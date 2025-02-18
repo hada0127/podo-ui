@@ -62,8 +62,8 @@ document.documentElement.setAttribute('data-color-mode', 'dark');
 
 ### 적용 색상 종류
 
-👉 선택 가능한 색상 종류 : primary, default, default-deep, info, link, success, warning, danger
-👉 선택 가능한 색상의 하위 색상으로 색상명-fill과 색상명-reverse가 존재한다.
+👉 선택 가능한 색상 종류 : primary, default, default-deep, info, link, success, warning, danger  
+👉 선택 가능한 색상의 하위 색상으로 색상명-fill과 색상명-reverse가 존재한다.  
 👉 위 선택자에 없는 text, border, bg, bg-elevation은 시스템 내 자동 적용한다.
 
 ### CSS 선택자 사용
