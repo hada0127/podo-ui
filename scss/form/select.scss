@@ -1,0 +1,57 @@
+@use '../color/function' as *;
+@use '../layout/spacing' as *;
+@use '../layout/radius' as *;
+@use '../typo/mixin' as *;
+
+select {
+  @include p3;
+  & {
+    border-radius: r(3);
+    padding: s(3) s(7) s(3) s(5);
+    outline: none;
+    vertical-align: middle;
+    -o-appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="8" viewBox="0 0 14 8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.4244 0.575719C13.19 0.341404 12.8101 0.341404 12.5758 0.575719L7.0001 6.15145L1.42436 0.575719C1.19005 0.341405 0.810148 0.341405 0.575833 0.575719C0.341518 0.810034 0.341518 1.18993 0.575833 1.42425L7.0001 7.84851L13.4244 1.42425C13.6587 1.18993 13.6587 0.810033 13.4244 0.575719Z" fill="%2371717A"/></svg>')
+      no-repeat right 11px center;
+
+    &:focus-visible:not(:disabled) {
+      outline: 4px solid color('primary-outline');
+    }
+    &:disabled {
+      color: color('text-action-disabled');
+      background-color: color('bg-disabled');
+      border: 1px solid color('bg-disabled');
+      outline-color: color('bg-disabled');
+      cursor: not-allowed;
+    }
+    > option[value=''][disabled] {
+      display: none;
+    }
+  }
+}
+
+.with-icon:has(> select) {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  > select {
+    padding-left: s(8);
+    position: relative;
+  }
+  > [class^='icon-']:first-child,
+  > [class*=' icon-']:first-child {
+    pointer-events: none;
+    position: absolute;
+    left: s(3);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    color: color('text-action');
+    &::before {
+      margin-top: -1px;
+    }
+  }
+}

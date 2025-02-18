@@ -1,0 +1,25 @@
+@use '../color/function' as *;
+@use '../layout/spacing' as *;
+@use '../typo/font-size' as *;
+@use '../typo/mixin' as *;
+
+label {
+  @include p4;
+  &.lg {
+    @include p3;
+  }
+  &.sm {
+    @include p5;
+  }
+  &.semibold {
+    font-weight: $font-weight-semibold;
+  }
+  &.disabled {
+    color: color('text-action-disabled') !important;
+  }
+
+  > span.required {
+    margin-left: s(2);
+    color: color('danger') !important;
+  }
+}

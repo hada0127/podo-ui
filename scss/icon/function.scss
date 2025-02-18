@@ -1,0 +1,5 @@
+@use './icon-name' as *;
+
+@function icon($key) {
+  @return '#{map-get($icon-name, $key)}';
+}

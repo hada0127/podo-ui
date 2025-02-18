@@ -1,0 +1,20 @@
+/*
+  Border
+*/
+$border: (
+  0: 0,
+  1: 1px,
+  2: 2px,
+  3: 3px,
+  4: 4px,
+);
+
+@function border($key) {
+  @return map-get($border, $key);
+}
+
+@each $key, $value in $border {
+  .border-#{$key} {
+    border: #{$value} solid;
+  }
+}

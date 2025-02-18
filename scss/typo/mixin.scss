@@ -1,0 +1,173 @@
+@use '../layout/device' as *;
+@use './font-family' as *;
+@use './font-size' as *;
+
+/*
+    Display
+  */
+@mixin display1 {
+  font-size: $font-size-60;
+  line-height: 1.2;
+  font-weight: $font-weight-semibold;
+  &:not(button) {
+    color: var(--color-text-header);
+  }
+  @include mo {
+    font-size: $font-size-36;
+  }
+}
+@mixin display2 {
+  font-size: $font-size-54;
+  line-height: 1.2;
+  font-weight: $font-weight-semibold;
+  &:not(button) {
+    color: var(--color-text-header);
+  }
+  @include mo {
+    font-size: $font-size-32;
+  }
+}
+@mixin display3 {
+  font-size: $font-size-48;
+  line-height: 1.2;
+  font-weight: $font-weight-semibold;
+  &:not(button) {
+    color: var(--color-text-header);
+  }
+  @include mo {
+    font-size: $font-size-28;
+  }
+}
+@mixin display4 {
+  font-size: $font-size-42;
+  line-height: 1.2;
+  font-weight: $font-weight-semibold;
+  &:not(button) {
+    color: var(--color-text-header);
+  }
+  @include mo {
+    font-size: $font-size-24;
+  }
+}
+
+@mixin display5 {
+  font-size: $font-size-36;
+  line-height: 1.2;
+  font-weight: $font-weight-semibold;
+  &:not(button) {
+    color: var(--color-text-header);
+  }
+  @include mo {
+    font-size: $font-size-20;
+  }
+}
+
+@mixin display6 {
+  font-size: $font-size-24;
+  line-height: 1.4;
+  font-weight: $font-weight-semibold;
+  &:not(button) {
+    color: var(--color-text-header);
+  }
+  @include mo {
+    font-size: $font-size-18;
+  }
+}
+
+@mixin display7 {
+  font-size: $font-size-20;
+  line-height: 1.6;
+  font-weight: $font-weight-semibold;
+  &:not(button) {
+    color: var(--color-text-header);
+  }
+  @include mo {
+    font-size: $font-size-16;
+  }
+}
+/*
+  Paragraph
+*/
+@mixin p1 {
+  font-size: $font-size-24;
+  line-height: 1.4;
+  font-weight: $font-weight-regular;
+  &:not(button) {
+    color: var(--color-text-body);
+  }
+  @include mo {
+    font-size: $font-size-20;
+  }
+}
+@mixin p2 {
+  font-size: $font-size-20;
+  line-height: 1.6;
+  font-weight: $font-weight-regular;
+  &:not(button) {
+    color: var(--color-text-body);
+  }
+  @include mo {
+    font-size: $font-size-16;
+  }
+}
+@mixin p3 {
+  font-size: $font-size-16;
+  line-height: 1.6;
+  font-weight: $font-weight-regular;
+  &:not(button) {
+    color: var(--color-text-body);
+  }
+  @include mo {
+    font-size: $font-size-14;
+  }
+}
+
+@mixin p3-semibold {
+  font-size: $font-size-16;
+  line-height: 1.6;
+  font-weight: $font-weight-semibold;
+  &:not(button) {
+    color: var(--color-text-body);
+  }
+  @include mo {
+    font-size: $font-size-14;
+  }
+}
+@mixin p4 {
+  font-size: $font-size-14;
+  line-height: 1.6;
+  font-weight: $font-weight-regular;
+  &:not(button) {
+    color: var(--color-text-body);
+  }
+  @include mo {
+    font-size: $font-size-12;
+  }
+}
+@mixin p4-semibold {
+  font-size: $font-size-14;
+  line-height: 1.6;
+  font-weight: $font-weight-semibold;
+  &:not(button) {
+    color: var(--color-text-body);
+  }
+  @include mo {
+    font-size: $font-size-12;
+  }
+}
+@mixin p5 {
+  font-size: $font-size-12;
+  line-height: 1.6;
+  font-weight: $font-weight-regular;
+  &:not(button) {
+    color: var(--color-text-body);
+  }
+}
+@mixin p5-semibold {
+  font-size: $font-size-12;
+  line-height: 1.6;
+  font-weight: 600;
+  &:not(button) {
+    color: var(--color-text-body);
+  }
+}

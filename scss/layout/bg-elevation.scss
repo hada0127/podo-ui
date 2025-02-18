@@ -1,0 +1,52 @@
+@use '../color/function' as *;
+/*
+  Shadow
+*/
+
+$shadow: (
+  1: 0px 6px 18px -3px rgba(50, 50, 50, 0.06),
+  2: 0px 8px 23px -3px rgba(50, 50, 50, 0.1),
+  3: 0px 9px 30px -3px rgba(50, 50, 50, 0.12),
+  4: 0px 9.995px 46px -3px rgba(50, 50, 50, 0.12),
+  5: 0px 13px 63px -3px rgba(50, 50, 50, 0.14),
+);
+
+@function shadow($key) {
+  @return map-get($shadow, $key);
+}
+
+@each $key, $value in $shadow {
+  .shadow-#{$key} {
+    box-shadow: #{$value};
+  }
+}
+
+/*
+  Elevation
+*/
+
+.bg-elevation {
+  background-color: color('bg-elevation');
+  &-1 {
+    background-color: color('bg-elevation-1');
+  }
+  &-2 {
+    background-color: color('bg-elevation-2');
+    box-shadow: shadow(1);
+  }
+  &-3 {
+    background-color: color('bg-elevation-3');
+    box-shadow: shadow(2);
+  }
+}
+
+html[data-color-mode='dark'] {
+  .bg-elevation {
+    &-2 {
+      box-shadow: none;
+    }
+    &-3 {
+      box-shadow: none;
+    }
+  }
+}

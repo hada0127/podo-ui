@@ -1,0 +1,189 @@
+@use 'sass:color';
+@use '../color/function' as *;
+@use '../layout/radius' as *;
+@use '../layout/spacing' as *;
+@use '../typo/mixin' as *;
+
+/*
+  Input
+  */
+input[type='text'],
+input[type='date'],
+input[type='datetime-local'],
+input[type='email'],
+input[type='month'],
+input[type='number'],
+input[type='password'],
+input[type='search'],
+input[type='tel'],
+input[type='time'],
+input[type='url'],
+input[type='week'],
+input[type='datetime'] {
+  @include p3;
+  & {
+    padding: s(3) s(4);
+    background-color: color('bg-block');
+    border-radius: r(3);
+    border: 1px solid color('border-disabled');
+    outline: none;
+  }
+  &:placeholder {
+    color: color('text-action-disabled');
+  }
+  &:focus-visible:not(:disabled):not(:read-only),
+  &:focus:not(:disabled):not(:read-only) {
+    outline: 4px solid color('primary-outline');
+    &.success {
+      outline: 4px solid color('success-outline');
+    }
+    &.danger {
+      outline: 4px solid color('danger-outline');
+    }
+  }
+  &:read-only {
+    border: none;
+  }
+  &.success {
+    &:not(:disabled):not(:read-only) {
+      border: 1px solid color('success');
+    }
+  }
+  &.danger {
+    &:not(:disabled):not(:read-only) {
+      border: 1px solid color('danger');
+    }
+  }
+  &:disabled {
+    background-color: color('bg-disabled');
+    border: 1px solid color('border-disabled');
+  }
+  &.fill:not(:disabled):not(:read-only) {
+    background-color: color('default-fill');
+  }
+  &.text:not(:disabled):not(:read-only) {
+    border: none;
+    &.success {
+      color: color('success');
+    }
+    &.danger {
+      color: color('danger');
+    }
+  }
+  &.underline:not(:disabled):not(:read-only) {
+    border: none;
+    border-bottom: 1px solid color('border-disabled');
+    border-radius: 0;
+    &.success {
+      border-bottom: 1px solid color('success');
+    }
+    &.danger {
+      border-bottom: 1px solid color('danger');
+    }
+  }
+  &.md {
+    @include p2;
+    & {
+      padding: s(4) s(4);
+      border-radius: r(5);
+    }
+  }
+  &.lg {
+    @include p2;
+    & {
+      padding: s(5) s(4);
+      border-radius: r(6);
+    }
+  }
+}
+
+.with-icon:has(
+    > input[type='text'],
+    > input[type='date'],
+    > input[type='datetime-local'],
+    > input[type='email'],
+    > input[type='month'],
+    > input[type='number'],
+    > input[type='password'],
+    > input[type='search'],
+    > input[type='tel'],
+    > input[type='time'],
+    > input[type='url'],
+    > input[type='week'],
+    > input[type='datetime']
+  ) {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  > input[type='text'],
+  > input[type='date'],
+  > input[type='datetime-local'],
+  > input[type='email'],
+  > input[type='month'],
+  > input[type='number'],
+  > input[type='password'],
+  > input[type='search'],
+  > input[type='tel'],
+  > input[type='time'],
+  > input[type='url'],
+  > input[type='week'],
+  > input[type='datetime'] {
+    padding-left: s(8);
+    position: relative;
+  }
+  > [class^='icon-']:first-child,
+  > [class*=' icon-']:first-child {
+    pointer-events: none;
+    position: absolute;
+    left: s(3);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    color: color('text-action');
+  }
+}
+.with-right-icon:has(
+    > input[type='text'],
+    > input[type='date'],
+    > input[type='datetime-local'],
+    > input[type='email'],
+    > input[type='month'],
+    > input[type='number'],
+    > input[type='password'],
+    > input[type='search'],
+    > input[type='tel'],
+    > input[type='time'],
+    > input[type='url'],
+    > input[type='week'],
+    > input[type='datetime']
+  ) {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  > input[type='text'],
+  > input[type='date'],
+  > input[type='datetime-local'],
+  > input[type='email'],
+  > input[type='month'],
+  > input[type='number'],
+  > input[type='password'],
+  > input[type='search'],
+  > input[type='tel'],
+  > input[type='time'],
+  > input[type='url'],
+  > input[type='week'],
+  > input[type='datetime'] {
+    padding-right: s(7);
+    position: relative;
+  }
+  > [class^='icon-']:last-child,
+  > [class*=' icon-']:last-child {
+    pointer-events: none;
+    position: absolute;
+    right: s(3);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    color: color('text-action');
+  }
+}

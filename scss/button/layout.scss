@@ -1,0 +1,37 @@
+@use '../layout/spacing' as *;
+@use '../layout/radius' as *;
+@use '../typo/mixin' as *;
+
+button {
+  @include p3;
+  & {
+    display: inline-flex;
+    gap: s(2);
+    border-radius: r(3);
+    padding: s(3) s(5);
+    &.xs {
+      @include p4;
+      & {
+        border-radius: r(2);
+        padding: s(2) s(3);
+        > i::before {
+          font-size: 20px;
+        }
+      }
+    }
+    &.md {
+      @include p2;
+      & {
+        border-radius: r(5);
+        padding: s(4) s(6);
+      }
+    }
+    &.lg {
+      @include p1;
+      & {
+        border-radius: r(6);
+        padding: s(5) s(6);
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+@use '../layout/spacing.scss' as *;
+@use '../color/function.scss' as *;
+@use '../layout/radius.scss' as *;
+@use '../typo/mixin.scss' as *;
+/*
+Table
+*/
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-radius: r(2);
+  border: 1px solid color('border');
+  &.list > tbody {
+    > tr {
+      &:hover {
+        cursor: pointer;
+        background-color: color('default-fill');
+      }
+    }
+  }
+  &.border > thead,
+  &.border > tbody {
+    > tr {
+      > th,
+      > td {
+        border-bottom: 1px solid color('border');
+      }
+    }
+  }
+  &.fill > thead,
+  &.fill > tbody {
+    > tr {
+      background-color: color('default-fill');
+    }
+  }
+  &.list.fill > tbody {
+    > tr {
+      &:hover {
+        background-color: color('default');
+      }
+    }
+  }
+  > thead,
+  > tbody {
+    > tr {
+      > th,
+      > td {
+        padding: s(3) s(4);
+        text-align: left;
+      }
+    }
+  }
+}

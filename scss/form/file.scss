@@ -1,0 +1,67 @@
+@use '../color/function' as *;
+@use '../layout/radius' as *;
+@use '../layout/spacing' as *;
+@use '../typo/mixin' as *;
+@use '../icon/function' as *;
+
+/*
+  File
+*/
+input[type='file'] {
+  position: relative;
+  @include p3;
+  & {
+    width: 404px;
+    padding: 0 s(4) 0 0;
+    background-color: color('bg-block');
+    border-radius: r(3);
+    border: 1px solid color('border-disabled');
+    outline: none;
+    overflow: visible;
+  }
+  &::before {
+    content: icon('upload-cloud');
+    position: absolute;
+    left: s(3);
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-block;
+    vertical-align: middle;
+    font-family: 'podo-ui-icon';
+    font-size: 24px;
+    color: color('default-deep-reverse');
+  }
+  &::file-selector-button {
+    @include p3;
+    & {
+      padding: s(3) s(3) s(3) s(8);
+      margin-right: s(2);
+      cursor: pointer;
+      border: none;
+      border-radius: r(3) 0 0 r(3);
+      background-color: color('default-deep');
+      color: color('default-deep-reverse');
+    }
+  }
+  &:focus-visible:not(:disabled) {
+    outline: 4px solid color('primary-outline');
+  }
+  &:disabled {
+    color: color('text-action-disabled');
+    cursor: not-allowed;
+    &:before {
+      color: color('text-action-disabled');
+    }
+    &::file-selector-button {
+      color: color('text-action-disabled');
+      background-color: color('bg-disabled');
+    }
+    &:hover {
+      &::file-selector-button {
+        color: color('text-action-disabled');
+        background-color: color('bg-disabled');
+        cursor: not-allowed;
+      }
+    }
+  }
+}

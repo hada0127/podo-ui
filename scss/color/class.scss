@@ -1,0 +1,50 @@
+@use './function' as *;
+
+body {
+  @each $type
+    in (primary, default, default-deep, info, link, success, warning, danger)
+  {
+    :not(button, input, textarea, :disabled).#{$type} {
+      color: color($type) !important;
+      &a:hover {
+        color: color($type + '-hover') !important;
+      }
+      &a:active {
+        color: color($type + '-pressed') !important;
+      }
+      &a:focus {
+        color: color($type + '-focus') !important;
+      }
+      &-fill {
+        @if ($type == 'default') {
+          color: color('default-reverse') !important;
+          background-color: color($type + '-fill') !important;
+        } @else {
+          color: color($type);
+          background-color: color($type + '-fill') !important;
+        }
+      }
+      &-reverse {
+        color: color($type + '-reverse') !important;
+      }
+    }
+    .#{$type}-bg {
+      color: color($type + '-reverse') !important;
+      background-color: color($type) !important;
+    }
+    .#{$type}-border:not(:disabled) {
+      border: 1px solid color($type) !important;
+    }
+    .#{$type}-border-fill {
+      @if ($type == 'default') {
+        color: color('default-reverse') !important;
+        background-color: color($type + '-fill') !important;
+        border: 1px solid color($type) !important;
+      } @else {
+        color: color($type);
+        background-color: color($type + '-fill') !important;
+        border: 1px solid color($type) !important;
+      }
+    }
+  }
+}

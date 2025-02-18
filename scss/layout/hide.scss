@@ -1,0 +1,23 @@
+@use '../layout/device' as *;
+
+/*
+  Hide
+*/
+.hide {
+  display: none !important;
+  &-pc {
+    @include pc {
+      display: none !important;
+    }
+  }
+  &-tb {
+    @include tb {
+      display: none !important;
+    }
+  }
+  &-mo {
+    @include mo {
+      display: none !important;
+    }
+  }
+}

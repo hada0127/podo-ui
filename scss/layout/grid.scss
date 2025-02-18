@@ -1,0 +1,69 @@
+@use './spacing' as *;
+@use './device' as *;
+$grid-pc: 12;
+$grid-tb: 6;
+$grid-mo: 4;
+.grid {
+  display: grid;
+  grid-template-columns: repeat($grid-pc, 1fr);
+  grid-gap: s(6);
+  padding: 0 s(6) 0 s(6);
+
+  @include tb {
+    grid-template-columns: repeat($grid-tb, 1fr);
+    grid-gap: s(5);
+    padding: 0 s(5) 0 s(5);
+  }
+  @include mo {
+    grid-template-columns: repeat($grid-mo, 1fr);
+    grid-gap: s(5);
+    padding: 0 s(5) 0 s(5);
+  }
+
+  @for $i from 2 through 6 {
+    &.grid-fix-#{$i} {
+      grid-template-columns: repeat(#{$i}, 1fr);
+    }
+    @for $j from 1 through $i {
+      > .w-#{$j}_#{$i} {
+        grid-column: span #{$j};
+      }
+    }
+  }
+  // w-1 ~ w-12
+  @for $i from 1 through $grid-pc {
+    > .w-#{$i} {
+      grid-column: span #{$i};
+    }
+  }
+
+  > .w-full {
+    grid-column: span $grid-pc;
+    @include tb {
+      grid-column: span $grid-tb;
+    }
+    @include mo {
+      grid-column: span $grid-mo;
+    }
+  }
+}
+/*
+  object size
+  */
+*:not(.grid) {
+  @for $i from 1 through $grid-pc {
+    > .w-#{$i} {
+      width: calc(#{$i}/ 12 * 100%);
+    }
+  }
+  > .w-full {
+    width: 100%;
+  }
+}
+* {
+  @for $i from 0 through 5000 {
+    &.w-#{$i}px {
+      width: #{$i} + 'px';
+    }
+  }
+}

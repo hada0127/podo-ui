@@ -1,0 +1,28 @@
+@use '../layout/spacing' as *;
+/*
+  Devices
+*/
+
+// Breakpoints
+$breakpoint-tb: 1280px;
+$breakpoint-mo: 768px;
+
+// Mobile Min-width
+$min-mo: 375px;
+
+// Media Queries Mixins
+@mixin pc {
+  @media screen and (min-width: $breakpoint-tb) {
+    @content;
+  }
+}
+@mixin tb {
+  @media screen and (min-width: $breakpoint-mo) and (max-width: calc(#{$breakpoint-tb} - 1px)) {
+    @content;
+  }
+}
+@mixin mo {
+  @media screen and (max-width: calc(#{$breakpoint-mo} - 1px)) {
+    @content;
+  }
+}

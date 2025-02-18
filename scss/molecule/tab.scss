@@ -1,0 +1,46 @@
+@use '../color/function' as *;
+@use '../layout/radius' as *;
+@use '../layout/spacing' as *;
+@use '../typo/mixin' as *;
+
+/*
+Tabs
+*/
+ul.tabs {
+  padding: 0;
+  display: flex;
+  justify-content: flex-start;
+  border-bottom: 1px inset color('border');
+
+  &.fill {
+    > li {
+      flex: 1;
+    }
+  }
+  > li {
+    text-align: center;
+    padding: 0;
+    > a {
+      @include p3;
+      & {
+        display: block;
+        padding: s(2) s(5);
+        color: color('text-sub');
+        &:hover {
+          color: inherit;
+        }
+        &:focus-visible:not(:disabled) {
+          outline: 4px solid color('primary-outline');
+        }
+      }
+    }
+    &.on > a {
+      @include p3-semibold;
+      & {
+        color: color('primary') !important;
+        border-bottom: 1px inset color('primary');
+        margin-bottom: -1px;
+      }
+    }
+  }
+}

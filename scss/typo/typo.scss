@@ -1,0 +1,102 @@
+@use '../layout/device' as *;
+@use './font-family' as *;
+@use './font-size' as *;
+@use './mixin' as *;
+@use '../layout/device' as *;
+
+/*
+  base font family
+  */
+:root {
+  --base-font-family: 'Pretendard', sans-serif;
+}
+body {
+  /*
+    Default
+  */
+  font-family: var(--base-font-family);
+  @include p3;
+  & {
+    h1 {
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-54;
+      line-height: 1.2;
+    }
+    h2 {
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-42;
+      line-height: 1.2;
+    }
+    h3 {
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-32;
+      line-height: 1.2;
+    }
+  }
+  @include mo {
+    h1 {
+      font-size: $font-size-24;
+    }
+    h2 {
+      font-size: $font-size-18;
+    }
+    h3 {
+      font-size: $font-size-16;
+    }
+  }
+}
+
+/*
+  Display
+*/
+:root {
+  .display1 {
+    @include display1;
+  }
+  .display2 {
+    @include display2;
+  }
+  .display3 {
+    @include display3;
+  }
+  .display4 {
+    @include display4;
+  }
+  .display5 {
+    @include display5;
+  }
+  .display6 {
+    @include display6;
+  }
+  .display7 {
+    @include display7;
+  }
+  /*
+  Paragraph
+*/
+  .p1 {
+    @include p1;
+  }
+  .p2 {
+    @include p2;
+  }
+  .p3 {
+    @include p3;
+  }
+
+  .p3-semibold {
+    @include p3-semibold;
+  }
+  .p4 {
+    @include p4;
+  }
+  .p4-semibold {
+    @include p4-semibold;
+  }
+  .p5 {
+    @include p5;
+  }
+  .p5-semibold {
+    @include p5-semibold;
+  }
+}

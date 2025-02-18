@@ -1,0 +1,80 @@
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 900;
+  src:
+    local('Pretendard Black'),
+    url(../../scss/typo/font/Pretendard-Black.woff2) format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 800;
+  src:
+    local('Pretendard ExtraBold'),
+    url(../../scss/typo/font/Pretendard-ExtraBold.woff2) format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 700;
+  src:
+    local('Pretendard Bold'),
+    url(../../scss/typo/font/Pretendard-Bold.woff2) format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 600;
+  src:
+    local('Pretendard SemiBold'),
+    url(../../scss/typo/font/Pretendard-SemiBold.woff2) format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 500;
+  src:
+    local('Pretendard Medium'),
+    url(../../scss/typo/font/Pretendard-Medium.woff2) format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  src:
+    local('Pretendard Regular'),
+    url(../../scss/typo/font/Pretendard-Regular.woff2) format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 300;
+  src:
+    local('Pretendard Light'),
+    url(../../scss/typo/font/Pretendard-Light.woff2) format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 200;
+  src:
+    local('Pretendard ExtraLight'),
+    url(../../scss/typo/font/Pretendard-ExtraLight.woff2) format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 100;
+  src:
+    local('Pretendard Thin'),
+    url(../../scss/typo/font/Pretendard-Thin.woff2) format('woff2');
+  font-display: swap;
+}

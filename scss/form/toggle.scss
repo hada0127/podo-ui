@@ -1,0 +1,67 @@
+@use '../color/function' as *;
+@use '../layout/radius' as *;
+/*
+  Toggle
+  */
+.toggle {
+  appearance: none;
+  position: relative;
+  border-radius: r('full');
+  border: none;
+  width: 33px;
+  height: 20px;
+  background-color: color('bg-toggle');
+  cursor: pointer;
+  vertical-align: middle;
+  margin-top: -1px;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    transition: 0.15s;
+  }
+  &:checked::before {
+    background-color: #ffffff;
+    left: auto;
+    right: 3px;
+  }
+  &:checked {
+    background-color: color('info');
+  }
+  &:disabled {
+    background-color: color('bg-disabled');
+    cursor: not-allowed;
+  }
+  &:disabled::before {
+    background-color: color('bg-toggle');
+    cursor: not-allowed;
+  }
+
+  &:checked:disabled {
+    background-color: #a6d4ff;
+    cursor: not-allowed;
+  }
+  &:checked:disabled::before {
+    background-color: #ffffff;
+  }
+  &:focus-visible:not(:disabled) {
+    outline: 4px solid color('primary-outline');
+  }
+}
+// 다크모드
+html[data-color-mode='dark'] {
+  .toggle {
+    &:checked:disabled {
+      background-color: #4c7295;
+      cursor: not-allowed;
+    }
+    &:checked:disabled::before {
+      background-color: #d9d9d9;
+    }
+  }
+}

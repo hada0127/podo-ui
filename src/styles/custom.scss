@@ -1,0 +1,11 @@
+@use '../../mixin' as *;
+
+h1 {
+  @include display1;
+}
+h2 {
+  @include display2;
+}
+h3 {
+  @include display3;
+}

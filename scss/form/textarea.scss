@@ -1,0 +1,52 @@
+@use '../color/function' as *;
+@use '../layout/radius' as *;
+@use '../layout/spacing' as *;
+@use '../typo/mixin' as *;
+
+textarea {
+  @include p3;
+  & {
+    padding: s(3) s(4);
+    background-color: color('bg-block');
+    border: 1px solid color('border');
+    border-radius: r(2);
+    outline: none;
+  }
+  &.resize-none {
+    resize: none;
+  }
+  &:placeholder {
+    color: color('text-action-disabled');
+  }
+  &:focus-visible:not(:disabled):not(:read-only),
+  &:focus:not(:disabled):not(:read-only) {
+    border: 1px solid color('primary');
+  }
+  &:read-only {
+    border: none;
+    resize: none;
+  }
+  &:focus-visible:not(:disabled) {
+    outline: 4px solid color('primary-outline');
+  }
+  &.success {
+    &:not(:disabled):not(:read-only) {
+      border: 1px solid color('success');
+      &:focus-visible:not(:disabled) {
+        outline: 4px solid color('success-outline');
+      }
+    }
+  }
+  &.danger {
+    &:not(:disabled):not(:read-only) {
+      border: 1px solid color('danger');
+    }
+    &:focus-visible:not(:disabled) {
+      outline: 4px solid color('danger-outline');
+    }
+  }
+  &:disabled {
+    background-color: color('bg-disabled');
+    border: 1px solid color('border-disabled');
+  }
+}
