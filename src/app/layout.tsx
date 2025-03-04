@@ -3,6 +3,8 @@ import '../styles/custom.scss';
 import '../styles/font-family.scss'; // custom path
 import '../styles/icon.scss'; // custom path
 
+export const runtime = 'edge';
+
 export default function RootLayout({
   children,
 }: Readonly<{
