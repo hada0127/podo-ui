@@ -10,7 +10,9 @@
     "start": "next start",
     "lint": "next lint",
     "icon": "node ./cli/icon-scss.js",
-    "pages:build": "npx @cloudflare/next-on-pages"
+    "pages:build": "npx @cloudflare/next-on-pages",
+    "preview": "npm run pages:build && wrangler pages dev",
+    "deploy": "npm run pages:build && wrangler pages deploy"
   },
   "dependencies": {
     "next": "14.1.0",
