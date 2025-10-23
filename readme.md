@@ -1,56 +1,443 @@
-# Podo-ui
-- SCSS Module 기반 디자인 시스템
+# Podo-UI 사용 가이드
 
+> SCSS Module 기반 디자인 시스템
+> 버전: 0.1.29
+> 저장소: https://github.com/hada0127/podo-ui
 
-# SCSS
+---
 
-## 기본 적용
+## 목차
+1. [설치 및 기본 설정](#설치-및-기본-설정)
+2. [컴포넌트](#컴포넌트)
+3. [색상 시스템](#색상-시스템)
+4. [레이아웃](#레이아웃)
+5. [그리드 시스템](#그리드-시스템)
+6. [타이포그래피](#타이포그래피)
 
-```js
+---
+
+## 설치 및 기본 설정
+
+### 1. Global SCSS 적용
+
+```typescript
+// main.tsx
 import 'podo-ui/global.scss';
 ```
 
-### SCSS Module 내에서 변수, 함수, 믹스인 활용
-
-👉 파일의 최상단에 아래 파일 선언
+### 2. SCSS Module에서 변수/함수/믹스인 사용
 
 ```scss
+// component.module.scss
 @use 'podo-ui/mixin' as *;
+
+.myComponent {
+  color: color(primary);
+  margin: s(4);
+  border-radius: r(2);
+}
 ```
 
-## Variables
+---
 
-### Color Tone
+## 컴포넌트
 
-👉 회색의 톤을 결정함. 기본값(미설정) 과 warm으로 선택할 수 있음.
-👉 js에서 아래와 같이 설정(warm)
+### React 컴포넌트
 
-```js
-// 기본값
+⚠️ **중요: React 컴포넌트는 `podo-ui/react`에서 import해야 합니다!**
+
+podo-ui는 주로 CSS 클래스 기반이지만, 몇 가지 React 컴포넌트를 제공합니다:
+
+#### Input
+
+```tsx
+import { Input } from 'podo-ui/react';  // ⚠️ 'podo-ui/react' 경로 사용!
+
+<Input
+  type="text"
+  placeholder="입력하세요"
+  value={value}
+  onChange={handleChange}
+  validator={zodSchema}  // Zod 스키마로 유효성 검사
+  withIcon="icon-search"  // 왼쪽 아이콘
+  withRightIcon="icon-clear"  // 오른쪽 아이콘
+  unit="원"  // 단위 표시
+/>
+```
+
+**Props:**
+- `value`: string | number
+- `validator`: Zod 스키마 (선택)
+- `withIcon`: 왼쪽 아이콘 클래스명
+- `withRightIcon`: 오른쪽 아이콘 클래스명
+- `unit`: 단위 문자열
+- 기타 HTML input 속성 전부 지원
+
+#### Textarea
+
+```tsx
+import { Textarea } from 'podo-ui/react';  // ⚠️ 'podo-ui/react' 경로 사용!
+
+<Textarea
+  placeholder="내용을 입력하세요"
+  value={value}
+  onChange={handleChange}
+  rows={5}
+/>
+```
+
+#### Editor (WYSIWYG)
+
+```tsx
+import { Editor } from 'podo-ui/react';  // ⚠️ 'podo-ui/react' 경로 사용!
+
+<Editor
+  value={content}
+  onChange={handleChange}
+/>
+```
+
+#### Field (Form 그룹)
+
+```tsx
+import { Field, Input } from 'podo-ui/react';  // ⚠️ 'podo-ui/react' 경로 사용!
+
+<Field
+  label="이름"
+  required
+  error="이름을 입력해주세요"
+>
+  <Input type="text" />
+</Field>
+```
+
+---
+
+## 색상 시스템
+
+### 사용 가능한 색상 타입
+
+- `primary` - 주요 색상
+- `default` - 기본 색상
+- `default-deep` - 진한 기본 색상
+- `info` - 정보 색상
+- `link` - 링크 색상
+- `success` - 성공 색상
+- `warning` - 경고 색상
+- `danger` - 위험 색상
+
+### 색상 변형
+
+각 색상은 다음 변형을 가집니다:
+- `{color}` - 기본
+- `{color}-hover` - 호버 상태
+- `{color}-pressed` - 눌림 상태
+- `{color}-focus` - 포커스 상태
+- `{color}-fill` - 배경 색상
+- `{color}-reverse` - 반전 색상
+- `{color}-outline` - 아웃라인 색상
+
+### CSS 클래스 사용
+
+```html
+<!-- 텍스트 색상 -->
+<div class="primary">Primary 색상 텍스트</div>
+
+<!-- 배경 색상 -->
+<div class="bg-primary">Primary 배경</div>
+
+<!-- 테두리 색상 -->
+<div class="border-primary">Primary 테두리</div>
+```
+
+### SCSS 함수 사용
+
+```scss
+.myButton {
+  color: color(primary-reverse);
+  background-color: color(primary);
+  border: 1px solid color(primary);
+
+  &:hover {
+    background-color: color(primary-hover);
+  }
+}
+```
+
+### 커스텀 색상 설정 (프로젝트에 이미 적용됨)
+
+```scss
+// src/styles/variables.scss
+:root {
+  --color-primary: #2D6AF6;
+  --color-primary-hover: #1F61E6;
+  --color-primary-pressed: #004AC3;
+  --color-primary-focus: #1F61E6;
+  --color-primary-fill: #ECF1FF;
+  --color-primary-reverse: #FFFFFF;
+  --color-primary-outline: rgba(31, 97, 230, 0.3);
+}
+
+html[data-color-mode='dark'] {
+  --color-primary: #4D79FF;
+  --color-primary-hover: #7393FF;
+  // ...
+}
+```
+
+### 다크 모드 설정
+
+```typescript
+// Light 모드
+document.documentElement.setAttribute('data-color-mode', 'light');
+
+// Dark 모드
+document.documentElement.setAttribute('data-color-mode', 'dark');
+
+// 자동 (브라우저 설정 따름)
+document.documentElement.setAttribute('data-color-mode', '');
+```
+
+### 색상 톤 설정
+
+```typescript
+// 기본 톤
 document.documentElement.setAttribute('data-color-tone', '');
 
-// warm 톤
+// Warm 톤
 document.documentElement.setAttribute('data-color-tone', 'warm');
 ```
 
-### Dark Mode
+---
 
-👉 다크모드를 설정함. 기본값(자동, 브라우저 설정에 따름)과 'light', 'dark'를 선택할 수 있음.
+## 버튼
 
-```js
-// 기본값(자동)
-document.documentElement.setAttribute('data-color-mode', '');
+### 기본 버튼
 
-// light 모드
-document.documentElement.setAttribute('data-color-mode', 'light');
-
-// dark 모드
-document.documentElement.setAttribute('data-color-mode', 'dark');
+```html
+<button>기본 버튼</button>
+<button class="primary">Primary 버튼</button>
+<button class="danger">Danger 버튼</button>
+<button disabled>비활성화</button>
 ```
 
-### Font family
+### 버튼 변형
 
-👉 font-family를 설정. scss에서 덮어쓰기
+```html
+<!-- Fill 스타일 (배경색 연함) -->
+<button class="primary-fill">Primary Fill</button>
+
+<!-- Border 스타일 (테두리만) -->
+<button class="primary-border">Primary Border</button>
+
+<!-- Text 스타일 (텍스트만) -->
+<button class="primary-text">Primary Text</button>
+```
+
+### 버튼 크기 (CSS 직접 지정)
+
+```html
+<button class="primary" style="padding: 0.5rem 1rem; font-size: 0.875rem">Small</button>
+<button class="primary" style="padding: 0.75rem 1.5rem; font-size: 1rem">Medium</button>
+<button class="primary" style="padding: 1rem 2rem; font-size: 1.125rem">Large</button>
+```
+
+---
+
+## 레이아웃
+
+### 여백 (Spacing)
+
+**클래스 사용:**
+```html
+<div class="spacing-4">여백 4</div>
+<div class="spacing-8">여백 8</div>
+```
+
+**SCSS 함수 사용:**
+```scss
+.container {
+  margin: s(4);
+  padding: s(8);
+  gap: s(2);
+}
+```
+
+**사용 가능한 값:** 0 ~ 13
+
+### 테두리 반경 (Border Radius)
+
+**클래스 사용:**
+```html
+<div class="r-2">작은 모서리</div>
+<div class="r-4">중간 모서리</div>
+<div class="r-full">완전한 원</div>
+```
+
+**SCSS 함수 사용:**
+```scss
+.card {
+  border-radius: r(4);
+}
+```
+
+**사용 가능한 값:** 0 ~ 6, 'full'
+
+### 테두리 두께 (Border)
+
+**클래스 사용:**
+```html
+<div class="border-1">테두리 1px</div>
+<div class="border-4">테두리 4px</div>
+```
+
+**SCSS 함수 사용:**
+```scss
+.box {
+  border-width: border(2);
+}
+```
+
+**사용 가능한 값:** 0 ~ 4
+
+---
+
+## 그리드 시스템
+
+### 기본 그리드 (Auto Wrap)
+
+```html
+<section class="grid">
+  <div class="w-4">4/12 (33.33%)</div>
+  <div class="w-4">4/12 (33.33%)</div>
+  <div class="w-4">4/12 (33.33%)</div>
+  <div class="w-6">6/12 (50%)</div>
+  <div class="w-6">6/12 (50%)</div>
+</section>
+```
+
+**특징:**
+- PC: 12 그리드
+- Tablet: 6 그리드
+- Mobile: 4 그리드
+- 자동 줄바꿈
+
+**사용 가능한 클래스:** `w-1` ~ `w-12`
+
+### 고정 그리드 (Fixed Columns)
+
+```html
+<!-- 4열 고정 그리드 -->
+<section class="grid-fix-4">
+  <div class="w-1_4">25%</div>
+  <div class="w-2_4">50%</div>
+  <div class="w-1_4">25%</div>
+</section>
+
+<!-- 6열 고정 그리드 -->
+<section class="grid-fix-6">
+  <div class="w-2_6">33.33%</div>
+  <div class="w-4_6">66.67%</div>
+</section>
+```
+
+**사용 가능한 그리드:** `grid-fix-2` ~ `grid-fix-6`
+
+---
+
+## 폼 요소
+
+### 입력 필드
+
+```html
+<input type="text" placeholder="텍스트 입력">
+<input type="email" placeholder="이메일">
+<input type="password" placeholder="비밀번호">
+```
+
+### Select
+
+```html
+<select>
+  <option>옵션 1</option>
+  <option>옵션 2</option>
+  <option>옵션 3</option>
+</select>
+```
+
+### Textarea
+
+```html
+<textarea rows="5" placeholder="내용을 입력하세요"></textarea>
+```
+
+### Checkbox & Radio
+
+```html
+<input type="checkbox" id="check1">
+<label for="check1">체크박스</label>
+
+<input type="radio" name="radio" id="radio1">
+<label for="radio1">라디오 1</label>
+```
+
+### Toggle
+
+```html
+<input type="checkbox" class="toggle" id="toggle1">
+<label for="toggle1">토글 스위치</label>
+```
+
+---
+
+## 분자 컴포넌트 (Molecule)
+
+### Pagination
+
+```html
+<nav class="pagination">
+  <button class="prev">이전</button>
+  <button class="active">1</button>
+  <button>2</button>
+  <button>3</button>
+  <button class="next">다음</button>
+</nav>
+```
+
+### Tab
+
+```html
+<div class="tab">
+  <button class="active">탭 1</button>
+  <button>탭 2</button>
+  <button>탭 3</button>
+</div>
+```
+
+### Table
+
+```html
+<table>
+  <thead>
+    <tr>
+      <th>제목 1</th>
+      <th>제목 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>데이터 1</td>
+      <td>데이터 2</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+---
+
+## 타이포그래피
+
+### 폰트 패밀리 설정
 
 ```scss
 :root {
@@ -58,142 +445,61 @@ document.documentElement.setAttribute('data-color-mode', 'dark');
 }
 ```
 
-## 색상
-
-### 적용 색상 종류
-
-👉 선택 가능한 색상 종류 : primary, default, default-deep, info, link, success, warning, danger  
-👉 선택 가능한 색상의 하위 색상으로 색상명-fill과 색상명-reverse가 존재한다.  
-👉 위 선택자에 없는 text, border, bg, bg-elevation은 시스템 내 자동 적용한다.
-
-### CSS 선택자 사용
-
-👉 아래와 같이 직접 선택자를 넣어 사용
+### 헤딩
 
 ```html
-<div className="primary">primary color</div>
-<div className="bg-primary">primary background color</div>
+<h1>Heading 1</h1>
+<h2>Heading 2</h2>
+<h3>Heading 3</h3>
+<h4>Heading 4</h4>
+<h5>Heading 5</h5>
+<h6>Heading 6</h6>
 ```
 
-### SCSS 내에서 함수 사용
+---
 
-```scss
-p {
-  color: color(값);
-}
-```
+## 주의사항
 
-### 커스컴 컬러
+1. **⚠️ Import 경로 (매우 중요!)**
+   ```tsx
+   // ✅ 올바른 방법 - React 컴포넌트는 'podo-ui/react'에서
+   import { Input, Textarea, Editor, Field } from 'podo-ui/react';
 
-👉 아래 형태로 css 변수를 커스텀하여 사용
+   // ❌ 잘못된 방법 - 이렇게 하면 오류 발생!
+   import { Input } from 'podo-ui';
 
-```scss
-:root {
-  --color-primary: #f34a35;
-  --color-primary-hover: #dd2d0f;
-  --color-primary-pressed: #c9280c;
-  --color-primary-focus: #dd2d0f;
-  --color-primary-fill: #fff8f7;
-  --color-primary-reverse: #ffffff;
-}
-html[data-color-mode='dark'] {
-  --color-primary: #ff5d49;
-  --color-primary-hover: #ff7564;
-  --color-primary-pressed: #ff5d49;
-  --color-primary-focus: #ff7564;
-  --color-primary-fill: #1c1c20;
-}
-```
+   // Global SCSS
+   import 'podo-ui/global.scss';
 
-## 그리드
+   // SCSS Module에서 믹스인
+   @use 'podo-ui/mixin' as *;
+   ```
 
-### 기본 그리드 시스템 ( 4 ~ 12 columns / auto wrap)
+2. **CSS 클래스 vs React 컴포넌트**
+   - podo-ui는 주로 CSS 클래스 기반 시스템입니다
+   - Button, Alert 등은 **컴포넌트가 없습니다** - HTML 요소에 클래스를 적용하여 사용
+   - React 컴포넌트는 **Input, Textarea, Editor, Field만** 제공됩니다
 
-👉 css에서 .grid 속성으로 기본 그리드 시스템을 설정합니다.
+   ```tsx
+   // ❌ 잘못된 사용 (Button 컴포넌트 없음)
+   import { Button } from 'podo-ui/react';
+   <Button color="primary">버튼</Button>
 
-```html
-<section className="grid">
-  <div className="w-4">w-4</div>
-  <div className="w-4">w-4</div>
-  <div className="w-4">w-4</div>
-</section>
-```
+   // ✅ 올바른 사용 (HTML + CSS 클래스)
+   <button className="primary">버튼</button>
+   ```
 
-👉 그리드 내 하위 요소가 중단점 이상일 경우 자동으로 줄바꿈 합니다.  
-👉 w-{숫자} 형태로 이루어져있으며 1~12 그리드가 존재합니다.  
-👉 {숫자} / 12 \* 100% 한 값을 전체 그리드 내의 비율로 사용합니다.  
-👉 예: w-1은 1 / 12 \* 100 = 8.333% 크기, w-6은 6 / 12 \* 100 = 50% 크기를 차지합니다.
-👉 PC는 12 그리드, Tablet은 6 그리드, Mobile은 4 그리드를 기본으로 한다.
+3. **색상 시스템**
+   - 색상은 CSS 변수로 제공되며 커스터마이징 가능
+   - 필요시 `src/styles/variables.scss`에서 추가 커스터마이징 가능
 
-### 고정 그리드 시스템
+4. **반응형**
+   - 그리드 시스템은 자동으로 반응형 지원
+   - PC(12), Tablet(6), Mobile(4) 그리드로 자동 변경
 
-👉 디바이스에 관계없이 디바이스의 너비를 유지하고 줄바꿈을 하지 않습니다.  
-👉 css에서 grid-fix-2 ~ grid-gix-6 로 2 ~ 6개의 컬럼을 가진 그리드 시스템을 설정합니다.  
-👉 4그리드일 경우 CSS에서 하위 구성요소는 w-1_4, w-2_4, w-3_4가 존재합니다.w-1_4은 1/4(25%)  
-👉 크기, w-2_4는 2/4(50%) 크기, w-3_4는 3/4(75%) 크기를 차지합니다.  
-👉 Fixed wrap grid에서는 w-full로 하위 구성요소를 그리드 시스템내에 100% 크기를 차지하도록 설정할 수 있습니다.
+---
 
-## 레이아웃
+## 참고 링크
 
-### 테두리 두께 (border)
-
-👉 border 함수 혹은 class 사용 사용 (0 ~ 4)
-
-```scss
-p {
-  margin: border(값);
-}
-```
-
-```html
-<p className="border-4">border-4</p>
-```
-
-### 테두리 반경 (border radius)
-
-👉 r 함수 혹은 class 사용 (0 ~ 6, 'full')
-
-```scss
-p {
-  margin: r(값);
-}
-```
-
-```html
-<p className="r-4">r-4</p>
-```
-
-### 여백 (spacing)
-
-👉 spacing 함수 혹은 class 사용 (0 ~ 13)
-
-```scss
-p {
-  margin: s(값);
-}
-```
-
-```html
-<p className="spacing-4">spacing-4</p>
-```
-
-## 입력요소
-
-### 토글 (toggle)
-
-👉 checkbox에 .toggle 클래스 사용
-
-```html
-<input type="checkbox" className="toggle" />
-```
-
-## 아이콘 생성 방법
-
-👉 디자인 시스템 피그마에서 상태를 선택한 후 svg로 export 할 것
-👉 폰트포지에서 icon.woff 폰트 생성
-👉 /scss/icon/font 경로에 icon.woff 복사
-👉 쉘에서 아래 스크립트 실행
-
-```sh
-npm run icon
-```
+- GitHub: https://github.com/hada0127/podo-ui
+- Issues: https://github.com/hada0127/podo-ui/issues

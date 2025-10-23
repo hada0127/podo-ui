@@ -18,30 +18,13 @@ body {
   @include p3;
   & {
     h1 {
-      font-weight: $font-weight-semibold;
-      font-size: $font-size-54;
-      line-height: 1.2;
+      @include h1;
     }
     h2 {
-      font-weight: $font-weight-semibold;
-      font-size: $font-size-42;
-      line-height: 1.2;
+      @include h2;
     }
     h3 {
-      font-weight: $font-weight-semibold;
-      font-size: $font-size-32;
-      line-height: 1.2;
-    }
-  }
-  @include mo {
-    h1 {
-      font-size: $font-size-24;
-    }
-    h2 {
-      font-size: $font-size-18;
-    }
-    h3 {
-      font-size: $font-size-16;
+      @include h3;
     }
   }
 }

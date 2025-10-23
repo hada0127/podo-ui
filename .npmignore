@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.github/
+tests/
+*.test.js
+.env
+.DS_Store
+coverage/
+.vscode/
+.vercel/
+.wrangler/
+.claude/
