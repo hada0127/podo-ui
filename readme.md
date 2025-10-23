@@ -38,6 +38,22 @@ import 'podo-ui/global.scss';
 }
 ```
 
+### 3. Vite 프로젝트 설정 (필수)
+
+⚠️ **Vite를 사용하는 경우 폰트 경로 재정의가 필요합니다!**
+
+Vite에서는 node_modules 내의 상대 경로를 올바르게 처리하지 못할 수 있습니다. `podo-ui/vite-fonts.scss`를 추가로 import하세요:
+
+```typescript
+// main.tsx
+import 'podo-ui/global.scss';
+import 'podo-ui/vite-fonts.scss'; // Vite용 폰트 경로 재정의
+```
+
+이 파일은 아이콘 폰트와 Pretendard 폰트의 경로를 Vite에서 올바르게 로드되도록 재정의합니다.
+
+**Next.js나 CRA 등 다른 번들러는 `vite-fonts.scss` 없이 사용 가능합니다.**
+
 ---
 
 ## 컴포넌트
