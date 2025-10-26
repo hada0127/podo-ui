@@ -1,3 +1,4 @@
+@use 'sass:map';
 /*
   Border
 */
@@ -10,7 +11,7 @@ $border: (
 );
 
 @function border($key) {
-  @return map-get($border, $key);
+  @return map.get($border, $key);
 }
 
 @each $key, $value in $border {

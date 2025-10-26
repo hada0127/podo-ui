@@ -1,3 +1,4 @@
+@use 'sass:map';
 /*
   Spacing
 */
@@ -19,7 +20,7 @@ $spacing: (
 );
 
 @function s($key) {
-  @return map-get($spacing, $key);
+  @return map.get($spacing, $key);
 }
 
 @each $key, $value in $spacing {

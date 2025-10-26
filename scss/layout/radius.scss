@@ -1,3 +1,4 @@
+@use 'sass:map';
 /*
   Radius
 */
@@ -13,7 +14,7 @@ $r: (
   full: 9999px,
 );
 @function r($key) {
-  @return map-get($r, $key);
+  @return map.get($r, $key);
 }
 
 @each $key, $value in $r {

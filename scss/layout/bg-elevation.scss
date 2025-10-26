@@ -1,4 +1,5 @@
 @use '../color/function' as *;
+@use 'sass:map';
 /*
   Shadow
 */
@@ -12,7 +13,7 @@ $shadow: (
 );
 
 @function shadow($key) {
-  @return map-get($shadow, $key);
+  @return map.get($shadow, $key);
 }
 
 @each $key, $value in $shadow {

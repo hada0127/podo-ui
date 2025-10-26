@@ -1,5 +1,6 @@
 @use './icon-name' as *;
+@use 'sass:map';
 
 @function icon($key) {
-  @return '#{map-get($icon-name, $key)}';
+  @return '#{map.get($icon-name, $key)}';
 }
