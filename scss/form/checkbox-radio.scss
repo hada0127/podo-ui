@@ -11,7 +11,7 @@ input[type='radio'] {
   position: relative;
   width: 24px;
   height: 24px;
-  cursor: pointer;
+  cursor: pointer !important;
   vertical-align: middle;
   &:focus-visible:not(:disabled) {
     outline: 4px solid color('primary-outline');
@@ -40,11 +40,11 @@ input[type='checkbox']:not(.toggle):checked::before {
 }
 input[type='checkbox']:not(.toggle):disabled::before {
   background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M3%205C3%203.89543%203.89543%203%205%203H19C20.1046%203%2021%203.89543%2021%205V19C21%2020.1046%2020.1046%2021%2019%2021H5C3.89543%2021%203%2020.1046%203%2019V5Z%22%20fill%3D%22%23E4E4E7%22%2F%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M19%204H5C4.44772%204%204%204.44772%204%205V19C4%2019.5523%204.44772%2020%205%2020H19C19.5523%2020%2020%2019.5523%2020%2019V5C20%204.44772%2019.5523%204%2019%204ZM5%203C3.89543%203%203%203.89543%203%205V19C3%2020.1046%203.89543%2021%205%2021H19C20.1046%2021%2021%2020.1046%2021%2019V5C21%203.89543%2020.1046%203%2019%203H5Z%22%20fill%3D%22black%22%20fill-opacity%3D%220.09%22%2F%3E%3C%2Fsvg%3E');
-  cursor: not-allowed;
+  cursor: not-allowed !important;
 }
 input[type='checkbox']:not(.toggle):checked:disabled::before {
   background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M3%205C3%203.89543%203.89543%203%205%203H19C20.1046%203%2021%203.89543%2021%205V19C21%2020.1046%2020.1046%2021%2019%2021H5C3.89543%2021%203%2020.1046%203%2019V5Z%22%20fill%3D%22%23A6D4FF%22%2F%3E%3Cpath%20d%3D%22M10%2016.4L6%2012.4L7.4%2011L10%2013.6L16.6%207L18%208.4L10%2016.4Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E');
-  cursor: not-allowed;
+  cursor: not-allowed !important;
 }
 
 input[type='checkbox']:not(.toggle):indeterminate::before {
@@ -71,11 +71,11 @@ html[data-color-mode='dark'] {
 
   input[type='checkbox']:not(.toggle):disabled::before {
     background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2225%22%20height%3D%2225%22%20viewBox%3D%220%200%2025%2025%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M3.5%205.5C3.5%204.39543%204.39543%203.5%205.5%203.5H19.5C20.6046%203.5%2021.5%204.39543%2021.5%205.5V19.5C21.5%2020.6046%2020.6046%2021.5%2019.5%2021.5H5.5C4.39543%2021.5%203.5%2020.6046%203.5%2019.5V5.5Z%22%20fill%3D%22%232F2F33%22%2F%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M19.5%204.5H5.5C4.94772%204.5%204.5%204.94772%204.5%205.5V19.5C4.5%2020.0523%204.94772%2020.5%205.5%2020.5H19.5C20.0523%2020.5%2020.5%2020.0523%2020.5%2019.5V5.5C20.5%204.94772%2020.0523%204.5%2019.5%204.5ZM5.5%203.5C4.39543%203.5%203.5%204.39543%203.5%205.5V19.5C3.5%2020.6046%204.39543%2021.5%205.5%2021.5H19.5C20.6046%2021.5%2021.5%2020.6046%2021.5%2019.5V5.5C21.5%204.39543%2020.6046%203.5%2019.5%203.5H5.5Z%22%20fill%3D%22%23424245%22%2F%3E%3C%2Fsvg%3E');
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
   input[type='checkbox']:not(.toggle):checked:disabled::before {
     background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2225%22%20viewBox%3D%220%200%2024%2025%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M3%205.5C3%204.39543%203.89543%203.5%205%203.5H19C20.1046%203.5%2021%204.39543%2021%205.5V19.5C21%2020.6046%2020.1046%2021.5%2019%2021.5H5C3.89543%2021.5%203%2020.6046%203%2019.5V5.5Z%22%20fill%3D%22%234C7295%22%2F%3E%3Cpath%20d%3D%22M10%2016.9L6%2012.9L7.4%2011.5L10%2014.1L16.6%207.5L18%208.9L10%2016.9Z%22%20fill%3D%22%23D9D9D9%22%2F%3E%3C%2Fsvg%3E');
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
 
   input[type='checkbox']:not(.toggle):indeterminate::before {
@@ -103,22 +103,22 @@ input[type='radio']:checked::before {
 
 input[type='radio']:disabled::before {
   background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%20fill%3D%22%23E4E4E7%22%2F%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M12%2020C16.4183%2020%2020%2016.4183%2020%2012C20%207.58172%2016.4183%204%2012%204C7.58172%204%204%207.58172%204%2012C4%2016.4183%207.58172%2020%2012%2020ZM12%2021C16.9706%2021%2021%2016.9706%2021%2012C21%207.02944%2016.9706%203%2012%203C7.02944%203%203%207.02944%203%2012C3%2016.9706%207.02944%2021%2012%2021Z%22%20fill%3D%22black%22%20fill-opacity%3D%220.09%22%2F%3E%3C%2Fsvg%3E');
-  cursor: not-allowed;
+  cursor: not-allowed !important;
 }
 input[type='radio']:checked:disabled::before {
   background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%20fill%3D%22white%22%2F%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M12%2020C7.58172%2020%204%2016.4183%204%2012C4%207.58172%207.58172%204%2012%204C16.4183%204%2020%207.58172%2020%2012C20%2016.4183%2016.4183%2020%2012%2020ZM3%2012C3%207.02944%207.02944%203%2012%203C16.9706%203%2021%207.02944%2021%2012C21%2016.9706%2016.9706%2021%2012%2021C7.02944%2021%203%2016.9706%203%2012ZM12%2017C14.7614%2017%2017%2014.7614%2017%2012C17%209.23858%2014.7614%207%2012%207C9.23858%207%207%209.23858%207%2012C7%2014.7614%209.23858%2017%2012%2017Z%22%20fill%3D%22%23A6D4FF%22%2F%3E%3C%2Fsvg%3E');
-  cursor: not-allowed;
+  cursor: not-allowed !important;
 }
 
 // 다크모드
 html[data-color-mode='dark'] {
   input[type='radio']:disabled::before {
     background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%20fill%3D%22%232F2F33%22%2F%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M12%2020C16.4183%2020%2020%2016.4183%2020%2012C20%207.58172%2016.4183%204%2012%204C7.58172%204%204%207.58172%204%2012C4%2016.4183%207.58172%2020%2012%2020ZM12%2021C16.9706%2021%2021%2016.9706%2021%2012C21%207.02944%2016.9706%203%2012%203C7.02944%203%203%207.02944%203%2012C3%2016.9706%207.02944%2021%2012%2021Z%22%20fill%3D%22%23424245%22%2F%3E%3C%2Fsvg%3E');
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
   input[type='radio']:checked:disabled::before {
     background-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%229%22%20fill%3D%22black%22%20fill-opacity%3D%220.09%22%2F%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M12%2020C7.58172%2020%204%2016.4183%204%2012C4%207.58172%207.58172%204%2012%204C16.4183%204%2020%207.58172%2020%2012C20%2016.4183%2016.4183%2020%2012%2020ZM3%2012C3%207.02944%207.02944%203%2012%203C16.9706%203%2021%207.02944%2021%2012C21%2016.9706%2016.9706%2021%2012%2021C7.02944%2021%203%2016.9706%203%2012ZM12%2017C14.7614%2017%2017%2014.7614%2017%2012C17%209.23858%2014.7614%207%2012%207C9.23858%207%207%209.23858%207%2012C7%2014.7614%209.23858%2017%2012%2017Z%22%20fill%3D%22%234C7295%22%2F%3E%3C%2Fsvg%3E');
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
 }
 

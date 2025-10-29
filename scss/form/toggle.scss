@@ -11,7 +11,7 @@
   width: 33px;
   height: 20px;
   background-color: color('bg-toggle');
-  cursor: pointer;
+  cursor: pointer !important;
   vertical-align: middle;
   margin-top: -1px;
   &::before {
@@ -35,16 +35,16 @@
   }
   &:disabled {
     background-color: color('bg-disabled');
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
   &:disabled::before {
     background-color: color('bg-toggle');
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
 
   &:checked:disabled {
     background-color: #a6d4ff;
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
   &:checked:disabled::before {
     background-color: #ffffff;
@@ -58,7 +58,7 @@ html[data-color-mode='dark'] {
   .toggle {
     &:checked:disabled {
       background-color: #4c7295;
-      cursor: not-allowed;
+      cursor: not-allowed !important;
     }
     &:checked:disabled::before {
       background-color: #d9d9d9;
