@@ -1,0 +1,119 @@
+// 문서 페이지 공통 스타일
+@use '../../mixin' as *;
+
+.section {
+  margin-bottom: s(10);
+
+  h2 {
+    @include display5;
+    margin: 0 0 s(5) 0;
+    color: color(default-deep-base);
+  }
+
+  h3 {
+    @include p1; font-weight: 600;
+    margin: s(7) 0 s(4) 0;
+    color: color(default-deep-base);
+  }
+
+  h4 {
+    @include p2; font-weight: 600;
+    margin: s(5) 0 s(3) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p2;
+    color: color(default-base);
+    line-height: 1.8;
+    margin: 0 0 s(5) 0;
+  }
+
+  ul {
+    @include p2;
+    color: color(default-base);
+    line-height: 1.8;
+    margin: 0 0 s(5) 0;
+    padding-left: s(6);
+
+    li {
+      margin-bottom: s(2);
+    }
+  }
+}
+
+.demo {
+  padding: s(6);
+  background: color(default-fill);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+  margin-bottom: s(5);
+}
+
+.note,
+.warning,
+.tip {
+  display: flex;
+  gap: s(4);
+  padding: s(5);
+  border-radius: r(4);
+  margin-bottom: s(5);
+
+  > i {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: s(2);
+  }
+}
+
+.note {
+  background: color(info-fill);
+  border: 1px solid color(info-outline);
+  color: color(info-base);
+
+  > i {
+    color: color(info-base);
+  }
+}
+
+.warning {
+  background: color(warning-fill);
+  border: 1px solid color(warning-outline);
+  color: color(warning-base);
+
+  > i {
+    color: color(warning-base);
+  }
+}
+
+.tip {
+  background: color(success-fill);
+  border: 1px solid color(success-outline);
+  color: color(success-base);
+
+  > i {
+    color: color(success-base);
+  }
+}
+
+.grid {
+  display: grid;
+  gap: s(5);
+  margin-bottom: s(5);
+
+  &.cols2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &.cols3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &.cols4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

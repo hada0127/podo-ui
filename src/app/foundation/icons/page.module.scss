@@ -1,0 +1,219 @@
+@use '../../../../mixin' as *;
+
+.section {
+  margin-bottom: s(10);
+
+  h2 {
+    @include display5;
+    margin: 0 0 s(5) 0;
+    color: color(default-deep-base);
+  }
+
+  h3 {
+    @include p1; font-weight: 600;
+    margin: s(7) 0 s(4) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p2;
+    color: color(default-base);
+    line-height: 1.8;
+    margin: 0 0 s(5) 0;
+  }
+}
+
+.codeBlock {
+  background: color(default-deep-base);
+  border-radius: r(4);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @include p4-semibold;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: #f8f8f2;
+      white-space: pre;
+    }
+  }
+}
+
+.note {
+  display: flex;
+  gap: s(4);
+  padding: s(5);
+  border-radius: r(4);
+  margin-top: s(5);
+  background: color(info-fill);
+  border: 1px solid color(info-outline);
+  color: color(info-base);
+
+  > i {
+    font-size: 20px;
+    flex-shrink: 0;
+    color: color(info-base);
+  }
+
+  strong {
+    display: block;
+    margin-bottom: s(2);
+  }
+}
+
+// Demo
+.demo {
+  margin-top: s(5);
+  padding: s(5);
+  background: color(default-fill);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+}
+
+.demoTitle {
+  @include p3-semibold;
+  margin-bottom: s(4);
+  color: color(default-deep-base);
+}
+
+.iconDemo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: s(5);
+  align-items: center;
+
+  i {
+    font-size: 32px;
+    color: color(default-deep-base);
+  }
+}
+
+.buttonDemo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: s(4);
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: s(2);
+
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+// Size Grid
+.sizeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: s(4);
+  margin-top: s(5);
+}
+
+.sizeCard {
+  display: flex;
+  align-items: center;
+  gap: s(4);
+  padding: s(5);
+  background: color(default-fill);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: color(primary-base);
+    background: color(primary-fill);
+  }
+
+  i {
+    color: color(primary-base);
+  }
+}
+
+.sizeInfo {
+  h4 {
+    @include p3-semibold;
+    margin: 0 0 s(1) 0;
+    color: color(default-deep-base);
+  }
+
+  code {
+    @include p5;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    color: color(default-base);
+    background: color(default-deep-fill);
+    padding: 2px 6px;
+    border-radius: r(1);
+  }
+}
+
+// Icon Grid
+.iconGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: s(3);
+  margin-top: s(5);
+}
+
+.iconCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: s(3);
+  padding: s(5);
+  background: color(default-fill);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: color(primary-base);
+    background: color(primary-fill);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    i {
+      color: color(primary-base);
+      transform: scale(1.1);
+    }
+
+    span {
+      color: color(primary-base);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  i {
+    font-size: 28px;
+    color: color(default-deep-base);
+    transition: all 0.3s;
+  }
+
+  span {
+    @include p5;
+    text-align: center;
+    color: color(default-base);
+    word-break: break-word;
+    transition: color 0.3s;
+  }
+}

@@ -1,0 +1,24 @@
+@use '../../mixin' as *;
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: s(7);
+  padding-bottom: s(6);
+  border-bottom: 1px solid color(default-outline);
+
+  .content {
+    h1 {
+      @include display3;
+      margin: 0 0 s(3) 0;
+      color: color(default-deep-base);
+    }
+
+    p {
+      @include p2;
+      margin: 0;
+      color: color(default-base);
+    }
+  }
+}

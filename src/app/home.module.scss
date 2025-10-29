@@ -1,0 +1,541 @@
+@use '../../mixin' as *;
+
+.homePage {
+  background: color(bg-elevation);
+  min-height: 100vh;
+}
+
+// Hero Section
+.hero {
+  text-align: center;
+  padding: s(13) s(6) s(12);
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .heroContent {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .logoContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: s(7);
+
+    img {
+      filter: drop-shadow(0 8px 32px rgba(139, 92, 246, 0.3));
+      animation: float 3s ease-in-out infinite;
+    }
+  }
+
+  .heroTitle {
+    @include display1;
+    font-size: 56px;
+    font-weight: 300;
+    margin: 0 0 s(6) 0;
+    color: color(default-deep-base);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+
+    .brandName {
+      display: block;
+      font-weight: 700;
+      background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-top: s(3);
+    }
+  }
+
+  .heroDescription {
+    @include p2;
+    font-size: 16px;
+    color: color(default-base);
+    margin: 0 0 s(6) 0;
+    line-height: 1.8;
+  }
+
+  .heroLinks {
+    display: flex;
+    justify-content: center;
+    gap: s(3);
+    margin-bottom: s(6);
+  }
+
+  .heroActions {
+    display: flex;
+    justify-content: center;
+    gap: s(4);
+  }
+}
+
+.linkButton {
+  @include p4;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: s(2);
+  padding: s(2) s(4);
+  background: color(bg-elevation-1);
+  color: color(default-deep-base);
+  text-decoration: none;
+  border-radius: r(2);
+  border: 1px solid color(default-outline);
+  transition: all 0.2s;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: color(default-hover);
+    border-color: color(primary-base);
+    color: color(primary-base);
+  }
+}
+
+.btnPrimary {
+  @include p2;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: s(3);
+  padding: s(4) s(8);
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+  }
+}
+
+// Section Headers
+.sectionHeader {
+  text-align: center;
+  margin-bottom: s(10);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sectionTitle {
+  @include display3;
+  font-size: 42px;
+  font-weight: 700;
+  margin: 0 0 s(5) 0;
+  color: color(default-deep-base);
+}
+
+.sectionDescription {
+  @include p2;
+  font-size: 16px;
+  color: color(default-base);
+  line-height: 1.8;
+  margin: 0;
+}
+
+// Features Section
+.featuresSection {
+  padding: s(12) s(6);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.browserMockup {
+  margin-top: s(10);
+}
+
+.browserWindow {
+  background: color(bg-modal);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  border: 1px solid color(default-outline);
+}
+
+.browserHeader {
+  background: color(bg-elevation-1);
+  padding: s(4) s(5);
+  display: flex;
+  align-items: center;
+  gap: s(4);
+  border-bottom: 1px solid color(default-outline);
+}
+
+.browserDots {
+  display: flex;
+  gap: s(2);
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: color(default-outline);
+
+    &:nth-child(1) {
+      background: #ff5f57;
+    }
+    &:nth-child(2) {
+      background: #febc2e;
+    }
+    &:nth-child(3) {
+      background: #28c840;
+    }
+  }
+}
+
+.browserUrl {
+  @include p4;
+  font-weight: 600;
+  color: color(default-base);
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.browserTab {
+  @include p4;
+  font-weight: 600;
+  color: color(default-deep-base);
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.browserContent {
+  display: flex;
+  min-height: 400px;
+  background: color(bg-elevation);
+}
+
+.mockSidebar {
+  width: 200px;
+  background: color(bg-elevation-1);
+  padding: s(5);
+  border-right: 1px solid color(default-outline);
+}
+
+.sidebarItem {
+  @include p3;
+  padding: s(3) s(4);
+  color: color(default-base);
+  margin-bottom: s(2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: color(default-hover);
+    color: color(default-deep-base);
+  }
+}
+
+.mockMain {
+  flex: 1;
+  padding: s(6);
+  display: flex;
+  flex-direction: column;
+  gap: s(5);
+}
+
+.mockCard {
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mockCardHeader {
+  @include p3;
+  font-weight: 600;
+  padding: s(4) s(5);
+  background: color(bg-elevation-1);
+  color: color(default-deep-base);
+  border-bottom: 1px solid color(default-outline);
+}
+
+.mockCardBody {
+  padding: s(5);
+
+  .mockLine {
+    height: 12px;
+    background: color(default-hover);
+    border-radius: 4px;
+    margin-bottom: s(3);
+
+    &:last-child {
+      width: 60%;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.mockCardFooter {
+  padding: s(4) s(5);
+  display: flex;
+  gap: s(3);
+  justify-content: flex-end;
+  border-top: 1px solid color(default-outline);
+}
+
+.mockButton {
+  @include p4;
+  font-weight: 600;
+  padding: s(2) s(5);
+  border-radius: 6px;
+  background: color(bg-disabled);
+  color: color(default-base);
+  border: 1px solid color(default-outline);
+
+  &.primary {
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+    color: white;
+    border: none;
+  }
+}
+
+.mockProfile {
+  display: flex;
+  align-items: center;
+  gap: s(4);
+  padding: s(5);
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: 8px;
+}
+
+.mockAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+  flex-shrink: 0;
+}
+
+.mockText {
+  flex: 1;
+
+  .mockTextLine {
+    height: 10px;
+    background: color(default-hover);
+    border-radius: 4px;
+    margin-bottom: s(2);
+
+    &:last-child {
+      width: 40%;
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Feature Cards
+.featureCards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: s(6);
+  padding: s(12) s(6);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.featureCard {
+  padding: s(7);
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: color(primary-base);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15);
+  }
+
+  .featureIcon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+    color: white;
+    border-radius: 12px;
+    font-size: 28px;
+    margin-bottom: s(5);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
+  }
+
+  h3 {
+    @include p1;
+    font-weight: 600;
+    margin: 0 0 s(3) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p3;
+    margin: 0;
+    color: color(default-base);
+    line-height: 1.7;
+  }
+}
+
+// API Section
+.apiSection {
+  padding: s(12) s(6);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.apiDemo {
+  margin-top: s(10);
+}
+
+.apiContent {
+  padding: s(6);
+  display: flex;
+  flex-direction: column;
+  gap: s(3);
+}
+
+.apiBar {
+  position: relative;
+}
+
+.apiBarFill {
+  background: linear-gradient(90deg, #8B5CF6 0%, #6366F1 100%);
+  padding: s(3) s(4);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
+
+  span {
+    @include p4;
+    font-weight: 600;
+    color: white;
+    font-family: 'Monaco', 'Menlo', monospace;
+  }
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+    transform: translateX(4px);
+  }
+}
+
+// Components Section
+.componentsSection {
+  padding: s(12) s(6);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.componentsDemo {
+  margin-top: s(10);
+}
+
+.componentsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: s(5);
+  padding: s(6);
+}
+
+.componentBox {
+  aspect-ratio: 1;
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: color(primary-base);
+    background: color(primary-fill);
+  }
+
+  .componentLabel {
+    @include p4;
+    font-weight: 600;
+    color: color(default-deep-base);
+    font-family: 'Monaco', 'Menlo', monospace;
+  }
+}
+
+// CTA Section
+.ctaSection {
+  padding: s(13) s(6);
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.ctaContent {
+  .logoContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: s(5);
+
+    img {
+      filter: drop-shadow(0 8px 24px rgba(139, 92, 246, 0.3));
+    }
+  }
+
+  .ctaTitle {
+    @include display4;
+    font-weight: 700;
+    margin: 0 0 s(4) 0;
+    color: color(default-deep-base);
+  }
+
+  .ctaDescription {
+    @include p2;
+    color: color(default-base);
+    margin: 0 0 s(7) 0;
+    line-height: 1.8;
+  }
+}
+
+// Footer
+.footer {
+  border-top: 1px solid color(default-outline);
+  padding: s(8) s(6);
+  background: color(bg-elevation-1);
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: s(4);
+}
+
+.footerLogo {
+  img {
+    opacity: 0.6;
+  }
+}
+
+.footerText {
+  @include p4;
+  color: color(default-base);
+  margin: 0;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

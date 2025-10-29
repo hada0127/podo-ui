@@ -1,0 +1,367 @@
+@use '../../../../mixin' as *;
+
+.section {
+  margin-bottom: s(10);
+
+  h2 {
+    @include display5;
+    margin: 0 0 s(5) 0;
+    color: color(default-deep-base);
+  }
+
+  h3 {
+    @include p1; font-weight: 600;
+    margin: s(7) 0 s(4) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p2;
+    color: color(default-base);
+    line-height: 1.8;
+    margin: 0 0 s(5) 0;
+  }
+}
+
+.codeBlock {
+  background: color(default-deep-base);
+  border-radius: r(4);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @include p4-semibold;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: #f8f8f2;
+      white-space: pre;
+    }
+  }
+}
+
+.note {
+  display: flex;
+  gap: s(4);
+  padding: s(5);
+  border-radius: r(4);
+  margin-bottom: s(5);
+  background: color(info-fill);
+  border: 1px solid color(info-outline);
+  color: color(info-base);
+
+  > i {
+    font-size: 20px;
+    flex-shrink: 0;
+    color: color(info-base);
+  }
+
+  strong {
+    display: block;
+    margin-bottom: s(2);
+  }
+}
+
+// Color Grid
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: s(5);
+  margin-top: s(6);
+}
+
+.colorCard {
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+  overflow: hidden;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: color(primary-base);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.colorPreview {
+  height: 120px;
+
+  &[data-color='primary'] {
+    background: color(primary-base);
+  }
+  &[data-color='default'] {
+    background: color(default-base);
+  }
+  &[data-color='default-deep'] {
+    background: color(default-deep-base);
+  }
+  &[data-color='info'] {
+    background: color(info-base);
+  }
+  &[data-color='link'] {
+    background: color(link-base);
+  }
+  &[data-color='success'] {
+    background: color(success-base);
+  }
+  &[data-color='warning'] {
+    background: color(warning-base);
+  }
+  &[data-color='danger'] {
+    background: color(danger-base);
+  }
+}
+
+.colorInfo {
+  padding: s(5);
+
+  h3 {
+    @include p2; font-weight: 600;
+    margin: 0 0 s(2) 0;
+    color: color(default-deep-base);
+  }
+}
+
+.colorName {
+  @include p4;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  color: color(default-base);
+  margin: 0 0 s(2) 0;
+}
+
+.colorDesc {
+  @include p4;
+  color: color(default-base);
+  margin: 0;
+}
+
+// Variants Grid
+.variantsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: s(4);
+  margin-top: s(5);
+}
+
+.variantCard {
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  overflow: hidden;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: color(primary-base);
+  }
+}
+
+.variantSwatch {
+  height: 80px;
+
+  &[data-variant='base'] {
+    background: color(primary-base);
+  }
+  &[data-variant='hover'] {
+    background: color(primary-hover);
+  }
+  &[data-variant='pressed'] {
+    background: color(primary-pressed);
+  }
+  &[data-variant='focus'] {
+    background: color(primary-focus);
+  }
+  &[data-variant='fill'] {
+    background: color(primary-fill);
+    border: 1px solid color(primary-outline);
+  }
+  &[data-variant='reverse'] {
+    background: color(primary-reverse);
+    border: 1px solid color(default-outline);
+  }
+  &[data-variant='outline'] {
+    background: color(primary-outline);
+  }
+}
+
+.variantInfo {
+  padding: s(4);
+
+  h4 {
+    @include p3-semibold;
+    margin: 0 0 s(1) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p5;
+    margin: 0 0 s(2) 0;
+    color: color(default-base);
+  }
+
+  code {
+    @include p5;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    color: color(primary-base);
+    background: color(primary-fill);
+    padding: 2px 6px;
+    border-radius: r(1);
+  }
+}
+
+// Demo
+.demo {
+  margin-top: s(5);
+  padding: s(5);
+  background: color(default-fill);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+}
+
+.demoTitle {
+  @include p3-semibold;
+  margin-bottom: s(4);
+  color: color(default-deep-base);
+}
+
+.demoGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: s(4);
+
+  > div {
+    @include p3-semibold;
+    padding: s(3) s(5);
+    border-radius: r(2);
+  }
+}
+
+// Swatch Section
+.swatchSection {
+  margin-bottom: s(8);
+
+  h3 {
+    @include p2; font-weight: 600;
+    margin: 0 0 s(5) 0;
+    color: color(default-deep-base);
+  }
+}
+
+.swatchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: s(4);
+}
+
+.swatchItem {
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  overflow: hidden;
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.swatchColor {
+  height: 60px;
+
+  // Primary
+  &[data-color='primary'][data-variant='base'] { background: color(primary-base); }
+  &[data-color='primary'][data-variant='hover'] { background: color(primary-hover); }
+  &[data-color='primary'][data-variant='pressed'] { background: color(primary-pressed); }
+  &[data-color='primary'][data-variant='focus'] { background: color(primary-focus); }
+  &[data-color='primary'][data-variant='fill'] { background: color(primary-fill); border: 1px solid color(primary-outline); }
+  &[data-color='primary'][data-variant='reverse'] { background: color(primary-reverse); border: 1px solid color(default-outline); }
+  &[data-color='primary'][data-variant='outline'] { background: color(primary-outline); }
+
+  // Default
+  &[data-color='default'][data-variant='base'] { background: color(default-base); }
+  &[data-color='default'][data-variant='hover'] { background: color(default-hover); }
+  &[data-color='default'][data-variant='pressed'] { background: color(default-pressed); }
+  &[data-color='default'][data-variant='focus'] { background: color(default-focus); }
+  &[data-color='default'][data-variant='fill'] { background: color(default-fill); border: 1px solid color(default-outline); }
+  &[data-color='default'][data-variant='reverse'] { background: color(default-reverse); border: 1px solid color(default-outline); }
+  &[data-color='default'][data-variant='outline'] { background: color(default-outline); }
+
+  // Default Deep
+  &[data-color='default-deep'][data-variant='base'] { background: color(default-deep-base); }
+  &[data-color='default-deep'][data-variant='hover'] { background: color(default-deep-hover); }
+  &[data-color='default-deep'][data-variant='pressed'] { background: color(default-deep-pressed); }
+  &[data-color='default-deep'][data-variant='focus'] { background: color(default-deep-focus); }
+  &[data-color='default-deep'][data-variant='fill'] { background: color(default-deep-fill); border: 1px solid color(default-deep-outline); }
+  &[data-color='default-deep'][data-variant='reverse'] { background: color(default-deep-reverse); border: 1px solid color(default-outline); }
+  &[data-color='default-deep'][data-variant='outline'] { background: color(default-deep-outline); }
+
+  // Info
+  &[data-color='info'][data-variant='base'] { background: color(info-base); }
+  &[data-color='info'][data-variant='hover'] { background: color(info-hover); }
+  &[data-color='info'][data-variant='pressed'] { background: color(info-pressed); }
+  &[data-color='info'][data-variant='focus'] { background: color(info-focus); }
+  &[data-color='info'][data-variant='fill'] { background: color(info-fill); border: 1px solid color(info-outline); }
+  &[data-color='info'][data-variant='reverse'] { background: color(info-reverse); border: 1px solid color(default-outline); }
+  &[data-color='info'][data-variant='outline'] { background: color(info-outline); }
+
+  // Link
+  &[data-color='link'][data-variant='base'] { background: color(link-base); }
+  &[data-color='link'][data-variant='hover'] { background: color(link-hover); }
+  &[data-color='link'][data-variant='pressed'] { background: color(link-pressed); }
+  &[data-color='link'][data-variant='focus'] { background: color(link-focus); }
+  &[data-color='link'][data-variant='fill'] { background: color(link-fill); border: 1px solid color(link-outline); }
+  &[data-color='link'][data-variant='reverse'] { background: color(link-reverse); border: 1px solid color(default-outline); }
+  &[data-color='link'][data-variant='outline'] { background: color(link-outline); }
+
+  // Success
+  &[data-color='success'][data-variant='base'] { background: color(success-base); }
+  &[data-color='success'][data-variant='hover'] { background: color(success-hover); }
+  &[data-color='success'][data-variant='pressed'] { background: color(success-pressed); }
+  &[data-color='success'][data-variant='focus'] { background: color(success-focus); }
+  &[data-color='success'][data-variant='fill'] { background: color(success-fill); border: 1px solid color(success-outline); }
+  &[data-color='success'][data-variant='reverse'] { background: color(success-reverse); border: 1px solid color(default-outline); }
+  &[data-color='success'][data-variant='outline'] { background: color(success-outline); }
+
+  // Warning
+  &[data-color='warning'][data-variant='base'] { background: color(warning-base); }
+  &[data-color='warning'][data-variant='hover'] { background: color(warning-hover); }
+  &[data-color='warning'][data-variant='pressed'] { background: color(warning-pressed); }
+  &[data-color='warning'][data-variant='focus'] { background: color(warning-focus); }
+  &[data-color='warning'][data-variant='fill'] { background: color(warning-fill); border: 1px solid color(warning-outline); }
+  &[data-color='warning'][data-variant='reverse'] { background: color(warning-reverse); border: 1px solid color(default-outline); }
+  &[data-color='warning'][data-variant='outline'] { background: color(warning-outline); }
+
+  // Danger
+  &[data-color='danger'][data-variant='base'] { background: color(danger-base); }
+  &[data-color='danger'][data-variant='hover'] { background: color(danger-hover); }
+  &[data-color='danger'][data-variant='pressed'] { background: color(danger-pressed); }
+  &[data-color='danger'][data-variant='focus'] { background: color(danger-focus); }
+  &[data-color='danger'][data-variant='fill'] { background: color(danger-fill); border: 1px solid color(danger-outline); }
+  &[data-color='danger'][data-variant='reverse'] { background: color(danger-reverse); border: 1px solid color(default-outline); }
+  &[data-color='danger'][data-variant='outline'] { background: color(danger-outline); }
+}
+
+.swatchLabel {
+  padding: s(3);
+
+  div {
+    @include p5-semibold;
+    margin-bottom: s(1);
+    color: color(default-deep-base);
+  }
+
+  code {
+    @include p5;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    color: color(default-base);
+    display: block;
+  }
+}

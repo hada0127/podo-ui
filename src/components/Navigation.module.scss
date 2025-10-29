@@ -1,0 +1,104 @@
+@use '../../mixin' as *;
+
+.nav {
+  width: 260px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: color(bg-modal);
+  border-right: 1px solid color(default-outline);
+  overflow-y: auto;
+  padding: s(6);
+}
+
+.header {
+  margin-bottom: s(7);
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: s(3);
+    text-decoration: none;
+    margin-bottom: s(2);
+
+    img {
+      flex-shrink: 0;
+    }
+
+    h1 {
+      @include display4;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  :global(.ThemeToggle_toggle__oQ8uJ) {
+    margin-top: s(4);
+  }
+}
+
+.version {
+  @include p4;
+  color: color(default-deep-base);
+  margin: 0;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: s(6);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: s(3);
+}
+
+.sectionTitle {
+  @include p3-semibold;
+  color: color(default-deep-base);
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: s(1);
+
+  a {
+    @include p3;
+    display: block;
+    padding: s(2) s(3);
+    margin: 0 s(-6);
+    padding-left: s(6);
+    padding-right: s(6);
+    color: color(default-deep-base);
+    text-decoration: none;
+    border-radius: r(2);
+    transition: all 0.2s;
+
+    &:hover {
+      background: color(default-hover);
+      color: color(default-deep-pressed);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+      color: white;
+      font-weight: 600;
+    }
+  }
+}

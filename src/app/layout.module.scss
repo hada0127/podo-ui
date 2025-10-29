@@ -1,0 +1,14 @@
+@use '../../mixin' as *;
+
+.container {
+  display: flex;
+  min-height: 100vh;
+  background: color(bg-elevation);
+}
+
+.main {
+  flex: 1;
+  margin-left: 260px;
+  padding: s(7);
+  max-width: 1200px;
+}
