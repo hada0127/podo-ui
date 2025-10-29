@@ -30,6 +30,9 @@ select {
     > option[value=''][disabled] {
       display: none;
     }
+    &:has(> option[value=''][disabled]:checked) {
+      color: color('text-action-disabled');
+    }
   }
 }
 
