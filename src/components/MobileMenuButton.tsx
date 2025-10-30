@@ -14,9 +14,11 @@ export default function MobileMenuButton({ isOpen, onClick }: MobileMenuButtonPr
       onClick={onClick}
       aria-label="메뉴 열기/닫기"
     >
-      <span></span>
-      <span></span>
-      <span></span>
+      {isOpen ? (
+        <i className="icon-close"></i>
+      ) : (
+        <i className="icon-menu"></i>
+      )}
     </button>
   );
 }

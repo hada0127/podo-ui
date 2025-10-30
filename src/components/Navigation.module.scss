@@ -15,7 +15,7 @@
   z-index: 1000;
 
   @media (max-width: 1024px) {
-    display: flex;
+    display: flex !important;
   }
 
   .logo {

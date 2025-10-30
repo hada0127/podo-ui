@@ -2,49 +2,38 @@
 
 .menuButton {
   display: none;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 32px;
-  height: 32px;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   background: transparent;
   border: none;
   cursor: pointer;
   padding: 0;
   z-index: 1001;
   position: relative;
+  transition: all 0.2s;
 
   @media (max-width: 1024px) {
-    display: flex;
+    display: flex !important;
   }
 
-  span {
-    width: 24px;
-    height: 2px;
-    background: color(default-deep-base);
-    border-radius: 2px;
+  i {
+    color: color(default-deep-base);
+    font-size: 24px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: center;
-    position: relative;
-  }
-
-  &.open {
-    span:nth-child(1) {
-      transform: translateY(7px) rotate(45deg);
-    }
-
-    span:nth-child(2) {
-      opacity: 0;
-      transform: translateX(-10px);
-    }
-
-    span:nth-child(3) {
-      transform: translateY(-7px) rotate(-45deg);
-    }
   }
 
   &:hover {
-    span {
-      background: color(primary-base);
+    background: color(default-hover);
+    border-radius: r(2);
+
+    i {
+      color: color(primary-base);
     }
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 }
