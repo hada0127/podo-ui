@@ -1,3 +1,4 @@
+# Dependencies & Build
 node_modules/
 .git/
 .github/
@@ -11,3 +12,31 @@ coverage/
 .wrangler/
 .claude/
 .next/
+
+# Documentation Site (Next.js)
+src/
+public/
+index.html
+next.config.*
+next-env.d.ts
+vite-env.d.ts
+
+# Development Tools
+cli/
+*.py
+update_*.py
+ARCHITECTURE.md
+
+# Config Files
+eslint.config.js
+.prettierrc
+.prettierignore
+tsconfig.json
+
+# Only keep library files:
+# - scss/
+# - react/
+# - *.scss (root level)
+# - react.ts
+# - package.json
+# - readme.md
