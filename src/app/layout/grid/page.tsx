@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Grid() {
   return (
     <>
-      <PageHeader
-        title="그리드"
-        description="Podo UI의 그리드 시스템과 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>그리드</h1>
+        <p>Podo UI의 그리드 시스템과 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>그리드 시스템</h2>
@@ -23,7 +22,7 @@ export default function Grid() {
                 <div key={i} className={styles.gridCol}></div>
               ))}
             </div>
-            <h3>PC (1280px~)</h3>
+            <h2>PC (1280px~)</h2>
             <p>12칸 그리드</p>
           </div>
           <div className={styles.infoCard}>
@@ -32,7 +31,7 @@ export default function Grid() {
                 <div key={i} className={styles.gridCol}></div>
               ))}
             </div>
-            <h3>Tablet (768px~1279px)</h3>
+            <h2>Tablet (768px~1279px)</h2>
             <p>6칸 그리드</p>
           </div>
           <div className={styles.infoCard}>
@@ -41,7 +40,7 @@ export default function Grid() {
                 <div key={i} className={styles.gridCol}></div>
               ))}
             </div>
-            <h3>Mobile (~767px)</h3>
+            <h2>Mobile (~767px)</h2>
             <p>4칸 그리드</p>
           </div>
         </div>

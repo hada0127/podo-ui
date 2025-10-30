@@ -25,6 +25,8 @@ body {
   overflow-wrap: break-word;
   -moz-tab-size: 4;
   tab-size: 4;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 img,
 picture,

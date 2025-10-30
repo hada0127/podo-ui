@@ -8,17 +8,40 @@
   padding-bottom: s(6);
   border-bottom: 1px solid color(default-outline);
 
+  @media (max-width: 1024px) {
+    margin-bottom: s(6);
+    padding-bottom: s(5);
+  }
+
+  @media (max-width: 768px) {
+    margin-bottom: s(5);
+    padding-bottom: s(4);
+  }
+
   .content {
     h1 {
       @include display3;
       margin: 0 0 s(3) 0;
       color: color(default-deep-base);
+
+      @media (max-width: 1024px) {
+        font-size: 32px;
+      }
+
+      @media (max-width: 768px) {
+        font-size: 24px;
+        margin: 0 0 s(2) 0;
+      }
     }
 
     p {
       @include p2;
       margin: 0;
       color: color(default-base);
+
+      @media (max-width: 768px) {
+        font-size: 14px;
+      }
     }
   }
 }

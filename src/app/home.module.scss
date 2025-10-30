@@ -147,7 +147,7 @@
   gap: s(3);
   padding: s(4) s(8);
   background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
-  color: white;
+  color: color(primary-reverse) !important;
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -411,7 +411,7 @@
 
   &.primary {
     background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
-    color: white;
+    color: color(primary-reverse);
     border: none;
   }
 }
@@ -492,7 +492,7 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
-    color: white;
+    color: color(primary-reverse);
     border-radius: 12px;
     font-size: 28px;
     margin-bottom: s(5);
@@ -571,7 +571,7 @@
   span {
     @include p4;
     font-weight: 600;
-    color: white;
+    color: color(primary-reverse) !important;
     font-family: 'Monaco', 'Menlo', monospace;
   }
 

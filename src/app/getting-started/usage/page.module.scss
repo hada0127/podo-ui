@@ -1,56 +1,8 @@
 @use '../../../../mixin' as *;
-
-.header {
-  margin-bottom: s(10);
-
-  .title {
-    @include display3;
-    font-size: 42px;
-    font-weight: 700;
-    margin: 0 0 s(4) 0;
-    color: color(default-deep-base);
-  }
-
-  .description {
-    @include p2;
-    font-size: 16px;
-    color: color(default-base);
-    line-height: 1.8;
-    margin: 0;
-  }
-}
+@use '../../common-page' as *;
 
 .section {
-  margin-bottom: s(10);
-
-  h2 {
-    @include display5;
-    margin: 0 0 s(5) 0;
-    color: color(default-deep-base);
-  }
-
-  h3 {
-    @include p1;
-    font-weight: 600;
-    margin: s(7) 0 s(4) 0;
-    color: color(default-deep-base);
-  }
-
-  p {
-    @include p2;
-    color: color(default-base);
-    line-height: 1.8;
-    margin: 0 0 s(5) 0;
-  }
-
-  code {
-    @include p4;
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    background: color(bg-elevation);
-    padding: s(1) s(2);
-    border-radius: r(1);
-    color: color(primary-base);
-  }
+  @include section-responsive;
 }
 
 .example {
@@ -83,6 +35,7 @@
 }
 
 .codeBlock {
+  max-width: 100%;
   background: color(bg-modal);
   border: 1px solid color(default-outline);
   border-radius: r(3);
@@ -96,6 +49,8 @@
     @include p4;
     font-weight: 600;
     color: color(default-deep-base);
+
+    word-break: break-word;
   }
 
   pre {
@@ -111,6 +66,15 @@
       white-space: pre;
       background: none;
       padding: 0;
+
+      display: block;
+      max-width: 100%;
+
+      @media (max-width: 768px) {
+        white-space: pre-wrap;
+        word-break: break-all;
+
+      }
     }
   }
 }
@@ -120,20 +84,7 @@
 }
 
 .note {
-  display: flex;
-  gap: s(4);
-  padding: s(5);
-  border-radius: r(3);
-  margin-bottom: s(5);
-  background: color(info-fill);
-  border: 1px solid color(info-outline);
-  color: color(info-base);
-
-  > i {
-    font-size: 20px;
-    flex-shrink: 0;
-    color: color(info-base);
-  }
+  @include note-style;
 
   strong {
     display: block;
@@ -187,7 +138,7 @@
   > div {
     flex: 1;
 
-    h4 {
+    h3 {
       @include p2;
       font-weight: 600;
       margin: 0 0 s(1) 0;

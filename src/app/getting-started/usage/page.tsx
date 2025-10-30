@@ -4,12 +4,12 @@ import styles from './page.module.scss';
 export default function Usage() {
   return (
     <>
-      <div className={styles.header}>
-        <h1 className={styles.title}>사용법</h1>
-        <p className={styles.description}>
+      <section className={styles.section}>
+        <h1>사용법</h1>
+        <p>
           Podo UI의 기본 사용법과 주요 기능을 소개합니다.
         </p>
-      </div>
+      </section>
 
       <section className={styles.section}>
         <h2>CSS 클래스 사용하기</h2>
@@ -197,7 +197,7 @@ document.documentElement.setAttribute('data-color-mode', '');`}</code></pre>
               <i className="icon-ellipse"></i>
             </div>
             <div>
-              <h4>컬러 시스템</h4>
+              <h3>컬러 시스템</h3>
               <p>8가지 시맨틱 컬러와 변형</p>
             </div>
             <i className="icon-arrow-right"></i>
@@ -208,7 +208,7 @@ document.documentElement.setAttribute('data-color-mode', '');`}</code></pre>
               <i className="icon-text"></i>
             </div>
             <div>
-              <h4>타이포그래피</h4>
+              <h3>타이포그래피</h3>
               <p>폰트 스타일과 믹스인</p>
             </div>
             <i className="icon-arrow-right"></i>
@@ -219,7 +219,7 @@ document.documentElement.setAttribute('data-color-mode', '');`}</code></pre>
               <i className="icon-star"></i>
             </div>
             <div>
-              <h4>아이콘</h4>
+              <h3>아이콘</h3>
               <p>119개 아이콘 폰트</p>
             </div>
             <i className="icon-arrow-right"></i>
@@ -230,7 +230,7 @@ document.documentElement.setAttribute('data-color-mode', '');`}</code></pre>
               <i className="icon-layers"></i>
             </div>
             <div>
-              <h4>컴포넌트</h4>
+              <h3>컴포넌트</h3>
               <p>UI 컴포넌트 둘러보기</p>
             </div>
             <i className="icon-arrow-right"></i>

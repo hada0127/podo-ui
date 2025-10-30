@@ -1,13 +1,15 @@
-import PageHeader from '@/components/PageHeader';
+'use client';
+
+import Field from '../../../../react/molecule/field';
 import styles from '../input/page.module.scss';
 
 export default function Field() {
   return (
     <>
-      <PageHeader
-        title="필드"
-        description="Podo UI의 Field 컴포넌트 (레이블 + 입력 + 도움말) 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>필드</h1>
+        <p>Podo UI의 Field 컴포넌트 (레이블 + 입력 + 도움말) 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>개요</h2>
@@ -15,6 +17,28 @@ export default function Field() {
           Field 컴포넌트는 레이블, 입력 요소, 도움말 텍스트를 하나로 묶은 React 컴포넌트입니다.
           폼 구성을 일관되고 쉽게 만들 수 있습니다.
         </p>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.fieldGroup}>
+            <Field label="이메일" helper="이메일 주소를 입력하세요">
+              <input type="email" placeholder="example@email.com" />
+            </Field>
+
+            <Field label="비밀번호" helper="8자 이상 입력하세요">
+              <input type="password" placeholder="••••••••" />
+            </Field>
+
+            <Field label="카테고리">
+              <select>
+                <option value="">선택하세요</option>
+                <option value="1">옵션 1</option>
+                <option value="2">옵션 2</option>
+                <option value="3">옵션 3</option>
+              </select>
+            </Field>
+          </div>
+        </div>
       </section>
 
       <section className={styles.section}>

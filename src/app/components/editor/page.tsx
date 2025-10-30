@@ -1,13 +1,18 @@
-import PageHeader from '@/components/PageHeader';
+'use client';
+
+import { useState } from 'react';
+import Editor from '../../../../react/atom/editor';
 import styles from '../input/page.module.scss';
 
 export default function Editor() {
+  const [content, setContent] = useState('<p>에디터를 사용해보세요!</p>');
+
   return (
     <>
-      <PageHeader
-        title="에디터"
-        description="Podo UI의 Editor 컴포넌트 (SunEditor 기반) 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>에디터</h1>
+        <p>Podo UI의 Editor 컴포넌트 (SunEditor 기반) 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>개요</h2>
@@ -15,6 +20,22 @@ export default function Editor() {
           Podo UI Editor는 SunEditor를 기반으로 한 리치 텍스트 에디터 컴포넌트입니다.
           React 환경에서 사용할 수 있으며, Podo UI 디자인 시스템과 통합되어 있습니다.
         </p>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>실제 예제:</div>
+          <Editor
+            value={content}
+            onChange={setContent}
+            height="300px"
+            buttonList={[
+              ['undo', 'redo'],
+              ['bold', 'underline', 'italic', 'strike'],
+              ['fontColor', 'hiliteColor'],
+              ['align', 'list'],
+              ['table', 'link', 'image'],
+            ]}
+          />
+        </div>
       </section>
 
       <section className={styles.section}>

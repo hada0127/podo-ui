@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Installation() {
   return (
     <>
-      <PageHeader
-        title="설치"
-        description="Podo UI를 프로젝트에 설치하고 설정하는 방법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>설치</h1>
+        <p>Podo UI를 프로젝트에 설치하고 설정하는 방법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>NPM 설치</h2>
@@ -120,7 +119,7 @@ import 'podo-ui/vite-fonts.scss'; // Vite용 폰트 경로 재정의`}</code></p
               <i className="icon-file"></i>
             </div>
             <div>
-              <h4>사용법</h4>
+              <h3>사용법</h3>
               <p>기본 사용법과 예제</p>
             </div>
             <i className="icon-arrow-right"></i>
@@ -131,7 +130,7 @@ import 'podo-ui/vite-fonts.scss'; // Vite용 폰트 경로 재정의`}</code></p
               <i className="icon-ellipse"></i>
             </div>
             <div>
-              <h4>컬러 시스템</h4>
+              <h3>컬러 시스템</h3>
               <p>테마와 컬러 사용법</p>
             </div>
             <i className="icon-arrow-right"></i>
@@ -142,7 +141,7 @@ import 'podo-ui/vite-fonts.scss'; // Vite용 폰트 경로 재정의`}</code></p
               <i className="icon-layers"></i>
             </div>
             <div>
-              <h4>컴포넌트</h4>
+              <h3>컴포넌트</h3>
               <p>UI 컴포넌트 둘러보기</p>
             </div>
             <i className="icon-arrow-right"></i>

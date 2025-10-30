@@ -1,0 +1,189 @@
+@use '../../mixin' as *;
+
+// 공통 섹션 스타일
+@mixin section-responsive {
+  margin-bottom: s(10);
+
+  @media (max-width: 1024px) {
+    margin-bottom: s(8);
+  }
+
+  @media (max-width: 768px) {
+    margin-bottom: s(6);
+  }
+
+  h1 {
+    @include display5;
+    margin: 0 0 s(5) 0;
+    color: color(default-deep-base);
+
+    @media (max-width: 1024px) {
+      font-size: 24px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 20px;
+      margin: 0 0 s(4) 0;
+    }
+  }
+
+  h2 {
+    @include p1;
+    font-weight: 600;
+    margin: s(7) 0 s(4) 0;
+    color: color(default-deep-base);
+
+    @media (max-width: 1024px) {
+      margin: s(6) 0 s(3) 0;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+      margin: s(5) 0 s(3) 0;
+    }
+  }
+
+  h3 {
+    @include p2;
+    font-weight: 600;
+    margin: s(5) 0 s(3) 0;
+    color: color(default-deep-base);
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+      margin: s(4) 0 s(2) 0;
+    }
+  }
+
+  p {
+    @include p2;
+    color: color(default-base);
+    line-height: 1.8;
+    margin: 0 0 s(5) 0;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+      margin: 0 0 s(4) 0;
+    }
+  }
+}
+
+// 코드 블록 반응형 스타일
+@mixin codeBlock-responsive {
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  @media (max-width: 768px) {
+    border-radius: r(2);
+  }
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: color(bg-elevation-1);
+    border-bottom: 1px solid color(default-outline);
+    @include p4;
+    font-weight: 600;
+    color: color(default-deep-base);
+
+    @media (max-width: 768px) {
+      padding: s(3) s(4);
+      font-size: 12px;
+    }
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+    background: color(bg-elevation);
+
+    @media (max-width: 768px) {
+      padding: s(4);
+    }
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: color(default-deep-base);
+      white-space: pre;
+
+      @media (max-width: 768px) {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// Note/Warning 박스 반응형 스타일
+@mixin alert-box-responsive {
+  display: flex;
+  gap: s(4);
+  padding: s(5);
+  border-radius: r(4);
+  margin-bottom: s(5);
+  max-width: 100%;
+
+  @media (max-width: 768px) {
+    gap: s(3);
+    padding: s(4);
+    border-radius: r(2);
+    margin-bottom: s(4);
+  }
+
+  > i {
+    font-size: 20px;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      font-size: 18px;
+    }
+  }
+
+  > div {
+    flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+
+    @media (max-width: 768px) {
+      font-size: 13px;
+    }
+  }
+
+  strong {
+    display: block;
+    margin-bottom: s(2);
+    word-wrap: break-word;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
+  }
+}
+
+// Note 스타일
+@mixin note-style {
+  @include alert-box-responsive;
+  background: color(info-fill);
+  border: 1px solid color(info-outline);
+  color: color(info-base);
+
+  > i {
+    color: color(info-base);
+  }
+}
+
+// Warning 스타일
+@mixin warning-style {
+  @include alert-box-responsive;
+  background: color(warning-fill);
+  border: 1px solid color(warning-outline);
+  color: color(warning-base);
+
+  > i {
+    color: color(warning-base);
+  }
+}

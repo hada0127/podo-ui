@@ -1,29 +1,8 @@
 @use '../../../../mixin' as *;
+@use '../../common-page' as *;
 
 .section {
-  margin-bottom: s(10);
-
-  h2 {
-    @include display5;
-    margin: 0 0 s(5) 0;
-    color: color(default-deep);
-  }
-
-  p {
-    @include p2;
-    color: color(default);
-    line-height: 1.8;
-    margin: 0 0 s(5) 0;
-
-    code {
-      @include p3;
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-      color: color(primary);
-      background: color(primary-fill);
-      padding: 2px 6px;
-      border-radius: r(1);
-    }
-  }
+  @include section-responsive;
 }
 
 .codeBlock {
@@ -40,6 +19,8 @@
     @include p4;
     font-weight: 600;
     color: color(default-deep);
+
+    word-break: break-word;
   }
 
   pre {
@@ -53,30 +34,21 @@
       font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
       color: color(default-deep);
       white-space: pre;
+
+      display: block;
+      max-width: 100%;
+
+      @media (max-width: 768px) {
+        white-space: pre-wrap;
+        word-break: break-all;
+
+      }
     }
   }
 }
 
 .note {
-  display: flex;
-  gap: s(4);
-  padding: s(5);
-  border-radius: r(4);
-  margin-top: s(5);
-  background: color(info-fill);
-  border: 1px solid color(info-outline);
-  color: color(info);
-
-  > i {
-    font-size: 20px;
-    flex-shrink: 0;
-    color: color(info);
-  }
-
-  strong {
-    display: block;
-    margin-bottom: s(2);
-  }
+  @include note-style;
 }
 
 .demo {
@@ -236,10 +208,21 @@
   padding-bottom: s(3);
   border-bottom: 1px solid color(default-outline);
 
-  h3 {
+  h2 {
     @include display6;
     margin: 0;
     color: color(default-deep);
+
+
+    @media (max-width: 1024px) {
+      margin: s(6) 0 s(3) 0;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+      margin: s(5) 0 s(3) 0;
+    }
+
   }
 }
 

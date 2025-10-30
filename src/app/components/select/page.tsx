@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Select() {
   return (
     <>
-      <PageHeader
-        title="선택"
-        description="Podo UI의 Select 컴포넌트와 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>선택</h1>
+        <p>Podo UI의 Select 컴포넌트와 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>기본 사용법</h2>

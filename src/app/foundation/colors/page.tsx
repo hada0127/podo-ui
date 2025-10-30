@@ -1,4 +1,3 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Colors() {
@@ -25,10 +24,10 @@ export default function Colors() {
 
   return (
     <>
-      <PageHeader
-        title="컬러"
-        description="Podo UI의 시맨틱 컬러 시스템과 테마 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>컬러</h1>
+        <p>Podo UI의 시맨틱 컬러 시스템과 테마 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>색상 시스템</h2>
@@ -63,7 +62,7 @@ export default function Colors() {
             <div key={variant.name} className={styles.variantCard}>
               <div className={styles.variantSwatch} data-variant={variant.name}></div>
               <div className={styles.variantInfo}>
-                <h4>{variant.label}</h4>
+                <h3>{variant.label}</h3>
                 <p>{variant.description}</p>
                 <code>primary-{variant.name}</code>
               </div>

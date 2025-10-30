@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Radius() {
   return (
     <>
-      <PageHeader
-        title="모서리 반경"
-        description="Podo UI의 Border Radius 유틸리티 클래스 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>모서리 반경</h1>
+        <p>Podo UI의 Border Radius 유틸리티 클래스 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>기본 사용법</h2>
@@ -118,11 +117,11 @@ export default function Radius() {
           <div className={styles.demoTitle}>카드 예제:</div>
           <div className={styles.cardExample}>
             <div className={styles.card} style={{ borderRadius: '6px' }}>
-              <h3>r-3 카드</h3>
+              <h2>r-3 카드</h2>
               <p>6px 반경의 모서리</p>
             </div>
             <div className={styles.card} style={{ borderRadius: '12px' }}>
-              <h3>r-5 카드</h3>
+              <h2>r-5 카드</h2>
               <p>12px 반경의 모서리</p>
             </div>
           </div>

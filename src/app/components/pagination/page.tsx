@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from '../input/page.module.scss';
 
 export default function Pagination() {
   return (
     <>
-      <PageHeader
-        title="페이지네이션"
-        description="Podo UI의 Pagination 컴포넌트 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>페이지네이션</h1>
+        <p>Podo UI의 Pagination 컴포넌트 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>개요</h2>

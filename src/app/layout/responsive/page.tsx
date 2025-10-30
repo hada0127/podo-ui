@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Responsive() {
   return (
     <>
-      <PageHeader
-        title="반응형"
-        description="Podo UI의 반응형 디자인 시스템과 미디어 쿼리 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>반응형</h1>
+        <p>Podo UI의 반응형 디자인 시스템과 미디어 쿼리 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>브레이크포인트</h2>
@@ -21,7 +20,7 @@ export default function Responsive() {
             <div className={styles.breakpointIcon}>
               <i className="icon-menu"></i>
             </div>
-            <h3>PC</h3>
+            <h2>PC</h2>
             <p className={styles.breakpointValue}>1280px 이상</p>
             <code>@include pc</code>
           </div>
@@ -29,7 +28,7 @@ export default function Responsive() {
             <div className={styles.breakpointIcon}>
               <i className="icon-menu"></i>
             </div>
-            <h3>Tablet</h3>
+            <h2>Tablet</h2>
             <p className={styles.breakpointValue}>768px ~ 1279px</p>
             <code>@include tb</code>
           </div>
@@ -37,7 +36,7 @@ export default function Responsive() {
             <div className={styles.breakpointIcon}>
               <i className="icon-menu"></i>
             </div>
-            <h3>Mobile</h3>
+            <h2>Mobile</h2>
             <p className={styles.breakpointValue}>767px 이하</p>
             <code>@include mo</code>
           </div>
@@ -153,7 +152,7 @@ PC: 16px → Mobile: 14px`}</code></pre>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>실제 예제:</div>
-          <h1>H1 제목 (PC: 54px, Mobile: 24px)</h1>
+          <h2>H1 제목 (PC: 54px, Mobile: 24px)</h2>
           <p className="p3">P3 본문 (PC: 16px, Mobile: 14px)</p>
         </div>
       </section>

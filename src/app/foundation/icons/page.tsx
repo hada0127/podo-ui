@@ -1,6 +1,5 @@
 'use client';
 
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Icons() {
@@ -25,10 +24,10 @@ export default function Icons() {
 
   return (
     <>
-      <PageHeader
-        title="아이콘"
-        description="Podo UI가 제공하는 119개의 아이콘과 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>아이콘</h1>
+        <p>Podo UI가 제공하는 119개의 아이콘과 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>아이콘 시스템</h2>
@@ -156,7 +155,7 @@ export default function Icons() {
         <h2>아이콘 카테고리</h2>
 
         <div className={styles.categorySection}>
-          <h3>일반 UI</h3>
+          <h2>일반 UI</h2>
           <div className={styles.iconList}>
             {['search', 'close', 'check', 'plus', 'minus', 'menu', 'more', 'more-horizontal'].map(icon => (
               <div key={icon} className={styles.iconItem}>
@@ -168,7 +167,7 @@ export default function Icons() {
         </div>
 
         <div className={styles.categorySection}>
-          <h3>화살표</h3>
+          <h2>화살표</h2>
           <div className={styles.iconList}>
             {['arrow-left', 'arrow-right', 'arrow-up', 'arrow-down', 'arrow-dropdown', 'arrow-dropdown-up', 'expand-left', 'expand-right', 'expand-up', 'expand-down'].map(icon => (
               <div key={icon} className={styles.iconItem}>
@@ -180,7 +179,7 @@ export default function Icons() {
         </div>
 
         <div className={styles.categorySection}>
-          <h3>파일 & 문서</h3>
+          <h2>파일 & 문서</h2>
           <div className={styles.iconList}>
             {['file', 'paper', 'folder', 'upload', 'download', 'import', 'export', 'save'].map(icon => (
               <div key={icon} className={styles.iconItem}>
@@ -192,7 +191,7 @@ export default function Icons() {
         </div>
 
         <div className={styles.categorySection}>
-          <h3>소셜 미디어</h3>
+          <h2>소셜 미디어</h2>
           <div className={styles.iconList}>
             {['facebook', 'naver', 'insta', 'tiktok', 'youtube', 'kakao', 'x', 'apple', 'google'].map(icon => (
               <div key={icon} className={styles.iconItem}>
@@ -204,7 +203,7 @@ export default function Icons() {
         </div>
 
         <div className={styles.categorySection}>
-          <h3>상태</h3>
+          <h2>상태</h2>
           <div className={styles.iconList}>
             {['info', 'warning', 'danger', 'danger-fill', 'check-circle-stroke', 'check-circle-fill'].map(icon => (
               <div key={icon} className={styles.iconItem}>

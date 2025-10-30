@@ -1,23 +1,12 @@
 @use '../../../../mixin' as *;
+@use '../../common-page' as *;
 
 .section {
-  margin-bottom: s(10);
-
-  h2 {
-    @include display5;
-    margin: 0 0 s(5) 0;
-    color: color(default-deep-base);
-  }
-
-  p {
-    @include p2;
-    color: color(default-base);
-    line-height: 1.8;
-    margin: 0 0 s(5) 0;
-  }
+  @include section-responsive;
 }
 
 .codeBlock {
+  max-width: 100%;
   background: color(default-deep-base);
   border-radius: r(4);
   overflow: hidden;
@@ -29,6 +18,8 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     @include p4-semibold;
     color: rgba(255, 255, 255, 0.7);
+
+    word-break: break-word;
   }
 
   pre {
@@ -41,6 +32,15 @@
       font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
       color: #f8f8f2;
       white-space: pre;
+
+      display: block;
+      max-width: 100%;
+
+      @media (max-width: 768px) {
+        white-space: pre-wrap;
+        word-break: break-all;
+
+      }
     }
   }
 }
@@ -108,5 +108,17 @@
   input {
     padding-left: s(10);
     width: 100%;
+  }
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: s(5);
+
+  :global {
+    input, select, textarea {
+      width: 100%;
+    }
   }
 }

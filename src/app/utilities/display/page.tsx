@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Display() {
   return (
     <>
-      <PageHeader
-        title="표시 & 가시성"
-        description="Podo UI의 Display와 Visibility 유틸리티 클래스 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>표시 & 가시성</h1>
+        <p>Podo UI의 Display와 Visibility 유틸리티 클래스 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>반응형 숨김 클래스</h2>

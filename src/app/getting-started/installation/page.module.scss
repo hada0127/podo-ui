@@ -1,27 +1,8 @@
 @use '../../../../mixin' as *;
+@use '../../common-page' as *;
 
 .section {
-  margin-bottom: s(10);
-
-  h2 {
-    @include display5;
-    margin: 0 0 s(5) 0;
-    color: color(default-deep-base);
-  }
-
-  h3 {
-    @include p1;
-    font-weight: 600;
-    margin: s(7) 0 s(4) 0;
-    color: color(default-deep-base);
-  }
-
-  p {
-    @include p2;
-    color: color(default-base);
-    line-height: 1.8;
-    margin: 0 0 s(5) 0;
-  }
+  @include section-responsive;
 }
 
 .codeBlock {
@@ -30,6 +11,11 @@
   border-radius: r(3);
   overflow: hidden;
   margin-bottom: s(4);
+  max-width: 100%;
+
+  @media (max-width: 768px) {
+    border-radius: r(2);
+  }
 
   .codeHeader {
     padding: s(3) s(5);
@@ -38,6 +24,12 @@
     @include p4;
     font-weight: 600;
     color: color(default-deep-base);
+    word-break: break-word;
+
+    @media (max-width: 768px) {
+      padding: s(3) s(4);
+      font-size: 12px;
+    }
   }
 
   pre {
@@ -45,53 +37,36 @@
     padding: s(5);
     overflow-x: auto;
     background: color(bg-elevation);
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+
+    @media (max-width: 768px) {
+      padding: s(4);
+    }
 
     code {
       @include p3;
       font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
       color: color(default-deep-base);
       white-space: pre;
+      display: block;
+      max-width: 100%;
+
+      @media (max-width: 768px) {
+        font-size: 11px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
     }
   }
 }
 
-.note,
-.warning {
-  display: flex;
-  gap: s(4);
-  padding: s(5);
-  border-radius: r(4);
-  margin-bottom: s(5);
-
-  > i {
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-
-  strong {
-    display: block;
-    margin-bottom: s(2);
-  }
-}
-
 .note {
-  background: color(info-fill);
-  border: 1px solid color(info-outline);
-  color: color(info-base);
-
-  > i {
-    color: color(info-base);
-  }
+  @include note-style;
 }
 
 .warning {
-  background: color(warning-fill);
-  border: 1px solid color(warning-outline);
-  color: color(warning-base);
-
-  > i {
-    color: color(warning-base);
-  }
+  @include warning-style;
 }
 
 .linkGrid {
@@ -99,6 +74,12 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: s(5);
   margin-top: s(6);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: s(4);
+    margin-top: s(5);
+  }
 }
 
 .linkCard {
@@ -111,6 +92,13 @@
   border-radius: r(3);
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 100%;
+
+  @media (max-width: 768px) {
+    gap: s(3);
+    padding: s(4);
+    border-radius: r(2);
+  }
 
   &:hover {
     border-color: color(primary-base);
@@ -130,22 +118,42 @@
     font-size: 20px;
     flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+
+    @media (max-width: 768px) {
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+    }
   }
 
   > div {
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
 
-    h4 {
+    h3 {
       @include p2;
       font-weight: 600;
       margin: 0 0 s(1) 0;
       color: color(default-deep-base);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+
+      @media (max-width: 768px) {
+        font-size: 15px;
+      }
     }
 
     p {
       @include p4;
       margin: 0;
       color: color(default-base);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+
+      @media (max-width: 768px) {
+        font-size: 12px;
+      }
     }
   }
 
@@ -153,5 +161,9 @@
     font-size: 16px;
     color: color(default-base);
     flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
   }
 }

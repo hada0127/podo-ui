@@ -1,15 +1,14 @@
 'use client';
 
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function CheckboxRadio() {
   return (
     <>
-      <PageHeader
-        title="체크박스 & 라디오"
-        description="Podo UI의 Checkbox와 Radio 컴포넌트 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>체크박스 & 라디오</h1>
+        <p>Podo UI의 Checkbox와 Radio 컴포넌트 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>Checkbox 기본 사용법</h2>

@@ -1,4 +1,3 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Spacing() {
@@ -32,10 +31,10 @@ export default function Spacing() {
 
   return (
     <>
-      <PageHeader
-        title="간격"
-        description="Podo UI의 여백과 모서리 반경 시스템을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>간격</h1>
+        <p>Podo UI의 여백과 모서리 반경 시스템을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>간격 시스템</h2>
@@ -261,7 +260,7 @@ export default function Spacing() {
           <div className={styles.demoTitle}>실제 렌더링:</div>
           <div className={styles.cardExample}>
             <div className={styles.cardHeader}>
-              <h3>카드 제목</h3>
+              <h2>카드 제목</h2>
             </div>
             <div className={styles.cardContent}>
               이 카드는 s() 함수로 일관된 여백을 적용하고, r() 함수로 모서리를 둥글게 만들었습니다.

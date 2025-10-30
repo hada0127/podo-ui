@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from '../input/page.module.scss';
 
 export default function File() {
   return (
     <>
-      <PageHeader
-        title="파일 업로드"
-        description="Podo UI의 File Input 컴포넌트와 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>파일 업로드</h1>
+        <p>Podo UI의 File Input 컴포넌트와 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>기본 사용법</h2>

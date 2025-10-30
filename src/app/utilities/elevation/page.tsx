@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Elevation() {
   return (
     <>
-      <PageHeader
-        title="배경 & 입체감"
-        description="Podo UI의 Background와 Elevation 유틸리티 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>배경 & 입체감</h1>
+        <p>Podo UI의 Background와 Elevation 유틸리티 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>배경 색상</h2>
@@ -74,15 +73,15 @@ export default function Elevation() {
           <div className={styles.demoTitle}>입체감 예제:</div>
           <div className={styles.elevationExample}>
             <div className={styles.elevationCard} style={{ background: 'var(--bg-modal)' }}>
-              <h3>Level 0</h3>
+              <h2>Level 0</h2>
               <p>기본 배경</p>
             </div>
             <div className={styles.elevationCard} style={{ background: 'var(--bg-elevation)', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h3>Level 1</h3>
+              <h2>Level 1</h2>
               <p>약간 띄워진 느낌</p>
             </div>
             <div className={styles.elevationCard} style={{ background: 'var(--bg-elevation-1)', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-              <h3>Level 2</h3>
+              <h2>Level 2</h2>
               <p>더 띄워진 느낌</p>
             </div>
           </div>
@@ -142,15 +141,15 @@ export default function Elevation() {
         <div className={styles.demo}>
           <div className={styles.cardShowcase}>
             <div className={styles.showcaseCard}>
-              <h3>기본 카드</h3>
+              <h2>기본 카드</h2>
               <p>bg-modal 배경과 기본 테두리</p>
             </div>
             <div className={styles.showcaseCard} style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-              <h3>그림자 카드</h3>
+              <h2>그림자 카드</h2>
               <p>bg-modal 배경과 그림자 효과</p>
             </div>
             <div className={styles.showcaseCard} style={{ background: 'var(--bg-elevation)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-              <h3>입체 카드</h3>
+              <h2>입체 카드</h2>
               <p>bg-elevation 배경과 강한 그림자</p>
             </div>
           </div>

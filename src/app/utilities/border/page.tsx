@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Border() {
   return (
     <>
-      <PageHeader
-        title="테두리"
-        description="Podo UI의 Border 유틸리티 클래스 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>테두리</h1>
+        <p>Podo UI의 Border 유틸리티 클래스 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>기본 사용법</h2>
@@ -137,11 +136,11 @@ export default function Border() {
           <div className={styles.demoTitle}>실제 예제:</div>
           <div className={styles.cardExample}>
             <div className={styles.card}>
-              <h3>기본 카드</h3>
+              <h2>기본 카드</h2>
               <p>기본 테두리 스타일을 사용한 카드입니다.</p>
             </div>
             <div className={styles.card} style={{ borderColor: 'var(--primary)' }}>
-              <h3>Primary 카드</h3>
+              <h2>Primary 카드</h2>
               <p>Primary 색상의 테두리를 사용한 카드입니다.</p>
             </div>
           </div>

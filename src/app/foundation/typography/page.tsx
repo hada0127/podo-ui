@@ -1,4 +1,3 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Typography() {
@@ -31,10 +30,10 @@ export default function Typography() {
 
   return (
     <>
-      <PageHeader
-        title="타이포그래피"
-        description="Podo UI의 타이포그래피 시스템과 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>타이포그래피</h1>
+        <p>Podo UI의 타이포그래피 시스템과 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>타이포그래피 시스템</h2>
@@ -55,7 +54,7 @@ export default function Typography() {
                 <div className={style.name}>타이포그래피</div>
               </div>
               <div className={styles.typeInfo}>
-                <h3>{style.name}</h3>
+                <h2>{style.name}</h2>
                 <div className={styles.typeSpecs}>
                   <div><strong>Size:</strong> {style.fontSize} (Mobile: {style.mobile})</div>
                   <div><strong>Weight:</strong> {style.fontWeight}</div>
@@ -80,7 +79,7 @@ export default function Typography() {
                 </div>
               </div>
               <div className={styles.typeInfo}>
-                <h3>{style.name}</h3>
+                <h2>{style.name}</h2>
                 <div className={styles.typeSpecs}>
                   <div><strong>Size:</strong> {style.fontSize} (Mobile: {style.mobile})</div>
                   <div><strong>Weight:</strong> {style.fontWeight}</div>
@@ -100,12 +99,12 @@ export default function Typography() {
           {headingStyles.map((style) => (
             <div key={style.name} className={styles.typeCard}>
               <div className={styles.typePreview}>
-                {style.name === 'h1' && <h1>Heading 1</h1>}
+                {style.name === 'h1' && <h2>Heading 1</h2>}
                 {style.name === 'h2' && <h2>Heading 2</h2>}
-                {style.name === 'h3' && <h3>Heading 3</h3>}
+                {style.name === 'h3' && <h2>Heading 3</h2>}
               </div>
               <div className={styles.typeInfo}>
-                <h3>{style.name}</h3>
+                <h2>{style.name}</h2>
                 <div className={styles.typeSpecs}>
                   <div><strong>Size:</strong> {style.fontSize} (Mobile: {style.mobile})</div>
                   <div><strong>Weight:</strong> {style.fontWeight}</div>

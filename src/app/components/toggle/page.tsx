@@ -1,15 +1,14 @@
 'use client';
 
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Toggle() {
   return (
     <>
-      <PageHeader
-        title="토글"
-        description="Podo UI의 Toggle 스위치 컴포넌트 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>토글</h1>
+        <p>Podo UI의 Toggle 스위치 컴포넌트 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>기본 사용법</h2>

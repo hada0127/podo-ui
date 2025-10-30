@@ -1,13 +1,12 @@
-import PageHeader from '@/components/PageHeader';
 import styles from './page.module.scss';
 
 export default function Tab() {
   return (
     <>
-      <PageHeader
-        title="탭"
-        description="Podo UI의 Tab 네비게이션 컴포넌트 사용법을 안내합니다"
-      />
+      <section className={styles.section}>
+        <h1>탭</h1>
+        <p>Podo UI의 Tab 네비게이션 컴포넌트 사용법을 안내합니다</p>
+      </section>
 
       <section className={styles.section}>
         <h2>기본 사용법</h2>
@@ -135,7 +134,7 @@ export default function Tab() {
 
           <div className={styles.tabContent}>
             <div className={styles.tabPanel}>
-              <h3>개요</h3>
+              <h2>개요</h2>
               <p>Podo UI는 현대적인 디자인 시스템입니다.</p>
             </div>
           </div>
