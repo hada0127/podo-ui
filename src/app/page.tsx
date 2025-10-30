@@ -91,8 +91,8 @@ export default function Home() {
                     <div className={styles.mockLine}></div>
                   </div>
                   <div className={styles.mockCardFooter}>
-                    <div className={styles.mockButton}>Cancel</div>
-                    <div className={styles.mockButton + ' ' + styles.primary}>Submit</div>
+                    <button className="default xs">Cancel</button>
+                    <button className="primary xs">Submit</button>
                   </div>
                 </div>
                 <div className={styles.mockProfile}>
@@ -111,22 +111,115 @@ export default function Home() {
       {/* Feature Cards */}
       <section className={styles.featureCards}>
         <FeatureCard
-          icon="icon-layers"
+          icon={
+            <svg width="120" height="120" viewBox="0 0 64 64" fill="none">
+              <defs>
+                <linearGradient id="rocket-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#667eea" />
+                  <stop offset="100%" stopColor="#764ba2" />
+                </linearGradient>
+                <linearGradient id="flame-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#f093fb" />
+                  <stop offset="100%" stopColor="#f5576c" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M32 8L36 20L48 24L36 28L32 40L28 28L16 24L28 20L32 8Z"
+                fill="url(#rocket-gradient)"
+              />
+              <circle cx="32" cy="32" r="20" fill="url(#rocket-gradient)" opacity="0.2" />
+              <path
+                d="M32 16C32 16 28 24 28 32C28 36 30 38 32 40C34 38 36 36 36 32C36 24 32 16 32 16Z"
+                fill="url(#flame-gradient)"
+              />
+              <circle cx="32" cy="28" r="3" fill="#ffffff" />
+            </svg>
+          }
           title="가볍고 빠른 성능"
           description="순수 SCSS로 구성되어 번들 크기가 작고, 런타임 오버헤드 없이 빠른 성능을 제공합니다."
         />
         <FeatureCard
-          icon="icon-setting"
+          icon={
+            <svg width="120" height="120" viewBox="0 0 64 64" fill="none">
+              <defs>
+                <linearGradient id="palette-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fa709a" />
+                  <stop offset="100%" stopColor="#fee140" />
+                </linearGradient>
+              </defs>
+              <circle cx="32" cy="32" r="24" fill="url(#palette-gradient)" opacity="0.2" />
+              <path
+                d="M32 12C20.96 12 12 20.96 12 32C12 37.52 14.84 42.36 19.08 45.28C20.6 46.24 22.56 45.4 22.56 43.56C22.56 42.68 22.16 41.84 21.52 41.2C18.72 38.4 17 34.44 17 32C17 23.72 23.72 17 32 17C40.28 17 47 23.72 47 32C47 36.4 43.6 40 39 40H35C33.9 40 33 40.9 33 42C33 42.44 33.16 42.84 33.44 43.12C33.84 43.52 34 44.08 34 44.68C34 46.52 32.52 48 30.68 48H30C19.52 48 12 40.48 12 32"
+                fill="url(#palette-gradient)"
+              />
+              <circle cx="24" cy="28" r="3" fill="#667eea" />
+              <circle cx="32" cy="24" r="3" fill="#f093fb" />
+              <circle cx="40" cy="28" r="3" fill="#4facfe" />
+              <circle cx="36" cy="36" r="3" fill="#43e97b" />
+            </svg>
+          }
           title="체계적인 디자인 토큰"
           description="색상, 간격, 타이포그래피, 반경 등 디자인 시스템의 모든 요소를 함수로 제공하여 일관성 있는 UI를 구축합니다."
         />
         <FeatureCard
-          icon="icon-hidden"
+          icon={
+            <svg width="120" height="120" viewBox="0 0 64 64" fill="none">
+              <defs>
+                <linearGradient id="sun-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#f6d365" />
+                  <stop offset="100%" stopColor="#fda085" />
+                </linearGradient>
+                <linearGradient id="moon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#a8edea" />
+                  <stop offset="100%" stopColor="#667eea" />
+                </linearGradient>
+              </defs>
+              <circle cx="32" cy="32" r="24" fill="url(#sun-gradient)" opacity="0.2" />
+              <circle cx="22" cy="28" r="10" fill="url(#sun-gradient)" />
+              <path d="M22 14V18M22 38V42M34 28H38M6 28H10M30 18L32 20M12 38L14 36M30 38L32 36M12 18L14 20" stroke="url(#sun-gradient)" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M46 40C46 40 42 36 38 36C34 36 32 38 32 42C32 46 34 48 38 48C42 48 46 44 46 40Z"
+                fill="url(#moon-gradient)"
+              />
+              <path
+                d="M42 44C40 44 38 42 38 40C38 38 40 36 42 36C42.5 36 43 36.1 43.5 36.3C42.6 37.2 42 38.5 42 40C42 41.5 42.6 42.8 43.5 43.7C43 43.9 42.5 44 42 44Z"
+                fill="url(#moon-gradient)"
+                opacity="0.6"
+              />
+            </svg>
+          }
           title="다크모드 기본 지원"
           description="라이트/다크 모드를 기본으로 지원하며, Warm 톤 설정으로 사용자 환경에 최적화된 경험을 제공합니다."
         />
         <FeatureCard
-          icon="icon-star"
+          icon={
+            <svg width="120" height="120" viewBox="0 0 64 64" fill="none">
+              <defs>
+                <linearGradient id="grid-gradient-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#4facfe" />
+                  <stop offset="100%" stopColor="#00f2fe" />
+                </linearGradient>
+                <linearGradient id="grid-gradient-2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#43e97b" />
+                  <stop offset="100%" stopColor="#38f9d7" />
+                </linearGradient>
+                <linearGradient id="grid-gradient-3" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#fa709a" />
+                  <stop offset="100%" stopColor="#fee140" />
+                </linearGradient>
+              </defs>
+              <circle cx="32" cy="32" r="24" fill="url(#grid-gradient-1)" opacity="0.1" />
+              <rect x="12" y="16" width="16" height="12" rx="2" fill="url(#grid-gradient-1)" />
+              <rect x="32" y="16" width="10" height="12" rx="2" fill="url(#grid-gradient-2)" />
+              <rect x="46" y="16" width="6" height="12" rx="2" fill="url(#grid-gradient-3)" />
+              <rect x="12" y="32" width="12" height="10" rx="2" fill="url(#grid-gradient-2)" />
+              <rect x="28" y="32" width="12" height="10" rx="2" fill="url(#grid-gradient-3)" />
+              <rect x="44" y="32" width="8" height="10" rx="2" fill="url(#grid-gradient-1)" />
+              <rect x="12" y="46" width="8" height="6" rx="2" fill="url(#grid-gradient-3)" />
+              <rect x="24" y="46" width="14" height="6" rx="2" fill="url(#grid-gradient-1)" />
+              <rect x="42" y="46" width="10" height="6" rx="2" fill="url(#grid-gradient-2)" />
+            </svg>
+          }
           title="반응형 그리드 시스템"
           description="PC(12), Tablet(6), Mobile(4) 그리드로 자동 변환되는 유연한 레이아웃 시스템을 통해 모든 기기에 대응합니다."
         />
@@ -235,10 +328,16 @@ export default function Home() {
               <div className={styles.componentDemo}>
                 <div className={styles.componentLabel}>Tab</div>
                 <div className={styles.componentExample}>
-                  <ul className="tabs">
-                    <li className="on">Tab 1</li>
-                    <li>Tab 2</li>
-                    <li>Tab 3</li>
+                  <ul className="tabs w-full">
+                    <li className="on">
+                      <a href="#tab1">Tab 1</a>
+                    </li>
+                    <li>
+                      <a href="#tab2">Tab 2</a>
+                    </li>
+                    <li>
+                      <a href="#tab3">Tab 3</a>
+                    </li>
                   </ul>
                 </div>
               </div>

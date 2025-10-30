@@ -406,12 +406,12 @@
   padding: s(2) s(5);
   border-radius: 6px;
   background: color(bg-disabled);
-  color: color(default-base);
+  color: color(default);
   border: 1px solid color(default-outline);
 
   &.primary {
     background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
-    color: color(primary-reverse);
+    color: color(primary-reverse) !important;
     border: none;
   }
 }
