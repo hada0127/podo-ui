@@ -1,5 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import SectionHeader from '@/components/home/SectionHeader';
+import BrowserWindow from '@/components/home/BrowserWindow';
+import FeatureCard from '@/components/home/FeatureCard';
 import styles from './home.module.scss';
 
 export default function Home() {
@@ -55,28 +58,22 @@ export default function Home() {
 
       {/* Features Section */}
       <section className={styles.featuresSection}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>SCSS Module 기반 디자인 시스템</h2>
-          <p className={styles.sectionDescription}>
-            HTML과 SCSS만으로 아름다운 UI를 구현할 수 있는 디자인 시스템입니다.
-            <br />
-            색상, 간격, 타이포그래피 등 체계적인 디자인 토큰을 제공하며,
-            <br />
-            다양한 프레임워크와 함께 사용할 수 있는 유연한 구조를 갖추고 있습니다.
-          </p>
-        </div>
+        <SectionHeader
+          title="SCSS Module 기반 디자인 시스템"
+          description={
+            <>
+              HTML과 SCSS만으로 아름다운 UI를 구현할 수 있는 디자인 시스템입니다.
+              <br />
+              색상, 간격, 타이포그래피 등 체계적인 디자인 토큰을 제공하며,
+              <br />
+              다양한 프레임워크와 함께 사용할 수 있는 유연한 구조를 갖추고 있습니다.
+            </>
+          }
+        />
 
         {/* Browser Mockup */}
         <div className={styles.browserMockup}>
-          <div className={styles.browserWindow}>
-            <div className={styles.browserHeader}>
-              <div className={styles.browserDots}>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-              </div>
-              <div className={styles.browserUrl}>podo-ui</div>
-            </div>
+          <BrowserWindow>
             <div className={styles.browserContent}>
               <div className={styles.mockSidebar}>
                 <div className={styles.sidebarItem}>Docs</div>
@@ -107,81 +104,49 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </BrowserWindow>
         </div>
       </section>
 
       {/* Feature Cards */}
       <section className={styles.featureCards}>
-        <div className={styles.featureCard}>
-          <div className={styles.featureIcon}>
-            <i className="icon-layers"></i>
-          </div>
-          <h3>가볍고 빠른 성능</h3>
-          <p>
-            순수 SCSS로 구성되어 번들 크기가 작고,
-            런타임 오버헤드 없이 빠른 성능을
-            제공합니다.
-          </p>
-        </div>
-
-        <div className={styles.featureCard}>
-          <div className={styles.featureIcon}>
-            <i className="icon-setting"></i>
-          </div>
-          <h3>체계적인 디자인 토큰</h3>
-          <p>
-            색상, 간격, 타이포그래피, 반경 등
-            디자인 시스템의 모든 요소를 함수로
-            제공하여 일관성 있는 UI를 구축합니다.
-          </p>
-        </div>
-
-        <div className={styles.featureCard}>
-          <div className={styles.featureIcon}>
-            <i className="icon-hidden"></i>
-          </div>
-          <h3>다크모드 기본 지원</h3>
-          <p>
-            라이트/다크 모드를 기본으로 지원하며,
-            Warm 톤 설정으로 사용자 환경에
-            최적화된 경험을 제공합니다.
-          </p>
-        </div>
-
-        <div className={styles.featureCard}>
-          <div className={styles.featureIcon}>
-            <i className="icon-star"></i>
-          </div>
-          <h3>반응형 그리드 시스템</h3>
-          <p>
-            PC(12), Tablet(6), Mobile(4) 그리드로
-            자동 변환되는 유연한 레이아웃 시스템을
-            통해 모든 기기에 대응합니다.
-          </p>
-        </div>
+        <FeatureCard
+          icon="icon-layers"
+          title="가볍고 빠른 성능"
+          description="순수 SCSS로 구성되어 번들 크기가 작고, 런타임 오버헤드 없이 빠른 성능을 제공합니다."
+        />
+        <FeatureCard
+          icon="icon-setting"
+          title="체계적인 디자인 토큰"
+          description="색상, 간격, 타이포그래피, 반경 등 디자인 시스템의 모든 요소를 함수로 제공하여 일관성 있는 UI를 구축합니다."
+        />
+        <FeatureCard
+          icon="icon-hidden"
+          title="다크모드 기본 지원"
+          description="라이트/다크 모드를 기본으로 지원하며, Warm 톤 설정으로 사용자 환경에 최적화된 경험을 제공합니다."
+        />
+        <FeatureCard
+          icon="icon-star"
+          title="반응형 그리드 시스템"
+          description="PC(12), Tablet(6), Mobile(4) 그리드로 자동 변환되는 유연한 레이아웃 시스템을 통해 모든 기기에 대응합니다."
+        />
       </section>
 
       {/* API Section */}
       <section className={styles.apiSection}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>강력한 SCSS 함수 시스템</h2>
-          <p className={styles.sectionDescription}>
-            color(), s(), r() 등의 직관적인 함수로 디자인 토큰을 사용할 수 있습니다.
-            <br />
-            팀 내 일관된 디자인 시스템을 구축하고, 손쉽게 커스터마이징할 수 있습니다.
-          </p>
-        </div>
+        <SectionHeader
+          title="강력한 SCSS 함수 시스템"
+          description={
+            <>
+              color(), s(), r() 등의 직관적인 함수로 디자인 토큰을 사용할 수 있습니다.
+              <br />
+              팀 내 일관된 디자인 시스템을 구축하고, 손쉽게 커스터마이징할 수 있습니다.
+            </>
+          }
+        />
 
         <div className={styles.apiDemo}>
-          <div className={styles.browserWindow}>
-            <div className={styles.browserHeader}>
-              <div className={styles.browserDots}>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-              </div>
-            </div>
+          <BrowserWindow>
             <div className={styles.apiContent}>
               {[
                 { label: 'w-1_12', width: '8%' },
@@ -200,31 +165,25 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
+          </BrowserWindow>
         </div>
       </section>
 
       {/* Components Section */}
       <section className={styles.componentsSection}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>다양한 UI 컴포넌트 제공</h2>
-          <p className={styles.sectionDescription}>
-            버튼, 폼 요소, 테이블, 탭 등 웹 개발에 필요한 필수 컴포넌트를 제공합니다.
-            <br />
-            CSS 클래스 기반으로 작동하여 자유롭게 커스터마이징하고 확장할 수 있습니다.
-          </p>
-        </div>
+        <SectionHeader
+          title="다양한 UI 컴포넌트 제공"
+          description={
+            <>
+              버튼, 폼 요소, 테이블, 탭 등 웹 개발에 필요한 필수 컴포넌트를 제공합니다.
+              <br />
+              CSS 클래스 기반으로 작동하여 자유롭게 커스터마이징하고 확장할 수 있습니다.
+            </>
+          }
+        />
 
         <div className={styles.componentsDemo}>
-          <div className={styles.browserWindow}>
-            <div className={styles.browserHeader}>
-              <div className={styles.browserDots}>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-                <span className={styles.dot}></span>
-              </div>
-              <div className={styles.browserTab}>Components Preview</div>
-            </div>
+          <BrowserWindow title="Components Preview">
             <div className={styles.componentsGrid}>
               <div className={styles.componentDemo}>
                 <div className={styles.componentLabel}>Button</div>
@@ -284,7 +243,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </BrowserWindow>
         </div>
       </section>
 

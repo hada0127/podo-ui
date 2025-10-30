@@ -1,0 +1,25 @@
+@use '../../../mixin' as *;
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: s(10);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sectionTitle {
+  @include display3;
+  font-size: 42px;
+  font-weight: 700;
+  margin: 0 0 s(5) 0;
+  color: color(default-deep-base);
+}
+
+.sectionDescription {
+  @include p2;
+  font-size: 16px;
+  color: color(default-base);
+  line-height: 1.8;
+  margin: 0;
+}

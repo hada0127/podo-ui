@@ -1,0 +1,47 @@
+@use '../../../mixin' as *;
+
+.browserWindow {
+  background: color(bg-modal);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  border: 1px solid color(default-outline);
+}
+
+.browserHeader {
+  background: color(bg-elevation-1);
+  padding: s(4) s(5);
+  display: flex;
+  align-items: center;
+  gap: s(4);
+  border-bottom: 1px solid color(default-outline);
+}
+
+.browserDots {
+  display: flex;
+  gap: s(2);
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: color(default-outline);
+
+    &:nth-child(1) {
+      background: #ff5f57;
+    }
+    &:nth-child(2) {
+      background: #febc2e;
+    }
+    &:nth-child(3) {
+      background: #28c840;
+    }
+  }
+}
+
+.browserTab {
+  @include p4;
+  font-weight: 600;
+  color: color(default-deep-base);
+  font-family: 'Monaco', 'Menlo', monospace;
+}

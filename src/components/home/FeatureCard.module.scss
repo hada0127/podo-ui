@@ -1,0 +1,43 @@
+@use '../../../mixin' as *;
+
+.featureCard {
+  padding: s(7);
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    border-color: color(primary-base);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15);
+  }
+
+  .featureIcon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+    color: white;
+    border-radius: 12px;
+    font-size: 28px;
+    margin-bottom: s(5);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
+  }
+
+  h3 {
+    @include p1;
+    font-weight: 600;
+    margin: 0 0 s(3) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p3;
+    margin: 0;
+    color: color(default-base);
+    line-height: 1.7;
+  }
+}
