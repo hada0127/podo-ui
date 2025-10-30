@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Editor from '../../../../react/atom/editor';
 import styles from '../input/page.module.scss';
 
-export default function Editor() {
+export default function EditorPage() {
   const [content, setContent] = useState('<p>에디터를 사용해보세요!</p>');
 
   return (
@@ -27,13 +27,6 @@ export default function Editor() {
             value={content}
             onChange={setContent}
             height="300px"
-            buttonList={[
-              ['undo', 'redo'],
-              ['bold', 'underline', 'italic', 'strike'],
-              ['fontColor', 'hiliteColor'],
-              ['align', 'list'],
-              ['table', 'link', 'image'],
-            ]}
           />
         </div>
       </section>
@@ -54,14 +47,6 @@ export default function MyComponent() {
       value={content}
       onChange={setContent}
       height="400px"
-      buttonList={[
-        ['undo', 'redo'],
-        ['bold', 'underline', 'italic', 'strike'],
-        ['fontColor', 'hiliteColor'],
-        ['align', 'list'],
-        ['table', 'link', 'image', 'video'],
-        ['fullScreen', 'codeView']
-      ]}
     />
   );
 }`}</code></pre>
