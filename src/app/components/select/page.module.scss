@@ -1,0 +1,90 @@
+@use '../../../../mixin' as *;
+
+.section {
+  margin-bottom: s(10);
+
+  h2 {
+    @include display5;
+    margin: 0 0 s(5) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p2;
+    color: color(default-base);
+    line-height: 1.8;
+    margin: 0 0 s(5) 0;
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: color(primary);
+      background: color(primary-fill);
+      padding: 2px 6px;
+      border-radius: r(1);
+    }
+  }
+}
+
+.codeBlock {
+  background: color(default-deep-base);
+  border-radius: r(4);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @include p4-semibold;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: #f8f8f2;
+      white-space: pre;
+    }
+  }
+}
+
+.demo {
+  margin-top: s(5);
+  padding: s(5);
+  background: color(default-fill);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+}
+
+.demoTitle {
+  @include p3-semibold;
+  margin-bottom: s(4);
+  color: color(default-deep-base);
+}
+
+.selectGroup {
+  display: flex;
+  flex-direction: column;
+  gap: s(4);
+
+  select {
+    width: 100%;
+  }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: s(2);
+  }
+}
+
+.label {
+  @include p3-semibold;
+  color: color(default-deep-base);
+}
