@@ -11,4 +11,14 @@
   margin-left: 260px;
   padding: s(7);
   max-width: 1200px;
+
+  @media (max-width: 1024px) {
+    margin-left: 0;
+    margin-top: 64px;
+    padding: s(5);
+  }
+
+  @media (max-width: 768px) {
+    padding: s(4);
+  }
 }

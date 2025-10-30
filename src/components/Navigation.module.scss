@@ -1,5 +1,61 @@
 @use '../../mixin' as *;
 
+.mobileHeader {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: color(bg-modal);
+  border-bottom: 1px solid color(default-outline);
+  padding: 0 s(5);
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+
+  @media (max-width: 1024px) {
+    display: flex;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: s(3);
+    text-decoration: none;
+
+    img {
+      flex-shrink: 0;
+    }
+
+    h1 {
+      @include display4;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+}
+
+.overlay {
+  display: none;
+
+  @media (max-width: 1024px) {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+}
+
 .nav {
   width: 260px;
   height: 100vh;
@@ -10,10 +66,25 @@
   border-right: 1px solid color(default-outline);
   overflow-y: auto;
   padding: s(6);
+  z-index: 1000;
+
+  @media (max-width: 1024px) {
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+
+    &.open {
+      transform: translateX(0);
+    }
+  }
 }
 
 .header {
   margin-bottom: s(7);
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
 
   .logo {
     display: flex;

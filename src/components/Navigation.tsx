@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import ThemeToggle from './ThemeToggle';
+import MobileMenuButton from './MobileMenuButton';
 import styles from './Navigation.module.scss';
 
 const menuItems = [
@@ -61,36 +63,54 @@ const menuItems = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
 
   return (
-    <nav className={styles.nav}>
-      <div className={styles.header}>
+    <>
+      <div className={styles.mobileHeader}>
         <Link href="/" className={styles.logo}>
           <Image src="/logo.svg" alt="Podo UI" width={32} height={32} />
           <h1>Podo UI</h1>
         </Link>
-        <ThemeToggle />
+        <MobileMenuButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
       </div>
 
-      <div className={styles.menu}>
-        {menuItems.map((section) => (
-          <div key={section.title} className={styles.section}>
-            <h2 className={styles.sectionTitle}>{section.title}</h2>
-            <ul className={styles.list}>
-              {section.items.map((item) => (
-                <li key={item.path}>
-                  <Link
-                    href={item.path}
-                    className={pathname === item.path ? styles.active : ''}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </nav>
+      {isOpen && <div className={styles.overlay} onClick={() => setIsOpen(false)} />}
+
+      <nav className={`${styles.nav} ${isOpen ? styles.open : ''}`}>
+        <div className={styles.header}>
+          <Link href="/" className={styles.logo}>
+            <Image src="/logo.svg" alt="Podo UI" width={32} height={32} />
+            <h1>Podo UI</h1>
+          </Link>
+          <ThemeToggle />
+        </div>
+
+        <div className={styles.menu}>
+          {menuItems.map((section) => (
+            <div key={section.title} className={styles.section}>
+              <h2 className={styles.sectionTitle}>{section.title}</h2>
+              <ul className={styles.list}>
+                {section.items.map((item) => (
+                  <li key={item.path}>
+                    <Link
+                      href={item.path}
+                      className={pathname === item.path ? styles.active : ''}
+                      onClick={handleLinkClick}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </nav>
+    </>
   );
 }

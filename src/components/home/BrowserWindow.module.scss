@@ -6,6 +6,10 @@
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
   border: 1px solid color(default-outline);
+
+  @media (max-width: 768px) {
+    border-radius: 8px;
+  }
 }
 
 .browserHeader {
@@ -15,6 +19,11 @@
   align-items: center;
   gap: s(4);
   border-bottom: 1px solid color(default-outline);
+
+  @media (max-width: 768px) {
+    padding: s(3) s(4);
+    gap: s(3);
+  }
 }
 
 .browserDots {
@@ -26,6 +35,11 @@
     height: 12px;
     border-radius: 50%;
     background: color(default-outline);
+
+    @media (max-width: 768px) {
+      width: 10px;
+      height: 10px;
+    }
 
     &:nth-child(1) {
       background: #ff5f57;
@@ -44,4 +58,8 @@
   font-weight: 600;
   color: color(default-deep-base);
   font-family: 'Monaco', 'Menlo', monospace;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
 }

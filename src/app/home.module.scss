@@ -12,6 +12,14 @@
   max-width: 1200px;
   margin: 0 auto;
 
+  @media (max-width: 1024px) {
+    padding: s(10) s(5) s(10);
+  }
+
+  @media (max-width: 768px) {
+    padding: s(8) s(4) s(8);
+  }
+
   .heroContent {
     max-width: 800px;
     margin: 0 auto;
@@ -21,6 +29,15 @@
     display: flex;
     justify-content: center;
     margin-bottom: s(7);
+
+    @media (max-width: 768px) {
+      margin-bottom: s(5);
+
+      img {
+        width: 48px;
+        height: 48px;
+      }
+    }
 
     img {
       filter: drop-shadow(0 8px 32px rgba(139, 92, 246, 0.3));
@@ -37,6 +54,15 @@
     letter-spacing: -0.02em;
     line-height: 1.2;
 
+    @media (max-width: 1024px) {
+      font-size: 42px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 32px;
+      margin: 0 0 s(4) 0;
+    }
+
     .brandName {
       display: block;
       font-weight: 700;
@@ -45,6 +71,10 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       margin-top: s(3);
+
+      @media (max-width: 768px) {
+        margin-top: s(2);
+      }
     }
   }
 
@@ -54,6 +84,14 @@
     color: color(default-base);
     margin: 0 0 s(6) 0;
     line-height: 1.8;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+      margin: 0 0 s(5) 0;
+      br {
+        display: none;
+      }
+    }
   }
 
   .heroLinks {
@@ -61,6 +99,10 @@
     justify-content: center;
     gap: s(3);
     margin-bottom: s(6);
+
+    @media (max-width: 768px) {
+      margin-bottom: s(5);
+    }
   }
 
   .heroActions {
@@ -124,6 +166,14 @@
   max-width: 900px;
   margin-left: auto;
   margin-right: auto;
+
+  @media (max-width: 1024px) {
+    margin-bottom: s(8);
+  }
+
+  @media (max-width: 768px) {
+    margin-bottom: s(6);
+  }
 }
 
 .sectionTitle {
@@ -132,6 +182,15 @@
   font-weight: 700;
   margin: 0 0 s(5) 0;
   color: color(default-deep-base);
+
+  @media (max-width: 1024px) {
+    font-size: 32px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+    margin: 0 0 s(4) 0;
+  }
 }
 
 .sectionDescription {
@@ -140,6 +199,13 @@
   color: color(default-base);
   line-height: 1.8;
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    br {
+      display: none;
+    }
+  }
 }
 
 // Features Section
@@ -147,10 +213,26 @@
   padding: s(12) s(6);
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 1024px) {
+    padding: s(10) s(5);
+  }
+
+  @media (max-width: 768px) {
+    padding: s(8) s(4);
+  }
 }
 
 .browserMockup {
   margin-top: s(10);
+
+  @media (max-width: 1024px) {
+    margin-top: s(8);
+  }
+
+  @media (max-width: 768px) {
+    margin-top: s(6);
+  }
 }
 
 .browserWindow {
@@ -210,6 +292,11 @@
   display: flex;
   min-height: 400px;
   background: color(bg-elevation);
+
+  @media (max-width: 768px) {
+    min-height: 300px;
+    flex-direction: column;
+  }
 }
 
 .mockSidebar {
@@ -217,6 +304,21 @@
   background: color(bg-elevation-1);
   padding: s(5);
   border-right: 1px solid color(default-outline);
+
+  @media (max-width: 1024px) {
+    width: 150px;
+    padding: s(4);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid color(default-outline);
+    padding: s(3);
+    display: flex;
+    gap: s(2);
+    overflow-x: auto;
+  }
 }
 
 .sidebarItem {
@@ -227,6 +329,13 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
+
+  @media (max-width: 768px) {
+    white-space: nowrap;
+    margin-bottom: 0;
+    padding: s(2) s(3);
+    font-size: 12px;
+  }
 
   &:hover {
     background: color(default-hover);
@@ -240,6 +349,15 @@
   display: flex;
   flex-direction: column;
   gap: s(5);
+
+  @media (max-width: 1024px) {
+    padding: s(5);
+  }
+
+  @media (max-width: 768px) {
+    padding: s(4);
+    gap: s(4);
+  }
 }
 
 .mockCard {
@@ -340,6 +458,18 @@
   padding: s(12) s(6);
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+    padding: s(10) s(5);
+    gap: s(5);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: s(8) s(4);
+    gap: s(4);
+  }
 }
 
 .featureCard {
@@ -389,10 +519,26 @@
   padding: s(12) s(6);
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 1024px) {
+    padding: s(10) s(5);
+  }
+
+  @media (max-width: 768px) {
+    padding: s(8) s(4);
+  }
 }
 
 .apiDemo {
   margin-top: s(10);
+
+  @media (max-width: 1024px) {
+    margin-top: s(8);
+  }
+
+  @media (max-width: 768px) {
+    margin-top: s(6);
+  }
 }
 
 .apiContent {
@@ -400,6 +546,14 @@
   display: flex;
   flex-direction: column;
   gap: s(3);
+
+  @media (max-width: 1024px) {
+    padding: s(5);
+  }
+
+  @media (max-width: 768px) {
+    padding: s(4);
+  }
 }
 
 .apiBar {
@@ -432,10 +586,26 @@
   padding: s(12) s(6);
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 1024px) {
+    padding: s(10) s(5);
+  }
+
+  @media (max-width: 768px) {
+    padding: s(8) s(4);
+  }
 }
 
 .componentsDemo {
   margin-top: s(10);
+
+  @media (max-width: 1024px) {
+    margin-top: s(8);
+  }
+
+  @media (max-width: 768px) {
+    margin-top: s(6);
+  }
 }
 
 .componentsGrid {
@@ -443,6 +613,17 @@
   grid-template-columns: repeat(2, 1fr);
   gap: s(6);
   padding: s(6);
+
+  @media (max-width: 1024px) {
+    padding: s(5);
+    gap: s(5);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: s(4);
+    gap: s(4);
+  }
 }
 
 .componentDemo {
@@ -550,6 +731,14 @@
   text-align: center;
   max-width: 800px;
   margin: 0 auto;
+
+  @media (max-width: 1024px) {
+    padding: s(10) s(5);
+  }
+
+  @media (max-width: 768px) {
+    padding: s(8) s(4);
+  }
 }
 
 .ctaContent {
@@ -557,6 +746,15 @@
     display: flex;
     justify-content: center;
     margin-bottom: s(5);
+
+    @media (max-width: 768px) {
+      margin-bottom: s(4);
+
+      img {
+        width: 40px;
+        height: 40px;
+      }
+    }
 
     img {
       filter: drop-shadow(0 8px 24px rgba(139, 92, 246, 0.3));
@@ -568,6 +766,11 @@
     font-weight: 700;
     margin: 0 0 s(4) 0;
     color: color(default-deep-base);
+
+    @media (max-width: 768px) {
+      font-size: 24px;
+      margin: 0 0 s(3) 0;
+    }
   }
 
   .ctaDescription {
@@ -575,6 +778,14 @@
     color: color(default-base);
     margin: 0 0 s(7) 0;
     line-height: 1.8;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+      margin: 0 0 s(5) 0;
+      br {
+        display: none;
+      }
+    }
   }
 }
 
@@ -583,6 +794,10 @@
   border-top: 1px solid color(default-outline);
   padding: s(8) s(6);
   background: color(bg-elevation-1);
+
+  @media (max-width: 768px) {
+    padding: s(6) s(4);
+  }
 }
 
 .footerContent {
@@ -592,11 +807,23 @@
   align-items: center;
   justify-content: center;
   gap: s(4);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: s(3);
+  }
 }
 
 .footerLogo {
   img {
     opacity: 0.6;
+  }
+
+  @media (max-width: 768px) {
+    img {
+      width: 20px;
+      height: 20px;
+    }
   }
 }
 
@@ -604,6 +831,11 @@
   @include p4;
   color: color(default-base);
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+    text-align: center;
+  }
 }
 
 @keyframes float {

@@ -7,6 +7,14 @@
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+  @media (max-width: 1024px) {
+    padding: s(6);
+  }
+
+  @media (max-width: 768px) {
+    padding: s(5);
+  }
+
   &:hover {
     border-color: color(primary-base);
     transform: translateY(-4px);
@@ -25,6 +33,13 @@
     font-size: 28px;
     margin-bottom: s(5);
     box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
+
+    @media (max-width: 768px) {
+      width: 48px;
+      height: 48px;
+      font-size: 24px;
+      margin-bottom: s(4);
+    }
   }
 
   h3 {
@@ -32,6 +47,11 @@
     font-weight: 600;
     margin: 0 0 s(3) 0;
     color: color(default-deep-base);
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+      margin: 0 0 s(2) 0;
+    }
   }
 
   p {
@@ -39,5 +59,9 @@
     margin: 0;
     color: color(default-base);
     line-height: 1.7;
+
+    @media (max-width: 768px) {
+      font-size: 13px;
+    }
   }
 }
