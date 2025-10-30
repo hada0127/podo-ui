@@ -82,7 +82,11 @@ checkbox.indeterminate = true;`}</code></pre>
             <label>
               <input
                 type="checkbox"
-                ref={(el) => el && (el.indeterminate = true)}
+                ref={(el) => {
+                  if (el) {
+                    el.indeterminate = true;
+                  }
+                }}
               />
               Indeterminate 상태
             </label>
