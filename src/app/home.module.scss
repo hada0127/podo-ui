@@ -440,31 +440,107 @@
 
 .componentsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: s(5);
+  grid-template-columns: repeat(2, 1fr);
+  gap: s(6);
   padding: s(6);
 }
 
-.componentBox {
-  aspect-ratio: 1;
+.componentDemo {
   background: color(bg-modal);
   border: 1px solid color(default-outline);
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: s(6);
   transition: all 0.3s;
 
   &:hover {
     border-color: color(primary-base);
-    background: color(primary-fill);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.1);
   }
 
   .componentLabel {
     @include p4;
     font-weight: 600;
-    color: color(default-deep-base);
+    color: color(primary-base);
+    margin-bottom: s(5);
+    padding-bottom: s(3);
+    border-bottom: 1px solid color(default-outline);
     font-family: 'Monaco', 'Menlo', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .componentExample {
+    display: flex;
+    flex-direction: column;
+    gap: s(3);
+    align-items: flex-start;
+
+    button {
+      min-width: 100px;
+    }
+
+    input:not([type='checkbox']):not([type='radio']),
+    select {
+      width: 100%;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: s(3);
+      cursor: pointer;
+      @include p3;
+      color: color(default-deep-base);
+
+      input[type='checkbox'],
+      input[type='radio'] {
+        cursor: pointer;
+      }
+    }
+
+    // Toggle 스타일 수정
+    input.toggle {
+      margin: 0;
+
+      + span {
+        margin-left: s(2);
+      }
+    }
+
+    // Tabs 스타일 수정
+    ul.tabs {
+      width: 100%;
+      display: flex;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-bottom: 1px solid color(default-outline);
+
+      li {
+        flex: 1;
+        text-align: center;
+        padding: s(3) s(4);
+        cursor: pointer;
+        @include p3;
+        color: color(default-base);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        transition: all 0.2s;
+        position: relative;
+
+        &.on {
+          color: color(primary-base);
+          border-bottom-color: color(primary-base);
+          font-weight: 600;
+        }
+
+        &:hover:not(.on) {
+          color: color(primary-hover);
+          background: color(primary-fill);
+        }
+      }
+    }
   }
 }
 

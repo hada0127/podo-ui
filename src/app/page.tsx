@@ -17,9 +17,9 @@ export default function Home() {
             <span className={styles.brandName}>Podo UI</span>
           </h1>
           <p className={styles.heroDescription}>
-            Podo UI는 빠르고 쉽게 반응형있는 구성하기 위한 오픈 소스 툴킷 입니다.
+            SCSS Module 기반의 가볍고 유연한 디자인 시스템입니다.
             <br />
-            복사 & 붙여넣기만 디자인으로 구현으로든 제공되는 방문 오픈 소스 프론트엔드 입니다.
+            체계적인 디자인 토큰과 다양한 컴포넌트로 빠르게 아름다운 웹을 만들어보세요.
           </p>
           <div className={styles.heroLinks}>
             <a
@@ -56,13 +56,13 @@ export default function Home() {
       {/* Features Section */}
       <section className={styles.featuresSection}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>깨끗하고 가벼운 구성요소</h2>
+          <h2 className={styles.sectionTitle}>SCSS Module 기반 디자인 시스템</h2>
           <p className={styles.sectionDescription}>
-            HTML5, SCSS를 UX/UI 디자인 요소를 구현한 웹과
+            HTML과 SCSS만으로 아름다운 UI를 구현할 수 있는 디자인 시스템입니다.
             <br />
-            로컬 프레임 프로젝트가 가능 네 버전의 프리미엄 UX/UI 디자인과 컬렉션 소스 다양한 컴포넌트 UI는
+            색상, 간격, 타이포그래피 등 체계적인 디자인 토큰을 제공하며,
             <br />
-            구성되는 사이트에 쉽고 빠르고 적용 이루어 다양한 레이아웃을 만들 수 있습니다.
+            다양한 프레임워크와 함께 사용할 수 있는 유연한 구조를 갖추고 있습니다.
           </p>
         </div>
 
@@ -117,11 +117,11 @@ export default function Home() {
           <div className={styles.featureIcon}>
             <i className="icon-layers"></i>
           </div>
-          <h3>CSS 프레임워크</h3>
+          <h3>가볍고 빠른 성능</h3>
           <p>
-            순수한 웹 프로젝트 뿐만 아니라 다른
-            프레임워크 자바스크립트 라이브러리와
-            사이트를 쉽고 빠르게 만들 수 있습니다.
+            순수 SCSS로 구성되어 번들 크기가 작고,
+            런타임 오버헤드 없이 빠른 성능을
+            제공합니다.
           </p>
         </div>
 
@@ -129,11 +129,11 @@ export default function Home() {
           <div className={styles.featureIcon}>
             <i className="icon-setting"></i>
           </div>
-          <h3>오픈과 구성 요소</h3>
+          <h3>체계적인 디자인 토큰</h3>
           <p>
-            오픈 프로젝트는 다음 커뮤니티의 참여와
-            컴포넌트 구성요소를 쉽게 다양한 오픈
-            소스를 개선할 수 있습니다.
+            색상, 간격, 타이포그래피, 반경 등
+            디자인 시스템의 모든 요소를 함수로
+            제공하여 일관성 있는 UI를 구축합니다.
           </p>
         </div>
 
@@ -141,11 +141,11 @@ export default function Home() {
           <div className={styles.featureIcon}>
             <i className="icon-hidden"></i>
           </div>
-          <h3>깨끗하고 다크모드 지원</h3>
+          <h3>다크모드 기본 지원</h3>
           <p>
-            깨끗한 UI를 통한 사용자에게는 시각적
-            피로를 줄이고 다양 야간 모드를 지원해
-            기술 응답을 합니다.
+            라이트/다크 모드를 기본으로 지원하며,
+            Warm 톤 설정으로 사용자 환경에
+            최적화된 경험을 제공합니다.
           </p>
         </div>
 
@@ -153,11 +153,11 @@ export default function Home() {
           <div className={styles.featureIcon}>
             <i className="icon-star"></i>
           </div>
-          <h3>단청성 돼 도구에도스</h3>
+          <h3>반응형 그리드 시스템</h3>
           <p>
-            다양한 UI/UX 요소에서는 도구에서
-            커뮤니티 도움을 받으시거나 보안으로
-            프로젝트 용량하게 대응합니다.
+            PC(12), Tablet(6), Mobile(4) 그리드로
+            자동 변환되는 유연한 레이아웃 시스템을
+            통해 모든 기기에 대응합니다.
           </p>
         </div>
       </section>
@@ -165,11 +165,11 @@ export default function Home() {
       {/* API Section */}
       <section className={styles.apiSection}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>디자인 시스템을 위한 API</h2>
+          <h2 className={styles.sectionTitle}>강력한 SCSS 함수 시스템</h2>
           <p className={styles.sectionDescription}>
-            기본적 시스템 구조는 재사용 하면 색상, 간격, 타이포그래피 그외의 등
+            color(), s(), r() 등의 직관적인 함수로 디자인 토큰을 사용할 수 있습니다.
             <br />
-            팀 내 설계된 디자인 시스템으로 구성함과 합쳐져 포함할 수 있습니다.
+            팀 내 일관된 디자인 시스템을 구축하고, 손쉽게 커스터마이징할 수 있습니다.
           </p>
         </div>
 
@@ -207,11 +207,11 @@ export default function Home() {
       {/* Components Section */}
       <section className={styles.componentsSection}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>원하는 구성요소를 조각하세요</h2>
+          <h2 className={styles.sectionTitle}>다양한 UI 컴포넌트 제공</h2>
           <p className={styles.sectionDescription}>
-            내장 웹사이트 컨텐츠를 설정 값이 지정이 유용하게 입니다.
+            버튼, 폼 요소, 테이블, 탭 등 웹 개발에 필요한 필수 컴포넌트를 제공합니다.
             <br />
-            직접적인 디자인 시스템을 위해 다룬 podo.ui에서 이를 자유와 맞춤 모듈로서는 챔페인드로 제공합니다.
+            CSS 클래스 기반으로 작동하여 자유롭게 커스터마이징하고 확장할 수 있습니다.
           </p>
         </div>
 
@@ -223,26 +223,65 @@ export default function Home() {
                 <span className={styles.dot}></span>
                 <span className={styles.dot}></span>
               </div>
-              <div className={styles.browserTab}>user / primary</div>
+              <div className={styles.browserTab}>Components Preview</div>
             </div>
             <div className={styles.componentsGrid}>
-              <div className={styles.componentBox}>
-                <div className={styles.componentLabel}>light</div>
+              <div className={styles.componentDemo}>
+                <div className={styles.componentLabel}>Button</div>
+                <div className={styles.componentExample}>
+                  <button className="primary">Primary</button>
+                  <button className="success">Success</button>
+                  <button className="danger">Danger</button>
+                </div>
               </div>
-              <div className={styles.componentBox}>
-                <div className={styles.componentLabel}>dark</div>
+              <div className={styles.componentDemo}>
+                <div className={styles.componentLabel}>Input</div>
+                <div className={styles.componentExample}>
+                  <input type="text" placeholder="Enter text..." />
+                  <input type="text" className="success" value="Valid input" readOnly />
+                </div>
               </div>
-              <div className={styles.componentBox}>
-                <div className={styles.componentLabel}>color={'{'} primary{'}'}</div>
+              <div className={styles.componentDemo}>
+                <div className={styles.componentLabel}>Select</div>
+                <div className={styles.componentExample}>
+                  <select>
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                    <option>Option 3</option>
+                  </select>
+                </div>
               </div>
-              <div className={styles.componentBox}>
-                <div className={styles.componentLabel}>color{'{'} secondary{'}'}</div>
+              <div className={styles.componentDemo}>
+                <div className={styles.componentLabel}>Checkbox & Radio</div>
+                <div className={styles.componentExample}>
+                  <label>
+                    <input type="checkbox" defaultChecked />
+                    Checkbox
+                  </label>
+                  <label>
+                    <input type="radio" name="demo" defaultChecked />
+                    Radio
+                  </label>
+                </div>
               </div>
-              <div className={styles.componentBox}>
-                <div className={styles.componentLabel}>padding={'{'}2{'}'}</div>
+              <div className={styles.componentDemo}>
+                <div className={styles.componentLabel}>Toggle</div>
+                <div className={styles.componentExample}>
+                  <label>
+                    <input type="checkbox" className="toggle" defaultChecked />
+                    Toggle Switch
+                  </label>
+                </div>
               </div>
-              <div className={styles.componentBox}>
-                <div className={styles.componentLabel}>margin={'{'}3{'}'}</div>
+              <div className={styles.componentDemo}>
+                <div className={styles.componentLabel}>Tab</div>
+                <div className={styles.componentExample}>
+                  <ul className="tabs">
+                    <li className="on">Tab 1</li>
+                    <li>Tab 2</li>
+                    <li>Tab 3</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -255,9 +294,11 @@ export default function Home() {
           <div className={styles.logoContainer}>
             <Image src="/logo.svg" alt="Podo UI" width={48} height={48} />
           </div>
-          <h2 className={styles.ctaTitle}>podo.ui를 응원해주세요</h2>
+          <h2 className={styles.ctaTitle}>Podo UI를 응원해주세요</h2>
           <p className={styles.ctaDescription}>
-            podo.ui 프레젠터로 응원해주시고 누구나 사용할 편리하게 하고
+            오픈소스 프로젝트 Podo UI를 GitHub에서 Star로 응원해주세요.
+            <br />
+            더 많은 분들이 편리하게 사용할 수 있도록 함께 만들어가요!
           </p>
           <a
             href="https://github.com/hada0127/podo-ui"
@@ -265,7 +306,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className={styles.btnPrimary}
           >
-            응원하기
+            GitHub에서 응원하기
           </a>
         </div>
       </section>
