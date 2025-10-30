@@ -58,7 +58,7 @@ export default function Home() {
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>깨끗하고 가벼운 구성요소</h2>
           <p className={styles.sectionDescription}>
-            PODOUI HTML5, SCSS를 UX/UI 디자인 요소를 구현한 웹과
+            HTML5, SCSS를 UX/UI 디자인 요소를 구현한 웹과
             <br />
             로컬 프레임 프로젝트가 가능 네 버전의 프리미엄 UX/UI 디자인과 컬렉션 소스 다양한 컴포넌트 UI는
             <br />

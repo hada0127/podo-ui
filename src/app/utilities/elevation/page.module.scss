@@ -1,0 +1,171 @@
+@use '../../../../mixin' as *;
+
+.section {
+  margin-bottom: s(10);
+
+  h2 {
+    @include display5;
+    margin: 0 0 s(5) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p2;
+    color: color(default-base);
+    line-height: 1.8;
+    margin: 0 0 s(5) 0;
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: color(primary);
+      background: color(primary-fill);
+      padding: 2px 6px;
+      border-radius: r(1);
+    }
+  }
+}
+
+.codeBlock {
+  background: color(default-deep-base);
+  border-radius: r(4);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @include p4-semibold;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: #f8f8f2;
+      white-space: pre;
+    }
+  }
+}
+
+.demo {
+  margin-top: s(5);
+  padding: s(5);
+  background: color(bg-reverse-wb);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+}
+
+.demoTitle {
+  @include p3-semibold;
+  margin-bottom: s(4);
+  color: color(default-deep-base);
+}
+
+.bgGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: s(4);
+}
+
+.bgBox {
+  padding: s(5);
+  border: 1px solid color(border);
+  border-radius: r(3);
+  display: flex;
+  flex-direction: column;
+  gap: s(2);
+
+  strong {
+    @include p3-semibold;
+    color: color(default-deep-base);
+  }
+
+  span {
+    @include p4;
+    color: color(default-base);
+  }
+}
+
+.elevationExample {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: s(5);
+}
+
+.elevationCard {
+  padding: s(5);
+  border-radius: r(4);
+  transition: all 0.3s;
+
+  h3 {
+    @include p2;
+    font-weight: 600;
+    margin: 0 0 s(2) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p3;
+    margin: 0;
+    color: color(default-base);
+  }
+}
+
+.shadowGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: s(4);
+}
+
+.shadowBox {
+  padding: s(5);
+  background: color(bg-modal);
+  border-radius: r(3);
+  text-align: center;
+  @include p3-semibold;
+  color: color(default-deep-base);
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+  }
+}
+
+.cardShowcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: s(5);
+}
+
+.showcaseCard {
+  padding: s(6);
+  background: color(bg-modal);
+  border: 1px solid color(border);
+  border-radius: r(4);
+  transition: all 0.3s;
+
+  h3 {
+    @include p2;
+    font-weight: 600;
+    margin: 0 0 s(3) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p3;
+    margin: 0;
+    color: color(default-base);
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}

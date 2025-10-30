@@ -68,28 +68,25 @@
   color: color(default-deep-base);
 }
 
-.checkboxGroup {
-  display: flex;
-  flex-direction: column;
-  gap: s(3);
-
-  label {
-    display: flex;
-    align-items: center;
-    @include p3;
-    color: color(default-deep-base);
-  }
+.tabContent {
+  margin-top: s(5);
 }
 
-.radioGroup {
-  display: flex;
-  flex-direction: column;
-  gap: s(3);
+.tabPanel {
+  padding: s(5);
+  background: color(bg-modal);
+  border-radius: r(3);
 
-  label {
-    display: flex;
-    align-items: center;
-    @include p3;
+  h3 {
+    @include p1;
+    font-weight: 600;
+    margin: 0 0 s(3) 0;
     color: color(default-deep-base);
+  }
+
+  p {
+    @include p3;
+    margin: 0;
+    color: color(default-base);
   }
 }

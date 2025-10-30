@@ -1,0 +1,160 @@
+@use '../../../../mixin' as *;
+
+.section {
+  margin-bottom: s(10);
+
+  h2 {
+    @include display5;
+    margin: 0 0 s(5) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p2;
+    color: color(default-base);
+    line-height: 1.8;
+    margin: 0 0 s(5) 0;
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: color(primary);
+      background: color(primary-fill);
+      padding: 2px 6px;
+      border-radius: r(1);
+    }
+  }
+}
+
+.codeBlock {
+  background: color(default-deep-base);
+  border-radius: r(4);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @include p4-semibold;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: #f8f8f2;
+      white-space: pre;
+    }
+  }
+}
+
+.demo {
+  margin-top: s(5);
+  padding: s(5);
+  background: color(bg-reverse-wb);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+}
+
+.demoTitle {
+  @include p3-semibold;
+  margin-bottom: s(4);
+  color: color(default-deep-base);
+}
+
+.radiusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: s(4);
+}
+
+.radiusBox {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: s(2);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+
+  div {
+    @include p3-semibold;
+    color: color(primary);
+  }
+
+  span {
+    @include p4;
+    color: color(default-base);
+  }
+}
+
+.buttonExample {
+  display: flex;
+  flex-wrap: wrap;
+  gap: s(4);
+
+  button {
+    padding: s(3) s(5);
+    background: color(primary);
+    color: color(primary-reverse);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    &:hover {
+      background: color(primary-hover);
+    }
+  }
+}
+
+.cardExample {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: s(5);
+}
+
+.card {
+  padding: s(5);
+  border: 1px solid color(border);
+  background: color(bg-modal);
+
+  h3 {
+    @include p2;
+    font-weight: 600;
+    margin: 0 0 s(3) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p3;
+    margin: 0;
+    color: color(default-base);
+  }
+}
+
+.avatarExample {
+  display: flex;
+  gap: s(5);
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+  color: white;
+
+  span {
+    @include p1;
+    font-weight: 600;
+  }
+}

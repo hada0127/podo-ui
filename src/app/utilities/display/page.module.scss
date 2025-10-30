@@ -24,6 +24,23 @@
       border-radius: r(1);
     }
   }
+
+  ul {
+    margin: s(4) 0;
+    padding-left: s(6);
+
+    li {
+      @include p2;
+      color: color(default-base);
+      margin-bottom: s(2);
+      line-height: 1.8;
+
+      strong {
+        font-weight: 600;
+        color: color(default-deep-base);
+      }
+    }
+  }
 }
 
 .codeBlock {
@@ -68,28 +85,53 @@
   color: color(default-deep-base);
 }
 
-.checkboxGroup {
+.hideDemo {
   display: flex;
-  flex-direction: column;
-  gap: s(3);
-
-  label {
-    display: flex;
-    align-items: center;
-    @include p3;
-    color: color(default-deep-base);
-  }
+  flex-wrap: wrap;
+  gap: s(4);
 }
 
-.radioGroup {
-  display: flex;
-  flex-direction: column;
-  gap: s(3);
+.demoBox {
+  padding: s(4) s(6);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: r(3);
+  @include p3-semibold;
+  color: color(primary);
+}
 
-  label {
-    display: flex;
-    align-items: center;
-    @include p3;
-    color: color(default-deep-base);
+.deviceIndicator {
+  display: flex;
+  justify-content: center;
+}
+
+.deviceBox {
+  display: flex;
+  align-items: center;
+  gap: s(4);
+  padding: s(5) s(6);
+  background: color(bg-modal);
+  border: 2px solid color(primary);
+  border-radius: r(4);
+
+  i {
+    font-size: 32px;
+    color: color(primary);
+  }
+
+  div {
+    strong {
+      @include p2;
+      font-weight: 600;
+      display: block;
+      margin-bottom: s(1);
+      color: color(default-deep-base);
+    }
+
+    p {
+      @include p3;
+      margin: 0;
+      color: color(default-base);
+    }
   }
 }

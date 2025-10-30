@@ -1,8 +1,8 @@
 # Podo UI 사용 가이드
 
-> SCSS Module 기반 디자인 시스템
-> 설명서 : https://podoui.com
-> 저장소: https://github.com/hada0127/podo-ui
+> SCSS Module 기반 디자인 시스템  
+> 설명서 : https://podoui.com  
+> 저장소: https://github.com/hada0127/podo-ui  
 
 ---
 

@@ -60,36 +60,11 @@
   background: color(bg-reverse-wb);
   border: 1px solid color(default-outline);
   border-radius: r(4);
+  overflow-x: auto;
 }
 
 .demoTitle {
   @include p3-semibold;
   margin-bottom: s(4);
   color: color(default-deep-base);
-}
-
-.checkboxGroup {
-  display: flex;
-  flex-direction: column;
-  gap: s(3);
-
-  label {
-    display: flex;
-    align-items: center;
-    @include p3;
-    color: color(default-deep-base);
-  }
-}
-
-.radioGroup {
-  display: flex;
-  flex-direction: column;
-  gap: s(3);
-
-  label {
-    display: flex;
-    align-items: center;
-    @include p3;
-    color: color(default-deep-base);
-  }
 }

@@ -68,28 +68,54 @@
   color: color(default-deep-base);
 }
 
-.checkboxGroup {
+.toggleGroup {
   display: flex;
   flex-direction: column;
-  gap: s(3);
+  gap: s(4);
 
   label {
     display: flex;
     align-items: center;
+    gap: s(3);
     @include p3;
     color: color(default-deep-base);
+    cursor: pointer;
   }
 }
 
-.radioGroup {
+.settingsGroup {
   display: flex;
   flex-direction: column;
-  gap: s(3);
+  gap: s(5);
+}
 
-  label {
-    display: flex;
-    align-items: center;
-    @include p3;
+.settingItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: s(4);
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: color(primary);
+  }
+}
+
+.settingInfo {
+  display: flex;
+  flex-direction: column;
+  gap: s(1);
+
+  strong {
+    @include p3-semibold;
     color: color(default-deep-base);
+  }
+
+  span {
+    @include p4;
+    color: color(default-base);
   }
 }
