@@ -1,4 +1,4 @@
-# Podo-UI 사용 가이드
+# Podo UI 사용 가이드
 
 > SCSS Module 기반 디자인 시스템
 > 설명서 : https://podoui.com
@@ -233,7 +233,12 @@ document.documentElement.setAttribute('data-color-tone', 'warm');
 ```html
 <button>기본 버튼</button>
 <button class="primary">Primary 버튼</button>
+<button class="info">Info 버튼</button>
+<button class="success">Success 버튼</button>
+<button class="warning">Warning 버튼</button>
 <button class="danger">Danger 버튼</button>
+<button class="default-deep">Default Deep 버튼</button>
+<button class="link">Link 버튼</button>
 <button disabled>비활성화</button>
 ```
 
@@ -242,12 +247,15 @@ document.documentElement.setAttribute('data-color-tone', 'warm');
 ```html
 <!-- Fill 스타일 (배경색 연함) -->
 <button class="primary-fill">Primary Fill</button>
+<button class="info-fill">Info Fill</button>
 
 <!-- Border 스타일 (테두리만) -->
 <button class="primary-border">Primary Border</button>
+<button class="info-border">Info Border</button>
 
 <!-- Text 스타일 (텍스트만) -->
 <button class="primary-text">Primary Text</button>
+<button class="info-text">Info Text</button>
 ```
 
 ### 버튼 크기 (CSS 직접 지정)
@@ -502,7 +510,9 @@ document.documentElement.setAttribute('data-color-tone', 'warm');
    <Button color="primary">버튼</Button>
 
    // ✅ 올바른 사용 (HTML + CSS 클래스)
-   <button className="primary">버튼</button>
+   <button className="primary">Primary 버튼</button>
+   <button className="info-fill">Info Fill 버튼</button>
+   <button className="danger-border">Danger Border 버튼</button>
    ```
 
 3. **색상 시스템**

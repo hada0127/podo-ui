@@ -1,4 +1,3 @@
-import ThemeToggle from './ThemeToggle';
 import styles from './PageHeader.module.scss';
 
 interface PageHeaderProps {
@@ -13,7 +12,6 @@ export default function PageHeader({ title, description }: PageHeaderProps) {
         <h1>{title}</h1>
         {description && <p>{description}</p>}
       </div>
-      <ThemeToggle />
     </header>
   );
 }

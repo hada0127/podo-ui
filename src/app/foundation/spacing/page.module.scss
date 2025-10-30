@@ -9,13 +9,6 @@
     color: color(default-deep);
   }
 
-  h3 {
-    @include p1;
-    font-weight: 600;
-    margin: s(7) 0 s(4) 0;
-    color: color(default-deep);
-  }
-
   p {
     @include p2;
     color: color(default);
@@ -84,13 +77,6 @@
     display: block;
     margin-bottom: s(2);
   }
-
-  code {
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 2px 6px;
-    border-radius: r(1);
-  }
 }
 
 .demo {
@@ -107,123 +93,166 @@
   color: color(default-deep);
 }
 
-.iconDemo {
+.spacingDemo {
   display: flex;
-  gap: s(5);
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
+  gap: s(4);
 
-  i {
-    font-size: 24px;
-    color: color(default-deep);
+  > div {
+    @include p3;
+    text-align: center;
   }
 }
 
-.buttonDemo {
+.radiusDemo {
   display: flex;
   gap: s(4);
   flex-wrap: wrap;
 
-  button {
-    display: inline-flex;
-    align-items: center;
-    gap: s(2);
-
-    i {
-      font-size: 16px;
-    }
+  > div {
+    @include p3;
+    text-align: center;
   }
 }
 
-.iconGrid {
+.spacingGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: s(4);
   margin-top: s(5);
 }
 
-.iconCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: s(5);
-  background: color(bg-modal);
+.spacingCard {
   border: 1px solid color(default-outline);
   border-radius: r(3);
-  cursor: pointer;
+  padding: s(4);
+  background: color(bg-modal);
   transition: all 0.3s;
 
   &:hover {
     border-color: color(primary);
-    background: color(primary-fill);
-    transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-
-  &:active {
-    transform: translateY(0);
-  }
 }
 
-.iconPreview {
+.spacingInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: s(3);
-
-  i {
-    font-size: 32px;
-    color: color(default-deep);
-  }
 }
 
-.iconName {
-  @include p5;
+.spacingKey {
+  @include p3-semibold;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  color: color(primary);
+}
+
+.spacingValue {
+  @include p4;
   font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
   color: color(default);
-  text-align: center;
-  word-break: break-all;
 }
 
-.categorySection {
-  margin-bottom: s(7);
-
-  h3 {
-    @include p2;
-    font-weight: 600;
-    margin: 0 0 s(4) 0;
-    color: color(default-deep);
-  }
-}
-
-.iconList {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: s(3);
-}
-
-.iconItem {
-  display: flex;
-  align-items: center;
-  gap: s(3);
-  padding: s(3) s(4);
-  background: color(bg-modal);
-  border: 1px solid color(default-outline);
+.spacingPreview {
+  padding: s(3);
+  background: color(bg-elevation-1);
   border-radius: r(2);
+  overflow: hidden;
+}
+
+.spacingBar {
+  height: 24px;
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+  border-radius: r(1);
+  min-width: 2px;
+  max-width: 100%;
+}
+
+.radiusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: s(4);
+  margin-top: s(5);
+}
+
+.radiusCard {
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  padding: s(4);
+  background: color(bg-modal);
   transition: all 0.3s;
 
   &:hover {
     border-color: color(primary);
-    background: color(primary-fill);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
+}
 
-  i {
-    font-size: 20px;
+.radiusInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: s(3);
+}
+
+.radiusKey {
+  @include p3-semibold;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  color: color(primary);
+}
+
+.radiusValue {
+  @include p4;
+  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  color: color(default);
+}
+
+.radiusPreview {
+  padding: s(4);
+  background: color(bg-elevation-1);
+  border-radius: r(2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radiusBox {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+}
+
+.cardExample {
+  padding: s(6);
+  margin-top: s(4);
+  border-radius: r(4);
+  background: color(bg-elevation-1);
+  border: 1px solid color(default-outline);
+}
+
+.cardHeader {
+  margin-bottom: s(4);
+  padding-bottom: s(3);
+  border-bottom: 1px solid color(default-outline);
+
+  h3 {
+    @include display6;
+    margin: 0;
     color: color(default-deep);
-    flex-shrink: 0;
   }
+}
 
-  span {
-    @include p5;
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    color: color(default);
-  }
+.cardContent {
+  @include p3;
+  line-height: 1.6;
+  color: color(default);
+}
+
+.cardFooter {
+  margin-top: s(5);
+  padding-top: s(4);
+  border-top: 1px solid color(default-outline);
+  display: flex;
+  gap: s(3);
 }

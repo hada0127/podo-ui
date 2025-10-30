@@ -22,7 +22,7 @@ export default function Button() {
   return (
     <>
       <PageHeader
-        title="Button"
+        title="버튼"
         description="Podo UI의 버튼 컴포넌트와 다양한 변형 사용법을 안내합니다"
       />
 
@@ -113,32 +113,42 @@ export default function Button() {
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
           <pre><code>{`<!-- Small -->
-<button class="primary" style="padding: 0.5rem 1rem; font-size: 0.875rem">
-  Small Button
+<button class="primary xs">
+  xs Button
 </button>
 
-<!-- Medium (기본) -->
-<button class="primary">
-  Medium Button
+<button class="primary sm">
+  sm Button
 </button>
 
-<!-- Large -->
-<button class="primary" style="padding: 1rem 2rem; font-size: 1.125rem">
-  Large Button
-</button>`}</code></pre>
+<button class="primary md">
+  md Button
+</button>
+
+<button class="primary lg">
+  lg Button
+</button>
+
+`}</code></pre>
         </div>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>실제 예제:</div>
           <div className={styles.sizeDemo}>
-            <button className="primary" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>
-              Small Button
+            <button className="primary xs">
+              xs Button
             </button>
-            <button className="primary">
-              Medium Button
+
+            <button className="primary sm">
+              sm Button
             </button>
-            <button className="primary" style={{ padding: '1rem 2rem', fontSize: '1.125rem' }}>
-              Large Button
+
+            <button className="primary md">
+              md Button
+            </button>
+
+            <button className="primary lg">
+              lg Button
             </button>
           </div>
         </div>

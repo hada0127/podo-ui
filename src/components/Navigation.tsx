@@ -8,7 +8,7 @@ import styles from './Navigation.module.scss';
 
 const menuItems = [
   {
-    title: 'Getting Started',
+    title: '시작하기',
     items: [
       { label: '소개', path: '/' },
       { label: '설치', path: '/getting-started/installation' },
@@ -16,7 +16,7 @@ const menuItems = [
     ],
   },
   {
-    title: 'Foundation',
+    title: '기초',
     items: [
       { label: '컬러', path: '/foundation/colors' },
       { label: '타이포그래피', path: '/foundation/typography' },
@@ -25,36 +25,36 @@ const menuItems = [
     ],
   },
   {
-    title: 'Layout',
+    title: '레이아웃',
     items: [
       { label: '그리드', path: '/layout/grid' },
       { label: '반응형', path: '/layout/responsive' },
     ],
   },
   {
-    title: 'Components',
+    title: '컴포넌트',
     items: [
       { label: '버튼', path: '/components/button' },
-      { label: 'Input', path: '/components/input' },
-      { label: 'Textarea', path: '/components/textarea' },
-      { label: 'Select', path: '/components/select' },
-      { label: 'Checkbox & Radio', path: '/components/checkbox-radio' },
-      { label: 'Toggle', path: '/components/toggle' },
-      { label: 'File Upload', path: '/components/file' },
-      { label: 'Editor', path: '/components/editor' },
-      { label: 'Field', path: '/components/field' },
-      { label: 'Table', path: '/components/table' },
-      { label: 'Tab', path: '/components/tab' },
-      { label: 'Pagination', path: '/components/pagination' },
+      { label: '입력', path: '/components/input' },
+      { label: '텍스트 영역', path: '/components/textarea' },
+      { label: '선택', path: '/components/select' },
+      { label: '체크박스 & 라디오', path: '/components/checkbox-radio' },
+      { label: '토글', path: '/components/toggle' },
+      { label: '파일 업로드', path: '/components/file' },
+      { label: '에디터', path: '/components/editor' },
+      { label: '필드', path: '/components/field' },
+      { label: '테이블', path: '/components/table' },
+      { label: '탭', path: '/components/tab' },
+      { label: '페이지네이션', path: '/components/pagination' },
     ],
   },
   {
-    title: 'Utilities',
+    title: '유틸리티',
     items: [
-      { label: 'Border', path: '/utilities/border' },
-      { label: 'Border Radius', path: '/utilities/radius' },
-      { label: 'Background & Elevation', path: '/utilities/elevation' },
-      { label: 'Display & Visibility', path: '/utilities/display' },
+      { label: '테두리', path: '/utilities/border' },
+      { label: '모서리 반경', path: '/utilities/radius' },
+      { label: '배경 & 입체감', path: '/utilities/elevation' },
+      { label: '표시 & 가시성', path: '/utilities/display' },
     ],
   },
 ];

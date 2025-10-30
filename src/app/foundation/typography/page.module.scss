@@ -1,0 +1,148 @@
+@use '../../../../mixin' as *;
+
+.section {
+  margin-bottom: s(10);
+
+  h2 {
+    @include display5;
+    margin: 0 0 s(5) 0;
+    color: color(default-deep);
+  }
+
+  p {
+    @include p2;
+    color: color(default);
+    line-height: 1.8;
+    margin: 0 0 s(5) 0;
+  }
+}
+
+.codeBlock {
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: color(bg-elevation-1);
+    border-bottom: 1px solid color(default-outline);
+    @include p4;
+    font-weight: 600;
+    color: color(default-deep);
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+    background: color(bg-elevation);
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: color(default-deep);
+      white-space: pre;
+    }
+  }
+}
+
+.note {
+  display: flex;
+  gap: s(4);
+  padding: s(5);
+  border-radius: r(4);
+  margin-bottom: s(5);
+  background: color(info-fill);
+  border: 1px solid color(info-outline);
+  color: color(info);
+
+  > i {
+    font-size: 20px;
+    flex-shrink: 0;
+    color: color(info);
+  }
+
+  strong {
+    display: block;
+    margin-bottom: s(2);
+  }
+}
+
+.typeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: s(5);
+  margin-top: s(6);
+}
+
+.typeCard {
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+  overflow: hidden;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: color(primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.typePreview {
+  padding: s(6);
+  background: color(bg-elevation-1);
+  border-bottom: 1px solid color(default-outline);
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  > div {
+    color: color(default-deep);
+  }
+}
+
+.typeInfo {
+  padding: s(5);
+
+  h3 {
+    @include p2;
+    font-weight: 600;
+    margin: 0 0 s(3) 0;
+    color: color(primary);
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+  }
+}
+
+.typeSpecs {
+  @include p4;
+  color: color(default);
+
+  > div {
+    margin-bottom: s(2);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    strong {
+      font-weight: 600;
+      color: color(default-deep);
+    }
+  }
+}
+
+.demo {
+  margin-top: s(5);
+  padding: s(5);
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+}
+
+.demoTitle {
+  @include p3-semibold;
+  margin-bottom: s(4);
+  color: color(default-deep);
+}

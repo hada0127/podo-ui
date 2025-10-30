@@ -26,7 +26,7 @@ export default function Colors() {
   return (
     <>
       <PageHeader
-        title="Colors"
+        title="컬러"
         description="Podo UI의 시맨틱 컬러 시스템과 테마 사용법을 안내합니다"
       />
 
@@ -82,9 +82,9 @@ export default function Colors() {
 
 .button {
   // 기본 색상
-  background: color(primary-base);
+  background: color(primary);
   color: color(primary-reverse);
-  border: 1px solid color(primary-base);
+  border: 1px solid color(primary);
 
   // 호버 상태
   &:hover {
@@ -106,7 +106,7 @@ export default function Colors() {
 // Fill 스타일 버튼
 .buttonFill {
   background: color(primary-fill);
-  color: color(primary-base);
+  color: color(primary);
   border: 1px solid color(primary-outline);
 }`}</code></pre>
         </div>
