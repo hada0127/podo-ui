@@ -3,7 +3,7 @@
 import Field from '../../../../react/molecule/field';
 import styles from '../input/page.module.scss';
 
-export default function Field() {
+export default function FieldPage() {
   return (
     <>
       <section className={styles.section}>
