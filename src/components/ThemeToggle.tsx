@@ -10,13 +10,21 @@ export default function ThemeToggle() {
     const savedMode = localStorage.getItem('color-mode') as '' | 'light' | 'dark';
     if (savedMode) {
       setMode(savedMode);
-      document.documentElement.setAttribute('data-color-mode', savedMode);
+      if (savedMode === '') {
+        document.documentElement.removeAttribute('data-color-mode');
+      } else {
+        document.documentElement.setAttribute('data-color-mode', savedMode);
+      }
     }
   }, []);
 
   const handleModeChange = (newMode: '' | 'light' | 'dark') => {
     setMode(newMode);
-    document.documentElement.setAttribute('data-color-mode', newMode);
+    if (newMode === '') {
+      document.documentElement.removeAttribute('data-color-mode');
+    } else {
+      document.documentElement.setAttribute('data-color-mode', newMode);
+    }
     localStorage.setItem('color-mode', newMode);
   };
 

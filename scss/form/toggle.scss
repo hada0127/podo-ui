@@ -53,6 +53,22 @@
     outline: 4px solid color('primary-outline');
   }
 }
+
+// Auto mode: Follow system preference
+@media (prefers-color-scheme: dark) {
+  :root:not([data-color-mode='light']) {
+    .toggle {
+      &:checked:disabled {
+        background-color: #4c7295;
+        cursor: not-allowed !important;
+      }
+      &:checked:disabled::before {
+        background-color: #d9d9d9;
+      }
+    }
+  }
+}
+
 // 다크모드
 html[data-color-mode='dark'] {
   .toggle {

@@ -41,6 +41,20 @@ $shadow: (
   }
 }
 
+// Auto mode: Follow system preference
+@media (prefers-color-scheme: dark) {
+  :root:not([data-color-mode='light']) {
+    .bg-elevation {
+      &-2 {
+        box-shadow: none;
+      }
+      &-3 {
+        box-shadow: none;
+      }
+    }
+  }
+}
+
 html[data-color-mode='dark'] {
   .bg-elevation {
     &-2 {
