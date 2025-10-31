@@ -66,10 +66,19 @@
     .brandName {
       display: block;
       font-weight: 700;
-      background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #3b82f6 100%);
+      background: linear-gradient(
+        90deg,
+        #8B5CF6 0%,
+        #E75C9C 25%,
+        #1EACDC 50%,
+        #72C7CE 75%,
+        #8B5CF6 100%
+      );
+      background-size: 300% 300%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      animation: gradientShift 8s ease infinite;
       margin-top: s(3);
 
       @media (max-width: 768px) {
@@ -845,5 +854,17 @@
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
