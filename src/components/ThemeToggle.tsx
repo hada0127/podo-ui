@@ -7,8 +7,8 @@ export default function ThemeToggle() {
   const [mode, setMode] = useState<'' | 'light' | 'dark'>('');
 
   useEffect(() => {
-    const savedMode = localStorage.getItem('color-mode') as '' | 'light' | 'dark';
-    if (savedMode) {
+    const savedMode = localStorage.getItem('color-mode') as '' | 'light' | 'dark' | null;
+    if (savedMode !== null) {
       setMode(savedMode);
       if (savedMode === '') {
         document.documentElement.removeAttribute('data-color-mode');
