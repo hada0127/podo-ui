@@ -375,7 +375,7 @@ export default function Home() {
           <div className={styles.footerLogo}>
             <Image src="/logo.svg" alt="Podo UI" width={24} height={24} />
           </div>
-          <p className={styles.footerText}>Made by <a href="https://www.instagram.com/figma_slot" target="_blank">전예진</a> · <a href="https://github.com/hada0127">이은규</a> MIT. Podo UI 2023</p>
+          <p className={styles.footerText}>Made by <a href="https://www.instagram.com/figma_slot" target="_blank">전예진</a> · <a href="https://github.com/hada0127" target="_blank">이은규</a> MIT. Podo UI 2023</p>
         </div>
       </footer>
     </div>
