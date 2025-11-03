@@ -1,4 +1,110 @@
+'use client';
+
 import styles from './page.module.scss';
+import { ToastProvider, useToast } from '../../../../react/molecule/toast-provider';
+
+function ToastExamples() {
+  const { showToast } = useToast();
+
+  const examples = [
+    {
+      label: 'Type 01 - Success (Top Right)',
+      onClick: () => {
+        showToast({
+          header: '성공',
+          message: '파일이 성공적으로 업로드되었습니다!',
+          variant: 'success',
+          type: 'type01',
+          position: 'top-right',
+          duration: 3000,
+        });
+      },
+    },
+    {
+      label: 'Type 02 - Info (Top Center)',
+      onClick: () => {
+        showToast({
+          header: '알림',
+          message: '새로운 메시지가 있습니다',
+          variant: 'info',
+          type: 'type02',
+          position: 'top-center',
+          duration: 3000,
+        });
+      },
+    },
+    {
+      label: 'Type 01 Long - Warning (Bottom Right)',
+      onClick: () => {
+        showToast({
+          message: '저장되지 않은 변경사항이 있습니다',
+          variant: 'warning',
+          type: 'type01',
+          long: true,
+          position: 'bottom-right',
+          duration: 4000,
+        });
+      },
+    },
+    {
+      label: 'Type 02 Long - Danger (Bottom Center)',
+      onClick: () => {
+        showToast({
+          message: '오류가 발생했습니다',
+          variant: 'danger',
+          type: 'type02',
+          long: true,
+          position: 'bottom-center',
+          duration: 3000,
+        });
+      },
+    },
+    {
+      label: 'Primary - Center (수동 닫기)',
+      onClick: () => {
+        showToast({
+          header: '중요 알림',
+          message: '이 메시지는 닫기 버튼을 눌러야 닫힙니다',
+          variant: 'primary',
+          type: 'type01',
+          position: 'center',
+          duration: 0,
+          width: 400,
+        });
+      },
+    },
+    {
+      label: 'Custom Width - Bottom Left',
+      onClick: () => {
+        showToast({
+          header: '넓은 토스트',
+          message: '너비를 500px로 지정한 토스트입니다',
+          variant: 'info',
+          type: 'type02',
+          position: 'bottom-left',
+          duration: 3000,
+          width: 500,
+        });
+      },
+    },
+  ];
+
+  return (
+    <div className={styles.examplesSection}>
+      <div className={styles.examplesGrid}>
+        {examples.map((example, index) => (
+          <button
+            key={index}
+            className="primary"
+            onClick={example.onClick}
+          >
+            {example.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Toast() {
   const variants = [
@@ -11,11 +117,12 @@ export default function Toast() {
   ];
 
   return (
-    <>
-      <section className={styles.section}>
-        <h1>토스트</h1>
-        <p>사용자에게 알림이나 피드백을 전달하는 Toast 컴포넌트입니다</p>
-      </section>
+    <ToastProvider>
+      <>
+        <section className={styles.section}>
+          <h1>토스트</h1>
+          <p>사용자에게 알림이나 피드백을 전달하는 Toast 컴포넌트입니다</p>
+        </section>
 
       <section className={styles.section}>
         <h2>기본 사용법</h2>
@@ -435,6 +542,125 @@ export default function Toast() {
       </section>
 
       <section className={styles.section}>
+        <h2>React 컴포넌트 예제</h2>
+        <p>버튼을 클릭하여 다양한 Toast 스타일을 확인해보세요:</p>
+
+        <ToastExamples />
+      </section>
+
+      <section className={styles.section}>
+        <h2>React에서 사용하기</h2>
+        <p>React 애플리케이션에서 Toast 컴포넌트를 사용할 수 있습니다.</p>
+
+        <h3>1. ToastProvider 설정</h3>
+        <p>먼저 애플리케이션의 최상위에 ToastProvider를 추가합니다:</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>app/layout.tsx</div>
+          <pre><code>{`import { ToastProvider } from 'podo-ui/react/molecule/toast-provider';
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <ToastProvider>
+          {children}
+        </ToastProvider>
+      </body>
+    </html>
+  );
+}`}</code></pre>
+        </div>
+
+        <h3>2. useToast Hook 사용</h3>
+        <p>컴포넌트에서 useToast hook을 사용하여 토스트를 표시합니다:</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>component.tsx</div>
+          <pre><code>{`import { useToast } from 'podo-ui/react/molecule/toast-provider';
+
+function MyComponent() {
+  const { showToast } = useToast();
+
+  const handleClick = () => {
+    showToast({
+      message: '저장되었습니다!',
+      header: '성공',
+      variant: 'success',
+      type: 'type01',
+      position: 'top-right',
+      duration: 3000,
+    });
+  };
+
+  return <button onClick={handleClick}>저장</button>;
+}`}</code></pre>
+        </div>
+
+        <h3>3. Toast 옵션</h3>
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>TypeScript</div>
+          <pre><code>{`interface ToastOptions {
+  message: string;           // 필수: 토스트 메시지
+  header?: string;           // 선택: 헤더 텍스트 (long일 때는 표시 안됨)
+  variant?: 'default' | 'primary' | 'info' | 'success' | 'warning' | 'danger';
+  type?: 'type01' | 'type02'; // type01: 강조 테두리, type02: 외곽선
+  long?: boolean;            // true: 가로 레이아웃
+  duration?: number;         // 자동 닫힘 시간(ms), 0이면 자동으로 닫히지 않음
+  width?: string | number;   // 너비 (기본: auto)
+  position?: 'top-left' | 'top-center' | 'top-right'
+           | 'center-left' | 'center' | 'center-right'
+           | 'bottom-left' | 'bottom-center' | 'bottom-right';
+}`}</code></pre>
+        </div>
+
+        <h3>4. 사용 예제</h3>
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>TypeScript</div>
+          <pre><code>{`// Type 01 (강조 테두리)
+showToast({
+  message: '파일이 업로드되었습니다',
+  variant: 'success',
+  position: 'top-right',
+});
+
+// Type 02 (전체 외곽선)
+showToast({
+  header: '알림',
+  message: '새로운 메시지가 있습니다',
+  variant: 'info',
+  type: 'type02',
+  position: 'bottom-center',
+});
+
+// Long 스타일
+showToast({
+  message: '저장 완료',
+  variant: 'success',
+  long: true,
+  position: 'bottom-right',
+  duration: 2000,
+});
+
+// 너비 지정
+showToast({
+  message: '이것은 넓은 토스트입니다',
+  width: 400,
+  position: 'top-center',
+});
+
+// 자동으로 닫히지 않음
+showToast({
+  header: '중요 알림',
+  message: '이 메시지는 수동으로 닫아야 합니다',
+  variant: 'warning',
+  duration: 0,
+  position: 'center',
+});`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
         <h2>SCSS에서 사용하기</h2>
         <p>SCSS 모듈에서 토스트 스타일을 커스터마이징할 수 있습니다:</p>
 
@@ -481,6 +707,7 @@ export default function Toast() {
 }`}</code></pre>
         </div>
       </section>
-    </>
+      </>
+    </ToastProvider>
   );
 }
