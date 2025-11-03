@@ -1,0 +1,218 @@
+@use '../color/function' as *;
+@use '../layout/spacing' as *;
+@use '../layout/radius' as *;
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: s(3);
+  padding: s(4) s(5);
+  border-radius: r(1);
+  background-color: color('bg-elevation-1');
+  border: none;
+  border-top: 4px solid color('border');
+  position: relative;
+  min-width: 320px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  // Icon area
+  .toast-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+  // Content area
+  .toast-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: s(1);
+  }
+
+  .toast-header {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.6;
+    color: color('text-body');
+  }
+
+  .toast-body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: color('text-body');
+  }
+
+  // Close button
+  .toast-close {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: color('text-action');
+    background: none;
+    border: none;
+    padding: 0;
+
+    &:hover {
+      color: color('text-action-hover');
+    }
+
+    i {
+      font-size: 16px;
+    }
+  }
+
+  // Long variant (horizontal layout, left border)
+  &.toast-long {
+    .toast-content {
+      flex-direction: row;
+      align-items: center;
+      gap: s(2);
+    }
+
+    .toast-header {
+      display: none;
+    }
+
+    .toast-body {
+      white-space: nowrap;
+    }
+
+    &:not(.toast-border) {
+      border-top: none;
+      border-left: 4px solid color('border');
+    }
+  }
+
+  // Type 02 - Only full outline border (no thick colored border)
+  &.toast-border {
+    border: 1px solid color('border');
+
+    &.toast-long {
+      border: 1px solid color('border');
+      border-top: 1px solid color('border');
+    }
+  }
+
+  // Color variants
+  &.info {
+    background-color: color('info-fill');
+    border-top-color: color('info');
+
+    .toast-icon {
+      color: color('info');
+    }
+
+    &.toast-long:not(.toast-border) {
+      border-top: none;
+      border-left-color: color('info');
+    }
+
+    &.toast-border {
+      border-color: color('info');
+    }
+  }
+
+  &.success {
+    background-color: color('success-fill');
+    border-top-color: color('success');
+
+    .toast-icon {
+      color: color('success');
+    }
+
+    &.toast-long:not(.toast-border) {
+      border-top: none;
+      border-left-color: color('success');
+    }
+
+    &.toast-border {
+      border-color: color('success');
+    }
+  }
+
+  &.warning {
+    background-color: color('warning-fill');
+    border-top-color: color('warning');
+
+    .toast-icon {
+      color: color('warning');
+    }
+
+    &.toast-long:not(.toast-border) {
+      border-top: none;
+      border-left-color: color('warning');
+    }
+
+    &.toast-border {
+      border-color: color('warning');
+    }
+  }
+
+  &.danger {
+    background-color: color('danger-fill');
+    border-top-color: color('danger');
+
+    .toast-icon {
+      color: color('danger');
+    }
+
+    &.toast-long:not(.toast-border) {
+      border-top: none;
+      border-left-color: color('danger');
+    }
+
+    &.toast-border {
+      border-color: color('danger');
+    }
+  }
+
+  // Default variant (gray)
+  &.default {
+    background-color: color('default-fill');
+    border-top-color: color('default-deep');
+
+    .toast-icon {
+      color: color('text-action');
+    }
+
+    &.toast-long:not(.toast-border) {
+      border-top: none;
+      border-left-color: color('default-deep');
+    }
+
+    &.toast-border {
+      border-color: color('default-pressed');
+    }
+  }
+
+  // Primary variant
+  &.primary {
+    background-color: color('primary-fill');
+    border-top-color: color('primary');
+
+    .toast-icon {
+      color: color('primary');
+    }
+
+    &.toast-long:not(.toast-border) {
+      border-top: none;
+      border-left-color: color('primary');
+    }
+
+    &.toast-border {
+      border-color: color('primary');
+    }
+  }
+}

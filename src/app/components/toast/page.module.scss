@@ -1,0 +1,135 @@
+@use '../../../../mixin' as *;
+@use '../../common-page' as *;
+
+.section {
+  @include section-responsive;
+}
+
+.codeBlock {
+  max-width: 100%;
+  background: color(default-deep-base);
+  border-radius: r(4);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @include p4-semibold;
+    color: rgba(255, 255, 255, 0.7);
+
+    word-break: break-word;
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+
+    code {
+      @include p3;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      color: #f8f8f2;
+      white-space: pre;
+
+      display: block;
+      max-width: 100%;
+
+      @media (max-width: 768px) {
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+    }
+  }
+}
+
+// Demo
+.demo {
+  margin-top: s(5);
+  padding: s(5);
+  background: color(bg-reverse-wb);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+}
+
+.demoTitle {
+  @include p3-semibold;
+  margin-bottom: s(4);
+  color: color(default-deep-base);
+}
+
+// Toast Group
+.toastGroup {
+  display: flex;
+  flex-direction: column;
+  gap: s(4);
+
+  .toast {
+    max-width: 500px;
+  }
+}
+
+// Variants Showcase
+.variantsShowcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: s(5);
+  margin: s(6) 0;
+}
+
+.variantCard {
+  padding: s(5);
+  background: transparent;
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: color(primary-base);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.variantHeader {
+  margin-bottom: s(4);
+
+  h3 {
+    @include p2; font-weight: 600;
+    margin: 0 0 s(2) 0;
+    color: color(default-deep-base);
+  }
+
+  p {
+    @include p4;
+    margin: 0 0 s(4) 0;
+    color: color(default-base);
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
+  }
+}
+
+.variantExamples {
+  display: flex;
+  flex-direction: column;
+  gap: s(3);
+
+  .toast {
+    width: 100%;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .variantsShowcase {
+    grid-template-columns: 1fr;
+  }
+
+  .toastGroup {
+    .toast {
+      max-width: 100%;
+    }
+  }
+}

@@ -48,6 +48,7 @@ const menuItems = [
       { label: '테이블', path: '/components/table' },
       { label: '탭', path: '/components/tab' },
       { label: '페이지네이션', path: '/components/pagination' },
+      { label: '토스트', path: '/components/toast' },
     ],
   },
   {
