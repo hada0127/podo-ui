@@ -1,6 +1,6 @@
 {
   "name": "podo-ui",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "author": "hada0127 <work@tarucy.net>",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sass": "^1.83.0",
-    "suneditor": "^2.47.1",
+    "suneditor": "^2.47.8",
     "uuid": "^11.0.3",
     "zod": "^3.23.8"
   },
