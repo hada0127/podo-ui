@@ -68,7 +68,7 @@ const SunEditor = ({
   };
   const toolbar = [
     ['undo', 'redo'],
-    ['formatBlock', 'bold', 'underline', 'italic', 'strike'],
+    ['fontSize','formatBlock', 'bold', 'underline', 'italic', 'strike'],
     ['fontColor', 'hiliteColor'],
     ['align', 'list', 'table'],
     ['link', 'image', 'video'],
@@ -104,48 +104,6 @@ const SunEditor = ({
       'h3',
       'p',
       'blockquote',
-      {
-        tag: 'p',
-        name: 'Display 1',
-        command: 'replace',
-        class: '__se__format__replace_display1',
-      },
-      {
-        tag: 'p',
-        name: 'Display 2',
-        command: 'replace',
-        class: '__se__format__replace_display2',
-      },
-      {
-        tag: 'p',
-        name: 'Display 3',
-        command: 'replace',
-        class: '__se__format__replace_display3',
-      },
-      {
-        tag: 'p',
-        name: 'Display 4',
-        command: 'replace',
-        class: '__se__format__replace_display4',
-      },
-      {
-        tag: 'p',
-        name: 'Display 5',
-        command: 'replace',
-        class: '__se__format__replace_display5',
-      },
-      {
-        tag: 'p',
-        name: 'Display 6',
-        command: 'replace',
-        class: '__se__format__replace_display6',
-      },
-      {
-        tag: 'p',
-        name: 'Display 7',
-        command: 'replace',
-        class: '__se__format__replace_display7',
-      },
     ],
     resizingBar: false,
     imageUploadUrl,
