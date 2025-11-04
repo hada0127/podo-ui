@@ -57,6 +57,12 @@ const Wysiwyg = ({
   const [isYoutubeDropdownOpen, setIsYoutubeDropdownOpen] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [savedYoutubeSelection, setSavedYoutubeSelection] = useState<Range | null>(null);
+  const [youtubeWidth, setYoutubeWidth] = useState('100%'); // 기본값 100%
+  const [youtubeAlign, setYoutubeAlign] = useState('center'); // 기본값 가운데
+  const [selectedYoutube, setSelectedYoutube] = useState<HTMLElement | null>(null); // 선택된 유튜브
+  const [isYoutubeEditPopupOpen, setIsYoutubeEditPopupOpen] = useState(false); // 유튜브 편집 팝업
+  const [editYoutubeWidth, setEditYoutubeWidth] = useState('100%'); // 편집 중인 유튜브 크기
+  const [editYoutubeAlign, setEditYoutubeAlign] = useState('center'); // 편집 중인 유튜브 정렬
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const paragraphButtonRef = useRef<HTMLDivElement>(null);
@@ -568,6 +574,36 @@ const Wysiwyg = ({
       return;
     }
 
+    // 유튜브 편집 팝업 클릭은 무시
+    if (target.closest(`.${styles.youtubeEditPopup}`)) {
+      return;
+    }
+
+    // 유튜브 오버레이 클릭 감지
+    if ((target.classList.contains('youtube-overlay') || target.closest('.youtube-container')) && editorRef.current?.contains(target)) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const youtubeContainer = target.closest('.youtube-container') as HTMLElement;
+      if (youtubeContainer) {
+        // 이미 선택된 유튜브가 아닌 경우에만 선택
+        if (selectedYoutube !== youtubeContainer) {
+          // 기존 선택 해제
+          if (selectedYoutube) {
+            deselectYoutube();
+          }
+          if (selectedImage) {
+            deselectImage();
+          }
+          selectYoutube(youtubeContainer);
+        } else {
+          // 같은 유튜브를 다시 클릭하면 편집창 토글
+          setIsYoutubeEditPopupOpen(!isYoutubeEditPopupOpen);
+        }
+      }
+      return;
+    }
+
     // 이미지 요소인지 확인
     if (target.tagName === 'IMG' && editorRef.current?.contains(target)) {
       e.preventDefault();
@@ -579,6 +615,9 @@ const Wysiwyg = ({
         // 기존 선택 해제
         if (selectedImage) {
           deselectImage();
+        }
+        if (selectedYoutube) {
+          deselectYoutube();
         }
         selectImage(img);
       } else {
@@ -592,6 +631,11 @@ const Wysiwyg = ({
     // image-wrapper 또는 리사이즈 핸들이 아닌 경우
     if (selectedImage && !target.closest('.image-wrapper')) {
       deselectImage();
+    }
+
+    // 기존 선택된 유튜브가 있으면 선택 해제
+    if (selectedYoutube && !target.closest('.youtube-wrapper')) {
+      deselectYoutube();
     }
 
     // 링크 요소인지 확인
@@ -840,6 +884,247 @@ const Wysiwyg = ({
     return null;
   };
 
+  // YouTube 선택
+  const selectYoutube = (youtubeContainer: HTMLElement) => {
+    // 기존 선택 해제
+    if (selectedYoutube) {
+      deselectYoutube();
+    }
+    if (selectedImage) {
+      deselectImage();
+    }
+
+    setSelectedYoutube(youtubeContainer);
+
+    // 유튜브 주위에 wrapper 추가
+    const wrapper = document.createElement('div');
+    wrapper.className = 'youtube-wrapper';
+    wrapper.style.position = 'relative';
+    wrapper.style.border = '2px solid #0084ff';
+    wrapper.style.padding = '0';
+
+    // wrapper를 유튜브 컨테이너와 동일한 display 속성으로 설정
+    const computedStyle = window.getComputedStyle(youtubeContainer);
+    wrapper.style.display = computedStyle.display;
+    wrapper.style.width = computedStyle.width;
+
+    // 원본 스타일 저장 (나중에 복원용)
+    youtubeContainer.dataset.originalWidth = youtubeContainer.style.width;
+    youtubeContainer.dataset.originalDisplay = youtubeContainer.style.display;
+
+    // 리사이즈 핸들 추가 (8개 포인트)
+    const handles = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    handles.forEach(handle => {
+      const handleDiv = document.createElement('div');
+      handleDiv.className = `resize-handle resize-handle-${handle}`;
+      handleDiv.dataset.handle = handle;
+      handleDiv.style.position = 'absolute';
+      handleDiv.style.width = '8px';
+      handleDiv.style.height = '8px';
+      handleDiv.style.backgroundColor = '#0084ff';
+      handleDiv.style.border = '1px solid white';
+      handleDiv.style.borderRadius = '2px';
+      handleDiv.style.cursor = `${handle}-resize`;
+
+      // 핸들 위치 설정
+      switch(handle) {
+        case 'nw': handleDiv.style.top = '-5px'; handleDiv.style.left = '-5px'; break;
+        case 'n': handleDiv.style.top = '-5px'; handleDiv.style.left = '50%'; handleDiv.style.transform = 'translateX(-50%)'; break;
+        case 'ne': handleDiv.style.top = '-5px'; handleDiv.style.right = '-5px'; break;
+        case 'e': handleDiv.style.top = '50%'; handleDiv.style.right = '-5px'; handleDiv.style.transform = 'translateY(-50%)'; break;
+        case 'se': handleDiv.style.bottom = '-5px'; handleDiv.style.right = '-5px'; break;
+        case 's': handleDiv.style.bottom = '-5px'; handleDiv.style.left = '50%'; handleDiv.style.transform = 'translateX(-50%)'; break;
+        case 'sw': handleDiv.style.bottom = '-5px'; handleDiv.style.left = '-5px'; break;
+        case 'w': handleDiv.style.top = '50%'; handleDiv.style.left = '-5px'; handleDiv.style.transform = 'translateY(-50%)'; break;
+      }
+
+      // 리사이즈 이벤트 핸들러
+      handleDiv.onmousedown = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        startYoutubeResize(e, youtubeContainer, handle);
+      };
+
+      wrapper.appendChild(handleDiv);
+    });
+
+    // 유튜브를 wrapper로 감싸기
+    const parent = youtubeContainer.parentNode;
+    parent?.insertBefore(wrapper, youtubeContainer);
+    wrapper.appendChild(youtubeContainer);
+
+    // 편집 팝업 데이터 설정
+    // 컨테이너 크기 확인
+    if (youtubeContainer.style.width) {
+      if (youtubeContainer.style.width === '560px') {
+        setEditYoutubeWidth('original');
+      } else if (youtubeContainer.style.width.includes('%')) {
+        setEditYoutubeWidth(youtubeContainer.style.width);
+      } else {
+        // px 값을 %로 변환
+        const parentWidth = editorRef.current?.offsetWidth || window.innerWidth;
+        const containerWidth = parseInt(youtubeContainer.style.width);
+        const percentage = Math.round((containerWidth / parentWidth) * 100);
+
+        if (percentage >= 95) {
+          setEditYoutubeWidth('100%');
+        } else if (percentage >= 70 && percentage <= 80) {
+          setEditYoutubeWidth('75%');
+        } else if (percentage >= 45 && percentage <= 55) {
+          setEditYoutubeWidth('50%');
+        } else {
+          setEditYoutubeWidth(`${percentage}%`);
+        }
+      }
+    } else {
+      setEditYoutubeWidth('100%');
+    }
+
+    // 정렬 확인
+    let alignContainer = youtubeContainer.parentElement;
+    let currentAlign = 'center';
+    while (alignContainer && alignContainer !== editorRef.current) {
+      if (alignContainer.tagName === 'DIV' && alignContainer.style.textAlign) {
+        currentAlign = alignContainer.style.textAlign;
+        break;
+      }
+      alignContainer = alignContainer.parentElement;
+    }
+    setEditYoutubeAlign(currentAlign);
+
+    // 약간의 지연 후 편집창 열기
+    setTimeout(() => {
+      setIsYoutubeEditPopupOpen(true);
+    }, 50);
+  };
+
+  // YouTube 선택 해제
+  const deselectYoutube = () => {
+    if (!selectedYoutube) return;
+
+    // 원본 스타일 복원
+    if (selectedYoutube.dataset.originalWidth !== undefined) {
+      selectedYoutube.style.width = selectedYoutube.dataset.originalWidth;
+      delete selectedYoutube.dataset.originalWidth;
+    }
+    if (selectedYoutube.dataset.originalDisplay !== undefined) {
+      selectedYoutube.style.display = selectedYoutube.dataset.originalDisplay;
+      delete selectedYoutube.dataset.originalDisplay;
+    }
+
+    // wrapper 제거
+    const wrapper = selectedYoutube.parentElement;
+    if (wrapper && wrapper.classList.contains('youtube-wrapper')) {
+      const parent = wrapper.parentNode;
+      if (parent) {
+        try {
+          parent.insertBefore(selectedYoutube, wrapper);
+          wrapper.remove();
+        } catch (e) {
+          // 이미 제거된 경우 무시
+        }
+      }
+    }
+
+    // 상태 초기화
+    setSelectedYoutube(null);
+    setIsYoutubeEditPopupOpen(false);
+  };
+
+  // YouTube 리사이즈 시작
+  const startYoutubeResize = (e: MouseEvent, container: HTMLElement, handle: string) => {
+    // 컨테이너의 실제 크기를 가져옴 (getBoundingClientRect로 실제 픽셀 크기 가져오기)
+    const rect = container.getBoundingClientRect();
+    const currentWidth = rect.width;
+    const currentHeight = rect.height || (currentWidth / (16/9)); // height가 없으면 16:9 비율로 계산
+
+    setIsResizing(true);
+    setResizeStartData({
+      startX: e.clientX,
+      startY: e.clientY,
+      startWidth: currentWidth,
+      startHeight: currentHeight,
+      handle
+    });
+  };
+
+  // YouTube 편집 적용
+  const applyYoutubeEdit = () => {
+    if (!selectedYoutube) return;
+
+    // 크기 적용
+    if (editYoutubeWidth === '100%') {
+      selectedYoutube.style.width = '100%';
+    } else if (editYoutubeWidth === '75%') {
+      selectedYoutube.style.width = '75%';
+    } else if (editYoutubeWidth === '50%') {
+      selectedYoutube.style.width = '50%';
+    } else if (editYoutubeWidth === 'original') {
+      selectedYoutube.style.width = '560px';
+    } else {
+      selectedYoutube.style.width = editYoutubeWidth;
+    }
+
+    // wrapper 크기도 업데이트
+    const wrapper = selectedYoutube.parentElement;
+    if (wrapper && wrapper.classList.contains('youtube-wrapper')) {
+      wrapper.style.width = selectedYoutube.style.width;
+    }
+
+    // 정렬 적용
+    // youtube-wrapper의 부모를 찾음
+    let targetElement = selectedYoutube.parentElement?.classList.contains('youtube-wrapper')
+      ? selectedYoutube.parentElement
+      : selectedYoutube;
+
+    // 정렬 컨테이너 찾기 (최상위 DIV 컨테이너)
+    let alignContainer = targetElement?.parentElement;
+
+    // 정렬 컨테이너가 있고 DIV이면 정렬 적용
+    if (alignContainer && alignContainer.tagName === 'DIV' && alignContainer !== editorRef.current) {
+      alignContainer.style.textAlign = editYoutubeAlign;
+
+      // 유튜브 컨테이너 자체도 적절한 display 설정
+      if (editYoutubeAlign === 'center' || editYoutubeAlign === 'right') {
+        selectedYoutube.style.display = 'inline-block';
+      } else {
+        selectedYoutube.style.display = 'inline-block';
+      }
+    }
+
+    // 선택 해제
+    deselectYoutube();
+    handleInput();
+  };
+
+  // YouTube 삭제
+  const deleteYoutube = () => {
+    if (!selectedYoutube) return;
+
+    const youtubeToDelete = selectedYoutube;
+    deselectYoutube();
+
+    let elementToRemove = youtubeToDelete;
+    let parent = youtubeToDelete.parentElement;
+
+    while (parent && parent !== editorRef.current) {
+      if (parent.classList.contains('youtube-wrapper') ||
+          parent.classList.contains('youtube-container') ||
+          (parent.tagName === 'DIV' && parent.style.textAlign)) {
+        elementToRemove = parent;
+        parent = parent.parentElement;
+      } else {
+        break;
+      }
+    }
+
+    if (elementToRemove.parentNode) {
+      elementToRemove.parentNode.removeChild(elementToRemove);
+    }
+
+    handleInput();
+  };
+
   // YouTube 삽입
   const insertYoutube = () => {
     if (!youtubeUrl) return;
@@ -850,25 +1135,54 @@ const Wysiwyg = ({
       return;
     }
 
+    // YouTube 정렬 컨테이너 생성
+    const alignContainer = document.createElement('div');
+    alignContainer.style.textAlign = youtubeAlign;
+    alignContainer.style.margin = '20px 0';
+
     // YouTube iframe 컨테이너 생성
     const container = document.createElement('div');
-    container.style.textAlign = 'center';
-    container.style.margin = '20px 0';
+    container.className = 'youtube-container';
+    container.style.position = 'relative';
+    container.style.display = 'inline-block';
+    container.style.maxWidth = '100%';
+
+    // 크기 설정
+    if (youtubeWidth === 'original') {
+      container.style.width = '560px';
+    } else {
+      container.style.width = youtubeWidth;
+    }
 
     // iframe 생성
     const iframe = document.createElement('iframe');
-    iframe.width = '560';
-    iframe.height = '315';
+    iframe.width = '100%';
+    iframe.height = '100%';
     iframe.src = `https://www.youtube.com/embed/${videoId}`;
     iframe.title = 'YouTube video player';
     iframe.frameBorder = '0';
     iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
     iframe.allowFullscreen = true;
-    iframe.style.maxWidth = '100%';
+    iframe.style.width = '100%';
     iframe.style.height = 'auto';
     iframe.style.aspectRatio = '16 / 9';
+    iframe.style.display = 'block';
+
+    // 투명 오버레이 추가 (편집 모드에서 클릭 방지)
+    const overlay = document.createElement('div');
+    overlay.className = 'youtube-overlay';
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'transparent';
+    overlay.style.cursor = 'pointer';
+    overlay.style.zIndex = '1';
 
     container.appendChild(iframe);
+    container.appendChild(overlay);
+    alignContainer.appendChild(container);
 
     // 에디터에 포커스 설정
     if (editorRef.current) {
@@ -907,12 +1221,12 @@ const Wysiwyg = ({
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         range.deleteContents();
-        range.insertNode(container);
+        range.insertNode(alignContainer);
 
         // iframe 다음에 새 문단 추가
         const newP = document.createElement('p');
         newP.innerHTML = '<br>';
-        container.after(newP);
+        alignContainer.after(newP);
 
         // 커서를 새 문단으로 이동
         const newRange = document.createRange();
@@ -922,13 +1236,15 @@ const Wysiwyg = ({
         selection.addRange(newRange);
       } else {
         // 폴백: 에디터 끝에 추가
-        editorRef.current.appendChild(container);
+        editorRef.current.appendChild(alignContainer);
       }
     }
 
     // 상태 초기화
     setIsYoutubeDropdownOpen(false);
     setYoutubeUrl('');
+    setYoutubeWidth('100%'); // 초기화
+    setYoutubeAlign('center'); // 초기화
     setSavedYoutubeSelection(null);
 
     editorRef.current?.focus();
@@ -979,6 +1295,13 @@ const Wysiwyg = ({
 
       // deleteImage 함수 호출로 통합
       deleteImage();
+      return;
+    }
+
+    // Backspace 또는 Delete 키로 선택된 유튜브 삭제
+    if ((e.key === 'Backspace' || e.key === 'Delete') && selectedYoutube) {
+      e.preventDefault();
+      deleteYoutube();
       return;
     }
 
@@ -1213,48 +1536,108 @@ const Wysiwyg = ({
 
   // 리사이즈 중 마우스 이벤트 처리
   useEffect(() => {
-    if (!isResizing || !resizeStartData || !selectedImage) return;
+    if (!isResizing || !resizeStartData) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!selectedImage || !resizeStartData) return;
+      if (!resizeStartData) return;
 
       const deltaX = e.clientX - resizeStartData.startX;
       const deltaY = e.clientY - resizeStartData.startY;
-      const aspectRatio = resizeStartData.startWidth / resizeStartData.startHeight;
 
-      let newWidth = resizeStartData.startWidth;
-      let newHeight = resizeStartData.startHeight;
+      // 이미지 리사이즈
+      if (selectedImage) {
+        const aspectRatio = resizeStartData.startWidth / resizeStartData.startHeight;
+        let newWidth = resizeStartData.startWidth;
+        let newHeight = resizeStartData.startHeight;
 
-      switch (resizeStartData.handle) {
-        case 'e':
-        case 'w':
-          newWidth = resizeStartData.startWidth + (resizeStartData.handle === 'e' ? deltaX : -deltaX);
-          newHeight = newWidth / aspectRatio;
-          break;
-        case 'n':
-        case 's':
-          newHeight = resizeStartData.startHeight + (resizeStartData.handle === 's' ? deltaY : -deltaY);
-          newWidth = newHeight * aspectRatio;
-          break;
-        case 'ne':
-        case 'nw':
-        case 'se':
-        case 'sw': {
-          // 대각선 리사이즈는 더 큰 변화량 기준
-          const diagonalDelta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
-          const multiplier = resizeStartData.handle.includes('e') ? 1 : -1;
-          newWidth = resizeStartData.startWidth + (diagonalDelta * multiplier);
-          newHeight = newWidth / aspectRatio;
-          break;
+        switch (resizeStartData.handle) {
+          case 'e':
+          case 'w':
+            newWidth = resizeStartData.startWidth + (resizeStartData.handle === 'e' ? deltaX : -deltaX);
+            newHeight = newWidth / aspectRatio;
+            break;
+          case 'n':
+          case 's':
+            newHeight = resizeStartData.startHeight + (resizeStartData.handle === 's' ? deltaY : -deltaY);
+            newWidth = newHeight * aspectRatio;
+            break;
+          case 'ne':
+          case 'nw':
+          case 'se':
+          case 'sw': {
+            // 대각선 리사이즈는 더 큰 변화량 기준
+            const diagonalDelta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+            const multiplier = resizeStartData.handle.includes('e') ? 1 : -1;
+            newWidth = resizeStartData.startWidth + (diagonalDelta * multiplier);
+            newHeight = newWidth / aspectRatio;
+            break;
+          }
         }
+
+        // 최소 크기 제한
+        newWidth = Math.max(50, newWidth);
+        newHeight = Math.max(50, newHeight);
+
+        selectedImage.style.width = newWidth + 'px';
+        selectedImage.style.height = newHeight + 'px';
       }
 
-      // 최소 크기 제한
-      newWidth = Math.max(50, newWidth);
-      newHeight = Math.max(50, newHeight);
+      // 유튜브 리사이즈
+      if (selectedYoutube) {
+        const aspectRatio = 16 / 9; // 유튜브는 16:9 고정
+        let newWidth = resizeStartData.startWidth;
+        let newHeight = resizeStartData.startHeight;
 
-      selectedImage.style.width = newWidth + 'px';
-      selectedImage.style.height = newHeight + 'px';
+        switch (resizeStartData.handle) {
+          case 'e':
+          case 'w':
+            newWidth = resizeStartData.startWidth + (resizeStartData.handle === 'e' ? deltaX : -deltaX);
+            newHeight = newWidth / aspectRatio;
+            break;
+          case 'n':
+          case 's':
+            newHeight = resizeStartData.startHeight + (resizeStartData.handle === 's' ? deltaY : -deltaY);
+            newWidth = newHeight * aspectRatio;
+            break;
+          case 'ne':
+          case 'nw':
+          case 'se':
+          case 'sw': {
+            // 대각선 리사이즈는 더 큰 변화량 기준
+            const diagonalDelta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+            const multiplier = resizeStartData.handle.includes('e') ? 1 : -1;
+            newWidth = resizeStartData.startWidth + (diagonalDelta * multiplier);
+            newHeight = newWidth / aspectRatio;
+            break;
+          }
+        }
+
+        // 최소/최대 크기 제한
+        const parentWidth = editorRef.current?.offsetWidth || window.innerWidth;
+        newWidth = Math.max(200, Math.min(newWidth, parentWidth - 40));
+        newHeight = newWidth / aspectRatio;
+
+        // 유튜브 컨테이너 크기 업데이트
+        selectedYoutube.style.width = newWidth + 'px';
+
+        // wrapper 크기도 업데이트
+        const wrapper = selectedYoutube.parentElement;
+        if (wrapper && wrapper.classList.contains('youtube-wrapper')) {
+          wrapper.style.width = newWidth + 'px';
+        }
+
+        // 편집 중인 크기 업데이트
+        const percentage = Math.round((newWidth / parentWidth) * 100);
+        if (percentage >= 95) {
+          setEditYoutubeWidth('100%');
+        } else if (percentage >= 70 && percentage <= 80) {
+          setEditYoutubeWidth('75%');
+        } else if (percentage >= 45 && percentage <= 55) {
+          setEditYoutubeWidth('50%');
+        } else {
+          setEditYoutubeWidth(`${percentage}%`);
+        }
+      }
     };
 
     const handleMouseUp = () => {
@@ -1262,6 +1645,23 @@ const Wysiwyg = ({
       setResizeStartData(null);
       if (selectedImage) {
         setEditImageWidth(selectedImage.style.width);
+      }
+      if (selectedYoutube) {
+        // 유튜브 크기도 유지
+        const computedStyle = window.getComputedStyle(selectedYoutube);
+        const currentWidth = parseInt(computedStyle.width);
+        const parentWidth = editorRef.current?.offsetWidth || window.innerWidth;
+        const percentage = Math.round((currentWidth / parentWidth) * 100);
+
+        if (percentage >= 95) {
+          setEditYoutubeWidth('100%');
+        } else if (percentage >= 70 && percentage <= 80) {
+          setEditYoutubeWidth('75%');
+        } else if (percentage >= 45 && percentage <= 55) {
+          setEditYoutubeWidth('50%');
+        } else {
+          setEditYoutubeWidth(`${percentage}%`);
+        }
       }
     };
 
@@ -1272,16 +1672,19 @@ const Wysiwyg = ({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isResizing, resizeStartData, selectedImage]);
+  }, [isResizing, resizeStartData, selectedImage, selectedYoutube]);
 
-  // 스크롤 및 이미지 드래그 시 편집창 숨기기
+  // 스크롤 및 이미지/유튜브 드래그 시 편집창 숨기기
   useEffect(() => {
-    if (!selectedImage) return;
+    if (!selectedImage && !selectedYoutube) return;
 
     // 스크롤 이벤트 핸들러
     const handleScroll = () => {
       if (isImageEditPopupOpen) {
         setIsImageEditPopupOpen(false);
+      }
+      if (isYoutubeEditPopupOpen) {
+        setIsYoutubeEditPopupOpen(false);
       }
     };
 
@@ -1924,16 +2327,24 @@ const Wysiwyg = ({
 
             {isYoutubeDropdownOpen && (
               <div
-                className={styles.youtubeDropdown}
+                className={styles.imageDropdown}
                 style={{
                   top: youtubeButtonRef.current?.getBoundingClientRect().bottom ?? 0,
                   left: youtubeButtonRef.current?.getBoundingClientRect().left ?? 0
                 }}
               >
-                <div className={styles.youtubeContent}>
-                  <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: '600' }}>유튜브 삽입</h3>
-                  <div className={styles.youtubeInput}>
-                    <label>유튜브 URL</label>
+                <div className={styles.imageTabSection}>
+                  <div className={styles.imageTabButtons}>
+                    <button
+                      type="button"
+                      className={styles.active}
+                      style={{ width: '100%' }}
+                    >
+                      유튜브 URL
+                    </button>
+                  </div>
+
+                  <div className={styles.imageUrlSection}>
                     <input
                       type="text"
                       value={youtubeUrl}
@@ -1942,17 +2353,75 @@ const Wysiwyg = ({
                       autoFocus
                     />
                   </div>
-                  <div className={styles.youtubeHelp}>
-                    <p style={{ fontSize: '12px', color: '#666', margin: '10px 0' }}>
-                      유튜브 비디오 링크를 입력하세요. 지원되는 형식:
-                      <br />• https://www.youtube.com/watch?v=VIDEO_ID
-                      <br />• https://youtu.be/VIDEO_ID
-                      <br />• https://www.youtube.com/embed/VIDEO_ID
-                    </p>
-                  </div>
                 </div>
 
-                <div className={styles.youtubeActions}>
+                  <div className={styles.imageOptions}>
+                    <div className={styles.imageOptionRow}>
+                      <label>크기</label>
+                      <div className={styles.imageSizeButtons}>
+                        <button
+                          type="button"
+                          className={youtubeWidth === '100%' ? styles.active : ''}
+                          onClick={() => setYoutubeWidth('100%')}
+                        >
+                          100%
+                        </button>
+                        <button
+                          type="button"
+                          className={youtubeWidth === '75%' ? styles.active : ''}
+                          onClick={() => setYoutubeWidth('75%')}
+                        >
+                          75%
+                        </button>
+                        <button
+                          type="button"
+                          className={youtubeWidth === '50%' ? styles.active : ''}
+                          onClick={() => setYoutubeWidth('50%')}
+                        >
+                          50%
+                        </button>
+                        <button
+                          type="button"
+                          className={youtubeWidth === 'original' ? styles.active : ''}
+                          onClick={() => setYoutubeWidth('original')}
+                        >
+                          원본
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className={styles.imageOptionRow}>
+                      <label>정렬</label>
+                      <div className={styles.imageAlignButtons}>
+                        <button
+                          type="button"
+                          className={youtubeAlign === 'left' ? styles.active : ''}
+                          onClick={() => setYoutubeAlign('left')}
+                          title="왼쪽 정렬"
+                        >
+                          <i className={styles.alignLeft} />
+                        </button>
+                        <button
+                          type="button"
+                          className={youtubeAlign === 'center' ? styles.active : ''}
+                          onClick={() => setYoutubeAlign('center')}
+                          title="가운데 정렬"
+                        >
+                          <i className={styles.alignCenter} />
+                        </button>
+                        <button
+                          type="button"
+                          className={youtubeAlign === 'right' ? styles.active : ''}
+                          onClick={() => setYoutubeAlign('right')}
+                          title="오른쪽 정렬"
+                        >
+                          <i className={styles.alignRight} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                <div className={styles.imageActions}>
                   <button
                     type="button"
                     onClick={() => insertYoutube()}
@@ -1965,6 +2434,8 @@ const Wysiwyg = ({
                     onClick={() => {
                       setIsYoutubeDropdownOpen(false);
                       setYoutubeUrl('');
+                      setYoutubeWidth('100%');
+                      setYoutubeAlign('center');
                       setSavedYoutubeSelection(null);
                     }}
                   >
@@ -2215,6 +2686,125 @@ const Wysiwyg = ({
           </div>
         </div>
       )})()}
+
+      {/* 유튜브 편집 팝업 */}
+      {isYoutubeEditPopupOpen && selectedYoutube && (() => {
+        // 유튜브의 wrapper를 찾기
+        const youtubeWrapper = selectedYoutube.parentElement?.classList.contains('youtube-wrapper')
+          ? selectedYoutube.parentElement
+          : selectedYoutube;
+
+        return (
+          <div
+            className={styles.imageDropdown}
+            style={{
+              position: 'fixed',
+              top: youtubeWrapper.getBoundingClientRect().bottom + 10,
+              left: Math.max(10, Math.min(
+                youtubeWrapper.getBoundingClientRect().left + (youtubeWrapper.getBoundingClientRect().width / 2) - 180,
+                window.innerWidth - 370
+              )),
+              zIndex: 9999,
+              minWidth: '360px',
+              maxWidth: '90%'
+            }}
+          >
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', fontWeight: '600' }}>유튜브 편집</h3>
+
+            <div className={styles.imageOptions} style={{ marginBottom: '0' }}>
+              <div className={styles.imageOptionRow}>
+                <label>크기</label>
+                <div className={styles.imageSizeButtons}>
+                  <button
+                    type="button"
+                    onClick={() => setEditYoutubeWidth('100%')}
+                    className={editYoutubeWidth === '100%' ? styles.active : ''}
+                  >
+                    100%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditYoutubeWidth('75%')}
+                    className={editYoutubeWidth === '75%' ? styles.active : ''}
+                  >
+                    75%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditYoutubeWidth('50%')}
+                    className={editYoutubeWidth === '50%' ? styles.active : ''}
+                  >
+                    50%
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditYoutubeWidth('original')}
+                    className={editYoutubeWidth === 'original' ? styles.active : ''}
+                  >
+                    원본
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.imageOptionRow}>
+                <label>정렬</label>
+                <div className={styles.imageAlignButtons}>
+                  <button
+                    type="button"
+                    onClick={() => setEditYoutubeAlign('left')}
+                    title="왼쪽 정렬"
+                    className={editYoutubeAlign === 'left' ? styles.active : ''}
+                  >
+                    <i className={styles.alignLeft} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditYoutubeAlign('center')}
+                    title="가운데 정렬"
+                    className={editYoutubeAlign === 'center' ? styles.active : ''}
+                  >
+                    <i className={styles.alignCenter} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditYoutubeAlign('right')}
+                    title="오른쪽 정렬"
+                    className={editYoutubeAlign === 'right' ? styles.active : ''}
+                  >
+                    <i className={styles.alignRight} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.imageActions}>
+              <button
+                type="button"
+                onClick={applyYoutubeEdit}
+              >
+                적용
+              </button>
+              <button
+                type="button"
+                onClick={deleteYoutube}
+                style={{
+                  backgroundColor: '#ff4444',
+                  color: 'white',
+                  borderColor: '#ff4444'
+                }}
+              >
+                삭제
+              </button>
+              <button
+                type="button"
+                onClick={deselectYoutube}
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   );
 };
