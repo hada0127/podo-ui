@@ -1167,12 +1167,16 @@ const Editor = ({
     const wrapper = selectedYoutube.parentElement;
     if (wrapper && wrapper.classList.contains('youtube-wrapper')) {
       wrapper.style.width = selectedYoutube.style.width;
+      wrapper.style.aspectRatio = selectedYoutube.style.aspectRatio;
       if (selectedYoutube.style.height && selectedYoutube.style.height !== 'auto') {
         wrapper.style.height = selectedYoutube.style.height;
       } else {
         wrapper.style.height = 'auto';
       }
     }
+
+    // dataset의 originalWidth도 업데이트 (선택 해제 시 이 크기로 복원)
+    selectedYoutube.dataset.originalWidth = selectedYoutube.style.width;
 
     // 정렬 적용
     // youtube-wrapper의 부모를 찾음
