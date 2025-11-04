@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Pagination from '../../../../react/atom/pagination';
+import Pagination from '../../../../react/molecule/pagination';
 import styles from '../input/page.module.scss';
 
 export default function PaginationPage() {

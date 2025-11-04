@@ -417,12 +417,40 @@ function MyForm() {
 }
 ```
 
+#### Pagination
+
+**파일:** [react/molecule/pagination.tsx](react/molecule/pagination.tsx)
+
+**특징:**
+- 페이지 네비게이션 컴포넌트
+- 현재 페이지 표시 및 페이지 이동
+- 이전/다음 버튼 지원
+- 페이지 번호 범위 표시
+
+**사용 예:**
+
+```tsx
+import { Pagination } from 'podo-ui/react'
+
+function MyList() {
+  const [currentPage, setCurrentPage] = useState(1)
+
+  return (
+    <Pagination
+      currentPage={currentPage}
+      totalPages={10}
+      onPageChange={setCurrentPage}
+    />
+  )
+}
+```
+
 ### 내보내기 전략
 
 #### 표준 내보내기 ([react.ts](react.ts))
 
 ```typescript
-export { Input, Textarea, Editor, Field }
+export { Input, Textarea, Editor, EditorView, Pagination, Field }
 ```
 
 #### Next.js 내보내기 ([next.ts](next.ts))
@@ -432,6 +460,8 @@ export { Input, Textarea, Editor, Field }
 
 // Editor는 동적 임포트 (SSR 비활성화)
 const Editor = dynamic(() => import('./react/atom/editor'), { ssr: false })
+
+export { Input, Textarea, Editor, EditorView, Pagination, Field }
 ```
 
 ---

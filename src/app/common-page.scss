@@ -54,18 +54,6 @@
       margin: s(4) 0 s(2) 0;
     }
   }
-
-  p {
-    @include p2;
-    color: color(default-base);
-    line-height: 1.8;
-    margin: 0 0 s(5) 0;
-
-    @media (max-width: 768px) {
-      font-size: 14px;
-      margin: 0 0 s(4) 0;
-    }
-  }
 }
 
 // 코드 블록 반응형 스타일
