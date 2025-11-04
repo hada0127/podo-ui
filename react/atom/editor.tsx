@@ -72,6 +72,15 @@ const Editor = ({
   const [isCodeView, setIsCodeView] = useState(false); // 코드보기 모드
   const [codeContent, setCodeContent] = useState(''); // 코드보기 내용
   const [savedEditorHeight, setSavedEditorHeight] = useState<number | null>(null); // 위지윅 에디터 높이 저장
+
+  // Undo/Redo 히스토리 관리
+  const [history, setHistory] = useState<string[]>([value]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const historyTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const historyRef = useRef<string[]>([value]);
+  const historyIndexRef = useRef(0);
+  const isUndoRedoRef = useRef(false); // undo/redo 실행 중 플래그
+
   const editorRef = useRef<HTMLDivElement>(null);
   const codeEditorRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -227,6 +236,106 @@ const Editor = ({
     setCurrentParagraphStyle('p');
   };
 
+  // ref와 state 동기화
+  useEffect(() => {
+    historyRef.current = history;
+    historyIndexRef.current = historyIndex;
+  }, [history, historyIndex]);
+
+  // 히스토리에 추가 (디바운스 적용)
+  const addToHistory = useCallback((content: string) => {
+    // 기존 타이머 취소
+    if (historyTimerRef.current) {
+      clearTimeout(historyTimerRef.current);
+    }
+
+    // 500ms 후에 히스토리 추가 (연속 입력 시 하나로 묶음)
+    historyTimerRef.current = setTimeout(() => {
+      // ref에서 최신 값 가져오기
+      const currentHistory = historyRef.current;
+      const currentIndex = historyIndexRef.current;
+
+      // 현재 인덱스 이후의 히스토리 제거
+      const newHistory = currentHistory.slice(0, currentIndex + 1);
+
+      // 마지막 항목과 동일하면 추가하지 않음
+      if (newHistory[newHistory.length - 1] === content) {
+        return;
+      }
+
+      // 새 항목 추가 (최대 200개)
+      const updated = [...newHistory, content];
+      if (updated.length > 200) {
+        updated.shift(); // 가장 오래된 항목 제거
+        setHistory(updated);
+        setHistoryIndex(currentIndex); // 인덱스는 그대로 유지
+      } else {
+        setHistory(updated);
+        setHistoryIndex(updated.length - 1);
+      }
+    }, 500);
+  }, []);
+
+  // Undo 실행
+  const performUndo = useCallback(() => {
+    // debounce 타이머 취소 (undo 중에는 히스토리 추가 안 함)
+    if (historyTimerRef.current) {
+      clearTimeout(historyTimerRef.current);
+      historyTimerRef.current = null;
+    }
+
+    const currentIndex = historyIndexRef.current;
+    const currentHistory = historyRef.current;
+
+    if (currentIndex > 0) {
+      const newIndex = currentIndex - 1;
+      const content = currentHistory[newIndex];
+      setHistoryIndex(newIndex);
+
+      if (editorRef.current) {
+        isUndoRedoRef.current = true; // undo 실행 중 플래그 설정
+        editorRef.current.innerHTML = content;
+        onChange(content);
+        detectCurrentParagraphStyle();
+        detectCurrentAlign();
+        // 다음 틱에서 플래그 해제
+        setTimeout(() => {
+          isUndoRedoRef.current = false;
+        }, 0);
+      }
+    }
+  }, [onChange]);
+
+  // Redo 실행
+  const performRedo = useCallback(() => {
+    // debounce 타이머 취소 (redo 중에는 히스토리 추가 안 함)
+    if (historyTimerRef.current) {
+      clearTimeout(historyTimerRef.current);
+      historyTimerRef.current = null;
+    }
+
+    const currentIndex = historyIndexRef.current;
+    const currentHistory = historyRef.current;
+
+    if (currentIndex < currentHistory.length - 1) {
+      const newIndex = currentIndex + 1;
+      const content = currentHistory[newIndex];
+      setHistoryIndex(newIndex);
+
+      if (editorRef.current) {
+        isUndoRedoRef.current = true; // redo 실행 중 플래그 설정
+        editorRef.current.innerHTML = content;
+        onChange(content);
+        detectCurrentParagraphStyle();
+        detectCurrentAlign();
+        // 다음 틱에서 플래그 해제
+        setTimeout(() => {
+          isUndoRedoRef.current = false;
+        }, 0);
+      }
+    }
+  }, [onChange]);
+
   const handleInput = useCallback(() => {
     if (editorRef.current) {
       const content = editorRef.current.innerHTML;
@@ -235,11 +344,24 @@ const Editor = ({
       validateHandler(content);
       detectCurrentParagraphStyle();
       detectCurrentAlign();
+
+      // 히스토리에 추가
+      addToHistory(content);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onChange]);
+  }, [onChange, addToHistory]);
 
   const execCommand = (command: string, value: string | undefined = undefined) => {
+    // undo/redo는 커스텀 함수 사용
+    if (command === 'undo') {
+      performUndo();
+      return;
+    }
+    if (command === 'redo') {
+      performRedo();
+      return;
+    }
+
     // bold, italic, underline, strikeThrough일 때 선택 영역이 없으면 아무것도 하지 않음
     if (['bold', 'italic', 'underline', 'strikeThrough'].includes(command)) {
       const selection = window.getSelection();
@@ -1929,6 +2051,18 @@ const Editor = ({
     };
   }, [selectedYoutube]);
 
+  // 외부에서 value가 변경되면 히스토리 초기화 (단, undo/redo 중에는 제외)
+  useEffect(() => {
+    if (isUndoRedoRef.current) {
+      return;
+    }
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value;
+      setHistory([value]);
+      setHistoryIndex(0);
+    }
+  }, [value]);
+
   // 초기 로드 시 문단 형식 감지 (기본 p 태그는 추가하지 않음)
   useEffect(() => {
     // 약간의 지연을 주어 DOM이 완전히 렌더링된 후 감지
@@ -1951,7 +2085,14 @@ const Editor = ({
             type="button"
             className={styles.toolbarButton}
             onClick={() => execCommand('undo')}
+            disabled={historyIndex <= 0}
             title="실행 취소"
+            style={{
+              opacity: historyIndex <= 0 ? 0.3 : 1,
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: historyIndex <= 0 ? 'not-allowed' : 'pointer'
+            }}
           >
             <i className={styles.undo} />
           </button>
@@ -1959,7 +2100,14 @@ const Editor = ({
             type="button"
             className={styles.toolbarButton}
             onClick={() => execCommand('redo')}
+            disabled={historyIndex >= history.length - 1}
             title="다시 실행"
+            style={{
+              opacity: historyIndex >= history.length - 1 ? 0.3 : 1,
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: historyIndex >= history.length - 1 ? 'not-allowed' : 'pointer'
+            }}
           >
             <i className={styles.redo} />
           </button>
