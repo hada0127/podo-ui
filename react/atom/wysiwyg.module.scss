@@ -177,6 +177,10 @@
     &.image {
       background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6h96 32H424c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>');
     }
+
+    &.youtube {
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>');
+    }
   }
 
   &:hover i {
@@ -1139,6 +1143,117 @@
           &:hover {
             background: color(bg-elevation);
           }
+        }
+      }
+    }
+  }
+}
+
+// 유튜브 드롭다운
+.youtubeDropdown {
+  position: fixed;
+  margin-top: 2px;
+  padding: 16px;
+  background: color(bg-modal);
+  border: 1px solid color(border);
+  border-radius: r(2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  min-width: 380px;
+  max-width: 480px;
+
+  .youtubeContent {
+    margin-bottom: 16px;
+
+    h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: color(text-primary);
+    }
+  }
+
+  .youtubeInput {
+    margin-bottom: 12px;
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: color(text-secondary);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid color(border);
+      border-radius: r(2);
+      background: color(bg);
+      color: color(text-primary);
+
+      &:focus {
+        outline: 2px solid color(primary-outline);
+        outline-offset: -1px;
+        border-color: color(primary);
+      }
+
+      &::placeholder {
+        color: color(text-tertiary);
+        font-size: 12px;
+      }
+    }
+  }
+
+  .youtubeHelp {
+    background: color(bg-elevation);
+    padding: 10px;
+    border-radius: r(2);
+
+    p {
+      font-size: 12px;
+      color: color(text-secondary);
+      line-height: 1.5;
+      margin: 0;
+    }
+  }
+
+  .youtubeActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+
+    button {
+      padding: 6px 16px;
+      border-radius: r(2);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+
+      &:first-child {
+        background: color(primary);
+        color: white;
+        border: 1px solid color(primary);
+
+        &:hover:not(:disabled) {
+          background: color(primary-hover);
+          border-color: color(primary-hover);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      &:last-child {
+        background: white;
+        color: color(text-primary);
+        border: 1px solid color(border);
+
+        &:hover {
+          background: color(bg-elevation);
         }
       }
     }

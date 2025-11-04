@@ -52,6 +52,11 @@ const Wysiwyg = ({
   const [editImageAlt, setEditImageAlt] = useState(''); // 편집 중인 이미지 대체 텍스트
   const [isResizing, setIsResizing] = useState(false); // 리사이즈 중 여부
   const [resizeStartData, setResizeStartData] = useState<{ startX: number; startY: number; startWidth: number; startHeight: number; handle: string } | null>(null);
+
+  // 유튜브 관련 상태
+  const [isYoutubeDropdownOpen, setIsYoutubeDropdownOpen] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [savedYoutubeSelection, setSavedYoutubeSelection] = useState<Range | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const paragraphButtonRef = useRef<HTMLDivElement>(null);
@@ -60,6 +65,7 @@ const Wysiwyg = ({
   const alignButtonRef = useRef<HTMLDivElement>(null);
   const linkButtonRef = useRef<HTMLDivElement>(null);
   const imageButtonRef = useRef<HTMLDivElement>(null);
+  const youtubeButtonRef = useRef<HTMLDivElement>(null);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
   // 클라이언트에서만 ID 생성 (Vite React용)
   const [editorID, setEditorID] = useState<string>('wysiwyg-editor');
@@ -817,6 +823,118 @@ const Wysiwyg = ({
     handleInput();
   };
 
+  // YouTube URL에서 Video ID 추출
+  const extractYoutubeVideoId = (url: string): string | null => {
+    // 다양한 YouTube URL 형식 지원
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    return null;
+  };
+
+  // YouTube 삽입
+  const insertYoutube = () => {
+    if (!youtubeUrl) return;
+
+    const videoId = extractYoutubeVideoId(youtubeUrl);
+    if (!videoId) {
+      alert('올바른 유튜브 URL을 입력해주세요.\n\n지원 형식:\n• https://www.youtube.com/watch?v=VIDEO_ID\n• https://youtu.be/VIDEO_ID');
+      return;
+    }
+
+    // YouTube iframe 컨테이너 생성
+    const container = document.createElement('div');
+    container.style.textAlign = 'center';
+    container.style.margin = '20px 0';
+
+    // iframe 생성
+    const iframe = document.createElement('iframe');
+    iframe.width = '560';
+    iframe.height = '315';
+    iframe.src = `https://www.youtube.com/embed/${videoId}`;
+    iframe.title = 'YouTube video player';
+    iframe.frameBorder = '0';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.allowFullscreen = true;
+    iframe.style.maxWidth = '100%';
+    iframe.style.height = 'auto';
+    iframe.style.aspectRatio = '16 / 9';
+
+    container.appendChild(iframe);
+
+    // 에디터에 포커스 설정
+    if (editorRef.current) {
+      editorRef.current.focus();
+
+      const selection = window.getSelection();
+
+      // 저장된 선택 영역이 있으면 복원
+      if (savedYoutubeSelection && selection) {
+        try {
+          selection.removeAllRanges();
+          selection.addRange(savedYoutubeSelection);
+        } catch (e) {
+          // 선택 영역 복원 실패 시 무시
+        }
+      }
+
+      // 선택 영역 재확인
+      if (!selection || selection.rangeCount === 0 || !editorRef.current.contains(selection.anchorNode)) {
+        // 에디터가 비어있으면 p 태그 추가
+        if (!editorRef.current.innerHTML || editorRef.current.innerHTML === '<br>') {
+          const p = document.createElement('p');
+          p.innerHTML = '<br>';
+          editorRef.current.appendChild(p);
+        }
+
+        // 커서를 에디터 끝으로 이동
+        const range = document.createRange();
+        range.selectNodeContents(editorRef.current);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+
+      // YouTube iframe 삽입
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(container);
+
+        // iframe 다음에 새 문단 추가
+        const newP = document.createElement('p');
+        newP.innerHTML = '<br>';
+        container.after(newP);
+
+        // 커서를 새 문단으로 이동
+        const newRange = document.createRange();
+        newRange.selectNodeContents(newP);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      } else {
+        // 폴백: 에디터 끝에 추가
+        editorRef.current.appendChild(container);
+      }
+    }
+
+    // 상태 초기화
+    setIsYoutubeDropdownOpen(false);
+    setYoutubeUrl('');
+    setSavedYoutubeSelection(null);
+
+    editorRef.current?.focus();
+    handleInput();
+  };
+
   const handleImageFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
@@ -1050,6 +1168,16 @@ const Wysiwyg = ({
         setSavedImageSelection(null); // 저장된 선택 영역 초기화
       }
 
+      // 유튜브 드롭다운 체크
+      const youtubeDropdown = document.querySelector(`.${styles.youtubeDropdown}`);
+      if (youtubeButtonRef.current &&
+          !youtubeButtonRef.current.contains(target) &&
+          (!youtubeDropdown || !youtubeDropdown.contains(target))) {
+        setIsYoutubeDropdownOpen(false);
+        setYoutubeUrl('');
+        setSavedYoutubeSelection(null);
+      }
+
       // 이미지 편집 팝업 닫기
       if (isImageEditPopupOpen && selectedImage) {
         const imageEditPopup = document.querySelector(`.${styles.imageDropdown}`);
@@ -1074,14 +1202,14 @@ const Wysiwyg = ({
       }
     };
 
-    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen || isAlignDropdownOpen || isLinkDropdownOpen || isEditLinkPopupOpen || isImageDropdownOpen || isImageEditPopupOpen) {
+    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen || isAlignDropdownOpen || isLinkDropdownOpen || isEditLinkPopupOpen || isImageDropdownOpen || isImageEditPopupOpen || isYoutubeDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen, isAlignDropdownOpen, isLinkDropdownOpen, isEditLinkPopupOpen, isImageDropdownOpen, isImageEditPopupOpen, selectedLinkElement, selectedImage]);
+  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen, isAlignDropdownOpen, isLinkDropdownOpen, isEditLinkPopupOpen, isImageDropdownOpen, isImageEditPopupOpen, isYoutubeDropdownOpen, selectedLinkElement, selectedImage]);
 
   // 리사이즈 중 마우스 이벤트 처리
   useEffect(() => {
@@ -1111,13 +1239,14 @@ const Wysiwyg = ({
         case 'ne':
         case 'nw':
         case 'se':
-        case 'sw':
+        case 'sw': {
           // 대각선 리사이즈는 더 큰 변화량 기준
           const diagonalDelta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
           const multiplier = resizeStartData.handle.includes('e') ? 1 : -1;
           newWidth = resizeStartData.startWidth + (diagonalDelta * multiplier);
           newHeight = newWidth / aspectRatio;
           break;
+        }
       }
 
       // 최소 크기 제한
@@ -1756,6 +1885,87 @@ const Wysiwyg = ({
                       setImageAlign('left'); // 좌측으로 초기화
                       setImageAlt('');
                       setSavedImageSelection(null); // 저장된 선택 영역 초기화
+                    }}
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div ref={youtubeButtonRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                // 현재 선택 영역 저장
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0) {
+                  const range = selection.getRangeAt(0).cloneRange();
+                  setSavedYoutubeSelection(range);
+                } else {
+                  setSavedYoutubeSelection(null);
+                }
+
+                setIsYoutubeDropdownOpen(true);
+                setIsImageDropdownOpen(false);
+                setIsParagraphDropdownOpen(false);
+                setIsTextColorOpen(false);
+                setIsBgColorOpen(false);
+                setIsAlignDropdownOpen(false);
+                setIsLinkDropdownOpen(false);
+              }}
+              title="유튜브"
+            >
+              <i className={styles.youtube} />
+            </button>
+
+            {isYoutubeDropdownOpen && (
+              <div
+                className={styles.youtubeDropdown}
+                style={{
+                  top: youtubeButtonRef.current?.getBoundingClientRect().bottom ?? 0,
+                  left: youtubeButtonRef.current?.getBoundingClientRect().left ?? 0
+                }}
+              >
+                <div className={styles.youtubeContent}>
+                  <h3 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: '600' }}>유튜브 삽입</h3>
+                  <div className={styles.youtubeInput}>
+                    <label>유튜브 URL</label>
+                    <input
+                      type="text"
+                      value={youtubeUrl}
+                      onChange={(e) => setYoutubeUrl(e.target.value)}
+                      placeholder="https://www.youtube.com/watch?v=... 또는 https://youtu.be/..."
+                      autoFocus
+                    />
+                  </div>
+                  <div className={styles.youtubeHelp}>
+                    <p style={{ fontSize: '12px', color: '#666', margin: '10px 0' }}>
+                      유튜브 비디오 링크를 입력하세요. 지원되는 형식:
+                      <br />• https://www.youtube.com/watch?v=VIDEO_ID
+                      <br />• https://youtu.be/VIDEO_ID
+                      <br />• https://www.youtube.com/embed/VIDEO_ID
+                    </p>
+                  </div>
+                </div>
+
+                <div className={styles.youtubeActions}>
+                  <button
+                    type="button"
+                    onClick={() => insertYoutube()}
+                    disabled={!youtubeUrl}
+                  >
+                    삽입
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsYoutubeDropdownOpen(false);
+                      setYoutubeUrl('');
+                      setSavedYoutubeSelection(null);
                     }}
                   >
                     취소
