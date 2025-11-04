@@ -10,7 +10,8 @@
   border: 1px solid color(border);
   border-radius: r(3);
   background: color(bg-modal);
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 
   &.success {
@@ -29,8 +30,11 @@
   padding: 8px 10px;
   background: color(bg-elevation);
   border-bottom: 1px solid color(border);
+  border-radius: r(3) r(3) 0 0;
   min-height: 44px;
   align-items: center;
+  position: relative;
+  overflow: visible;
 }
 
 .toolbarGroup {
@@ -222,17 +226,16 @@
 }
 
 .paragraphDropdown {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 8px;
+  position: fixed;
   margin-top: 2px;
   min-width: 200px;
   max-height: 400px;
   overflow-y: auto;
   background: color(bg-modal);
   border: 1px solid color(border);
+  border-radius: r(2);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 10000;
 
   // 드롭다운 내 h1, h2, h3 태그 스타일
   h1 {
@@ -276,16 +279,14 @@
 
 // 정렬 드롭다운
 .alignDropdown {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 0;
+  position: fixed;
   margin-top: 2px;
   padding: 4px;
   background: color(bg-modal);
   border: 1px solid color(border);
   border-radius: r(2);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -347,17 +348,124 @@
   }
 }
 
+// 링크 드롭다운
+.linkDropdown {
+  position: fixed;
+  margin-top: 2px;
+  padding: 12px;
+  background: color(bg-modal);
+  border: 1px solid color(border);
+  border-radius: r(2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  min-width: 280px;
+
+  .linkInput {
+    margin-bottom: 12px;
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: color(text-sub);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid color(border);
+      border-radius: r(2);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: color(primary);
+      }
+
+      &::placeholder {
+        color: color(text-placeholder);
+      }
+    }
+  }
+
+  .linkTarget {
+    margin-bottom: 12px;
+    padding: 8px 0;
+    border-top: 1px solid color(border);
+    border-bottom: 1px solid color(border);
+
+    label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: color(text-body);
+      cursor: pointer;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      input[type="radio"] {
+        margin-right: 6px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .linkActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+
+    button {
+      padding: 6px 12px;
+      border: 1px solid color(border);
+      border-radius: r(2);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:first-child {
+        background: color(primary);
+        border-color: color(primary);
+        color: color(white);
+
+        &:hover:not(:disabled) {
+          background: color(primary-hover);
+          border-color: color(primary-hover);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      &:last-child {
+        background: color(bg-modal);
+        color: color(text-body);
+
+        &:hover {
+          background: color(default-fill);
+        }
+      }
+    }
+  }
+}
+
 // 색상 팔레트 드롭다운
 .colorPalette {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 0;
+  position: fixed;
+  margin-top: 2px;
   padding: 8px;
   background: color(bg-modal);
   border: 1px solid color(border);
   border-radius: r(2);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -451,9 +559,11 @@
   color: color(text-body); // 기본 텍스트 색상
   font-family: inherit; // podo-ui 기본 폰트 상속
   overflow-y: auto;
+  overflow-x: hidden;
   outline: none;
   min-height: 200px;
   background: color(bg-modal);
+  border-radius: 0 0 r(3) r(3);
 
   &:focus {
     outline: none;
@@ -644,4 +754,292 @@
   color: color(danger);
   font-size: 12px;
   border-top: 1px solid color(danger-outline);
+}
+
+// 이미지 드롭다운
+.imageDropdown {
+  position: fixed;
+  margin-top: 2px;
+  padding: 16px;
+  background: color(bg-modal);
+  border: 1px solid color(border);
+  border-radius: r(2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  min-width: 360px;
+  max-height: 80vh;
+  overflow-y: auto;
+
+  .imageTabSection {
+    margin-bottom: 16px;
+
+    .imageTabButtons {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid color(border);
+
+      button {
+        flex: 1;
+        padding: 8px 12px;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        font-size: 13px;
+        color: color(text-sub);
+        transition: all 0.15s;
+
+        &.active {
+          color: color(primary);
+          border-bottom-color: color(primary);
+          font-weight: 500;
+        }
+
+        &:hover {
+          color: color(text);
+        }
+      }
+    }
+
+    .imageFileSection {
+      .fileSelectButton {
+        width: 100%;
+        padding: 10px;
+        border: 1px dashed color(border);
+        border-radius: r(2);
+        background: color(bg-elevation);
+        cursor: pointer;
+        font-size: 13px;
+        transition: all 0.15s;
+
+        &:hover {
+          border-color: color(primary);
+          background: color(bg-modal);
+        }
+      }
+
+      .imagePreviewBox {
+        margin-top: 12px;
+        padding: 8px;
+        border: 1px solid color(border);
+        border-radius: r(2);
+        background: color(bg-elevation);
+
+        img {
+          width: 100%;
+          max-height: 150px;
+          object-fit: contain;
+        }
+      }
+    }
+
+    .imageUrlSection {
+      input[type="text"] {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid color(border);
+        border-radius: r(2);
+        font-size: 13px;
+        transition: all 0.15s;
+
+        &:focus {
+          outline: none;
+          border-color: color(primary);
+        }
+      }
+    }
+  }
+
+  .imageOptions {
+    padding: 12px 0;
+    border-top: 1px solid color(border);
+    border-bottom: 1px solid color(border);
+
+    .imageOptionRow {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      label {
+        flex: 0 0 80px;
+        font-size: 12px;
+        color: color(text-sub);
+        font-weight: 500;
+      }
+
+      select,
+      input[type="text"] {
+        flex: 1;
+        padding: 6px 8px;
+        border: 1px solid color(border);
+        border-radius: r(2);
+        font-size: 12px;
+        transition: all 0.15s;
+
+        &:focus {
+          outline: none;
+          border-color: color(primary);
+        }
+      }
+    }
+  }
+
+  .imageActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 12px;
+
+    button {
+      padding: 6px 12px;
+      border: 1px solid color(border);
+      border-radius: r(2);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+
+      &:first-child {
+        background: color(primary);
+        color: white;
+        border-color: color(primary);
+
+        &:hover:not(:disabled) {
+          background: color(primary-hover);
+          border-color: color(primary-hover);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      &:last-child {
+        background: white;
+
+        &:hover {
+          background: color(bg-elevation);
+        }
+      }
+    }
+  }
+}
+
+// 링크 수정 팝업
+.editLinkPopup {
+  position: absolute;
+  padding: 12px;
+  background: color(bg-modal);
+  border: 1px solid color(border);
+  border-radius: r(2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  min-width: 300px;
+
+  .editLinkContent {
+    .editLinkInput {
+      margin-bottom: 12px;
+
+      label {
+        display: block;
+        font-size: 12px;
+        color: color(text-sub);
+        margin-bottom: 4px;
+        font-weight: 500;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid color(border);
+        border-radius: r(2);
+        font-size: 13px;
+        transition: all 0.15s;
+
+        &:focus {
+          outline: none;
+          border-color: color(primary);
+          box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+        }
+      }
+    }
+
+    .editLinkTarget {
+      margin-bottom: 12px;
+      padding: 8px 0;
+      border-top: 1px solid color(border);
+      border-bottom: 1px solid color(border);
+
+      label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 6px;
+        font-size: 13px;
+        cursor: pointer;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        input[type="radio"] {
+          margin-right: 6px;
+        }
+      }
+    }
+
+    .editLinkActions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+
+      button {
+        padding: 6px 12px;
+        border: 1px solid color(border);
+        border-radius: r(2);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s;
+
+        &:first-child {
+          background: color(primary);
+          color: white;
+          border-color: color(primary);
+
+          &:hover:not(:disabled) {
+            background: color(primary-hover);
+            border-color: color(primary-hover);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+
+        &:nth-child(2) {
+          background: color(danger);
+          color: white;
+          border-color: color(danger);
+
+          &:hover {
+            background: color(danger-hover);
+            border-color: color(danger-hover);
+          }
+        }
+
+        &:last-child {
+          background: white;
+
+          &:hover {
+            background: color(bg-elevation);
+          }
+        }
+      }
+    }
+  }
 }

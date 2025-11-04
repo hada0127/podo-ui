@@ -28,20 +28,32 @@ const Wysiwyg = ({
   const [isBgColorOpen, setIsBgColorOpen] = useState(false);
   const [isAlignDropdownOpen, setIsAlignDropdownOpen] = useState(false);
   const [currentAlign, setCurrentAlign] = useState('left');
-  const [activeStyles, setActiveStyles] = useState({
-    bold: false,
-    italic: false,
-    underline: false,
-    strikeThrough: false,
-  });
+  const [isLinkDropdownOpen, setIsLinkDropdownOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkTarget, setLinkTarget] = useState('_blank');
+  const [isEditLinkPopupOpen, setIsEditLinkPopupOpen] = useState(false);
+  const [selectedLinkElement, setSelectedLinkElement] = useState<HTMLAnchorElement | null>(null);
+  const [editLinkUrl, setEditLinkUrl] = useState('');
+  const [editLinkTarget, setEditLinkTarget] = useState('_self');
   const [savedSelection, setSavedSelection] = useState<Range | null>(null);
+  const [isImageDropdownOpen, setIsImageDropdownOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [imageWidth, setImageWidth] = useState('100%');
+  const [imageAlign, setImageAlign] = useState('center');
+  const [imageAlt, setImageAlt] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState('');
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const paragraphButtonRef = useRef<HTMLDivElement>(null);
   const textColorButtonRef = useRef<HTMLDivElement>(null);
   const bgColorButtonRef = useRef<HTMLDivElement>(null);
   const alignButtonRef = useRef<HTMLDivElement>(null);
-  const editorID = `wysiwyg-${uuid()}`;
+  const linkButtonRef = useRef<HTMLDivElement>(null);
+  const imageButtonRef = useRef<HTMLDivElement>(null);
+  const imageFileInputRef = useRef<HTMLInputElement>(null);
+  // 클라이언트에서만 ID 생성 (Vite React용)
+  const [editorID, setEditorID] = useState<string>('wysiwyg-editor');
 
   // 색상 팔레트 정의
   const colorPalette = [
@@ -112,14 +124,6 @@ const Wysiwyg = ({
     }
   };
 
-  const detectCurrentTextStyles = () => {
-    setActiveStyles({
-      bold: document.queryCommandState('bold'),
-      italic: document.queryCommandState('italic'),
-      underline: document.queryCommandState('underline'),
-      strikeThrough: document.queryCommandState('strikeThrough'),
-    });
-  };
 
   const detectCurrentAlign = () => {
     // 정렬 상태 감지
@@ -198,7 +202,6 @@ const Wysiwyg = ({
       onChange(content);
       validateHandler(content);
       detectCurrentParagraphStyle();
-      detectCurrentTextStyles();
       detectCurrentAlign();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -269,28 +272,213 @@ const Wysiwyg = ({
     setIsParagraphDropdownOpen(false);
   };
 
-  const insertLink = () => {
-    const url = prompt('링크 URL을 입력하세요:');
-    if (url) {
-      execCommand('createLink', url);
-    }
-  };
+  const applyLink = () => {
+    if (linkUrl && savedSelection) {
+      restoreSelection(savedSelection);
 
-  const insertImage = () => {
-    const choice = confirm('파일을 업로드하시겠습니까?\n확인: 파일 업로드\n취소: URL 입력');
+      const selection = window.getSelection();
+      if (selection && !selection.isCollapsed) {
+        const range = selection.getRangeAt(0);
+        const selectedText = range.toString();
 
-    if (choice) {
-      // 파일 업로드
-      fileInputRef.current?.click();
-    } else {
-      // URL 입력
-      const url = prompt('이미지 URL을 입력하세요:');
-      if (url) {
-        execCommand('insertImage', url);
+        // Create link element
+        const link = document.createElement('a');
+        link.href = linkUrl;
+        link.textContent = selectedText;
+
+        // Set target attribute
+        if (linkTarget === '_blank') {
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+        }
+
+        // Replace selection with link
+        range.deleteContents();
+        range.insertNode(link);
+
+        // Clear and close dropdown
+        setLinkUrl('');
+        setLinkTarget('_blank');
+        setIsLinkDropdownOpen(false);
+        setSavedSelection(null);
+
+        editorRef.current?.focus();
+        handleInput();
       }
     }
   };
 
+  const openLinkDropdown = () => {
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed) {
+      // Save selection
+      const range = saveSelection();
+      setSavedSelection(range);
+      setIsLinkDropdownOpen(true);
+      setIsParagraphDropdownOpen(false);
+      setIsTextColorOpen(false);
+      setIsBgColorOpen(false);
+      setIsAlignDropdownOpen(false);
+    }
+  };
+
+  // 링크 요소 클릭 감지
+  const handleEditorClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+
+    // 링크 요소인지 확인
+    const linkElement = target.closest('a') as HTMLAnchorElement;
+    if (linkElement && editorRef.current?.contains(linkElement)) {
+      e.preventDefault();
+      setSelectedLinkElement(linkElement);
+      setEditLinkUrl(linkElement.href);
+      setEditLinkTarget(linkElement.target || '_self');
+      setIsEditLinkPopupOpen(true);
+    } else {
+      // 일반 클릭 처리
+      detectCurrentParagraphStyle();
+      detectCurrentAlign();
+    }
+  };
+
+  // 링크 수정
+  const updateLink = () => {
+    if (selectedLinkElement && editLinkUrl) {
+      selectedLinkElement.href = editLinkUrl;
+
+      if (editLinkTarget === '_blank') {
+        selectedLinkElement.target = '_blank';
+        selectedLinkElement.rel = 'noopener noreferrer';
+      } else {
+        selectedLinkElement.removeAttribute('target');
+        selectedLinkElement.removeAttribute('rel');
+      }
+
+      setIsEditLinkPopupOpen(false);
+      setSelectedLinkElement(null);
+      editorRef.current?.focus();
+      handleInput();
+    }
+  };
+
+  // 링크 삭제
+  const removeLink = () => {
+    if (selectedLinkElement) {
+      const parent = selectedLinkElement.parentNode;
+      const textContent = selectedLinkElement.textContent || '';
+      const textNode = document.createTextNode(textContent);
+
+      parent?.replaceChild(textNode, selectedLinkElement);
+
+      setIsEditLinkPopupOpen(false);
+      setSelectedLinkElement(null);
+      editorRef.current?.focus();
+      handleInput();
+    }
+  };
+
+  const openImageDropdown = () => {
+    setIsImageDropdownOpen(true);
+    setIsParagraphDropdownOpen(false);
+    setIsTextColorOpen(false);
+    setIsBgColorOpen(false);
+    setIsAlignDropdownOpen(false);
+    setIsLinkDropdownOpen(false);
+  };
+
+  const insertImage = () => {
+    let imageSrc = '';
+
+    // 파일이 업로드된 경우
+    if (imageFile && imagePreview) {
+      imageSrc = imagePreview;
+    }
+    // URL이 입력된 경우
+    else if (imageUrl) {
+      imageSrc = imageUrl;
+    }
+
+    if (!imageSrc) return;
+
+    // 이미지 엘리먼트 생성
+    const img = document.createElement('img');
+    img.src = imageSrc;
+    img.alt = imageAlt || '';
+
+    // 크기 설정
+    if (imageWidth === '100%') {
+      img.style.width = '100%';
+      img.style.height = 'auto';
+    } else if (imageWidth === '75%') {
+      img.style.width = '75%';
+      img.style.height = 'auto';
+    } else if (imageWidth === '50%') {
+      img.style.width = '50%';
+      img.style.height = 'auto';
+    }
+    // '원본'인 경우 스타일을 설정하지 않음
+
+    // 컨테이너 div 생성 (정렬용)
+    const container = document.createElement('div');
+    container.style.textAlign = imageAlign;
+    container.appendChild(img);
+
+    // 에디터에 삽입
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(container);
+
+      // 이미지 다음에 커서 이동
+      const newP = document.createElement('p');
+      const br = document.createElement('br');
+      newP.appendChild(br);
+      container.after(newP);
+
+      const newRange = document.createRange();
+      newRange.selectNodeContents(newP);
+      newRange.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+    } else {
+      editorRef.current?.appendChild(container);
+    }
+
+    // 상태 초기화
+    setIsImageDropdownOpen(false);
+    setImageUrl('');
+    setImageFile(null);
+    setImagePreview('');
+    setImageWidth('100%');
+    setImageAlign('center');
+    setImageAlt('');
+
+    editorRef.current?.focus();
+    handleInput();
+  };
+
+  const handleImageFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setImageFile(file);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setImagePreview(base64String);
+        // URL 필드 초기화
+        setImageUrl('');
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert('이미지 파일을 선택해주세요.');
+    }
+    // 같은 파일을 다시 선택할 수 있도록 초기화
+    e.target.value = '';
+  };
+
+  // 기존 handleFileUpload은 삭제 또는 제거 예정
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
@@ -439,6 +627,11 @@ const Wysiwyg = ({
     applyColorStyle('background-color', color, savedRange);
   };
 
+  // 클라이언트에서만 고유 ID 생성
+  useEffect(() => {
+    setEditorID(`wysiwyg-${uuid()}`);
+  }, []);
+
   useEffect(() => {
     if (editorRef.current && value && !editorRef.current.innerHTML) {
       editorRef.current.innerHTML = value;
@@ -465,16 +658,44 @@ const Wysiwyg = ({
       if (alignButtonRef.current && !alignButtonRef.current.contains(target)) {
         setIsAlignDropdownOpen(false);
       }
+
+      if (linkButtonRef.current && !linkButtonRef.current.contains(target)) {
+        setIsLinkDropdownOpen(false);
+        setLinkUrl('');
+        setLinkTarget('_blank');
+        setSavedSelection(null);
+      }
+
+      if (imageButtonRef.current && !imageButtonRef.current.contains(target)) {
+        setIsImageDropdownOpen(false);
+        setImageUrl('');
+        setImageFile(null);
+        setImagePreview('');
+        setImageWidth('100%');
+        setImageAlign('center');
+        setImageAlt('');
+      }
+
+      // 링크 수정 팝업 닫기
+      if (isEditLinkPopupOpen) {
+        const editPopup = document.querySelector(`.${styles.editLinkPopup}`);
+        if (editPopup && !editPopup.contains(target) && !selectedLinkElement?.contains(target)) {
+          setIsEditLinkPopupOpen(false);
+          setSelectedLinkElement(null);
+          setEditLinkUrl('');
+          setEditLinkTarget('_self');
+        }
+      }
     };
 
-    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen || isAlignDropdownOpen) {
+    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen || isAlignDropdownOpen || isLinkDropdownOpen || isEditLinkPopupOpen || isImageDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen, isAlignDropdownOpen]);
+  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen, isAlignDropdownOpen, isLinkDropdownOpen, isEditLinkPopupOpen, isImageDropdownOpen, selectedLinkElement]);
 
   // 초기 로드 시 문단 형식 감지 (기본 p 태그는 추가하지 않음)
   useEffect(() => {
@@ -483,7 +704,6 @@ const Wysiwyg = ({
       if (editorRef.current && editorRef.current.innerHTML) {
         // 내용이 있을 때만 문단 형식 감지
         detectCurrentParagraphStyle();
-        detectCurrentTextStyles();
         detectCurrentAlign();
       }
     }, 100);
@@ -530,7 +750,13 @@ const Wysiwyg = ({
           </button>
 
           {isParagraphDropdownOpen && (
-            <div className={styles.paragraphDropdown}>
+            <div
+              className={styles.paragraphDropdown}
+              style={{
+                top: paragraphButtonRef.current?.getBoundingClientRect().bottom ?? 0,
+                left: paragraphButtonRef.current?.getBoundingClientRect().left ?? 0
+              }}
+            >
               {paragraphOptions.map((option) => (
                 <button
                   key={option.value}
@@ -556,7 +782,7 @@ const Wysiwyg = ({
         <div className={styles.toolbarGroup}>
           <button
             type="button"
-            className={`${styles.toolbarButton} ${activeStyles.bold ? styles.active : ''}`}
+            className={styles.toolbarButton}
             onClick={() => execCommand('bold')}
             title="굵게"
           >
@@ -564,7 +790,7 @@ const Wysiwyg = ({
           </button>
           <button
             type="button"
-            className={`${styles.toolbarButton} ${activeStyles.italic ? styles.active : ''}`}
+            className={styles.toolbarButton}
             onClick={() => execCommand('italic')}
             title="기울임"
           >
@@ -572,7 +798,7 @@ const Wysiwyg = ({
           </button>
           <button
             type="button"
-            className={`${styles.toolbarButton} ${activeStyles.underline ? styles.active : ''}`}
+            className={styles.toolbarButton}
             onClick={() => execCommand('underline')}
             title="밑줄"
           >
@@ -580,7 +806,7 @@ const Wysiwyg = ({
           </button>
           <button
             type="button"
-            className={`${styles.toolbarButton} ${activeStyles.strikeThrough ? styles.active : ''}`}
+            className={styles.toolbarButton}
             onClick={() => execCommand('strikeThrough')}
             title="취소선"
           >
@@ -608,7 +834,13 @@ const Wysiwyg = ({
               <i className={styles.fontColor} />
             </button>
             {isTextColorOpen && (
-              <div className={styles.colorPalette}>
+              <div
+                className={styles.colorPalette}
+                style={{
+                  top: textColorButtonRef.current?.getBoundingClientRect().bottom ?? 0,
+                  left: textColorButtonRef.current?.getBoundingClientRect().left ?? 0
+                }}
+              >
                 {colorPalette.map((row, rowIndex) => (
                   <div key={rowIndex} className={styles.colorRow}>
                     {row.map((color) => (
@@ -650,7 +882,13 @@ const Wysiwyg = ({
               <i className={styles.highlight} />
             </button>
             {isBgColorOpen && (
-              <div className={styles.colorPalette}>
+              <div
+                className={styles.colorPalette}
+                style={{
+                  top: bgColorButtonRef.current?.getBoundingClientRect().bottom ?? 0,
+                  left: bgColorButtonRef.current?.getBoundingClientRect().left ?? 0
+                }}
+              >
                 {colorPalette.map((row, rowIndex) => (
                   <div key={rowIndex} className={styles.colorRow}>
                     {row.map((color) => (
@@ -691,7 +929,13 @@ const Wysiwyg = ({
             </button>
 
             {isAlignDropdownOpen && (
-              <div className={styles.alignDropdown}>
+              <div
+                className={styles.alignDropdown}
+                style={{
+                  top: alignButtonRef.current?.getBoundingClientRect().bottom ?? 0,
+                  left: alignButtonRef.current?.getBoundingClientRect().left ?? 0
+                }}
+              >
                 {alignOptions.map((option) => (
                   <button
                     key={option.value}
@@ -736,22 +980,221 @@ const Wysiwyg = ({
         </div>
 
         <div className={styles.toolbarGroup}>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={insertLink}
-            title="링크"
-          >
-            <i className={styles.link} />
-          </button>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={insertImage}
-            title="이미지"
-          >
-            <i className={styles.image} />
-          </button>
+          <div ref={linkButtonRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={openLinkDropdown}
+              title="링크"
+            >
+              <i className={styles.link} />
+            </button>
+
+            {isLinkDropdownOpen && (
+              <div
+                className={styles.linkDropdown}
+                style={{
+                  top: linkButtonRef.current?.getBoundingClientRect().bottom ?? 0,
+                  left: linkButtonRef.current?.getBoundingClientRect().left ?? 0
+                }}
+              >
+                <div className={styles.linkInput}>
+                  <label>URL</label>
+                  <input
+                    type="text"
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    placeholder="https://..."
+                    autoFocus
+                  />
+                </div>
+                <div className={styles.linkTarget}>
+                  <label>
+                    <input
+                      type="radio"
+                      value="_blank"
+                      checked={linkTarget === '_blank'}
+                      onChange={(e) => setLinkTarget(e.target.value)}
+                    />
+                    새 창에서 열기
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      value="_self"
+                      checked={linkTarget === '_self'}
+                      onChange={(e) => setLinkTarget(e.target.value)}
+                    />
+                    현재 창에서 열기
+                  </label>
+                </div>
+                <div className={styles.linkActions}>
+                  <button
+                    type="button"
+                    onClick={applyLink}
+                    disabled={!linkUrl}
+                  >
+                    적용
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsLinkDropdownOpen(false);
+                      setLinkUrl('');
+                      setLinkTarget('_blank');
+                      setSavedSelection(null);
+                    }}
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div ref={imageButtonRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={openImageDropdown}
+              title="이미지"
+            >
+              <i className={styles.image} />
+            </button>
+
+            {isImageDropdownOpen && (
+              <div
+                className={styles.imageDropdown}
+                style={{
+                  top: imageButtonRef.current?.getBoundingClientRect().bottom ?? 0,
+                  left: imageButtonRef.current?.getBoundingClientRect().left ?? 0
+                }}
+              >
+                <div className={styles.imageTabSection}>
+                  <div className={styles.imageTabButtons}>
+                    <button
+                      type="button"
+                      className={imageUrl ? '' : styles.active}
+                      onClick={() => {
+                        setImageUrl('');
+                        setImageFile(null);
+                        setImagePreview('');
+                      }}
+                    >
+                      파일 업로드
+                    </button>
+                    <button
+                      type="button"
+                      className={imageUrl ? styles.active : ''}
+                      onClick={() => {
+                        setImageUrl('');
+                        setImageFile(null);
+                        setImagePreview('');
+                      }}
+                    >
+                      URL 입력
+                    </button>
+                  </div>
+
+                  {/* 파일 업로드 탭 */}
+                  {!imageUrl && (
+                    <div className={styles.imageFileSection}>
+                      <input
+                        ref={imageFileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageFileSelect}
+                        style={{ display: 'none' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => imageFileInputRef.current?.click()}
+                        className={styles.fileSelectButton}
+                      >
+                        {imageFile ? imageFile.name : '파일 선택'}
+                      </button>
+                      {imagePreview && (
+                        <div className={styles.imagePreviewBox}>
+                          <img src={imagePreview} alt="Preview" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* URL 입력 탭 */}
+                  {imageUrl !== undefined && !imageFile && (
+                    <div className={styles.imageUrlSection}>
+                      <input
+                        type="text"
+                        value={imageUrl}
+                        onChange={(e) => {
+                          setImageUrl(e.target.value);
+                          setImageFile(null);
+                          setImagePreview('');
+                        }}
+                        placeholder="https://..."
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.imageOptions}>
+                  <div className={styles.imageOptionRow}>
+                    <label>크기</label>
+                    <select value={imageWidth} onChange={(e) => setImageWidth(e.target.value)}>
+                      <option value="100%">100%</option>
+                      <option value="75%">75%</option>
+                      <option value="50%">50%</option>
+                      <option value="original">원본</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.imageOptionRow}>
+                    <label>정렬</label>
+                    <select value={imageAlign} onChange={(e) => setImageAlign(e.target.value)}>
+                      <option value="left">좌측</option>
+                      <option value="center">가운데</option>
+                      <option value="right">우측</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.imageOptionRow}>
+                    <label>대체 텍스트</label>
+                    <input
+                      type="text"
+                      value={imageAlt}
+                      onChange={(e) => setImageAlt(e.target.value)}
+                      placeholder="이미지 설명..."
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.imageActions}>
+                  <button
+                    type="button"
+                    onClick={insertImage}
+                    disabled={!imageUrl && !imageFile}
+                  >
+                    삽입
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsImageDropdownOpen(false);
+                      setImageUrl('');
+                      setImageFile(null);
+                      setImagePreview('');
+                      setImageWidth('100%');
+                      setImageAlign('center');
+                      setImageAlt('');
+                    }}
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={styles.toolbarGroup}>
@@ -772,14 +1215,9 @@ const Wysiwyg = ({
         className={styles.editor}
         contentEditable
         onInput={handleInput}
-        onClick={() => {
-          detectCurrentParagraphStyle();
-          detectCurrentTextStyles();
-          detectCurrentAlign();
-        }}
+        onClick={handleEditorClick}
         onKeyUp={() => {
           detectCurrentParagraphStyle();
-          detectCurrentTextStyles();
           detectCurrentAlign();
         }}
         onKeyDown={handleKeyDown}
@@ -799,6 +1237,77 @@ const Wysiwyg = ({
         onChange={handleFileUpload}
         style={{ display: 'none' }}
       />
+
+      {/* 링크 수정 팝업 */}
+      {isEditLinkPopupOpen && selectedLinkElement && (
+        <div
+          className={styles.editLinkPopup}
+          style={{
+            position: 'absolute',
+            top: selectedLinkElement.offsetTop + selectedLinkElement.offsetHeight + 5,
+            left: selectedLinkElement.offsetLeft
+          }}
+        >
+          <div className={styles.editLinkContent}>
+            <div className={styles.editLinkInput}>
+              <label>URL 수정</label>
+              <input
+                type="text"
+                value={editLinkUrl}
+                onChange={(e) => setEditLinkUrl(e.target.value)}
+                placeholder="https://..."
+                autoFocus
+              />
+            </div>
+            <div className={styles.editLinkTarget}>
+              <label>
+                <input
+                  type="radio"
+                  value="_blank"
+                  checked={editLinkTarget === '_blank'}
+                  onChange={(e) => setEditLinkTarget(e.target.value)}
+                />
+                새 창에서 열기
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="_self"
+                  checked={editLinkTarget === '_self'}
+                  onChange={(e) => setEditLinkTarget(e.target.value)}
+                />
+                현재 창에서 열기
+              </label>
+            </div>
+            <div className={styles.editLinkActions}>
+              <button
+                type="button"
+                onClick={updateLink}
+                disabled={!editLinkUrl}
+              >
+                수정
+              </button>
+              <button
+                type="button"
+                onClick={removeLink}
+              >
+                링크 삭제
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditLinkPopupOpen(false);
+                  setSelectedLinkElement(null);
+                  setEditLinkUrl('');
+                  setEditLinkTarget('_self');
+                }}
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
