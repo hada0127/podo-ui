@@ -713,12 +713,14 @@ const Editor = ({
 
     // 기존 선택된 이미지가 있으면 선택 해제
     // image-wrapper 또는 리사이즈 핸들이 아닌 경우
-    if (selectedImage && !target.closest('.image-wrapper')) {
+    // 단, 리사이즈 중일 때는 선택 해제하지 않음
+    if (selectedImage && !target.closest('.image-wrapper') && !isResizing) {
       deselectImage();
     }
 
     // 기존 선택된 유튜브가 있으면 선택 해제
-    if (selectedYoutube && !target.closest('.youtube-wrapper')) {
+    // 단, 리사이즈 중일 때는 선택 해제하지 않음
+    if (selectedYoutube && !target.closest('.youtube-wrapper') && !isResizing) {
       deselectYoutube();
     }
 
@@ -992,7 +994,8 @@ const Editor = ({
     // wrapper를 유튜브 컨테이너와 동일한 display 속성으로 설정
     const computedStyle = window.getComputedStyle(youtubeContainer);
     wrapper.style.display = computedStyle.display;
-    wrapper.style.width = computedStyle.width;
+    // style.width가 있으면 그것을 사용, 없으면 computed width 사용
+    wrapper.style.width = youtubeContainer.style.width || computedStyle.width;
 
     // 원본 스타일 저장 (나중에 복원용)
     youtubeContainer.dataset.originalWidth = youtubeContainer.style.width;
@@ -1140,22 +1143,35 @@ const Editor = ({
     if (!selectedYoutube) return;
 
     // 크기 적용
-    if (editYoutubeWidth === '100%') {
-      selectedYoutube.style.width = '100%';
-    } else if (editYoutubeWidth === '75%') {
-      selectedYoutube.style.width = '75%';
-    } else if (editYoutubeWidth === '50%') {
-      selectedYoutube.style.width = '50%';
-    } else if (editYoutubeWidth === 'original') {
-      selectedYoutube.style.width = '560px';
-    } else {
+    if (editYoutubeWidth === '100%' || editYoutubeWidth === '75%' || editYoutubeWidth === '50%') {
+      // 퍼센트 값은 그대로 유지
       selectedYoutube.style.width = editYoutubeWidth;
+      selectedYoutube.style.aspectRatio = '16 / 9';
+      selectedYoutube.style.height = 'auto';
+    } else if (editYoutubeWidth === 'original') {
+      // original은 고정 크기
+      selectedYoutube.style.aspectRatio = '';
+      selectedYoutube.style.width = '560px';
+      selectedYoutube.style.height = '315px';
+    } else {
+      // px 값은 그대로 설정 (리사이즈로 변경된 경우)
+      selectedYoutube.style.aspectRatio = '';
+      selectedYoutube.style.width = editYoutubeWidth;
+      // height 계산
+      const width = parseInt(editYoutubeWidth);
+      const height = width / (16 / 9);
+      selectedYoutube.style.height = height + 'px';
     }
 
     // wrapper 크기도 업데이트
     const wrapper = selectedYoutube.parentElement;
     if (wrapper && wrapper.classList.contains('youtube-wrapper')) {
       wrapper.style.width = selectedYoutube.style.width;
+      if (selectedYoutube.style.height && selectedYoutube.style.height !== 'auto') {
+        wrapper.style.height = selectedYoutube.style.height;
+      } else {
+        wrapper.style.height = 'auto';
+      }
     }
 
     // 정렬 적용
@@ -1237,8 +1253,15 @@ const Editor = ({
     // 크기 설정
     if (youtubeWidth === 'original') {
       container.style.width = '560px';
-    } else {
+      container.style.height = '315px';
+    } else if (youtubeWidth === '100%' || youtubeWidth === '75%' || youtubeWidth === '50%') {
+      // 퍼센트는 그대로 유지하고 aspect-ratio 사용
       container.style.width = youtubeWidth;
+      container.style.aspectRatio = '16 / 9';
+    } else {
+      // 기타 값은 그대로 설정
+      container.style.width = youtubeWidth;
+      container.style.aspectRatio = '16 / 9';
     }
 
     // iframe 생성
@@ -1706,12 +1729,16 @@ const Editor = ({
         newHeight = newWidth / aspectRatio;
 
         // 유튜브 컨테이너 크기 업데이트
+        // aspectRatio를 제거하고 명시적인 크기 설정
+        selectedYoutube.style.aspectRatio = '';
         selectedYoutube.style.width = newWidth + 'px';
+        selectedYoutube.style.height = newHeight + 'px';
 
         // wrapper 크기도 업데이트
         const wrapper = selectedYoutube.parentElement;
         if (wrapper && wrapper.classList.contains('youtube-wrapper')) {
           wrapper.style.width = newWidth + 'px';
+          wrapper.style.height = newHeight + 'px';
         }
 
         // 편집 중인 크기 업데이트
@@ -1735,21 +1762,13 @@ const Editor = ({
         setEditImageWidth(selectedImage.style.width);
       }
       if (selectedYoutube) {
-        // 유튜브 크기도 유지
-        const computedStyle = window.getComputedStyle(selectedYoutube);
-        const currentWidth = parseInt(computedStyle.width);
-        const parentWidth = editorRef.current?.offsetWidth || window.innerWidth;
-        const percentage = Math.round((currentWidth / parentWidth) * 100);
+        // 유튜브 크기는 이미 px로 설정되어 있으므로,
+        // 편집창의 width 값만 업데이트 (실제 DOM은 변경하지 않음)
+        const currentWidth = selectedYoutube.style.width;
+        setEditYoutubeWidth(currentWidth);
 
-        if (percentage >= 95) {
-          setEditYoutubeWidth('100%');
-        } else if (percentage >= 70 && percentage <= 80) {
-          setEditYoutubeWidth('75%');
-        } else if (percentage >= 45 && percentage <= 55) {
-          setEditYoutubeWidth('50%');
-        } else {
-          setEditYoutubeWidth(`${percentage}%`);
-        }
+        // 변경된 크기를 새로운 원본으로 설정 (선택 해제 시 이 크기로 복원됨)
+        selectedYoutube.dataset.originalWidth = currentWidth;
       }
     };
 
@@ -1762,7 +1781,7 @@ const Editor = ({
     };
   }, [isResizing, resizeStartData, selectedImage, selectedYoutube]);
 
-  // 스크롤 및 이미지/유튜브 드래그 시 편집창 숨기기
+  // 스크롤, 리사이즈 및 이미지/유튜브 드래그 시 편집창 숨기기
   useEffect(() => {
     if (!selectedImage && !selectedYoutube) return;
 
@@ -1776,25 +1795,43 @@ const Editor = ({
       }
     };
 
+    // 리사이즈 이벤트 핸들러
+    const handleResize = () => {
+      if (isImageEditPopupOpen) {
+        setIsImageEditPopupOpen(false);
+      }
+      if (isYoutubeEditPopupOpen) {
+        setIsYoutubeEditPopupOpen(false);
+      }
+    };
+
     // 드래그 시작 이벤트 핸들러
     const handleDragStart = (e: DragEvent) => {
       if (e.target === selectedImage) {
         setIsImageEditPopupOpen(false);
       }
+      if (e.target === selectedYoutube) {
+        setIsYoutubeEditPopupOpen(false);
+      }
     };
 
-    // 드래그 종료 이벤트 핸들러 - 이미지 이동 후 wrapper 재적용
+    // 드래그 종료 이벤트 핸들러 - 이미지/유튜브 이동 후 wrapper 재적용
     const handleDragEnd = (e: DragEvent) => {
       if (e.target === selectedImage) {
         // 드래그 후에도 선택 상태 유지를 원한다면 여기서 재선택
         // 아니면 선택 해제
         deselectImage();
       }
+      if (e.target === selectedYoutube) {
+        deselectYoutube();
+      }
     };
 
     // 이벤트 리스너 등록
     window.addEventListener('scroll', handleScroll, true);
+    window.addEventListener('resize', handleResize);
     editorRef.current?.addEventListener('scroll', handleScroll);
+    containerRef.current?.addEventListener('resize', handleResize);
 
     if (selectedImage) {
       selectedImage.addEventListener('dragstart', handleDragStart);
@@ -1803,16 +1840,30 @@ const Editor = ({
       selectedImage.draggable = true;
     }
 
+    if (selectedYoutube) {
+      selectedYoutube.addEventListener('dragstart', handleDragStart);
+      selectedYoutube.addEventListener('dragend', handleDragEnd);
+      // 유튜브에 draggable 속성 추가
+      selectedYoutube.draggable = true;
+    }
+
     return () => {
       window.removeEventListener('scroll', handleScroll, true);
+      window.removeEventListener('resize', handleResize);
       editorRef.current?.removeEventListener('scroll', handleScroll);
+      containerRef.current?.removeEventListener('resize', handleResize);
       if (selectedImage) {
         selectedImage.removeEventListener('dragstart', handleDragStart);
         selectedImage.removeEventListener('dragend', handleDragEnd);
         selectedImage.draggable = false;
       }
+      if (selectedYoutube) {
+        selectedYoutube.removeEventListener('dragstart', handleDragStart);
+        selectedYoutube.removeEventListener('dragend', handleDragEnd);
+        selectedYoutube.draggable = false;
+      }
     };
-  }, [selectedImage, isImageEditPopupOpen]);
+  }, [selectedImage, selectedYoutube, isImageEditPopupOpen, isYoutubeEditPopupOpen]);
 
   // DOM Mutation Observer - 선택된 이미지가 DOM에서 제거되는 것을 감지
   useEffect(() => {
@@ -1843,6 +1894,36 @@ const Editor = ({
       observer.disconnect();
     };
   }, [selectedImage]);
+
+  // DOM Mutation Observer - 선택된 유튜브가 DOM에서 제거되는 것을 감지
+  useEffect(() => {
+    if (!selectedYoutube || !editorRef.current) return;
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        // 제거된 노드들 확인
+        mutation.removedNodes.forEach((node) => {
+          // 제거된 노드가 선택된 유튜브이거나 그것을 포함하는 경우
+          if (node === selectedYoutube ||
+              (node.nodeType === Node.ELEMENT_NODE &&
+               (node as Element).contains(selectedYoutube))) {
+            // 선택 상태 해제
+            deselectYoutube();
+          }
+        });
+      });
+    });
+
+    // 에디터 관찰 시작
+    observer.observe(editorRef.current, {
+      childList: true,
+      subtree: true
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [selectedYoutube]);
 
   // 초기 로드 시 문단 형식 감지 (기본 p 태그는 추가하지 않음)
   useEffect(() => {
