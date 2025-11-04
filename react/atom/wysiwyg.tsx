@@ -26,6 +26,8 @@ const Wysiwyg = ({
   const [isParagraphDropdownOpen, setIsParagraphDropdownOpen] = useState(false);
   const [isTextColorOpen, setIsTextColorOpen] = useState(false);
   const [isBgColorOpen, setIsBgColorOpen] = useState(false);
+  const [isAlignDropdownOpen, setIsAlignDropdownOpen] = useState(false);
+  const [currentAlign, setCurrentAlign] = useState('left');
   const [activeStyles, setActiveStyles] = useState({
     bold: false,
     italic: false,
@@ -38,6 +40,7 @@ const Wysiwyg = ({
   const paragraphButtonRef = useRef<HTMLDivElement>(null);
   const textColorButtonRef = useRef<HTMLDivElement>(null);
   const bgColorButtonRef = useRef<HTMLDivElement>(null);
+  const alignButtonRef = useRef<HTMLDivElement>(null);
   const editorID = `wysiwyg-${uuid()}`;
 
   // 색상 팔레트 정의
@@ -50,6 +53,13 @@ const Wysiwyg = ({
     ['#404040', '#800000', '#808000', '#008000', '#008080', '#000080', '#800080', '#808080'],
     // 네 번째 줄: 어두운 톤
     ['#202020', '#400000', '#404000', '#004000', '#004040', '#000040', '#400040', '#404040'],
+  ];
+
+  // 정렬 옵션 정의
+  const alignOptions = [
+    { value: 'left', label: '왼쪽 정렬', icon: 'alignLeft' },
+    { value: 'center', label: '가운데 정렬', icon: 'alignCenter' },
+    { value: 'right', label: '오른쪽 정렬', icon: 'alignRight' },
   ];
 
   // 문단 형식 옵션 정의
@@ -72,6 +82,18 @@ const Wysiwyg = ({
   const getCurrentStyleLabel = () => {
     const option = paragraphOptions.find(opt => opt.value === currentParagraphStyle);
     return option ? option.label : '문단 형식';
+  };
+
+  // 현재 정렬 상태의 라벨 가져오기
+  const getCurrentAlignLabel = () => {
+    const option = alignOptions.find(opt => opt.value === currentAlign);
+    return option ? option.label : '왼쪽 정렬';
+  };
+
+  // 현재 정렬 상태의 아이콘 가져오기
+  const getCurrentAlignIcon = () => {
+    const option = alignOptions.find(opt => opt.value === currentAlign);
+    return option ? styles[option.icon] : styles.alignLeft;
   };
 
   const validateHandler = (content: string) => {
@@ -97,6 +119,20 @@ const Wysiwyg = ({
       underline: document.queryCommandState('underline'),
       strikeThrough: document.queryCommandState('strikeThrough'),
     });
+  };
+
+  const detectCurrentAlign = () => {
+    // 정렬 상태 감지
+    if (document.queryCommandState('justifyLeft')) {
+      setCurrentAlign('left');
+    } else if (document.queryCommandState('justifyCenter')) {
+      setCurrentAlign('center');
+    } else if (document.queryCommandState('justifyRight')) {
+      setCurrentAlign('right');
+    } else {
+      // 기본값은 왼쪽 정렬
+      setCurrentAlign('left');
+    }
   };
 
   const detectCurrentParagraphStyle = () => {
@@ -163,6 +199,7 @@ const Wysiwyg = ({
       validateHandler(content);
       detectCurrentParagraphStyle();
       detectCurrentTextStyles();
+      detectCurrentAlign();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onChange]);
@@ -424,16 +461,20 @@ const Wysiwyg = ({
       if (bgColorButtonRef.current && !bgColorButtonRef.current.contains(target)) {
         setIsBgColorOpen(false);
       }
+
+      if (alignButtonRef.current && !alignButtonRef.current.contains(target)) {
+        setIsAlignDropdownOpen(false);
+      }
     };
 
-    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen) {
+    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen || isAlignDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen]);
+  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen, isAlignDropdownOpen]);
 
   // 초기 로드 시 문단 형식 감지 (기본 p 태그는 추가하지 않음)
   useEffect(() => {
@@ -443,6 +484,7 @@ const Wysiwyg = ({
         // 내용이 있을 때만 문단 형식 감지
         detectCurrentParagraphStyle();
         detectCurrentTextStyles();
+        detectCurrentAlign();
       }
     }, 100);
 
@@ -475,7 +517,12 @@ const Wysiwyg = ({
           <button
             type="button"
             className={styles.paragraphButton}
-            onClick={() => setIsParagraphDropdownOpen(!isParagraphDropdownOpen)}
+            onClick={() => {
+              setIsParagraphDropdownOpen(!isParagraphDropdownOpen);
+              setIsTextColorOpen(false);
+              setIsBgColorOpen(false);
+              setIsAlignDropdownOpen(false);
+            }}
             title="문단 형식"
           >
             <span>{getCurrentStyleLabel()}</span>
@@ -628,30 +675,47 @@ const Wysiwyg = ({
         </div>
 
         <div className={styles.toolbarGroup}>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('justifyLeft')}
-            title="왼쪽 정렬"
-          >
-            <i className={styles.alignLeft} />
-          </button>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('justifyCenter')}
-            title="가운데 정렬"
-          >
-            <i className={styles.alignCenter} />
-          </button>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('justifyRight')}
-            title="오른쪽 정렬"
-          >
-            <i className={styles.alignRight} />
-          </button>
+          <div ref={alignButtonRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={() => {
+                setIsAlignDropdownOpen(!isAlignDropdownOpen);
+                setIsParagraphDropdownOpen(false);
+                setIsTextColorOpen(false);
+                setIsBgColorOpen(false);
+              }}
+              title={getCurrentAlignLabel()}
+            >
+              <i className={getCurrentAlignIcon()} />
+            </button>
+
+            {isAlignDropdownOpen && (
+              <div className={styles.alignDropdown}>
+                {alignOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={`${styles.alignOption} ${currentAlign === option.value ? styles.active : ''}`}
+                    onClick={() => {
+                      if (option.value === 'left') {
+                        execCommand('justifyLeft');
+                      } else if (option.value === 'center') {
+                        execCommand('justifyCenter');
+                      } else if (option.value === 'right') {
+                        execCommand('justifyRight');
+                      }
+                      setCurrentAlign(option.value);
+                      setIsAlignDropdownOpen(false);
+                    }}
+                    title={option.label}
+                  >
+                    <i className={styles[option.icon]} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={styles.toolbarGroup}>
@@ -721,10 +785,12 @@ const Wysiwyg = ({
         onClick={() => {
           detectCurrentParagraphStyle();
           detectCurrentTextStyles();
+          detectCurrentAlign();
         }}
         onKeyUp={() => {
           detectCurrentParagraphStyle();
           detectCurrentTextStyles();
+          detectCurrentAlign();
         }}
         onKeyDown={handleKeyDown}
         style={{ height }}

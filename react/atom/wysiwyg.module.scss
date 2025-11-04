@@ -274,6 +274,79 @@
   }
 }
 
+// 정렬 드롭다운
+.alignDropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  margin-top: 2px;
+  padding: 4px;
+  background: color(bg-modal);
+  border: 1px solid color(border);
+  border-radius: r(2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.alignOption {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: r(2);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  i {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: opacity(0.7);
+    transition: filter 0.2s;
+  }
+
+  // 아이콘 정의 (toolbarButton과 동일)
+  .alignLeft {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M288 64c0 17.7-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32H256c17.7 0 32 14.3 32 32zm0 256c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H256c17.7 0 32 14.3 32 32zM0 192c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>');
+  }
+
+  .alignCenter {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M352 64c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32s14.3 32 32 32H320c17.7 0 32-14.3 32-32zm96 128c0-17.7-14.3-32-32-32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H416c17.7 0 32-14.3 32-32zM0 448c0 17.7 14.3 32 32 32H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H32c-17.7 0-32 14.3-32 32zM352 320c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32s14.3 32 32 32H320c17.7 0 32-14.3 32-32z"/></svg>');
+  }
+
+  .alignRight {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M448 64c0 17.7-14.3 32-32 32H192c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32zm0 256c0 17.7-14.3 32-32 32H192c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32zM0 192c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>');
+  }
+
+  &:hover {
+    background: color(default-fill);
+    border-color: color(border-hover);
+
+    i {
+      filter: opacity(1);
+    }
+  }
+
+  &.active {
+    background: color(primary-fill);
+    border-color: color(primary);
+
+    i {
+      filter: brightness(0) saturate(100%) invert(30%) sepia(88%) saturate(1838%) hue-rotate(250deg) brightness(95%) contrast(109%);
+    }
+  }
+}
+
 // 색상 팔레트 드롭다운
 .colorPalette {
   position: absolute;
