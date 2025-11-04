@@ -436,13 +436,13 @@
       cursor: pointer;
       transition: all 0.2s;
 
-      &:first-child {
-        background: color(primary);
+      &.primary {
+        background-color: color(primary);
+        color: white;
         border-color: color(primary);
-        color: color(white);
 
         &:hover:not(:disabled) {
-          background: color(primary-hover);
+          background-color: color(primary-hover);
           border-color: color(primary-hover);
         }
 
@@ -452,12 +452,13 @@
         }
       }
 
-      &:last-child {
-        background: color(bg-modal);
-        color: color(text-body);
+      &.default {
+        background-color: transparent;
+        color: inherit;
+        border-color: color(border);
 
-        &:hover {
-          background: color(default-fill);
+        &:hover:not(:disabled) {
+          background-color: color(bg-elevation);
         }
       }
     }
@@ -1015,7 +1016,7 @@
   .imageActions {
     display: flex;
     gap: 8px;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin-top: 12px;
 
     button {
@@ -1026,13 +1027,13 @@
       cursor: pointer;
       transition: all 0.15s;
 
-      &:first-child {
-        background: color(primary);
+      &.primary {
+        background-color: color(primary);
         color: white;
         border-color: color(primary);
 
         &:hover:not(:disabled) {
-          background: color(primary-hover);
+          background-color: color(primary-hover);
           border-color: color(primary-hover);
         }
 
@@ -1042,11 +1043,24 @@
         }
       }
 
-      &:last-child {
-        background: white;
+      &.danger {
+        background-color: color(danger);
+        color: white;
+        border-color: color(danger);
 
-        &:hover {
-          background: color(bg-elevation);
+        &:hover:not(:disabled) {
+          background-color: color(danger-hover);
+          border-color: color(danger-hover);
+        }
+      }
+
+      &.default {
+        background-color: transparent;
+        color: inherit;
+        border-color: color(border);
+
+        &:hover:not(:disabled) {
+          background-color: color(bg-elevation);
         }
       }
     }
@@ -1118,7 +1132,7 @@
     .editLinkActions {
       display: flex;
       gap: 8px;
-      justify-content: flex-end;
+      justify-content: space-between;
 
       button {
         padding: 6px 12px;
@@ -1128,13 +1142,13 @@
         cursor: pointer;
         transition: all 0.15s;
 
-        &:first-child {
-          background: color(primary);
+        &.primary {
+          background-color: color(primary);
           color: white;
           border-color: color(primary);
 
           &:hover:not(:disabled) {
-            background: color(primary-hover);
+            background-color: color(primary-hover);
             border-color: color(primary-hover);
           }
 
@@ -1144,22 +1158,24 @@
           }
         }
 
-        &:nth-child(2) {
-          background: color(danger);
+        &.danger {
+          background-color: color(danger);
           color: white;
           border-color: color(danger);
 
-          &:hover {
-            background: color(danger-hover);
+          &:hover:not(:disabled) {
+            background-color: color(danger-hover);
             border-color: color(danger-hover);
           }
         }
 
-        &:last-child {
-          background: white;
+        &.default {
+          background-color: transparent;
+          color: inherit;
+          border-color: color(border);
 
-          &:hover {
-            background: color(bg-elevation);
+          &:hover:not(:disabled) {
+            background-color: color(bg-elevation);
           }
         }
       }

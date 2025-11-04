@@ -2178,21 +2178,23 @@ const Editor = ({
                 <div className={styles.linkActions}>
                   <button
                     type="button"
-                    onClick={applyLink}
-                    disabled={!linkUrl}
-                  >
-                    적용
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => {
                       setIsLinkDropdownOpen(false);
                       setLinkUrl('');
                       setLinkTarget('_blank');
                       setSavedSelection(null);
                     }}
+                    className={styles.default}
                   >
                     취소
+                  </button>
+                  <button
+                    type="button"
+                    onClick={applyLink}
+                    disabled={!linkUrl}
+                    className={styles.primary}
+                  >
+                    삽입
                   </button>
                 </div>
               </div>
@@ -2361,13 +2363,6 @@ const Editor = ({
                 <div className={styles.imageActions}>
                   <button
                     type="button"
-                    onClick={insertImage}
-                    disabled={!imageUrl && !imageFile}
-                  >
-                    삽입
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => {
                       setIsImageDropdownOpen(false);
                       setImageTabMode('file'); // 탭 모드 초기화
@@ -2379,8 +2374,17 @@ const Editor = ({
                       setImageAlt('');
                       setSavedImageSelection(null); // 저장된 선택 영역 초기화
                     }}
+                    className={styles.default}
                   >
                     취소
+                  </button>
+                  <button
+                    type="button"
+                    onClick={insertImage}
+                    disabled={!imageUrl && !imageFile}
+                    className={styles.primary}
+                  >
+                    삽입
                   </button>
                 </div>
               </div>
@@ -2514,13 +2518,7 @@ const Editor = ({
                 <div className={styles.imageActions}>
                   <button
                     type="button"
-                    onClick={() => insertYoutube()}
-                    disabled={!youtubeUrl}
-                  >
-                    삽입
-                  </button>
-                  <button
-                    type="button"
+                    className={styles.default}
                     onClick={() => {
                       setIsYoutubeDropdownOpen(false);
                       setYoutubeUrl('');
@@ -2530,6 +2528,14 @@ const Editor = ({
                     }}
                   >
                     취소
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.primary}
+                    onClick={() => insertYoutube()}
+                    disabled={!youtubeUrl}
+                  >
+                    삽입
                   </button>
                 </div>
               </div>
@@ -2668,28 +2674,33 @@ const Editor = ({
             <div className={styles.editLinkActions}>
               <button
                 type="button"
-                onClick={updateLink}
-                disabled={!editLinkUrl}
-              >
-                수정
-              </button>
-              <button
-                type="button"
                 onClick={removeLink}
+                className={styles.danger}
               >
                 링크 삭제
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsEditLinkPopupOpen(false);
-                  setSelectedLinkElement(null);
-                  setEditLinkUrl('');
-                  setEditLinkTarget('_self');
-                }}
-              >
-                취소
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditLinkPopupOpen(false);
+                    setSelectedLinkElement(null);
+                    setEditLinkUrl('');
+                    setEditLinkTarget('_self');
+                  }}
+                  className={styles.default}
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  onClick={updateLink}
+                  disabled={!editLinkUrl}
+                  className={styles.primary}
+                >
+                  적용
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -2798,27 +2809,27 @@ const Editor = ({
           <div className={styles.imageActions}>
             <button
               type="button"
-              onClick={applyImageEdit}
-            >
-              적용
-            </button>
-            <button
-              type="button"
               onClick={deleteImage}
-              style={{
-                backgroundColor: '#ff4444',
-                color: 'white',
-                borderColor: '#ff4444'
-              }}
+              className={styles.danger}
             >
               삭제
             </button>
-            <button
-              type="button"
-              onClick={deselectImage}
-            >
-              취소
-            </button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={deselectImage}
+                className={styles.default}
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={applyImageEdit}
+                className={styles.primary}
+              >
+                적용
+              </button>
+            </div>
           </div>
         </div>
       )})()}
@@ -2916,27 +2927,27 @@ const Editor = ({
             <div className={styles.imageActions}>
               <button
                 type="button"
-                onClick={applyYoutubeEdit}
-              >
-                적용
-              </button>
-              <button
-                type="button"
+                className={styles.danger}
                 onClick={deleteYoutube}
-                style={{
-                  backgroundColor: '#ff4444',
-                  color: 'white',
-                  borderColor: '#ff4444'
-                }}
               >
                 삭제
               </button>
-              <button
-                type="button"
-                onClick={deselectYoutube}
-              >
-                취소
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className={styles.default}
+                  onClick={deselectYoutube}
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  className={styles.primary}
+                  onClick={applyYoutubeEdit}
+                >
+                  적용
+                </button>
+              </div>
             </div>
           </div>
         )
