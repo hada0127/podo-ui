@@ -1,0 +1,203 @@
+@use '../../scss/color/function.scss' as *;
+@use '../../scss/typo/mixin.scss' as typo;
+
+.editorView {
+  color: color(text-body);
+  font-family: inherit;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
+  // 텍스트 서식
+  strong,
+  b {
+    font-weight: bold;
+  }
+
+  em,
+  i {
+    font-style: italic;
+  }
+
+  u {
+    text-decoration: underline;
+  }
+
+  s,
+  strike {
+    text-decoration: line-through;
+  }
+
+  // 제목 - podo-ui 스타일 상속
+  h1 {
+    @include typo.h1;
+    margin: 0.67em 0;
+  }
+
+  h2 {
+    @include typo.h2;
+    margin: 0.75em 0;
+  }
+
+  h3 {
+    @include typo.h3;
+    margin: 0.83em 0;
+  }
+
+  // p1~p5 스타일 클래스
+  .p1 {
+    @include typo.p1;
+  }
+
+  .p2 {
+    @include typo.p2;
+  }
+
+  .p3 {
+    @include typo.p3;
+  }
+
+  .p4 {
+    @include typo.p4;
+  }
+
+  .p5 {
+    @include typo.p5;
+  }
+
+  // Semibold 스타일
+  .p1_semibold {
+    @include typo.p1;
+    font-weight: 600;
+  }
+
+  .p2_semibold {
+    @include typo.p2;
+    font-weight: 600;
+  }
+
+  .p3_semibold {
+    @include typo.p3-semibold;
+  }
+
+  .p4_semibold {
+    @include typo.p4-semibold;
+  }
+
+  .p5_semibold {
+    @include typo.p5-semibold;
+  }
+
+  // 단락 - 기본 본문 스타일 p3 적용
+  p {
+    @include typo.p3;
+    margin: 1em 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // 링크
+  a {
+    color: color(link);
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      color: color(link-hover);
+    }
+  }
+
+  // 목록 - podo-ui p3 스타일 적용
+  ul,
+  ol {
+    @include typo.p3;
+    margin: 1em 0 !important;
+    padding-left: 2em !important;
+    padding-top: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+
+    &:first-child {
+      margin-top: 0 !important;
+    }
+
+    &:last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  ul {
+    list-style: disc !important;
+    list-style-type: disc !important;
+    list-style-position: outside !important;
+  }
+
+  ol {
+    list-style: decimal !important;
+    list-style-type: decimal !important;
+    list-style-position: outside !important;
+  }
+
+  li {
+    display: list-item !important;
+    margin: 0.5em 0 !important;
+    padding: 0 !important;
+    list-style: inherit !important;
+    list-style-position: outside !important;
+
+    // 중첩된 리스트
+    ul,
+    ol {
+      margin: 0.5em 0 !important;
+      padding-left: 1.5em !important;
+    }
+
+    ul {
+      list-style-type: circle !important;
+    }
+
+    ol {
+      list-style-type: lower-alpha !important;
+    }
+  }
+
+  // 이미지
+  img {
+    display: inline-block !important;
+    vertical-align: middle;
+    max-width: 100%;
+    height: auto;
+  }
+
+  // 인용
+  blockquote {
+    @include typo.p3;
+    margin: 1em 0;
+    padding-left: 1em;
+    border-left: 4px solid color(border);
+    color: color(text-sub);
+    font-style: italic;
+  }
+
+  // 유튜브 컨테이너 (editor에서 삽입된 스타일 유지)
+  :global(.youtube-container) {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    :global(.youtube-overlay) {
+      display: none; // view 모드에서는 오버레이 숨김
+    }
+  }
+}

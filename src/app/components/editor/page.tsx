@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Editor from '../../../../react/atom/editor';
+import EditorView from '../../../../react/atom/editor-view';
 import styles from '../input/page.module.scss';
 
 export default function EditorPage() {
@@ -33,8 +34,16 @@ export default function EditorPage() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>미리보기:</div>
-          <div dangerouslySetInnerHTML={{ __html: content }} />
+          <div className={styles.demoTitle}>미리보기 (EditorView):</div>
+          <div style={{
+            border: '1px solid #e0e0e0',
+            borderRadius: '8px',
+            padding: '16px',
+            backgroundColor: '#fff',
+            minHeight: '100px'
+          }}>
+            <EditorView value={content} />
+          </div>
         </div>
       </section>
 

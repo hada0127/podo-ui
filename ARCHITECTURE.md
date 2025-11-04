@@ -284,7 +284,9 @@ react/
 │   ├── textarea.tsx        # 텍스트영역
 │   ├── textarea.module.scss
 │   ├── editor.tsx          # WYSIWYG 에디터
-│   └── editor.module.scss
+│   ├── editor.module.scss
+│   ├── editor-view.tsx     # 에디터 뷰 (읽기 전용)
+│   └── editor-view.module.scss
 └── molecule/               # 분자 단위 컴포넌트
     ├── field.tsx           # 폼 필드 래퍼
     └── field.module.scss
@@ -336,12 +338,15 @@ function MyForm() {
 **파일:** [react/atom/editor.tsx](react/atom/editor.tsx)
 
 **특징:**
-- SunEditor 기반 WYSIWYG 에디터
-- 이미지 업로드 (커스텀 헤더 지원)
-- Zod 검증
-- 한국어 지원
-- 풍부한 플러그인 (테이블, 비디오, 링크 등)
-- UUID 기반 고유 ID (다중 인스턴스 지원)
+- 자체 제작 WYSIWYG 에디터
+- 이미지/유튜브 삽입 및 편집
+- 텍스트 서식 (굵게, 기울임, 밑줄, 취소선)
+- 폰트 및 크기 설정
+- 단락 형식 (제목 1-6, 본문, 인용 등)
+- 색상 및 정렬 옵션
+- Zod 검증 지원
+- 리사이즈 가능
+- 자동 높이 조절 (height='contents')
 
 **사용 예:**
 
@@ -353,8 +358,32 @@ function MyEditor() {
     <Editor
       value={content}
       onChange={setContent}
-      imageUploadUrl="/api/upload"
+      height="400px"
+      placeholder="내용을 입력하세요..."
     />
+  )
+}
+```
+
+#### EditorView 컴포넌트
+
+**파일:** [react/atom/editor-view.tsx](react/atom/editor-view.tsx)
+
+**특징:**
+- Editor에서 생성된 HTML 표시
+- 읽기 전용
+- Editor와 동일한 스타일 적용
+- 이미지, 링크, 유튜브 영상 표시
+- 간단한 사용법
+
+**사용 예:**
+
+```tsx
+import { EditorView } from 'podo-ui/react'
+
+function MyPost() {
+  return (
+    <EditorView value={htmlContent} />
   )
 }
 ```
