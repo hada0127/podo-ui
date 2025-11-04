@@ -5,19 +5,18 @@ import Editor from '../../../../react/atom/editor';
 import styles from '../input/page.module.scss';
 
 export default function EditorPage() {
-  const [content, setContent] = useState('<p>에디터를 사용해보세요!</p>');
+  const [content, setContent] = useState('');
 
   return (
     <>
       <section className={styles.section}>
         <h1>에디터</h1>
-        <p>Podo UI의 Editor 컴포넌트 (SunEditor 기반) 사용법을 안내합니다</p>
+        <p>Podo UI의 에디터 컴포넌트와 사용법을 안내합니다.</p>
       </section>
 
       <section className={styles.section}>
         <h2>개요</h2>
         <p>
-          Podo UI Editor는 SunEditor를 기반으로 한 리치 텍스트 에디터 컴포넌트입니다.
           React 환경에서 사용할 수 있으며, Podo UI 디자인 시스템과 통합되어 있습니다.
         </p>
 
@@ -26,8 +25,14 @@ export default function EditorPage() {
           <Editor
             value={content}
             onChange={setContent}
-            height="300px"
+            height="400px"
+            placeholder="내용을 입력하세요..."
           />
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>미리보기:</div>
+          <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
       </section>
 
@@ -37,7 +42,7 @@ export default function EditorPage() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.tsx</div>
-          <pre><code>{`import { Editor } from 'podo-ui/react';
+          <pre><code>{`import Editor from 'podo-ui/react/atom/editor';
 
 export default function MyComponent() {
   const [content, setContent] = useState('');
@@ -47,6 +52,7 @@ export default function MyComponent() {
       value={content}
       onChange={setContent}
       height="400px"
+      placeholder="내용을 입력하세요..."
     />
   );
 }`}</code></pre>
@@ -57,47 +63,15 @@ export default function MyComponent() {
         <h2>주요 기능</h2>
         <ul>
           <li>텍스트 서식 (굵게, 기울임, 밑줄, 취소선)</li>
-          <li>폰트 색상 및 배경색</li>
-          <li>정렬 및 목록</li>
-          <li>표, 링크, 이미지, 비디오 삽입</li>
-          <li>전체 화면 및 코드 보기</li>
+          <li>폰트 및 크기 설정</li>
+          <li>단락 형식 (제목 1-6, 본문, 인용, 서식있는 텍스트)</li>
+          <li>글꼴 색상 및 배경색</li>
+          <li>정렬 (왼쪽, 가운데, 오른쪽, 양쪽)</li>
+          <li>목록 (순서 없는 목록, 순서 있는 목록)</li>
+          <li>링크 및 이미지 삽입</li>
+          <li>서식 지우기</li>
           <li>실행 취소/다시 실행</li>
         </ul>
-      </section>
-
-      <section className={styles.section}>
-        <h2>SCSS 커스터마이징</h2>
-        <p>에디터의 스타일은 SCSS 모듈을 통해 커스터마이징할 수 있습니다:</p>
-
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
-
-.editorWrapper {
-  :global {
-    .sun-editor {
-      border: 1px solid color(border);
-      border-radius: r(3);
-
-      .se-toolbar {
-        background: color(bg-elevation-1);
-        border-bottom: 1px solid color(border);
-      }
-
-      .se-wrapper {
-        background: color(bg-modal);
-        color: color(default-deep-base);
-      }
-
-      button {
-        &:hover {
-          background-color: color(primary-fill);
-        }
-      }
-    }
-  }
-}`}</code></pre>
-        </div>
       </section>
     </>
   );

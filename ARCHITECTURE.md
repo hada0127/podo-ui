@@ -284,8 +284,7 @@ react/
 │   ├── textarea.tsx        # 텍스트영역
 │   ├── textarea.module.scss
 │   ├── editor.tsx          # WYSIWYG 에디터
-│   ├── editor.module.scss
-│   └── editor-view.tsx     # 읽기 전용 에디터
+│   └── editor.module.scss
 └── molecule/               # 분자 단위 컴포넌트
     ├── field.tsx           # 폼 필드 래퍼
     └── field.module.scss
@@ -394,7 +393,7 @@ function MyForm() {
 #### 표준 내보내기 ([react.ts](react.ts))
 
 ```typescript
-export { Input, Textarea, Editor, EditorView, Field }
+export { Input, Textarea, Editor, Field }
 ```
 
 #### Next.js 내보내기 ([next.ts](next.ts))
