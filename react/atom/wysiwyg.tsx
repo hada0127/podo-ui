@@ -37,12 +37,21 @@ const Wysiwyg = ({
   const [editLinkTarget, setEditLinkTarget] = useState('_self');
   const [savedSelection, setSavedSelection] = useState<Range | null>(null);
   const [isImageDropdownOpen, setIsImageDropdownOpen] = useState(false);
+  const [imageTabMode, setImageTabMode] = useState<'file' | 'url'>('file'); // 탭 모드 추가
   const [imageUrl, setImageUrl] = useState('');
-  const [imageWidth, setImageWidth] = useState('100%');
-  const [imageAlign, setImageAlign] = useState('center');
+  const [imageWidth, setImageWidth] = useState('original'); // 기본값을 원본으로 변경
+  const [imageAlign, setImageAlign] = useState('left'); // 기본값을 좌측으로 변경
   const [imageAlt, setImageAlt] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
+  const [savedImageSelection, setSavedImageSelection] = useState<Range | null>(null); // 이미지 삽입용 선택 영역 저장
+  const [selectedImage, setSelectedImage] = useState<HTMLImageElement | null>(null); // 선택된 이미지
+  const [isImageEditPopupOpen, setIsImageEditPopupOpen] = useState(false); // 이미지 편집 팝업 상태
+  const [editImageWidth, setEditImageWidth] = useState(''); // 편집 중인 이미지 크기
+  const [editImageAlign, setEditImageAlign] = useState('left'); // 편집 중인 이미지 정렬
+  const [editImageAlt, setEditImageAlt] = useState(''); // 편집 중인 이미지 대체 텍스트
+  const [isResizing, setIsResizing] = useState(false); // 리사이즈 중 여부
+  const [resizeStartData, setResizeStartData] = useState<{ startX: number; startY: number; startWidth: number; startHeight: number; handle: string } | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const paragraphButtonRef = useRef<HTMLDivElement>(null);
@@ -322,9 +331,262 @@ const Wysiwyg = ({
     }
   };
 
+  // 이미지 선택
+  const selectImage = (img: HTMLImageElement) => {
+    // 기존 선택 해제
+    if (selectedImage) {
+      deselectImage();
+    }
+
+    setSelectedImage(img);
+
+    // 이미지 주위에 wrapper 추가
+    const wrapper = document.createElement('div');
+    wrapper.className = 'image-wrapper';
+    wrapper.style.position = 'relative';
+    wrapper.style.display = 'inline-block';
+    wrapper.style.border = '2px solid #0084ff';
+    wrapper.style.padding = '0';
+
+    // 리사이즈 핸들 추가
+    const handles = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    handles.forEach(handle => {
+      const handleDiv = document.createElement('div');
+      handleDiv.className = `resize-handle resize-handle-${handle}`;
+      handleDiv.dataset.handle = handle;
+      handleDiv.style.position = 'absolute';
+      handleDiv.style.width = '8px';
+      handleDiv.style.height = '8px';
+      handleDiv.style.backgroundColor = '#0084ff';
+      handleDiv.style.border = '1px solid white';
+      handleDiv.style.borderRadius = '2px';
+      handleDiv.style.cursor = `${handle}-resize`;
+
+      // 핸들 위치 설정
+      switch(handle) {
+        case 'nw': handleDiv.style.top = '-5px'; handleDiv.style.left = '-5px'; break;
+        case 'n': handleDiv.style.top = '-5px'; handleDiv.style.left = '50%'; handleDiv.style.transform = 'translateX(-50%)'; break;
+        case 'ne': handleDiv.style.top = '-5px'; handleDiv.style.right = '-5px'; break;
+        case 'e': handleDiv.style.top = '50%'; handleDiv.style.right = '-5px'; handleDiv.style.transform = 'translateY(-50%)'; break;
+        case 'se': handleDiv.style.bottom = '-5px'; handleDiv.style.right = '-5px'; break;
+        case 's': handleDiv.style.bottom = '-5px'; handleDiv.style.left = '50%'; handleDiv.style.transform = 'translateX(-50%)'; break;
+        case 'sw': handleDiv.style.bottom = '-5px'; handleDiv.style.left = '-5px'; break;
+        case 'w': handleDiv.style.top = '50%'; handleDiv.style.left = '-5px'; handleDiv.style.transform = 'translateY(-50%)'; break;
+      }
+
+      // 리사이즈 이벤트 핸들러
+      handleDiv.onmousedown = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        startResize(e, img, handle);
+      };
+
+      wrapper.appendChild(handleDiv);
+    });
+
+    // 이미지를 wrapper로 감싸기
+    const parent = img.parentNode;
+    parent?.insertBefore(wrapper, img);
+    wrapper.appendChild(img);
+
+    // 편집 팝업 데이터 설정
+    // 이미지 크기 확인
+    if (img.style.width) {
+      setEditImageWidth(img.style.width);
+    } else {
+      setEditImageWidth('original');
+    }
+
+    // 이미지의 정렬 상태 확인 - 부모 div의 textAlign 체크
+    let container = img.parentElement;
+    let currentAlign = 'left'; // 기본값
+
+    // 부모 요소를 올라가며 textAlign이 설정된 div 찾기
+    while (container && container !== editorRef.current) {
+      if (container.tagName === 'DIV' && container.style.textAlign) {
+        currentAlign = container.style.textAlign;
+        break;
+      }
+      container = container.parentElement;
+    }
+
+    setEditImageAlign(currentAlign);
+    setEditImageAlt(img.alt || '');
+
+    // 약간의 지연 후 편집창 열기 (클릭 이벤트 완전 처리 후)
+    setTimeout(() => {
+      setIsImageEditPopupOpen(true);
+    }, 50);
+  };
+
+  // 이미지 선택 해제
+  const deselectImage = () => {
+    if (!selectedImage) return;
+
+    // wrapper 제거
+    const wrapper = selectedImage.parentElement;
+    if (wrapper && wrapper.classList.contains('image-wrapper')) {
+      const parent = wrapper.parentNode;
+      if (parent) {
+        try {
+          // 이미지를 wrapper 밖으로 이동
+          parent.insertBefore(selectedImage, wrapper);
+          // wrapper 제거
+          wrapper.remove();
+        } catch (e) {
+          // 이미 제거된 경우 무시
+        }
+      }
+    }
+
+    // 이미지 draggable 속성 제거
+    if (selectedImage) {
+      selectedImage.draggable = false;
+    }
+
+    // 상태 초기화
+    setSelectedImage(null);
+    setIsImageEditPopupOpen(false);
+    setIsResizing(false);
+    setResizeStartData(null);
+  };
+
+  // 리사이즈 시작
+  const startResize = (e: MouseEvent, img: HTMLImageElement, handle: string) => {
+    setIsResizing(true);
+    setResizeStartData({
+      startX: e.clientX,
+      startY: e.clientY,
+      startWidth: img.offsetWidth,
+      startHeight: img.offsetHeight,
+      handle
+    });
+  };
+
+  // 이미지 편집 적용
+  const applyImageEdit = () => {
+    if (!selectedImage) return;
+
+    // 크기 적용
+    if (editImageWidth) {
+      if (editImageWidth.includes('%')) {
+        selectedImage.style.width = editImageWidth;
+        selectedImage.style.height = 'auto';
+      } else if (editImageWidth === 'original') {
+        selectedImage.style.width = '';
+        selectedImage.style.height = '';
+      } else {
+        selectedImage.style.width = editImageWidth;
+        selectedImage.style.height = 'auto';
+      }
+    }
+
+    // 정렬 적용 - 이미지를 감싸는 정렬 컨테이너 찾기 또는 생성
+    let alignContainer = selectedImage.parentElement;
+
+    // wrapper가 있으면 그 부모를 확인
+    if (alignContainer?.classList.contains('image-wrapper')) {
+      alignContainer = alignContainer.parentElement;
+    }
+
+    // 정렬 컨테이너가 이미 있는지 확인 (div이고 textAlign이 설정된 경우)
+    if (alignContainer && alignContainer.tagName === 'DIV' && alignContainer !== editorRef.current) {
+      // 기존 컨테이너의 정렬 변경
+      alignContainer.style.textAlign = editImageAlign;
+    } else {
+      // 정렬 컨테이너가 없으면 새로 생성
+      const newContainer = document.createElement('div');
+      newContainer.style.textAlign = editImageAlign;
+
+      // wrapper나 이미지를 새 컨테이너로 감싸기
+      const elementToWrap = selectedImage.parentElement?.classList.contains('image-wrapper')
+        ? selectedImage.parentElement
+        : selectedImage;
+
+      if (elementToWrap.parentNode) {
+        elementToWrap.parentNode.insertBefore(newContainer, elementToWrap);
+        newContainer.appendChild(elementToWrap);
+      }
+    }
+
+    // 대체 텍스트 적용
+    selectedImage.alt = editImageAlt;
+
+    // 선택 해제
+    deselectImage();
+    handleInput();
+  };
+
+  // 이미지 삭제
+  const deleteImage = () => {
+    if (!selectedImage) return;
+
+    // 먼저 선택 해제 (상태 초기화)
+    const imageToDelete = selectedImage;
+    deselectImage();
+
+    // wrapper가 있는 경우 wrapper를 찾아서 제거
+    let elementToRemove = imageToDelete;
+    let parent = imageToDelete.parentElement;
+
+    // wrapper를 거슬러 올라가며 정렬 컨테이너까지 찾기
+    while (parent && parent !== editorRef.current) {
+      if (parent.classList.contains('image-wrapper') ||
+          (parent.tagName === 'DIV' && parent.style.textAlign)) {
+        elementToRemove = parent;
+        parent = parent.parentElement;
+      } else {
+        break;
+      }
+    }
+
+    // DOM에서 제거
+    if (elementToRemove.parentNode) {
+      elementToRemove.parentNode.removeChild(elementToRemove);
+    }
+
+    handleInput();
+  };
+
   // 링크 요소 클릭 감지
   const handleEditorClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
+
+    // 리사이즈 핸들 클릭은 무시
+    if (target.classList.contains('resize-handle')) {
+      return;
+    }
+
+    // 이미지 편집 팝업 클릭은 무시
+    if (target.closest(`.${styles.imageDropdown}`)) {
+      return;
+    }
+
+    // 이미지 요소인지 확인
+    if (target.tagName === 'IMG' && editorRef.current?.contains(target)) {
+      e.preventDefault();
+      e.stopPropagation();
+      const img = target as HTMLImageElement;
+
+      // 이미 선택된 이미지가 아닌 경우에만 선택
+      if (selectedImage !== img) {
+        // 기존 선택 해제
+        if (selectedImage) {
+          deselectImage();
+        }
+        selectImage(img);
+      } else {
+        // 같은 이미지를 다시 클릭하면 편집창 토글
+        setIsImageEditPopupOpen(!isImageEditPopupOpen);
+      }
+      return;
+    }
+
+    // 기존 선택된 이미지가 있으면 선택 해제
+    // image-wrapper 또는 리사이즈 핸들이 아닌 경우
+    if (selectedImage && !target.closest('.image-wrapper')) {
+      deselectImage();
+    }
 
     // 링크 요소인지 확인
     const linkElement = target.closest('a') as HTMLAnchorElement;
@@ -377,8 +639,19 @@ const Wysiwyg = ({
     }
   };
 
-  const openImageDropdown = () => {
+  const openImageDropdown = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    // 현재 선택 영역 저장
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0).cloneRange();
+      setSavedImageSelection(range);
+    } else {
+      setSavedImageSelection(null);
+    }
+
     setIsImageDropdownOpen(true);
+    setImageTabMode('file'); // 기본값으로 파일 업로드 탭 선택
     setIsParagraphDropdownOpen(false);
     setIsTextColorOpen(false);
     setIsBgColorOpen(false);
@@ -386,7 +659,7 @@ const Wysiwyg = ({
     setIsLinkDropdownOpen(false);
   };
 
-  const insertImage = () => {
+  const insertImage = async () => {
     let imageSrc = '';
 
     // 파일이 업로드된 경우
@@ -395,7 +668,35 @@ const Wysiwyg = ({
     }
     // URL이 입력된 경우
     else if (imageUrl) {
-      imageSrc = imageUrl;
+      // URL 유효성 검사
+      try {
+        const testImg = new Image();
+
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Timeout'));
+          }, 5000); // 5초 타임아웃
+
+          testImg.onload = () => {
+            clearTimeout(timeout);
+            resolve(true);
+          };
+
+          testImg.onerror = () => {
+            clearTimeout(timeout);
+            reject(new Error('Load failed'));
+          };
+
+          // CORS를 우회하기 위해 crossOrigin 설정하지 않음
+          testImg.src = imageUrl;
+        });
+
+        imageSrc = imageUrl;
+      } catch (error) {
+        console.error('Image validation failed:', error);
+        alert(`이미지를 불러올 수 없습니다.\n\n가능한 원인:\n1. 잘못된 이미지 URL\n2. CORS 정책으로 인한 차단 (외부 도메인)\n3. 네트워크 연결 문제\n4. 이미지가 존재하지 않음\n\nURL: ${imageUrl}\n\n💡 팁: CORS 정책으로 차단된 경우, 이미지를 직접 다운로드 후 파일 업로드를 사용해주세요.`);
+        return;
+      }
     }
 
     if (!imageSrc) return;
@@ -404,6 +705,26 @@ const Wysiwyg = ({
     const img = document.createElement('img');
     img.src = imageSrc;
     img.alt = imageAlt || '';
+
+    // display를 inline-block으로 설정하여 정렬이 작동하도록 함
+    img.style.display = 'inline-block';
+    img.style.verticalAlign = 'middle'; // 수직 정렬 개선
+
+    // 이미지 로드 에러 처리
+    img.onerror = () => {
+      console.error('Image load failed:', imageSrc);
+      alert(`이미지를 불러올 수 없습니다.\n\n가능한 원인:\n1. 잘못된 이미지 URL\n2. CORS 정책으로 인한 차단\n3. 네트워크 연결 문제\n\nURL: ${imageSrc}`);
+
+      // 에러 발생 시 삽입된 이미지 제거
+      if (img.parentNode) {
+        img.parentNode.removeChild(img);
+      }
+    };
+
+    // 이미지 로드 성공 처리
+    img.onload = () => {
+      // 이미지 로드 성공
+    };
 
     // 크기 설정
     if (imageWidth === '100%') {
@@ -423,36 +744,74 @@ const Wysiwyg = ({
     container.style.textAlign = imageAlign;
     container.appendChild(img);
 
-    // 에디터에 삽입
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-      range.insertNode(container);
+    // 에디터에 포커스 먼저 설정
+    if (editorRef.current) {
+      editorRef.current.focus();
 
-      // 이미지 다음에 커서 이동
-      const newP = document.createElement('p');
-      const br = document.createElement('br');
-      newP.appendChild(br);
-      container.after(newP);
+      const selection = window.getSelection();
 
-      const newRange = document.createRange();
-      newRange.selectNodeContents(newP);
-      newRange.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(newRange);
-    } else {
-      editorRef.current?.appendChild(container);
+      // 저장된 선택 영역이 있으면 복원
+      if (savedImageSelection && selection) {
+        try {
+          selection.removeAllRanges();
+          selection.addRange(savedImageSelection);
+        } catch (e) {
+        }
+      }
+
+      // 선택 영역 재확인
+      if (!selection || selection.rangeCount === 0 || !editorRef.current.contains(selection.anchorNode)) {
+        // 에디터가 비어있으면 p 태그 추가
+        if (!editorRef.current.innerHTML || editorRef.current.innerHTML === '<br>') {
+          const p = document.createElement('p');
+          p.innerHTML = '<br>';
+          editorRef.current.appendChild(p);
+        }
+
+        // 커서를 에디터 끝으로 이동
+        const range = document.createRange();
+        range.selectNodeContents(editorRef.current);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+
+      // 이제 이미지 삽입
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(container);
+
+        // 이미지 다음에 새 문단 추가
+        const newP = document.createElement('p');
+        newP.innerHTML = '<br>';
+        container.after(newP);
+
+        // 커서를 새 문단으로 이동
+        const newRange = document.createRange();
+        newRange.selectNodeContents(newP);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+
+      } else {
+        // 폴백: 에디터 끝에 추가
+        editorRef.current.appendChild(container);
+      }
     }
+
+
 
     // 상태 초기화
     setIsImageDropdownOpen(false);
+    setImageTabMode('file'); // 탭 모드도 초기화
     setImageUrl('');
     setImageFile(null);
     setImagePreview('');
-    setImageWidth('100%');
-    setImageAlign('center');
+    setImageWidth('original'); // 원본으로 초기화
+    setImageAlign('left'); // 좌측으로 초기화
     setImageAlt('');
+    setSavedImageSelection(null); // 저장된 선택 영역 초기화
 
     editorRef.current?.focus();
     handleInput();
@@ -496,6 +855,15 @@ const Wysiwyg = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // Backspace 또는 Delete 키로 선택된 이미지 삭제
+    if ((e.key === 'Backspace' || e.key === 'Delete') && selectedImage) {
+      e.preventDefault();
+
+      // deleteImage 함수 호출로 통합
+      deleteImage();
+      return;
+    }
+
     // 에디터가 비어있고 처음 입력하는 경우
     if (editorRef.current && (!editorRef.current.innerHTML || editorRef.current.innerHTML === '<br>')) {
       // Enter, Backspace, Delete가 아닌 일반 문자 입력인 경우
@@ -666,14 +1034,32 @@ const Wysiwyg = ({
         setSavedSelection(null);
       }
 
-      if (imageButtonRef.current && !imageButtonRef.current.contains(target)) {
+      // 이미지 드롭다운 체크 - 드롭다운 자체도 체크
+      const imageDropdown = document.querySelector(`.${styles.imageDropdown}`);
+      if (imageButtonRef.current &&
+          !imageButtonRef.current.contains(target) &&
+          (!imageDropdown || !imageDropdown.contains(target))) {
         setIsImageDropdownOpen(false);
+        setImageTabMode('file'); // 탭 모드 초기화
         setImageUrl('');
         setImageFile(null);
         setImagePreview('');
-        setImageWidth('100%');
-        setImageAlign('center');
+        setImageWidth('original'); // 원본으로 초기화
+        setImageAlign('left'); // 좌측으로 초기화
         setImageAlt('');
+        setSavedImageSelection(null); // 저장된 선택 영역 초기화
+      }
+
+      // 이미지 편집 팝업 닫기
+      if (isImageEditPopupOpen && selectedImage) {
+        const imageEditPopup = document.querySelector(`.${styles.imageDropdown}`);
+        // 편집 팝업, 선택된 이미지, image-wrapper 외부를 클릭한 경우
+        if (imageEditPopup &&
+            !imageEditPopup.contains(target) &&
+            !selectedImage.contains(target) &&
+            !selectedImage.parentElement?.contains(target)) {
+          setIsImageEditPopupOpen(false);
+        }
       }
 
       // 링크 수정 팝업 닫기
@@ -688,14 +1074,153 @@ const Wysiwyg = ({
       }
     };
 
-    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen || isAlignDropdownOpen || isLinkDropdownOpen || isEditLinkPopupOpen || isImageDropdownOpen) {
+    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen || isAlignDropdownOpen || isLinkDropdownOpen || isEditLinkPopupOpen || isImageDropdownOpen || isImageEditPopupOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen, isAlignDropdownOpen, isLinkDropdownOpen, isEditLinkPopupOpen, isImageDropdownOpen, selectedLinkElement]);
+  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen, isAlignDropdownOpen, isLinkDropdownOpen, isEditLinkPopupOpen, isImageDropdownOpen, isImageEditPopupOpen, selectedLinkElement, selectedImage]);
+
+  // 리사이즈 중 마우스 이벤트 처리
+  useEffect(() => {
+    if (!isResizing || !resizeStartData || !selectedImage) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!selectedImage || !resizeStartData) return;
+
+      const deltaX = e.clientX - resizeStartData.startX;
+      const deltaY = e.clientY - resizeStartData.startY;
+      const aspectRatio = resizeStartData.startWidth / resizeStartData.startHeight;
+
+      let newWidth = resizeStartData.startWidth;
+      let newHeight = resizeStartData.startHeight;
+
+      switch (resizeStartData.handle) {
+        case 'e':
+        case 'w':
+          newWidth = resizeStartData.startWidth + (resizeStartData.handle === 'e' ? deltaX : -deltaX);
+          newHeight = newWidth / aspectRatio;
+          break;
+        case 'n':
+        case 's':
+          newHeight = resizeStartData.startHeight + (resizeStartData.handle === 's' ? deltaY : -deltaY);
+          newWidth = newHeight * aspectRatio;
+          break;
+        case 'ne':
+        case 'nw':
+        case 'se':
+        case 'sw':
+          // 대각선 리사이즈는 더 큰 변화량 기준
+          const diagonalDelta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+          const multiplier = resizeStartData.handle.includes('e') ? 1 : -1;
+          newWidth = resizeStartData.startWidth + (diagonalDelta * multiplier);
+          newHeight = newWidth / aspectRatio;
+          break;
+      }
+
+      // 최소 크기 제한
+      newWidth = Math.max(50, newWidth);
+      newHeight = Math.max(50, newHeight);
+
+      selectedImage.style.width = newWidth + 'px';
+      selectedImage.style.height = newHeight + 'px';
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      setResizeStartData(null);
+      if (selectedImage) {
+        setEditImageWidth(selectedImage.style.width);
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, resizeStartData, selectedImage]);
+
+  // 스크롤 및 이미지 드래그 시 편집창 숨기기
+  useEffect(() => {
+    if (!selectedImage) return;
+
+    // 스크롤 이벤트 핸들러
+    const handleScroll = () => {
+      if (isImageEditPopupOpen) {
+        setIsImageEditPopupOpen(false);
+      }
+    };
+
+    // 드래그 시작 이벤트 핸들러
+    const handleDragStart = (e: DragEvent) => {
+      if (e.target === selectedImage) {
+        setIsImageEditPopupOpen(false);
+      }
+    };
+
+    // 드래그 종료 이벤트 핸들러 - 이미지 이동 후 wrapper 재적용
+    const handleDragEnd = (e: DragEvent) => {
+      if (e.target === selectedImage) {
+        // 드래그 후에도 선택 상태 유지를 원한다면 여기서 재선택
+        // 아니면 선택 해제
+        deselectImage();
+      }
+    };
+
+    // 이벤트 리스너 등록
+    window.addEventListener('scroll', handleScroll, true);
+    editorRef.current?.addEventListener('scroll', handleScroll);
+    selectedImage.addEventListener('dragstart', handleDragStart);
+    selectedImage.addEventListener('dragend', handleDragEnd);
+
+    // 이미지에 draggable 속성 추가
+    selectedImage.draggable = true;
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+      editorRef.current?.removeEventListener('scroll', handleScroll);
+      if (selectedImage) {
+        selectedImage.removeEventListener('dragstart', handleDragStart);
+        selectedImage.removeEventListener('dragend', handleDragEnd);
+        selectedImage.draggable = false;
+      }
+    };
+  }, [selectedImage, isImageEditPopupOpen]);
+
+  // DOM Mutation Observer - 선택된 이미지가 DOM에서 제거되는 것을 감지
+  useEffect(() => {
+    if (!selectedImage || !editorRef.current) return;
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        // 제거된 노드들 확인
+        mutation.removedNodes.forEach((node) => {
+          // 제거된 노드가 선택된 이미지이거나 그것을 포함하는 경우
+          if (node === selectedImage ||
+              (node.nodeType === Node.ELEMENT_NODE &&
+               (node as Element).contains(selectedImage))) {
+            // 선택 상태 해제
+            deselectImage();
+          }
+        });
+      });
+    });
+
+    // 에디터 관찰 시작
+    observer.observe(editorRef.current, {
+      childList: true,
+      subtree: true
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [selectedImage]);
 
   // 초기 로드 시 문단 형식 감지 (기본 p 태그는 추가하지 않음)
   useEffect(() => {
@@ -712,7 +1237,7 @@ const Wysiwyg = ({
   }, []);
 
   return (
-    <div className={`${styles.wysiwyg} ${statusClass}`} style={{ width }}>
+    <div className={`${styles.wysiwyg} ${statusClass}`} style={{ width, position: 'relative' }}>
       <div className={styles.toolbar}>
         <div className={styles.toolbarGroup}>
           <button
@@ -1074,22 +1599,21 @@ const Wysiwyg = ({
                   <div className={styles.imageTabButtons}>
                     <button
                       type="button"
-                      className={imageUrl ? '' : styles.active}
+                      className={imageTabMode === 'file' ? styles.active : ''}
                       onClick={() => {
-                        setImageUrl('');
-                        setImageFile(null);
-                        setImagePreview('');
+                        setImageTabMode('file');
+                        setImageUrl(''); // URL 초기화
                       }}
                     >
                       파일 업로드
                     </button>
                     <button
                       type="button"
-                      className={imageUrl ? styles.active : ''}
+                      className={imageTabMode === 'url' ? styles.active : ''}
                       onClick={() => {
-                        setImageUrl('');
-                        setImageFile(null);
-                        setImagePreview('');
+                        setImageTabMode('url');
+                        setImageFile(null); // 파일 초기화
+                        setImagePreview(''); // 프리뷰 초기화
                       }}
                     >
                       URL 입력
@@ -1097,7 +1621,7 @@ const Wysiwyg = ({
                   </div>
 
                   {/* 파일 업로드 탭 */}
-                  {!imageUrl && (
+                  {imageTabMode === 'file' && (
                     <div className={styles.imageFileSection}>
                       <input
                         ref={imageFileInputRef}
@@ -1122,15 +1646,13 @@ const Wysiwyg = ({
                   )}
 
                   {/* URL 입력 탭 */}
-                  {imageUrl !== undefined && !imageFile && (
+                  {imageTabMode === 'url' && (
                     <div className={styles.imageUrlSection}>
                       <input
                         type="text"
                         value={imageUrl}
                         onChange={(e) => {
                           setImageUrl(e.target.value);
-                          setImageFile(null);
-                          setImagePreview('');
                         }}
                         placeholder="https://..."
                       />
@@ -1141,21 +1663,66 @@ const Wysiwyg = ({
                 <div className={styles.imageOptions}>
                   <div className={styles.imageOptionRow}>
                     <label>크기</label>
-                    <select value={imageWidth} onChange={(e) => setImageWidth(e.target.value)}>
-                      <option value="100%">100%</option>
-                      <option value="75%">75%</option>
-                      <option value="50%">50%</option>
-                      <option value="original">원본</option>
-                    </select>
+                    <div className={styles.imageSizeButtons}>
+                      <button
+                        type="button"
+                        className={imageWidth === '100%' ? styles.active : ''}
+                        onClick={() => setImageWidth('100%')}
+                      >
+                        100%
+                      </button>
+                      <button
+                        type="button"
+                        className={imageWidth === '75%' ? styles.active : ''}
+                        onClick={() => setImageWidth('75%')}
+                      >
+                        75%
+                      </button>
+                      <button
+                        type="button"
+                        className={imageWidth === '50%' ? styles.active : ''}
+                        onClick={() => setImageWidth('50%')}
+                      >
+                        50%
+                      </button>
+                      <button
+                        type="button"
+                        className={imageWidth === 'original' ? styles.active : ''}
+                        onClick={() => setImageWidth('original')}
+                      >
+                        원본
+                      </button>
+                    </div>
                   </div>
 
                   <div className={styles.imageOptionRow}>
                     <label>정렬</label>
-                    <select value={imageAlign} onChange={(e) => setImageAlign(e.target.value)}>
-                      <option value="left">좌측</option>
-                      <option value="center">가운데</option>
-                      <option value="right">우측</option>
-                    </select>
+                    <div className={styles.imageAlignButtons}>
+                      <button
+                        type="button"
+                        className={imageAlign === 'left' ? styles.active : ''}
+                        onClick={() => setImageAlign('left')}
+                        title="왼쪽 정렬"
+                      >
+                        <i className={styles.alignLeft} />
+                      </button>
+                      <button
+                        type="button"
+                        className={imageAlign === 'center' ? styles.active : ''}
+                        onClick={() => setImageAlign('center')}
+                        title="가운데 정렬"
+                      >
+                        <i className={styles.alignCenter} />
+                      </button>
+                      <button
+                        type="button"
+                        className={imageAlign === 'right' ? styles.active : ''}
+                        onClick={() => setImageAlign('right')}
+                        title="오른쪽 정렬"
+                      >
+                        <i className={styles.alignRight} />
+                      </button>
+                    </div>
                   </div>
 
                   <div className={styles.imageOptionRow}>
@@ -1181,12 +1748,14 @@ const Wysiwyg = ({
                     type="button"
                     onClick={() => {
                       setIsImageDropdownOpen(false);
+                      setImageTabMode('file'); // 탭 모드 초기화
                       setImageUrl('');
                       setImageFile(null);
                       setImagePreview('');
-                      setImageWidth('100%');
-                      setImageAlign('center');
+                      setImageWidth('original'); // 원본으로 초기화
+                      setImageAlign('left'); // 좌측으로 초기화
                       setImageAlt('');
+                      setSavedImageSelection(null); // 저장된 선택 영역 초기화
                     }}
                   >
                     취소
@@ -1308,6 +1877,134 @@ const Wysiwyg = ({
           </div>
         </div>
       )}
+
+      {/* 이미지 편집 팝업 */}
+      {isImageEditPopupOpen && selectedImage && (() => {
+        // 이미지의 wrapper를 찾기 (wrapper가 있으면 wrapper 기준, 없으면 이미지 기준)
+        const imageWrapper = selectedImage.parentElement?.classList.contains('image-wrapper')
+          ? selectedImage.parentElement
+          : selectedImage;
+
+        return (
+          <div
+            className={styles.imageDropdown}
+            style={{
+              position: 'fixed',
+              top: imageWrapper.getBoundingClientRect().bottom + 10,
+              left: Math.max(10, Math.min(
+                imageWrapper.getBoundingClientRect().left + (imageWrapper.getBoundingClientRect().width / 2) - 180,
+                window.innerWidth - 370
+              )),
+              zIndex: 9999,
+              minWidth: '360px',
+              maxWidth: '90%'
+            }}
+          >
+          <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', fontWeight: '600' }}>이미지 편집</h3>
+
+          <div className={styles.imageOptions} style={{ marginBottom: '0' }}>
+            <div className={styles.imageOptionRow}>
+              <label>크기</label>
+              <div className={styles.imageSizeButtons}>
+                <button
+                  type="button"
+                  onClick={() => setEditImageWidth('100%')}
+                  className={editImageWidth === '100%' ? styles.active : ''}
+                >
+                  100%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditImageWidth('75%')}
+                  className={editImageWidth === '75%' ? styles.active : ''}
+                >
+                  75%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditImageWidth('50%')}
+                  className={editImageWidth === '50%' ? styles.active : ''}
+                >
+                  50%
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditImageWidth('original')}
+                  className={editImageWidth === 'original' ? styles.active : ''}
+                >
+                  원본
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.imageOptionRow}>
+              <label>정렬</label>
+              <div className={styles.imageAlignButtons}>
+                <button
+                  type="button"
+                  onClick={() => setEditImageAlign('left')}
+                  title="왼쪽 정렬"
+                  className={editImageAlign === 'left' ? styles.active : ''}
+                >
+                  <i className={styles.alignLeft} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditImageAlign('center')}
+                  title="가운데 정렬"
+                  className={editImageAlign === 'center' ? styles.active : ''}
+                >
+                  <i className={styles.alignCenter} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditImageAlign('right')}
+                  title="오른쪽 정렬"
+                  className={editImageAlign === 'right' ? styles.active : ''}
+                >
+                  <i className={styles.alignRight} />
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.imageOptionRow}>
+              <label>대체 텍스트</label>
+              <input
+                type="text"
+                value={editImageAlt}
+                onChange={(e) => setEditImageAlt(e.target.value)}
+                placeholder="이미지 설명..."
+              />
+            </div>
+          </div>
+
+          <div className={styles.imageActions}>
+            <button
+              type="button"
+              onClick={applyImageEdit}
+            >
+              적용
+            </button>
+            <button
+              type="button"
+              onClick={deleteImage}
+              style={{
+                backgroundColor: '#ff4444',
+                color: 'white',
+                borderColor: '#ff4444'
+              }}
+            >
+              삭제
+            </button>
+            <button
+              type="button"
+              onClick={deselectImage}
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      )})()}
     </div>
   );
 };

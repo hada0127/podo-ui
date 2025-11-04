@@ -737,6 +737,14 @@
     }
   }
 
+  // 에디터 내부 이미지는 inline-block으로 설정하여 정렬이 작동하도록 함
+  img {
+    display: inline-block !important;
+    vertical-align: middle;
+    max-width: 100%;
+    height: auto;
+  }
+
   // 인용
   blockquote {
     @include typo.p3;
@@ -785,6 +793,7 @@
         background: transparent;
         border: none;
         border-bottom: 2px solid transparent;
+        border-radius: 0;
         cursor: pointer;
         font-size: 13px;
         color: color(text-sub);
@@ -884,6 +893,98 @@
         &:focus {
           outline: none;
           border-color: color(primary);
+        }
+      }
+
+      // 크기 선택 버튼 그룹
+      .imageSizeButtons {
+        flex: 1;
+        display: flex;
+        gap: 4px;
+
+        button {
+          flex: 1;
+          padding: 6px 8px;
+          border: 1px solid color(border);
+          border-radius: r(2);
+          background: color(bg-modal);
+          color: color(text-sub);
+          font-size: 12px;
+          cursor: pointer;
+          transition: all 0.15s;
+
+          &:hover {
+            background: color(bg-elevation);
+            color: color(text-body);
+          }
+
+          &.active {
+            background: color(primary);
+            color: white;
+            border-color: color(primary);
+          }
+        }
+      }
+
+      // 정렬 아이콘 버튼 그룹
+      .imageAlignButtons {
+        flex: 1;
+        display: flex;
+        gap: 4px;
+
+        button {
+          width: 32px;
+          height: 32px;
+          padding: 0;
+          border: 1px solid color(border);
+          border-radius: r(2);
+          background: color(bg-modal);
+          color: color(text-sub);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s;
+
+          i {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background-size: 14px 14px;
+            background-repeat: no-repeat;
+            background-position: center;
+
+            &.alignLeft {
+              background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M288 64c0 17.7-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32H256c17.7 0 32 14.3 32 32zm0 256c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H256c17.7 0 32 14.3 32 32zM0 192c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>');
+            }
+
+            &.alignCenter {
+              background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M352 64c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32s14.3 32 32 32H320c17.7 0 32-14.3 32-32zm96 128c0-17.7-14.3-32-32-32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H416c17.7 0 32-14.3 32-32zM0 448c0 17.7 14.3 32 32 32H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H32c-17.7 0-32 14.3-32 32zM352 320c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32s14.3 32 32 32H320c17.7 0 32-14.3 32-32z"/></svg>');
+            }
+
+            &.alignRight {
+              background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M448 64c0 17.7-14.3 32-32 32H192c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32zm0 256c0 17.7-14.3 32-32 32H192c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32zM0 192c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 448c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>');
+            }
+          }
+
+          &:hover {
+            background: color(bg-elevation);
+            color: color(text-body);
+
+            i {
+              filter: opacity(0.8);
+            }
+          }
+
+          &.active {
+            background: color(primary);
+            color: white;
+            border-color: color(primary);
+
+            i {
+              filter: brightness(0) invert(1);
+            }
+          }
         }
       }
     }

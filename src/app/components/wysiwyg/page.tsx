@@ -31,16 +31,8 @@ export default function WysiwygPage() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>HTML 출력:</div>
-          <pre style={{
-            background: '#f5f5f5',
-            padding: '16px',
-            borderRadius: '4px',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-all'
-          }}>
-            {content}
-          </pre>
+          <div className={styles.demoTitle}>미리보기:</div>
+          <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
       </section>
 
