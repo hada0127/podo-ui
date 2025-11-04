@@ -1,55 +1,29 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { v4 as uuid } from 'uuid';
-import suneditor from 'suneditor';
-import 'suneditor/dist/css/suneditor.min.css';
-import styles from './editor.module.scss';
-import lang from 'suneditor/src/lang';
-import {
-  blockquote,
-  align,
-  font,
-  fontSize,
-  fontColor,
-  hiliteColor,
-  horizontalRule,
-  list,
-  formatBlock,
-  lineHeight,
-  template,
-  paragraphStyle,
-  textStyle,
-  link,
-  image,
-  video,
-  table,
-} from 'suneditor/src/plugins';
 import { z } from 'zod';
+import styles from './editor.module.scss';
 
 interface Props {
   value: string;
   width?: string;
   height?: string;
   onChange: (content: string) => void;
-  imageUploadUrl?: string;
-  imageUploadHeader?: Record<string, string>;
   validator?: z.ZodType<unknown>;
+  placeholder?: string;
 }
 
-const SunEditor = ({
+const Editor = ({
   value = '',
   width = '100%',
-  height = '600px',
+  height = '400px',
   onChange,
-  imageUploadUrl,
-  imageUploadHeader,
   validator,
+  placeholder = '내용을 입력하세요...',
 }: Props) => {
   const [message, setMessage] = useState('');
   const [statusClass, setStatusClass] = useState('');
-  const editorRef = useRef<HTMLTextAreaElement>(null);
-  const editorID = `f${uuid()}`;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const ref = useRef<any>();
+  const editorRef = useRef<HTMLDivElement>(null);
+  const editorID = `editor-${uuid()}`;
 
   const validateHandler = (content: string) => {
     setMessage('');
@@ -66,91 +40,203 @@ const SunEditor = ({
       }
     }
   };
-  const toolbar = [
-    ['undo', 'redo'],
-    ['fontSize','formatBlock', 'bold', 'underline', 'italic', 'strike'],
-    ['fontColor', 'hiliteColor'],
-    ['align', 'list', 'table'],
-    ['link', 'image', 'video'],
-    ['fullScreen', 'codeView'],
-  ];
-  const editorOptions = {
-    lang: lang.ko,
-    plugins: {
-      blockquote,
-      align,
-      font,
-      fontSize,
-      fontColor,
-      hiliteColor,
-      horizontalRule,
-      list,
-      table,
-      formatBlock,
-      lineHeight,
-      template,
-      paragraphStyle,
-      textStyle,
-      link,
-      image,
-      video,
-    },
-    width: width,
-    height: height,
-    buttonList: toolbar,
-    formats: [
-      'h1',
-      'h2',
-      'h3',
-      'p',
-      'blockquote',
-    ],
-    resizingBar: false,
-    imageUploadUrl,
-    imageUploadHeader,
-    icons: {
-      undo: '<i class="editor undo">실행취소</i>',
-      redo: '<i class="editor redo">다시실행</i>',
-      bold: '<i class="editor bold">굵게</i>',
-      underline: '<i class="editor underline">밑줄</i>',
-      italic: '<i class="editor italic">기울이기</i>',
-      strike: '<i class="editor strike">가운데선</i>',
-      font_color: '<i class="editor font">글자색</i>',
-      highlight_color: '<i class="editor highlighter">배경색</i>',
-      align_left: '<i class="editor align-left">왼쪽 정렬</i>',
-      align_center: '<i class="editor align-center">가운데 정렬</i>',
-      align_right: '<i class="editor align-right">우측 정렬</i>',
-      align_justify: '<i class="editor align-justify">양쪽 정렬</i>',
 
-      list_bullets: '<i class="editor list-ul">목록</i>',
-      list_number: '<i class="editor list-ol">숫자 목록</i>',
-      table: '<i class="editor table">테이블</i>',
-      link: '<i class="editor link">링크</i>',
-      image: '<i class="editor image">사진</i>',
-      video: '<i class="editor video">비디오</i>',
-      expansion: '<i class="editor expand">확장</i>',
-      code_view: '<i class="editor code">코드</i>',
-    },
+  const handleInput = useCallback(() => {
+    if (editorRef.current) {
+      const content = editorRef.current.innerHTML;
+      onChange(content);
+      validateHandler(content);
+    }
+  }, [onChange]);
+
+  const execCommand = (command: string, value: string | undefined = undefined) => {
+    document.execCommand(command, false, value);
+    editorRef.current?.focus();
+    handleInput();
+  };
+
+  const insertLink = () => {
+    const url = prompt('링크 URL을 입력하세요:');
+    if (url) {
+      execCommand('createLink', url);
+    }
   };
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ref.current = suneditor.create(editorID, editorOptions as any);
-
-    ref.current.onChange = function (content: string) {
-      onChange(content);
-      validateHandler(content);
-    };
-
-    return () => {
-      ref.current.destroy();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (editorRef.current && value && !editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = value;
+    }
+  }, [value]);
 
   return (
-    <div className={`${styles.editor} ${statusClass}`}>
-      <textarea ref={editorRef} id={editorID} defaultValue={value} />
+    <div className={`${styles.editor} ${statusClass}`} style={{ width }}>
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarGroup}>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('undo')}
+            title="실행 취소"
+          >
+            <i className="icon undo" />
+          </button>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('redo')}
+            title="다시 실행"
+          >
+            <i className="icon redo" />
+          </button>
+        </div>
+
+        <div className={styles.toolbarGroup}>
+          <select
+            className={styles.toolbarSelect}
+            onChange={(e) => execCommand('formatBlock', e.target.value)}
+            defaultValue=""
+          >
+            <option value="">텍스트</option>
+            <option value="h1">제목 1</option>
+            <option value="h2">제목 2</option>
+            <option value="h3">제목 3</option>
+            <option value="h4">제목 4</option>
+            <option value="h5">제목 5</option>
+            <option value="h6">제목 6</option>
+            <option value="p">본문</option>
+          </select>
+        </div>
+
+        <div className={styles.toolbarGroup}>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('bold')}
+            title="굵게"
+          >
+            <i className="icon bold" />
+          </button>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('italic')}
+            title="기울임"
+          >
+            <i className="icon italic" />
+          </button>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('underline')}
+            title="밑줄"
+          >
+            <i className="icon underline" />
+          </button>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('strikeThrough')}
+            title="취소선"
+          >
+            <i className="icon strikethrough" />
+          </button>
+        </div>
+
+        <div className={styles.toolbarGroup}>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('justifyLeft')}
+            title="왼쪽 정렬"
+          >
+            <i className="icon align-left" />
+          </button>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('justifyCenter')}
+            title="가운데 정렬"
+          >
+            <i className="icon align-center" />
+          </button>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('justifyRight')}
+            title="오른쪽 정렬"
+          >
+            <i className="icon align-right" />
+          </button>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('justifyFull')}
+            title="양쪽 정렬"
+          >
+            <i className="icon align-justify" />
+          </button>
+        </div>
+
+        <div className={styles.toolbarGroup}>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('insertUnorderedList')}
+            title="목록"
+          >
+            <i className="icon list-ul" />
+          </button>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('insertOrderedList')}
+            title="번호 목록"
+          >
+            <i className="icon list-ol" />
+          </button>
+        </div>
+
+        <div className={styles.toolbarGroup}>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={insertLink}
+            title="링크"
+          >
+            <i className="icon link" />
+          </button>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('unlink')}
+            title="링크 제거"
+          >
+            <i className="icon unlink" />
+          </button>
+        </div>
+
+        <div className={styles.toolbarGroup}>
+          <button
+            type="button"
+            className={styles.toolbarButton}
+            onClick={() => execCommand('removeFormat')}
+            title="서식 지우기"
+          >
+            <i className="icon eraser" />
+          </button>
+        </div>
+      </div>
+
+      <div
+        ref={editorRef}
+        id={editorID}
+        className={styles.editorContent}
+        contentEditable
+        onInput={handleInput}
+        style={{ height }}
+        data-placeholder={placeholder}
+      />
+
       {validator && message && (
         <div className={styles.validator}>{message}</div>
       )}
@@ -158,4 +244,4 @@ const SunEditor = ({
   );
 };
 
-export default SunEditor;
+export default Editor;
