@@ -63,7 +63,11 @@ const Wysiwyg = ({
   const [isYoutubeEditPopupOpen, setIsYoutubeEditPopupOpen] = useState(false); // 유튜브 편집 팝업
   const [editYoutubeWidth, setEditYoutubeWidth] = useState('100%'); // 편집 중인 유튜브 크기
   const [editYoutubeAlign, setEditYoutubeAlign] = useState('center'); // 편집 중인 유튜브 정렬
+  const [isCodeView, setIsCodeView] = useState(false); // 코드보기 모드
+  const [codeContent, setCodeContent] = useState(''); // 코드보기 내용
   const editorRef = useRef<HTMLDivElement>(null);
+  const codeEditorRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const paragraphButtonRef = useRef<HTMLDivElement>(null);
   const textColorButtonRef = useRef<HTMLDivElement>(null);
@@ -241,6 +245,71 @@ const Wysiwyg = ({
     document.execCommand(command, false, value);
     editorRef.current?.focus();
     handleInput();
+  };
+
+  // 코드보기 토글
+  const toggleCodeView = () => {
+    if (isCodeView) {
+      // 코드보기에서 일반 모드로 전환
+      setIsCodeView(false);
+      // 다음 렌더링 사이클에서 에디터 내용 업데이트
+      setTimeout(() => {
+        if (editorRef.current && codeContent !== undefined) {
+          editorRef.current.innerHTML = codeContent;
+          handleInput();
+        }
+      }, 0);
+    } else {
+      // 일반 모드에서 코드보기로 전환
+      if (editorRef.current) {
+        // 현재 HTML을 포맷팅
+        const html = editorRef.current.innerHTML;
+        const formattedHtml = formatHtml(html);
+        setCodeContent(formattedHtml);
+        setIsCodeView(true);
+      }
+    }
+  };
+
+  // HTML 포맷팅 함수
+  const formatHtml = (html: string): string => {
+    // 기본적인 HTML 포맷팅
+    let formatted = html
+      .replace(/></g, '>\n<')  // 태그 사이에 줄바꿈 추가
+      .replace(/(<div|<p|<h[1-6]|<ul|<ol|<li|<blockquote)/gi, '\n$1')  // 블록 요소 앞에 줄바꿈
+      .replace(/(<\/div>|<\/p>|<\/h[1-6]>|<\/ul>|<\/ol>|<\/li>|<\/blockquote>)/gi, '$1\n');  // 블록 요소 뒤에 줄바꿈
+
+    // 들여쓰기 추가
+    const lines = formatted.split('\n');
+    let indentLevel = 0;
+    const indentedLines = lines.map(line => {
+      const trimmed = line.trim();
+      if (!trimmed) return '';
+
+      // 닫는 태그인 경우 들여쓰기 레벨 감소
+      if (trimmed.startsWith('</')) {
+        indentLevel = Math.max(0, indentLevel - 1);
+        const indented = '  '.repeat(indentLevel) + trimmed;
+        return indented;
+      }
+
+      // 자체 닫는 태그가 아닌 여는 태그인 경우
+      const indented = '  '.repeat(indentLevel) + trimmed;
+      if (trimmed.startsWith('<') && !trimmed.startsWith('<!') &&
+          !trimmed.endsWith('/>') && trimmed.includes('>') &&
+          !trimmed.includes('</')) {
+        indentLevel++;
+      }
+
+      return indented;
+    });
+
+    return indentedLines.filter(line => line !== '').join('\n');
+  };
+
+  // 코드 에디터 내용 변경 처리
+  const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCodeContent(e.target.value);
   };
 
   const applyParagraphStyle = (value: string) => {
@@ -538,7 +607,7 @@ const Wysiwyg = ({
     deselectImage();
 
     // wrapper가 있는 경우 wrapper를 찾아서 제거
-    let elementToRemove = imageToDelete;
+    let elementToRemove: HTMLElement = imageToDelete;
     let parent = imageToDelete.parentElement;
 
     // wrapper를 거슬러 올라가며 정렬 컨테이너까지 찾기
@@ -1104,7 +1173,7 @@ const Wysiwyg = ({
     const youtubeToDelete = selectedYoutube;
     deselectYoutube();
 
-    let elementToRemove = youtubeToDelete;
+    let elementToRemove: HTMLElement = youtubeToDelete;
     let parent = youtubeToDelete.parentElement;
 
     while (parent && parent !== editorRef.current) {
@@ -1707,11 +1776,13 @@ const Wysiwyg = ({
     // 이벤트 리스너 등록
     window.addEventListener('scroll', handleScroll, true);
     editorRef.current?.addEventListener('scroll', handleScroll);
-    selectedImage.addEventListener('dragstart', handleDragStart);
-    selectedImage.addEventListener('dragend', handleDragEnd);
 
-    // 이미지에 draggable 속성 추가
-    selectedImage.draggable = true;
+    if (selectedImage) {
+      selectedImage.addEventListener('dragstart', handleDragStart);
+      selectedImage.addEventListener('dragend', handleDragEnd);
+      // 이미지에 draggable 속성 추가
+      selectedImage.draggable = true;
+    }
 
     return () => {
       window.removeEventListener('scroll', handleScroll, true);
@@ -2457,23 +2528,65 @@ const Wysiwyg = ({
             <i className={styles.eraser} />
           </button>
         </div>
+
+        <div className={styles.toolbarGroup}>
+          <button
+            type="button"
+            className={`${styles.toolbarButton} ${isCodeView ? styles.active : ''}`}
+            onClick={toggleCodeView}
+            title={isCodeView ? "에디터로 전환" : "HTML 코드보기"}
+          >
+            <i className={styles.code} />
+          </button>
+        </div>
       </div>
 
       <div
-        ref={editorRef}
-        id={editorID}
-        className={styles.editor}
-        contentEditable
-        onInput={handleInput}
-        onClick={handleEditorClick}
-        onKeyUp={() => {
-          detectCurrentParagraphStyle();
-          detectCurrentAlign();
+        ref={containerRef}
+        className={styles.editorContainer}
+        style={{
+          height: height || '300px',
+          minHeight: '200px',
+          display: 'flex',
+          flexDirection: 'column'
         }}
-        onKeyDown={handleKeyDown}
-        style={{ height }}
-        data-placeholder={placeholder}
-      />
+      >
+        {isCodeView ? (
+          <textarea
+            ref={codeEditorRef}
+            className={styles.codeEditor}
+            value={codeContent}
+            onChange={handleCodeChange}
+            spellCheck={false}
+            style={{
+              flex: 1,
+              minHeight: 0,
+              resize: 'none'
+            }}
+            placeholder={placeholder}
+          />
+        ) : (
+          <div
+            ref={editorRef}
+            id={editorID}
+            className={styles.editor}
+            contentEditable
+            onInput={handleInput}
+            onClick={handleEditorClick}
+            onKeyUp={() => {
+              detectCurrentParagraphStyle();
+              detectCurrentAlign();
+            }}
+            onKeyDown={handleKeyDown}
+            style={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: 'auto'
+            }}
+            data-placeholder={placeholder}
+          />
+        )}
+      </div>
 
       {validator && message && (
         <div className={styles.validator}>{message}</div>
