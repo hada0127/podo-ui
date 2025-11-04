@@ -6,6 +6,8 @@ import styles from '../input/page.module.scss';
 
 export default function EditorPage() {
   const [content, setContent] = useState('');
+  const [content2, setContent2] = useState('');
+  const [content3, setContent3] = useState('');
 
   return (
     <>
@@ -69,9 +71,139 @@ export default function MyComponent() {
           <li>정렬 (왼쪽, 가운데, 오른쪽, 양쪽)</li>
           <li>목록 (순서 없는 목록, 순서 있는 목록)</li>
           <li>링크 및 이미지 삽입</li>
+          <li>유튜브 동영상 삽입</li>
+          <li>HTML 코드 보기/편집</li>
           <li>서식 지우기</li>
           <li>실행 취소/다시 실행</li>
         </ul>
+      </section>
+
+      <section className={styles.section}>
+        <h2>높이 설정 옵션</h2>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>자동 높이 (height="contents"):</div>
+          <Editor
+            value={content2}
+            onChange={setContent2}
+            height="contents"
+            minHeight="150px"
+            maxHeight="500px"
+            placeholder="내용에 따라 자동으로 높이가 조절됩니다..."
+          />
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>자동 높이 예제</div>
+          <pre><code>{`<Editor
+  value={content}
+  onChange={setContent}
+  height="contents"
+  minHeight="150px"
+  maxHeight="500px"
+  placeholder="내용에 따라 자동으로 높이가 조절됩니다..."
+/>`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>크기 조절 가능 에디터</h2>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>리사이즈 가능 (resizable={true}):</div>
+          <Editor
+            value={content3}
+            onChange={setContent3}
+            height="300px"
+            minHeight="200px"
+            maxHeight="600px"
+            resizable={true}
+            placeholder="우측 하단을 드래그하여 크기를 조절할 수 있습니다..."
+          />
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>리사이즈 예제</div>
+          <pre><code>{`<Editor
+  value={content}
+  onChange={setContent}
+  height="300px"
+  minHeight="200px"
+  maxHeight="600px"
+  resizable={true}
+  placeholder="우측 하단을 드래그하여 크기를 조절할 수 있습니다..."
+/>`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Props</h2>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>속성</th>
+              <th>타입</th>
+              <th>기본값</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>value</td>
+              <td>string</td>
+              <td>''</td>
+              <td>에디터의 HTML 내용</td>
+            </tr>
+            <tr>
+              <td>onChange</td>
+              <td>function</td>
+              <td>-</td>
+              <td>내용 변경 시 호출되는 콜백 함수</td>
+            </tr>
+            <tr>
+              <td>height</td>
+              <td>string | 'contents'</td>
+              <td>'400px'</td>
+              <td>에디터 높이 (px 단위 또는 'contents')</td>
+            </tr>
+            <tr>
+              <td>minHeight</td>
+              <td>string</td>
+              <td>-</td>
+              <td>최소 높이 (px 단위)</td>
+            </tr>
+            <tr>
+              <td>maxHeight</td>
+              <td>string</td>
+              <td>-</td>
+              <td>최대 높이 (px 단위)</td>
+            </tr>
+            <tr>
+              <td>width</td>
+              <td>string</td>
+              <td>'100%'</td>
+              <td>에디터 너비</td>
+            </tr>
+            <tr>
+              <td>resizable</td>
+              <td>boolean</td>
+              <td>false</td>
+              <td>크기 조절 가능 여부</td>
+            </tr>
+            <tr>
+              <td>placeholder</td>
+              <td>string</td>
+              <td>'내용을 입력하세요...'</td>
+              <td>빈 에디터에 표시될 플레이스홀더</td>
+            </tr>
+            <tr>
+              <td>validator</td>
+              <td>z.ZodType</td>
+              <td>-</td>
+              <td>Zod 검증 스키마</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
     </>
   );

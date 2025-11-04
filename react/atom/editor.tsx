@@ -6,7 +6,10 @@ import styles from './editor.module.scss';
 interface Props {
   value: string;
   width?: string;
-  height?: string;
+  height?: string | 'contents';
+  minHeight?: string;
+  maxHeight?: string;
+  resizable?: boolean;
   onChange: (content: string) => void;
   validator?: z.ZodType<unknown>;
   placeholder?: string;
@@ -16,6 +19,9 @@ const Editor = ({
   value = '',
   width = '100%',
   height = '400px',
+  minHeight,
+  maxHeight,
+  resizable = false,
   onChange,
   validator,
   placeholder = '내용을 입력하세요...',
@@ -65,6 +71,7 @@ const Editor = ({
   const [editYoutubeAlign, setEditYoutubeAlign] = useState('center'); // 편집 중인 유튜브 정렬
   const [isCodeView, setIsCodeView] = useState(false); // 코드보기 모드
   const [codeContent, setCodeContent] = useState(''); // 코드보기 내용
+  const [savedEditorHeight, setSavedEditorHeight] = useState<number | null>(null); // 위지윅 에디터 높이 저장
   const editorRef = useRef<HTMLDivElement>(null);
   const codeEditorRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -252,6 +259,7 @@ const Editor = ({
     if (isCodeView) {
       // 코드보기에서 일반 모드로 전환
       setIsCodeView(false);
+      setSavedEditorHeight(null); // 저장된 높이 초기화
       // 다음 렌더링 사이클에서 에디터 내용 업데이트
       setTimeout(() => {
         if (editorRef.current && codeContent !== undefined) {
@@ -262,6 +270,12 @@ const Editor = ({
     } else {
       // 일반 모드에서 코드보기로 전환
       if (editorRef.current) {
+        // height가 contents일 때 현재 에디터 높이 저장
+        if (height === 'contents') {
+          const currentHeight = editorRef.current.scrollHeight;
+          setSavedEditorHeight(currentHeight);
+        }
+
         // 현재 HTML을 포맷팅
         const html = editorRef.current.innerHTML;
         const formattedHtml = formatHtml(html);
@@ -2548,12 +2562,15 @@ const Editor = ({
 
       <div
         ref={containerRef}
-        className={styles.editorContainer}
+        className={`${styles.editorContainer} ${resizable ? styles.resizable : ''}`}
         style={{
-          height: height || '300px',
-          minHeight: '200px',
+          height: height === 'contents' ? 'auto' : (height || '300px'),
+          minHeight: minHeight || (height === 'contents' ? '100px' : '200px'),
+          maxHeight: maxHeight || (height === 'contents' ? undefined : undefined),
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          resize: resizable ? 'vertical' : 'none',
+          overflow: 'auto'
         }}
       >
         {isCodeView ? (
@@ -2564,8 +2581,9 @@ const Editor = ({
             onChange={handleCodeChange}
             spellCheck={false}
             style={{
-              flex: 1,
-              minHeight: 0,
+              flex: height === 'contents' ? '0 0 auto' : 1,
+              minHeight: height === 'contents' ? 'auto' : 0,
+              height: height === 'contents' && savedEditorHeight ? `${savedEditorHeight}px` : undefined,
               resize: 'none'
             }}
             placeholder={placeholder}
@@ -2584,9 +2602,9 @@ const Editor = ({
             }}
             onKeyDown={handleKeyDown}
             style={{
-              flex: 1,
-              minHeight: 0,
-              overflowY: 'auto'
+              flex: height === 'contents' ? '0 0 auto' : 1,
+              minHeight: height === 'contents' ? 'auto' : 0,
+              overflowY: height === 'contents' ? 'visible' : 'auto'
             }}
             data-placeholder={placeholder}
           />

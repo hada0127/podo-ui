@@ -10,7 +10,7 @@
   border: 1px solid color(border);
   border-radius: r(3);
   background: color(bg-modal);
-  overflow: visible;
+  overflow: hidden;
   position: relative;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 
@@ -565,6 +565,16 @@
 .editorContainer {
   background: color(bg-modal);
   overflow: hidden;
+
+  &.resizable {
+    resize: vertical;
+    overflow: auto;
+
+    // 리사이즈 핸들 스타일
+    &::-webkit-resizer {
+      background: transparent;
+    }
+  }
 }
 
 .editorContent {
