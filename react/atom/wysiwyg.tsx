@@ -716,9 +716,7 @@ const Wysiwyg = ({
               </div>
             )}
           </div>
-        </div>
 
-        <div className={styles.toolbarGroup}>
           <button
             type="button"
             className={styles.toolbarButton}
@@ -745,14 +743,6 @@ const Wysiwyg = ({
             title="링크"
           >
             <i className={styles.link} />
-          </button>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('unlink')}
-            title="링크 제거"
-          >
-            <i className={styles.unlink} />
           </button>
           <button
             type="button"
