@@ -351,6 +351,132 @@ const Editor = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onChange, addToHistory]);
 
+  // 붙여넣기 이벤트 핸들러 - 지원하지 않는 스타일 제거
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const clipboardData = e.clipboardData;
+    if (!clipboardData) return;
+
+    // HTML 데이터 가져오기
+    const html = clipboardData.getData('text/html');
+    const text = clipboardData.getData('text/plain');
+
+    if (html) {
+      // 임시 div를 만들어서 HTML 파싱
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+
+      // 지원하는 태그와 스타일 정의
+      const allowedTags = ['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'S', 'STRIKE', 'DEL',
+                          'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE',
+                          'UL', 'OL', 'LI', 'A', 'IMG', 'SPAN', 'DIV'];
+      const allowedStyles = ['color', 'background-color', 'text-align'];
+
+      // 모든 요소를 순회하면서 정리
+      const cleanElement = (element: Element): Node | null => {
+        const tagName = element.tagName;
+
+        // 지원하지 않는 태그는 내용만 유지
+        if (!allowedTags.includes(tagName)) {
+          const fragment = document.createDocumentFragment();
+          Array.from(element.childNodes).forEach(child => {
+            if (child.nodeType === Node.ELEMENT_NODE) {
+              const cleaned = cleanElement(child as Element);
+              if (cleaned) fragment.appendChild(cleaned);
+            } else if (child.nodeType === Node.TEXT_NODE) {
+              fragment.appendChild(child.cloneNode(true));
+            }
+          });
+          return fragment.childNodes.length > 0 ? fragment : null;
+        }
+
+        // 지원하는 태그는 복제하고 스타일 정리
+        const newElement = element.cloneNode(false) as HTMLElement;
+
+        // 모든 속성 제거 후 필요한 것만 복원
+        const attrs = Array.from(element.attributes);
+        attrs.forEach(attr => newElement.removeAttribute(attr.name));
+
+        // href, src, alt 등 필수 속성만 복원
+        if (tagName === 'A' && element.getAttribute('href')) {
+          newElement.setAttribute('href', element.getAttribute('href')!);
+        }
+        if (tagName === 'IMG') {
+          if (element.getAttribute('src')) {
+            newElement.setAttribute('src', element.getAttribute('src')!);
+          }
+          if (element.getAttribute('alt')) {
+            newElement.setAttribute('alt', element.getAttribute('alt')!);
+          }
+        }
+
+        // 스타일 복원 (허용된 것만)
+        if (element instanceof HTMLElement && element.style) {
+          allowedStyles.forEach(styleName => {
+            const value = element.style.getPropertyValue(styleName);
+            if (value) {
+              (newElement as HTMLElement).style.setProperty(styleName, value);
+            }
+          });
+        }
+
+        // 자식 요소 처리
+        Array.from(element.childNodes).forEach(child => {
+          if (child.nodeType === Node.ELEMENT_NODE) {
+            const cleaned = cleanElement(child as Element);
+            if (cleaned) newElement.appendChild(cleaned);
+          } else if (child.nodeType === Node.TEXT_NODE) {
+            newElement.appendChild(child.cloneNode(true));
+          }
+        });
+
+        return newElement;
+      };
+
+      // 정리된 HTML 생성
+      const cleanedDiv = document.createElement('div');
+      Array.from(tempDiv.childNodes).forEach(child => {
+        if (child.nodeType === Node.ELEMENT_NODE) {
+          const cleaned = cleanElement(child as Element);
+          if (cleaned) cleanedDiv.appendChild(cleaned);
+        } else if (child.nodeType === Node.TEXT_NODE) {
+          cleanedDiv.appendChild(child.cloneNode(true));
+        }
+      });
+
+      // 현재 커서 위치에 삽입
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+
+        const fragment = document.createDocumentFragment();
+        while (cleanedDiv.firstChild) {
+          fragment.appendChild(cleanedDiv.firstChild);
+        }
+        range.insertNode(fragment);
+
+        // 커서를 삽입된 내용의 끝으로 이동
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    } else if (text) {
+      // HTML이 없으면 일반 텍스트 삽입
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(document.createTextNode(text));
+        range.collapse(false);
+      }
+    }
+
+    // 변경사항 반영
+    handleInput();
+  }, [handleInput]);
+
   const execCommand = (command: string, value: string | undefined = undefined) => {
     // undo/redo는 커스텀 함수 사용
     if (command === 'undo') {
@@ -2834,6 +2960,7 @@ const Editor = ({
             className={styles.editorContent}
             contentEditable
             onInput={handleInput}
+            onPaste={handlePaste}
             onClick={handleEditorClick}
             onKeyUp={() => {
               detectCurrentParagraphStyle();
