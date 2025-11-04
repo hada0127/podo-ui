@@ -46,7 +46,6 @@
 
   code {
     @include p4;
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
     color: color(primary);
     background: color(primary-fill);
     padding: s(2) s(3);
@@ -107,7 +106,6 @@
 
     code {
       @include p3;
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
       color: color(default-deep);
       white-space: pre;
 

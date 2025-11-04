@@ -287,14 +287,12 @@
   @include p4;
   font-weight: 600;
   color: color(default-base);
-  font-family: 'Monaco', 'Menlo', monospace;
 }
 
 .browserTab {
   @include p4;
   font-weight: 600;
   color: color(default-deep-base);
-  font-family: 'Monaco', 'Menlo', monospace;
 }
 
 .browserContent {
@@ -581,7 +579,6 @@
     @include p4;
     font-weight: 600;
     color: color(primary-reverse) !important;
-    font-family: 'Monaco', 'Menlo', monospace;
   }
 
   &:hover {
@@ -654,7 +651,6 @@
     margin-bottom: s(5);
     padding-bottom: s(3);
     border-bottom: 1px solid color(default-outline);
-    font-family: 'Monaco', 'Menlo', monospace;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }

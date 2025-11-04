@@ -32,7 +32,6 @@
 
     code {
       @include p3;
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
       color: color(default-deep);
       white-space: pre;
 
@@ -113,7 +112,6 @@
 
 .colorName {
   @include p4;
-  font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
   color: color(default);
   margin: 0 0 s(2) 0;
 }
@@ -195,7 +193,6 @@
 
   code {
     @include p5;
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
     color: color(primary);
     background: color(primary-fill);
     padding: 2px 6px;
@@ -346,7 +343,6 @@
 
   code {
     @include p5;
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
     color: color(default);
     display: block;
   }

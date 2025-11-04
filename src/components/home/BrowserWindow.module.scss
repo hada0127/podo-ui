@@ -57,7 +57,6 @@
   @include p4;
   font-weight: 600;
   color: color(default-deep-base);
-  font-family: 'Monaco', 'Menlo', monospace;
 
   @media (max-width: 768px) {
     font-size: 12px;
