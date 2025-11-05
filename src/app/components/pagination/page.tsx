@@ -43,7 +43,7 @@ export default function PaginationPage() {
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.tsx</div>
           <pre><code>{`import { useState } from 'react';
-import { Pagination } from 'podo-ui/react';
+import { Pagination } from 'podo-ui';
 
 export default function MyComponent() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -137,7 +137,7 @@ export default function MyComponent() {
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>list-with-pagination.tsx</div>
           <pre><code>{`import { useState } from 'react';
-import { Pagination } from 'podo-ui/react';
+import { Pagination } from 'podo-ui';
 
 export default function DataList() {
   const [currentPage, setCurrentPage] = useState(1);

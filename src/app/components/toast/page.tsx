@@ -557,7 +557,7 @@ export default function Toast() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>app/layout.tsx</div>
-          <pre><code>{`import { ToastProvider } from 'podo-ui/react/molecule/toast-provider';
+          <pre><code>{`import { ToastProvider } from 'podo-ui';
 
 export default function RootLayout({ children }) {
   return (
@@ -577,7 +577,7 @@ export default function RootLayout({ children }) {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.tsx</div>
-          <pre><code>{`import { useToast } from 'podo-ui/react/molecule/toast-provider';
+          <pre><code>{`import { useToast } from 'podo-ui';
 
 function MyComponent() {
   const { showToast } = useToast();

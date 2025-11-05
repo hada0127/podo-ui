@@ -47,7 +47,7 @@ export default function FieldPage() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.tsx</div>
-          <pre><code>{`import { Field } from 'podo-ui/react';
+          <pre><code>{`import { Field } from 'podo-ui';
 
 export default function MyForm() {
   return (

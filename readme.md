@@ -34,20 +34,12 @@ import 'podo-ui/vite-fonts.scss'; // Vite 사용 시
 ### React 컴포넌트
 
 ```tsx
-// Atomic 컴포넌트
+// Named imports로 개별 컴포넌트 가져오기
+import { Input, Textarea, Editor, EditorView, Field, Pagination } from 'podo-ui';
+
+// 또는 개별 컴포넌트 직접 import (레거시 방식)
 import Input from 'podo-ui/react/atom/input';
-import Textarea from 'podo-ui/react/atom/textarea';
-import Editor from 'podo-ui/react/atom/editor';
-import EditorView from 'podo-ui/react/atom/editor-view';
-
-// Molecule 컴포넌트
 import Field from 'podo-ui/react/molecule/field';
-import Pagination from 'podo-ui/react/molecule/pagination';
-import Toast from 'podo-ui/react/molecule/toast';
-import ToastProvider from 'podo-ui/react/molecule/toast-provider';
-
-// SCSS 모듈도 함께 import (Next.js에서)
-import 'podo-ui/dist/react/atom/input.module.scss';
 ```
 
 ## 주요 기능

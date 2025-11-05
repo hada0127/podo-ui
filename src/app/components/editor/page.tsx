@@ -45,7 +45,7 @@ export default function EditorPage() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.tsx</div>
-          <pre><code>{`import Editor from 'podo-ui/react/atom/editor';
+          <pre><code>{`import { Editor } from 'podo-ui';
 
 export default function MyComponent() {
   const [content, setContent] = useState('');
@@ -216,7 +216,7 @@ export default function MyComponent() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>EditorView 사용 예제</div>
-          <pre><code>{`import EditorView from 'podo-ui/react/atom/editor-view';
+          <pre><code>{`import { EditorView } from 'podo-ui';
 
 export default function MyComponent() {
   const htmlContent = '<h1>제목</h1><p>본문 내용</p>';

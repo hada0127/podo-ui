@@ -21,8 +21,7 @@
     "tsBuildInfoFile": ".tsbuildinfo"
   },
   "include": [
-    "react.ts",
-    "next.ts",
+    "index.ts",
     "react/**/*.ts",
     "react/**/*.tsx"
   ],

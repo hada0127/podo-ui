@@ -93,7 +93,7 @@ import 'podo-ui/vite-fonts.scss'; // Vite용 폰트 경로 재정의`}</code></p
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>일반 React 프로젝트</div>
-          <pre><code>{`import { Input, Textarea, Editor, Field } from 'podo-ui/react';`}</code></pre>
+          <pre><code>{`import { Input, Textarea, Editor, Field } from 'podo-ui';`}</code></pre>
         </div>
 
         <div className={styles.codeBlock}>

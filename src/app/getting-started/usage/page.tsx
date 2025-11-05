@@ -136,7 +136,7 @@ export default function Usage() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>일반 React</div>
-          <pre><code>{`import { Input, Textarea, Editor, Field } from 'podo-ui/react';
+          <pre><code>{`import { Input, Textarea, Editor, Field } from 'podo-ui';
 
 function MyForm() {
   return (
