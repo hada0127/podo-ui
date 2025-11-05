@@ -96,16 +96,20 @@ const Editor = ({
   // 클라이언트에서만 ID 생성 (Vite React용)
   const [editorID, setEditorID] = useState<string>('podo-editor');
 
-  // 색상 팔레트 정의
+  // 색상 팔레트 정의 (이미지 기반)
   const colorPalette = [
-    // 첫 번째 줄: 기본 색상
-    ['#000000', '#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff', '#ffffff'],
-    // 두 번째 줄: 밝은 톤
-    ['#808080', '#ff8080', '#ffff80', '#80ff80', '#80ffff', '#8080ff', '#ff80ff', '#c0c0c0'],
-    // 세 번째 줄: 중간 톤
-    ['#404040', '#800000', '#808000', '#008000', '#008080', '#000080', '#800080', '#808080'],
-    // 네 번째 줄: 어두운 톤
-    ['#202020', '#400000', '#404000', '#004000', '#004040', '#000040', '#400040', '#404040'],
+    // 첫 번째 줄: 순수 색상
+    ['#ff0000', '#ff8000', '#ffff00', '#80ff00', '#00ffff', '#0080ff', '#0000ff', '#8000ff', '#ff00ff', '#000000'],
+    // 두 번째 줄: 매우 밝은 톤 (90% 밝기)
+    ['#ffcccc', '#ffe0cc', '#ffffcc', '#e0ffcc', '#ccffff', '#cce0ff', '#ccccff', '#e0ccff', '#ffccff', '#cccccc'],
+    // 세 번째 줄: 밝은 톤 (70% 밝기)
+    ['#ff9999', '#ffcc99', '#ffff99', '#ccff99', '#99ffff', '#99ccff', '#9999ff', '#cc99ff', '#ff99ff', '#999999'],
+    // 네 번째 줄: 중간 톤 (50% 밝기)
+    ['#ff6666', '#ffb366', '#ffff66', '#b3ff66', '#66ffff', '#66b3ff', '#6666ff', '#b366ff', '#ff66ff', '#666666'],
+    // 다섯 번째 줄: 어두운 톤 (30% 밝기)
+    ['#cc0000', '#cc6600', '#cccc00', '#66cc00', '#00cccc', '#0066cc', '#0000cc', '#6600cc', '#cc00cc', '#333333'],
+    // 여섯 번째 줄: 매우 어두운 톤 (15% 밝기)
+    ['#800000', '#804000', '#808000', '#408000', '#008080', '#004080', '#000080', '#400080', '#800080', '#1a1a1a'],
   ];
 
   // 정렬 옵션 정의
@@ -2214,7 +2218,7 @@ const Editor = ({
             disabled={historyIndex <= 0}
             title="실행 취소"
             style={{
-              opacity: historyIndex <= 0 ? 0.3 : 1,
+              opacity: historyIndex <= 0 ? 0.65 : 1,
               backgroundColor: 'transparent',
               border: 'none',
               cursor: historyIndex <= 0 ? 'not-allowed' : 'pointer'
@@ -2229,7 +2233,7 @@ const Editor = ({
             disabled={historyIndex >= history.length - 1}
             title="다시 실행"
             style={{
-              opacity: historyIndex >= history.length - 1 ? 0.3 : 1,
+              opacity: historyIndex >= history.length - 1 ? 0.65 : 1,
               backgroundColor: 'transparent',
               border: 'none',
               cursor: historyIndex >= history.length - 1 ? 'not-allowed' : 'pointer'

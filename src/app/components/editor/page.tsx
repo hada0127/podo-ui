@@ -35,15 +35,7 @@ export default function EditorPage() {
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>미리보기 (EditorView):</div>
-          <div style={{
-            border: '1px solid #e0e0e0',
-            borderRadius: '8px',
-            padding: '16px',
-            backgroundColor: '#fff',
-            minHeight: '100px'
-          }}>
-            <EditorView value={content} />
-          </div>
+          <EditorView value={content} />
         </div>
       </section>
 
@@ -146,7 +138,7 @@ export default function MyComponent() {
       </section>
 
       <section className={styles.section}>
-        <h2>Props</h2>
+        <h2>Editor Props</h2>
         <table className={styles.table}>
           <thead>
             <tr>
@@ -213,6 +205,75 @@ export default function MyComponent() {
             </tr>
           </tbody>
         </table>
+      </section>
+
+      <section className={styles.section}>
+        <h2>EditorView (미리보기 컴포넌트)</h2>
+        <p>
+          EditorView는 Editor로 작성한 HTML 콘텐츠를 읽기 전용으로 표시하는 컴포넌트입니다.
+          편집 기능 없이 순수하게 내용만 렌더링하며, 다크모드를 지원합니다.
+        </p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>EditorView 사용 예제</div>
+          <pre><code>{`import EditorView from 'podo-ui/react/atom/editor-view';
+
+export default function MyComponent() {
+  const htmlContent = '<h1>제목</h1><p>본문 내용</p>';
+
+  return (
+    <EditorView value={htmlContent} />
+  );
+}`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>실제 미리보기 예제:</div>
+          <div style={{
+            padding: '20px',
+            background: 'var(--bg-elevation)',
+            borderRadius: '8px'
+          }}>
+            <EditorView value={content} />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>EditorView Props</h2>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>속성</th>
+              <th>타입</th>
+              <th>기본값</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>value</td>
+              <td>string</td>
+              <td>''</td>
+              <td>표시할 HTML 콘텐츠</td>
+            </tr>
+            <tr>
+              <td>className</td>
+              <td>string</td>
+              <td>-</td>
+              <td>추가 CSS 클래스</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>특징</h3>
+        <ul>
+          <li>Editor로 작성한 모든 서식 지원 (제목, 목록, 링크, 이미지 등)</li>
+          <li>다크모드 자동 지원</li>
+          <li>코드 블록 및 인라인 코드 스타일링</li>
+          <li>반응형 이미지 및 유튜브 임베드</li>
+          <li>편집 기능 없이 읽기 전용으로만 표시</li>
+        </ul>
       </section>
     </>
   );

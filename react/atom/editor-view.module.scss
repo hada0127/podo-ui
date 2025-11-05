@@ -1,5 +1,6 @@
 @use '../../scss/color/function.scss' as *;
 @use '../../scss/typo/mixin.scss' as typo;
+@use '../../scss/layout/radius.scss' as *;
 
 .editorView {
   color: color(text-body);
@@ -199,5 +200,52 @@
     :global(.youtube-overlay) {
       display: none; // view 모드에서는 오버레이 숨김
     }
+  }
+
+  // 인라인 코드
+  code {
+    @include typo.p4;
+    background: color(bg-elevation-1);
+    color: color(text-body);
+    padding: 2px 6px;
+    border-radius: r(1);
+    border: 1px solid color(default-outline);
+  }
+
+  // 코드 블록
+  pre {
+    @include typo.p3;
+    background: color(bg-elevation-1);
+    color: color(text-body);
+    padding: 12px 16px;
+    border-radius: r(2);
+    border: 1px solid color(default-outline);
+    overflow-x: auto;
+    margin: 1em 0;
+
+    code {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+  }
+
+  // 하이라이트/배경색이 있는 요소 (다크모드 대응)
+  span[style*="background-color"] {
+    padding: 2px 4px;
+    border-radius: 2px;
+  }
+
+  // 텍스트 색상이 너무 밝거나 어두운 경우 자동 조정
+  span[style*="color: #fff"],
+  span[style*="color: white"],
+  span[style*="color: rgb(255, 255, 255)"] {
+    color: color(text-body) !important;
+  }
+
+  span[style*="color: #000"],
+  span[style*="color: black"],
+  span[style*="color: rgb(0, 0, 0)"] {
+    color: color(text-body) !important;
   }
 }
