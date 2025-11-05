@@ -4,6 +4,8 @@ node_modules/
 .github/
 tests/
 *.test.js
+*.test.ts
+*.test.tsx
 .env
 .DS_Store
 coverage/
@@ -15,6 +17,7 @@ coverage/
 
 # Documentation Site (Next.js)
 src/
+app/
 public/
 index.html
 next.config.*
@@ -32,11 +35,13 @@ eslint.config.js
 .prettierrc
 .prettierignore
 tsconfig.json
+tsconfig.build.json
+
+# Source files (exclude TypeScript sources, only include compiled dist/)
+react/
 
 # Only keep library files:
+# - dist/ (compiled JavaScript + types)
 # - scss/
-# - react/
-# - *.scss (root level)
-# - react.ts
 # - package.json
-# - readme.md
+# - README.md
