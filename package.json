@@ -1,6 +1,6 @@
 {
   "name": "podo-ui",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "type": "module",
   "author": "hada0127 <work@tarucy.net>",
   "license": "MIT",
@@ -59,7 +59,7 @@
     "build": "next build",
     "build:lib": "npm run clean && tsc -p tsconfig.build.json && npm run copy:styles",
     "copy:styles": "find react -name '*.scss' -exec sh -c 'mkdir -p \"dist/$(dirname \"{}\")\" && cp \"{}\" \"dist/{}\"' \\;",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist && rm -f .tsbuildinfo",
     "prepublishOnly": "npm run build:lib",
     "start": "next start",
     "lint": "next lint",

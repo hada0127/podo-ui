@@ -36,9 +36,12 @@ eslint.config.js
 .prettierignore
 tsconfig.json
 tsconfig.build.json
+.tsbuildinfo
 
 # Source files (exclude TypeScript sources, only include compiled dist/)
 react/
+react.ts
+next.ts
 
 # Only keep library files:
 # - dist/ (compiled JavaScript + types)
