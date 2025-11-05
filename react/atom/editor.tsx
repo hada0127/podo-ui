@@ -2065,22 +2065,19 @@ const Editor = ({
     const handleDragStart = (e: DragEvent) => {
       if (e.target === selectedImage) {
         setIsImageEditPopupOpen(false);
-      }
-      if (e.target === selectedYoutube) {
-        setIsYoutubeEditPopupOpen(false);
-      }
-    };
-
-    // 드래그 종료 이벤트 핸들러 - 이미지/유튜브 이동 후 wrapper 재적용
-    const handleDragEnd = (e: DragEvent) => {
-      if (e.target === selectedImage) {
-        // 드래그 후에도 선택 상태 유지를 원한다면 여기서 재선택
-        // 아니면 선택 해제
+        // 드래그 시작 시 wrapper를 즉시 제거하여 핸들이 남아있지 않도록 함
         deselectImage();
       }
       if (e.target === selectedYoutube) {
+        setIsYoutubeEditPopupOpen(false);
         deselectYoutube();
       }
+    };
+
+    // 드래그 종료 이벤트 핸들러 - 이미지/유튜브 이동 후 선택 해제
+    const handleDragEnd = () => {
+      // dragStart에서 이미 선택 해제했으므로 여기서는 추가 작업 불필요
+      // 드래그가 완료되면 자연스럽게 선택 해제 상태 유지
     };
 
     // 이벤트 리스너 등록
