@@ -2063,21 +2063,47 @@ const Editor = ({
 
     // 드래그 시작 이벤트 핸들러
     const handleDragStart = (e: DragEvent) => {
-      if (e.target === selectedImage) {
+      if (e.target === selectedImage && selectedImage) {
         setIsImageEditPopupOpen(false);
-        // 드래그 시작 시 wrapper를 즉시 제거하여 핸들이 남아있지 않도록 함
-        deselectImage();
+        // 드래그 효과를 'move'로 설정하여 복제가 아닌 이동으로 동작하도록 함
+        e.dataTransfer!.effectAllowed = 'move';
+        e.dataTransfer!.dropEffect = 'move';
+        // wrapper를 숨겨서 드래그 중 핸들이 보이지 않도록 함 (DOM 조작은 dragend에서 수행)
+        const wrapper = selectedImage.parentElement;
+        if (wrapper && wrapper.classList.contains('image-wrapper')) {
+          wrapper.style.border = 'none';
+          const handles = wrapper.querySelectorAll('.resize-handle');
+          handles.forEach((handle) => {
+            (handle as HTMLElement).style.display = 'none';
+          });
+        }
       }
-      if (e.target === selectedYoutube) {
+      if (e.target === selectedYoutube && selectedYoutube) {
         setIsYoutubeEditPopupOpen(false);
-        deselectYoutube();
+        // 드래그 효과를 'move'로 설정하여 복제가 아닌 이동으로 동작하도록 함
+        e.dataTransfer!.effectAllowed = 'move';
+        e.dataTransfer!.dropEffect = 'move';
+        // wrapper를 숨겨서 드래그 중 핸들이 보이지 않도록 함 (DOM 조작은 dragend에서 수행)
+        const wrapper = selectedYoutube.parentElement;
+        if (wrapper && wrapper.classList.contains('youtube-wrapper')) {
+          wrapper.style.border = 'none';
+          const handles = wrapper.querySelectorAll('.resize-handle');
+          handles.forEach((handle) => {
+            (handle as HTMLElement).style.display = 'none';
+          });
+        }
       }
     };
 
     // 드래그 종료 이벤트 핸들러 - 이미지/유튜브 이동 후 선택 해제
     const handleDragEnd = () => {
-      // dragStart에서 이미 선택 해제했으므로 여기서는 추가 작업 불필요
-      // 드래그가 완료되면 자연스럽게 선택 해제 상태 유지
+      // 드래그 완료 후 wrapper를 제거하여 선택 해제
+      if (selectedImage) {
+        deselectImage();
+      }
+      if (selectedYoutube) {
+        deselectYoutube();
+      }
     };
 
     // 이벤트 리스너 등록
