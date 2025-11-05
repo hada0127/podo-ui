@@ -80,6 +80,8 @@ const Editor = ({
   const historyRef = useRef<string[]>([value]);
   const historyIndexRef = useRef(0);
   const isUndoRedoRef = useRef(false); // undo/redo 실행 중 플래그
+  const isComposingRef = useRef(false); // IME 입력 중 플래그
+  const justComposedRef = useRef(false); // compositionend 직후 플래그
 
   const editorRef = useRef<HTMLDivElement>(null);
   const codeEditorRef = useRef<HTMLTextAreaElement>(null);
@@ -341,6 +343,15 @@ const Editor = ({
   }, [onChange]);
 
   const handleInput = useCallback(() => {
+    // IME 입력 중에는 처리하지 않음
+    if (isComposingRef.current) return;
+
+    // compositionend 직후 input 이벤트는 무시
+    if (justComposedRef.current) {
+      justComposedRef.current = false;
+      return;
+    }
+
     if (editorRef.current) {
       const content = editorRef.current.innerHTML;
 
@@ -350,6 +361,28 @@ const Editor = ({
       detectCurrentAlign();
 
       // 히스토리에 추가
+      addToHistory(content);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onChange, addToHistory]);
+
+  // IME 입력 시작
+  const handleCompositionStart = useCallback(() => {
+    isComposingRef.current = true;
+  }, []);
+
+  // IME 입력 종료
+  const handleCompositionEnd = useCallback(() => {
+    isComposingRef.current = false;
+    justComposedRef.current = true;
+
+    // composition 종료 시 직접 업데이트 처리
+    if (editorRef.current) {
+      const content = editorRef.current.innerHTML;
+      onChange(content);
+      validateHandler(content);
+      detectCurrentParagraphStyle();
+      detectCurrentAlign();
       addToHistory(content);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2987,6 +3020,8 @@ const Editor = ({
             className={styles.editorContent}
             contentEditable
             onInput={handleInput}
+            onCompositionStart={handleCompositionStart}
+            onCompositionEnd={handleCompositionEnd}
             onPaste={handlePaste}
             onClick={handleEditorClick}
             onKeyUp={() => {
