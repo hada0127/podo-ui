@@ -1,6 +1,6 @@
 {
   "name": "podo-ui",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "type": "module",
   "author": "hada0127 <work@tarucy.net>",
   "license": "MIT",
@@ -12,8 +12,8 @@
     "url": "https://github.com/hada0127/podo-ui/issues"
   },
   "homepage": "https://podoui.com",
-  "main": "dist/react/atom/editor.js",
-  "types": "dist/react/atom/editor.d.ts",
+  "main": "dist/react.js",
+  "types": "dist/react.d.ts",
   "files": [
     "dist",
     "scss",
@@ -23,6 +23,21 @@
     "README.md"
   ],
   "exports": {
+    ".": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "default": "./dist/react.js"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "default": "./dist/react.js"
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "import": "./dist/next.js",
+      "default": "./dist/next.js"
+    },
     "./react/atom/*": {
       "types": "./dist/react/atom/*.d.ts",
       "import": "./dist/react/atom/*.js",

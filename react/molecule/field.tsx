@@ -2,7 +2,7 @@ import { z } from 'zod';
 import styles from './field.module.scss';
 import { useCallback, useEffect, useState } from 'react';
 
-interface Props {
+export interface FieldProps {
   label?: string;
   labelClass?: string;
   required?: boolean;
@@ -26,7 +26,7 @@ const Field = ({
   value,
   setClassName,
   className,
-}: Props) => {
+}: FieldProps) => {
   const [message, setMessage] = useState('');
 
   const validateHandler = useCallback(() => {

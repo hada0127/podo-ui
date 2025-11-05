@@ -1,11 +1,11 @@
 import styles from './editor-view.module.scss';
 
-interface Props {
+export interface EditorViewProps {
   value: string;
   className?: string;
 }
 
-const EditorView = ({ value, className }: Props) => {
+const EditorView = ({ value, className }: EditorViewProps) => {
   return (
     <div
       className={`${styles.editorView} ${className || ''}`}

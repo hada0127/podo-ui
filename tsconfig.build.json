@@ -2,10 +2,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
+    "emitDeclarationOnly": false,
     "declaration": true,
     "declarationMap": true,
     "outDir": "dist",
-    "rootDir": ".",
     "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "node",
@@ -21,6 +21,8 @@
     "tsBuildInfoFile": ".tsbuildinfo"
   },
   "include": [
+    "react.ts",
+    "next.ts",
     "react/**/*.ts",
     "react/**/*.tsx"
   ],

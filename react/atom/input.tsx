@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 import styles from './input.module.scss';
 
-interface InputWrapperProps extends React.ComponentProps<'input'> {
+export interface InputWrapperProps extends React.ComponentProps<'input'> {
   value?: string | number;
   className?: string;
   validator?: z.ZodType<unknown>;

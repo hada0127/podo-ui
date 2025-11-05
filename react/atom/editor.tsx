@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import styles from './editor.module.scss';
 
-interface Props {
+export interface EditorProps {
   value: string;
   width?: string;
   height?: string | 'contents';
@@ -25,7 +25,7 @@ const Editor = ({
   onChange,
   validator,
   placeholder = '내용을 입력하세요...',
-}: Props) => {
+}: EditorProps) => {
   const [message, setMessage] = useState('');
   const [statusClass, setStatusClass] = useState('');
   const [currentParagraphStyle, setCurrentParagraphStyle] = useState('p');
