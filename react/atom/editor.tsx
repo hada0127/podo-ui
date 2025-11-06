@@ -95,8 +95,30 @@ const Editor = ({
   const imageButtonRef = useRef<HTMLDivElement>(null);
   const youtubeButtonRef = useRef<HTMLDivElement>(null);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
+  const tableButtonRef = useRef<HTMLDivElement>(null);
   // 클라이언트에서만 ID 생성 (Vite React용)
   const [editorID, setEditorID] = useState<string>('podo-editor');
+
+  // 표 삽입 관련 상태
+  const [isTableDropdownOpen, setIsTableDropdownOpen] = useState(false);
+  const [tableRows, setTableRows] = useState(0);
+  const [tableCols, setTableCols] = useState(0);
+  const [savedTableSelection, setSavedTableSelection] = useState<Range | null>(null);
+
+  // 표 컨텍스트 메뉴 관련 상태
+  const [isTableContextMenuOpen, setIsTableContextMenuOpen] = useState(false);
+  const [tableContextMenuPosition, setTableContextMenuPosition] = useState({ x: 0, y: 0 });
+  const [selectedTableCell, setSelectedTableCell] = useState<HTMLTableCellElement | null>(null);
+  const [isTableCellColorOpen, setIsTableCellColorOpen] = useState(false);
+  const tableContextMenuRef = useRef<HTMLDivElement>(null);
+
+  // 다중 셀 선택 관련 상태
+  const [selectedTableCells, setSelectedTableCells] = useState<HTMLTableCellElement[]>([]);
+  const [isSelectingCells, setIsSelectingCells] = useState(false);
+  const [selectionStartCell, setSelectionStartCell] = useState<HTMLTableCellElement | null>(null);
+  const isSelectingCellsRef = useRef(false); // 최신 상태 추적을 위한 ref
+  const justFinishedDraggingRef = useRef(false); // 드래그가 방금 끝났는지 추적
+  const isMouseDownRef = useRef(false); // 마우스 버튼이 눌려있는지 추적
 
   // 색상 팔레트 정의 (이미지 기반)
   const colorPalette = [
@@ -1009,6 +1031,32 @@ const Editor = ({
       deselectYoutube();
     }
 
+    // 표 컨텍스트 메뉴 닫기
+    if (isTableContextMenuOpen && !target.closest(`.${styles.tableContextMenu}`)) {
+      setIsTableContextMenuOpen(false);
+      setSelectedTableCell(null);
+      setIsTableCellColorOpen(false);
+    }
+
+    // 표 셀 클릭 시에는 선택 유지
+    const clickedCell = target.closest('td');
+    console.log('⚪ handleEditorClick - 에디터 클릭');
+    console.log('  - clickedCell:', !!clickedCell);
+    console.log('  - selectedTableCells.length:', selectedTableCells.length);
+    console.log('  - justFinishedDraggingRef.current:', justFinishedDraggingRef.current);
+
+    // 드래그가 방금 끝난 경우 선택 해제하지 않음
+    if (justFinishedDraggingRef.current) {
+      console.log('  - 드래그 직후이므로 선택 유지');
+      return;
+    }
+
+    // 표 셀 외부를 클릭한 경우에만 선택 해제
+    if (!clickedCell && selectedTableCells.length > 0) {
+      console.log('  - 표 외부 클릭, 선택 해제 호출');
+      clearCellSelection();
+    }
+
     // 링크 요소인지 확인
     const linkElement = target.closest('a') as HTMLAnchorElement;
     if (linkElement && editorRef.current?.contains(linkElement)) {
@@ -1021,6 +1069,155 @@ const Editor = ({
       // 일반 클릭 처리
       detectCurrentParagraphStyle();
       detectCurrentAlign();
+    }
+  };
+
+  // 표 셀 마우스 다운 (드래그 선택 시작)
+  const handleCellMouseDown = useCallback((e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const cell = target.closest('td') as HTMLTableCellElement;
+
+    if (cell && editorRef.current?.contains(cell)) {
+      console.log('🔵 handleCellMouseDown - 셀 클릭');
+
+      // 마우스 다운 상태 설정
+      isMouseDownRef.current = true;
+      console.log('  - isMouseDownRef.current = true');
+
+      // 드래그 시작 셀 설정
+      setSelectionStartCell(cell);
+
+      // 이미 선택된 셀을 클릭한 경우 선택 유지
+      const isAlreadySelected = cell.classList.contains('selected-cell');
+      console.log('  - isAlreadySelected:', isAlreadySelected);
+      console.log('  - shift 키:', e.shiftKey);
+
+      // 새로운 셀을 클릭하거나 Shift 키를 누르지 않은 경우에만 기존 선택 해제
+      if (!isAlreadySelected && !e.shiftKey) {
+        const allCells = editorRef.current.querySelectorAll('.selected-cell');
+        console.log('  - 기존 선택 해제, 선택된 셀 수:', allCells.length);
+        allCells.forEach(c => c.classList.remove('selected-cell'));
+        setSelectedTableCells([]);
+      } else {
+        console.log('  - 기존 선택 유지');
+      }
+    }
+  }, []);
+
+  // 표 셀 마우스 이동 (드래그 선택 중)
+  const handleCellMouseMove = useCallback((e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const cell = target.closest('td') as HTMLTableCellElement;
+
+    if (!cell || !editorRef.current?.contains(cell)) return;
+
+    // 마우스가 눌려있지 않으면 드래그 불가
+    if (!isMouseDownRef.current) {
+      console.log('🟢 handleCellMouseMove - 마우스가 눌려있지 않음, 무시');
+      return;
+    }
+
+    // selectionStartCell이 있고, 다른 셀로 이동한 경우에만 드래그 선택 모드 활성화
+    if (selectionStartCell && cell !== selectionStartCell && !isSelectingCellsRef.current) {
+      console.log('🟢 handleCellMouseMove - 드래그 선택 모드 활성화');
+      isSelectingCellsRef.current = true;
+      setIsSelectingCells(true);
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    if (!isSelectingCellsRef.current || !selectionStartCell) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 범위 내 모든 셀 선택
+    const cellsInRange = getCellsInRange(selectionStartCell, cell);
+    console.log('🟢 handleCellMouseMove - 범위 선택, 셀 수:', cellsInRange.length);
+
+    // 기존 선택 클래스 제거
+    const allSelectedCells = editorRef.current.querySelectorAll('.selected-cell');
+    allSelectedCells.forEach(c => c.classList.remove('selected-cell'));
+
+    // 새 선택 적용
+    setSelectedTableCells(cellsInRange);
+    cellsInRange.forEach(c => c.classList.add('selected-cell'));
+  }, [selectionStartCell]);
+
+  // 표 셀 마우스 업 (드래그 선택 종료)
+  const handleCellMouseUp = useCallback((e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const cell = target.closest('td') as HTMLTableCellElement;
+
+    console.log('🟡 handleCellMouseUp - 마우스 업');
+    console.log('  - isSelectingCellsRef.current:', isSelectingCellsRef.current);
+    console.log('  - isMouseDownRef.current:', isMouseDownRef.current);
+    console.log('  - 현재 선택된 셀 수:', editorRef.current?.querySelectorAll('.selected-cell').length);
+
+    // 드래그 선택 중이었다면 플래그 설정
+    if (isSelectingCellsRef.current) {
+      console.log('  - 드래그 중이었음, 플래그 설정');
+
+      // 셀 내부에서 마우스 업한 경우 이벤트 방지
+      if (cell && editorRef.current?.contains(cell)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      // 드래그가 방금 끝났음을 표시
+      justFinishedDraggingRef.current = true;
+      console.log('  - justFinishedDraggingRef.current = true');
+
+      // 50ms 후 플래그 해제 (클릭 이벤트가 처리된 후)
+      setTimeout(() => {
+        justFinishedDraggingRef.current = false;
+        console.log('  - justFinishedDraggingRef.current = false (타이머)');
+      }, 50);
+    }
+
+    // 마우스 다운 상태 해제 (가장 중요!)
+    isMouseDownRef.current = false;
+    console.log('  - isMouseDownRef.current = false');
+
+    // 드래그 선택 모드 무조건 종료 (선택된 셀은 유지)
+    isSelectingCellsRef.current = false;
+    setIsSelectingCells(false);
+    console.log('  - 드래그 모드 종료, 선택 상태는 유지해야 함');
+    // selectionStartCell은 유지하여 선택 상태 보존
+  }, []);
+
+  // 셀 선택 해제
+  const clearCellSelection = () => {
+    console.log('🔴 clearCellSelection - 셀 선택 해제 호출됨');
+    console.log('  - 해제할 셀 수:', selectedTableCells.length);
+    console.trace('  - 호출 스택:');
+    selectedTableCells.forEach(cell => cell.classList.remove('selected-cell'));
+    setSelectedTableCells([]);
+    setSelectionStartCell(null);
+  };
+
+  // 표 셀 우클릭 이벤트 처리
+  const handleEditorContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+
+    // 표 셀 우클릭 감지 (td 또는 td 내부 요소)
+    const cell = target.closest('td') as HTMLTableCellElement;
+    if (cell && editorRef.current?.contains(cell)) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 선택된 셀이 없거나, 우클릭한 셀이 선택 영역에 포함되지 않은 경우
+      if (selectedTableCells.length === 0 || !selectedTableCells.includes(cell)) {
+        clearCellSelection();
+        setSelectedTableCell(cell);
+      } else {
+        // 선택된 셀들 중 하나를 우클릭한 경우, 첫 번째 셀을 대표로 사용
+        setSelectedTableCell(selectedTableCells[0]);
+      }
+
+      setTableContextMenuPosition({ x: e.clientX, y: e.clientY });
+      setIsTableContextMenuOpen(true);
+      setIsTableCellColorOpen(false);
     }
   };
 
@@ -1518,6 +1715,278 @@ const Editor = ({
   };
 
   // YouTube 삽입
+  // 표 삽입 함수
+  const insertTable = (rows: number, cols: number) => {
+    if (rows === 0 || cols === 0) return;
+
+    // 표 HTML 생성
+    const table = document.createElement('table');
+    table.style.borderCollapse = 'collapse';
+    table.style.width = '100%';
+    table.style.margin = '10px 0';
+    table.setAttribute('border', '1');
+    table.style.border = '1px solid #ddd';
+
+    const tbody = document.createElement('tbody');
+
+    for (let i = 0; i < rows; i++) {
+      const tr = document.createElement('tr');
+
+      for (let j = 0; j < cols; j++) {
+        const td = document.createElement('td');
+        td.style.border = '1px solid #ddd';
+        td.style.padding = '8px';
+        td.style.minWidth = '50px';
+        td.innerHTML = '<br>';
+        tr.appendChild(td);
+      }
+
+      tbody.appendChild(tr);
+    }
+
+    table.appendChild(tbody);
+
+    // 에디터에 포커스 설정
+    if (editorRef.current) {
+      editorRef.current.focus();
+
+      const selection = window.getSelection();
+
+      // 저장된 선택 영역이 있으면 복원
+      if (savedTableSelection && selection) {
+        try {
+          selection.removeAllRanges();
+          selection.addRange(savedTableSelection);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (e) {
+          // 선택 영역 복원 실패 시 무시
+        }
+      }
+
+      // 선택 영역 재확인
+      if (!selection || selection.rangeCount === 0 || !editorRef.current.contains(selection.anchorNode)) {
+        // 에디터가 비어있으면 p 태그 추가
+        if (!editorRef.current.innerHTML || editorRef.current.innerHTML === '<br>') {
+          const p = document.createElement('p');
+          p.innerHTML = '<br>';
+          editorRef.current.appendChild(p);
+        }
+
+        // 커서를 에디터 끝으로 이동
+        const range = document.createRange();
+        range.selectNodeContents(editorRef.current);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+
+      // 표 삽입
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(table);
+
+        // 표 다음에 새 문단 추가
+        const newP = document.createElement('p');
+        newP.innerHTML = '<br>';
+        table.after(newP);
+
+        // 커서를 첫 번째 셀로 이동
+        const firstCell = table.querySelector('td');
+        if (firstCell) {
+          const newRange = document.createRange();
+          newRange.selectNodeContents(firstCell);
+          newRange.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(newRange);
+        }
+      } else {
+        // 폴백: 에디터 끝에 추가
+        editorRef.current.appendChild(table);
+      }
+    }
+
+    // 상태 초기화
+    setIsTableDropdownOpen(false);
+    setTableRows(0);
+    setTableCols(0);
+    setSavedTableSelection(null);
+
+    editorRef.current?.focus();
+    handleInput();
+  };
+
+  // 다중 셀 선택 범위 계산
+  const getCellsInRange = (startCell: HTMLTableCellElement, endCell: HTMLTableCellElement): HTMLTableCellElement[] => {
+    const table = startCell.closest('table');
+    if (!table) return [];
+
+    const tbody = table.querySelector('tbody');
+    if (!tbody) return [];
+
+    const startRow = startCell.parentElement as HTMLTableRowElement;
+    const endRow = endCell.parentElement as HTMLTableRowElement;
+
+    const startRowIndex = Array.from(tbody.rows).indexOf(startRow);
+    const endRowIndex = Array.from(tbody.rows).indexOf(endRow);
+    const startColIndex = startCell.cellIndex;
+    const endColIndex = endCell.cellIndex;
+
+    const minRow = Math.min(startRowIndex, endRowIndex);
+    const maxRow = Math.max(startRowIndex, endRowIndex);
+    const minCol = Math.min(startColIndex, endColIndex);
+    const maxCol = Math.max(startColIndex, endColIndex);
+
+    const cells: HTMLTableCellElement[] = [];
+    for (let r = minRow; r <= maxRow; r++) {
+      const row = tbody.rows[r];
+      for (let c = minCol; c <= maxCol; c++) {
+        if (row.cells[c]) {
+          cells.push(row.cells[c]);
+        }
+      }
+    }
+
+    return cells;
+  };
+
+  // 표 셀 배경색 변경 (단일/다중)
+  const changeTableCellBackgroundColor = (color: string) => {
+    // 다중 셀이 선택되어 있으면 모든 선택된 셀에 적용
+    if (selectedTableCells.length > 0) {
+      selectedTableCells.forEach(cell => {
+        cell.style.backgroundColor = color;
+      });
+    } else if (selectedTableCell) {
+      // 단일 셀에만 적용
+      selectedTableCell.style.backgroundColor = color;
+    }
+
+    setIsTableCellColorOpen(false);
+    handleInput();
+  };
+
+  // 행 추가 (위/아래)
+  const addTableRow = (position: 'above' | 'below') => {
+    if (!selectedTableCell) return;
+
+    const row = selectedTableCell.closest('tr');
+    if (!row) return;
+
+    const table = row.closest('table');
+    if (!table) return;
+
+    const newRow = document.createElement('tr');
+    const cellCount = row.cells.length;
+
+    for (let i = 0; i < cellCount; i++) {
+      const td = document.createElement('td');
+      td.style.border = '1px solid #ddd';
+      td.style.padding = '8px';
+      td.style.minWidth = '50px';
+      td.innerHTML = '<br>';
+      newRow.appendChild(td);
+    }
+
+    if (position === 'above') {
+      row.parentNode?.insertBefore(newRow, row);
+    } else {
+      row.parentNode?.insertBefore(newRow, row.nextSibling);
+    }
+
+    setIsTableContextMenuOpen(false);
+    handleInput();
+  };
+
+  // 행 삭제
+  const deleteTableRow = () => {
+    if (!selectedTableCell) return;
+
+    const row = selectedTableCell.closest('tr');
+    if (!row) return;
+
+    const tbody = row.parentNode as HTMLTableSectionElement;
+    if (!tbody) return;
+
+    // 마지막 행이면 삭제 불가
+    if (tbody.rows.length <= 1) {
+      alert('표에는 최소 1개의 행이 필요합니다.');
+      return;
+    }
+
+    row.remove();
+    setIsTableContextMenuOpen(false);
+    setSelectedTableCell(null);
+    handleInput();
+  };
+
+  // 열 추가 (좌/우)
+  const addTableColumn = (position: 'left' | 'right') => {
+    if (!selectedTableCell) return;
+
+    const cellIndex = selectedTableCell.cellIndex;
+    const row = selectedTableCell.closest('tr');
+    if (!row) return;
+
+    const table = row.closest('table');
+    if (!table) return;
+
+    const tbody = table.querySelector('tbody');
+    if (!tbody) return;
+
+    Array.from(tbody.rows).forEach(row => {
+      const newCell = document.createElement('td');
+      newCell.style.border = '1px solid #ddd';
+      newCell.style.padding = '8px';
+      newCell.style.minWidth = '50px';
+      newCell.innerHTML = '<br>';
+
+      if (position === 'left') {
+        row.insertBefore(newCell, row.cells[cellIndex]);
+      } else {
+        if (cellIndex + 1 < row.cells.length) {
+          row.insertBefore(newCell, row.cells[cellIndex + 1]);
+        } else {
+          row.appendChild(newCell);
+        }
+      }
+    });
+
+    setIsTableContextMenuOpen(false);
+    handleInput();
+  };
+
+  // 열 삭제
+  const deleteTableColumn = () => {
+    if (!selectedTableCell) return;
+
+    const cellIndex = selectedTableCell.cellIndex;
+    const row = selectedTableCell.closest('tr');
+    if (!row) return;
+
+    const table = row.closest('table');
+    if (!table) return;
+
+    const tbody = table.querySelector('tbody');
+    if (!tbody) return;
+
+    // 마지막 열이면 삭제 불가
+    if (row.cells.length <= 1) {
+      alert('표에는 최소 1개의 열이 필요합니다.');
+      return;
+    }
+
+    Array.from(tbody.rows).forEach(row => {
+      if (row.cells[cellIndex]) {
+        row.cells[cellIndex].remove();
+      }
+    });
+
+    setIsTableContextMenuOpen(false);
+    setSelectedTableCell(null);
+    handleInput();
+  };
+
   const insertYoutube = () => {
     if (!youtubeUrl) return;
 
@@ -1901,6 +2370,17 @@ const Editor = ({
         setSavedYoutubeSelection(null);
       }
 
+      // 표 드롭다운 체크
+      const tableDropdown = document.querySelector(`.${styles.tableDropdown}`);
+      if (tableButtonRef.current &&
+          !tableButtonRef.current.contains(target) &&
+          (!tableDropdown || !tableDropdown.contains(target))) {
+        setIsTableDropdownOpen(false);
+        setTableRows(0);
+        setTableCols(0);
+        setSavedTableSelection(null);
+      }
+
       // 이미지 편집 팝업 닫기
       if (isImageEditPopupOpen && selectedImage) {
         const imageEditPopup = document.querySelector(`.${styles.imageDropdown}`);
@@ -1923,16 +2403,23 @@ const Editor = ({
           setEditLinkTarget('_self');
         }
       }
+
+      // 표 컨텍스트 메뉴 닫기
+      if (isTableContextMenuOpen && tableContextMenuRef.current && !tableContextMenuRef.current.contains(target)) {
+        setIsTableContextMenuOpen(false);
+        setSelectedTableCell(null);
+        setIsTableCellColorOpen(false);
+      }
     };
 
-    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen || isAlignDropdownOpen || isLinkDropdownOpen || isEditLinkPopupOpen || isImageDropdownOpen || isImageEditPopupOpen || isYoutubeDropdownOpen) {
+    if (isParagraphDropdownOpen || isTextColorOpen || isBgColorOpen || isAlignDropdownOpen || isLinkDropdownOpen || isEditLinkPopupOpen || isImageDropdownOpen || isImageEditPopupOpen || isYoutubeDropdownOpen || isTableDropdownOpen || isTableContextMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen, isAlignDropdownOpen, isLinkDropdownOpen, isEditLinkPopupOpen, isImageDropdownOpen, isImageEditPopupOpen, isYoutubeDropdownOpen, selectedLinkElement, selectedImage]);
+  }, [isParagraphDropdownOpen, isTextColorOpen, isBgColorOpen, isAlignDropdownOpen, isLinkDropdownOpen, isEditLinkPopupOpen, isImageDropdownOpen, isImageEditPopupOpen, isYoutubeDropdownOpen, isTableDropdownOpen, isTableContextMenuOpen, selectedLinkElement, selectedImage]);
 
   // 리사이즈 중 마우스 이벤트 처리
   useEffect(() => {
@@ -2069,6 +2556,23 @@ const Editor = ({
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isResizing, resizeStartData, selectedImage, selectedYoutube]);
+
+  // 표 셀 드래그 선택 이벤트 등록
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    const editor = editorRef.current;
+
+    editor.addEventListener('mousedown', handleCellMouseDown as EventListener);
+    document.addEventListener('mousemove', handleCellMouseMove as EventListener);
+    document.addEventListener('mouseup', handleCellMouseUp as EventListener);
+
+    return () => {
+      editor.removeEventListener('mousedown', handleCellMouseDown as EventListener);
+      document.removeEventListener('mousemove', handleCellMouseMove as EventListener);
+      document.removeEventListener('mouseup', handleCellMouseUp as EventListener);
+    };
+  }, [handleCellMouseDown, handleCellMouseMove, handleCellMouseUp]);
 
   // 스크롤, 리사이즈 및 이미지/유튜브 드래그 시 편집창 숨기기
   useEffect(() => {
@@ -2543,6 +3047,61 @@ const Editor = ({
           >
             <i className={styles.listOl} />
           </button>
+
+          <div ref={tableButtonRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={() => {
+                // 현재 선택 영역 저장
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0) {
+                  setSavedTableSelection(selection.getRangeAt(0).cloneRange());
+                }
+                setIsTableDropdownOpen(!isTableDropdownOpen);
+              }}
+              title="표 삽입"
+            >
+              <i className={styles.table} />
+            </button>
+
+            {isTableDropdownOpen && (
+              <div
+                className={styles.tableDropdown}
+                style={{
+                  top: tableButtonRef.current?.getBoundingClientRect().bottom ?? 0,
+                  left: tableButtonRef.current?.getBoundingClientRect().left ?? 0
+                }}
+              >
+                <div className={styles.tableGridSelector}>
+                  <div className={styles.tableGridLabel}>
+                    {tableRows > 0 && tableCols > 0 ? `${tableRows} × ${tableCols} 표` : '표 크기 선택'}
+                  </div>
+                  <div className={styles.tableGrid}>
+                    {Array.from({ length: 10 }, (_, i) => i + 1).map(row => (
+                      <div key={row} className={styles.tableGridRow}>
+                        {Array.from({ length: 10 }, (_, j) => j + 1).map(col => (
+                          <div
+                            key={`${row}-${col}`}
+                            className={`${styles.tableGridCell} ${
+                              row <= tableRows && col <= tableCols ? styles.active : ''
+                            }`}
+                            onMouseEnter={() => {
+                              setTableRows(row);
+                              setTableCols(col);
+                            }}
+                            onClick={() => {
+                              insertTable(row, col);
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={styles.toolbarGroup}>
@@ -3024,6 +3583,7 @@ const Editor = ({
             onCompositionEnd={handleCompositionEnd}
             onPaste={handlePaste}
             onClick={handleEditorClick}
+            onContextMenu={handleEditorContextMenu}
             onKeyUp={() => {
               detectCurrentParagraphStyle();
               detectCurrentAlign();
@@ -3374,6 +3934,103 @@ const Editor = ({
           </div>
         )
       })()}
+
+      {/* 표 컨텍스트 메뉴 */}
+      {isTableContextMenuOpen && selectedTableCell && (
+        <div
+          ref={tableContextMenuRef}
+          className={styles.tableContextMenu}
+          style={{
+            position: 'fixed',
+            top: tableContextMenuPosition.y,
+            left: tableContextMenuPosition.x,
+            zIndex: 10000
+          }}
+        >
+          {selectedTableCells.length > 1 && (
+            <div className={styles.tableContextMenuHeader}>
+              {selectedTableCells.length}개 셀 선택됨
+            </div>
+          )}
+
+          <div className={styles.tableContextMenuItem}>
+            <button
+              type="button"
+              onClick={() => setIsTableCellColorOpen(!isTableCellColorOpen)}
+              className={styles.tableContextMenuButton}
+            >
+              셀 배경색 {selectedTableCells.length > 1 ? `(${selectedTableCells.length}개)` : ''}
+              <span className={styles.arrow}>{isTableCellColorOpen ? '▲' : '▼'}</span>
+            </button>
+            {isTableCellColorOpen && (
+              <div className={styles.colorPaletteInline}>
+                {colorPalette.map((row, rowIndex) => (
+                  <div key={rowIndex} className={styles.colorRow}>
+                    {row.map((color, colIndex) => (
+                      <button
+                        key={colIndex}
+                        type="button"
+                        className={styles.colorButton}
+                        style={{ backgroundColor: color }}
+                        onClick={() => changeTableCellBackgroundColor(color)}
+                        title={color}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className={styles.tableContextMenuDivider} />
+
+          <button
+            type="button"
+            onClick={() => addTableRow('above')}
+            className={styles.tableContextMenuButton}
+          >
+            위에 행 추가
+          </button>
+          <button
+            type="button"
+            onClick={() => addTableRow('below')}
+            className={styles.tableContextMenuButton}
+          >
+            아래에 행 추가
+          </button>
+          <button
+            type="button"
+            onClick={deleteTableRow}
+            className={styles.tableContextMenuButton}
+          >
+            행 삭제
+          </button>
+
+          <div className={styles.tableContextMenuDivider} />
+
+          <button
+            type="button"
+            onClick={() => addTableColumn('left')}
+            className={styles.tableContextMenuButton}
+          >
+            왼쪽에 열 추가
+          </button>
+          <button
+            type="button"
+            onClick={() => addTableColumn('right')}
+            className={styles.tableContextMenuButton}
+          >
+            오른쪽에 열 추가
+          </button>
+          <button
+            type="button"
+            onClick={deleteTableColumn}
+            className={styles.tableContextMenuButton}
+          >
+            열 삭제
+          </button>
+        </div>
+      )}
     </div>
   );
 };

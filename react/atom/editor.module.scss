@@ -214,6 +214,11 @@
       mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>');
       -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path fill="currentColor" d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>');
     }
+
+    &.table {
+      mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M64 256V160H224v96H64zm0 64H224v96H64V320zm224 96V320H448v96H288zM448 256H288V160H448v96zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"/></svg>');
+      -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M64 256V160H224v96H64zm0 64H224v96H64V320zm224 96V320H448v96H288zM448 256H288V160H448v96zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"/></svg>');
+    }
   }
 
   &:hover i {
@@ -496,6 +501,127 @@
         }
       }
     }
+  }
+}
+
+// 표 드롭다운
+.tableDropdown {
+  position: fixed;
+  margin-top: 2px;
+  padding: 12px;
+  background: color(bg-modal);
+  border: 1px solid color(border);
+  border-radius: r(2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  min-width: 240px;
+
+  .tableGridSelector {
+    .tableGridLabel {
+      text-align: center;
+      font-size: 13px;
+      color: color(text-body);
+      margin-bottom: 8px;
+      font-weight: 500;
+      min-height: 20px;
+    }
+
+    .tableGrid {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .tableGridRow {
+        display: flex;
+        gap: 2px;
+
+        .tableGridCell {
+          width: 20px;
+          height: 20px;
+          border: 1px solid color(border);
+          background: color(bg-elevation);
+          cursor: pointer;
+          transition: all 0.15s;
+
+          &:hover {
+            border-color: color(primary);
+          }
+
+          &.active {
+            background: color(primary-fill);
+            border-color: color(primary);
+          }
+        }
+      }
+    }
+  }
+}
+
+// 표 컨텍스트 메뉴
+.tableContextMenu {
+  background: color(bg-modal);
+  border: 1px solid color(border);
+  border-radius: r(2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  min-width: 180px;
+
+  .tableContextMenuHeader {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: color(primary);
+    background: color(primary-fill);
+    border-bottom: 1px solid color(border);
+    margin-bottom: 4px;
+  }
+
+  .tableContextMenuItem {
+    position: relative;
+
+    .colorPaletteInline {
+      padding: 8px;
+      background: color(bg-elevation);
+      border-top: 1px solid color(border);
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+  }
+
+  .tableContextMenuButton {
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: color(text-body);
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:hover {
+      background: color(bg-elevation);
+    }
+
+    &:active {
+      background: color(default-pressed);
+    }
+
+    .arrow {
+      font-size: 10px;
+      color: color(text-sub);
+    }
+  }
+
+  .tableContextMenuDivider {
+    height: 1px;
+    background: color(border);
+    margin: 4px 0;
   }
 }
 
@@ -1238,4 +1364,13 @@
   tab-size: 2;
   width: 100%;
   box-sizing: border-box;
+}
+
+// 선택된 표 셀 스타일
+.editorContent {
+  :global(.selected-cell) {
+    outline: 2px solid color(primary) !important;
+    outline-offset: -2px !important;
+    position: relative;
+  }
 }
