@@ -73,6 +73,8 @@ export default function MyComponent() {
           <li>글꼴 색상 및 배경색</li>
           <li>정렬 (왼쪽, 가운데, 오른쪽, 양쪽)</li>
           <li>목록 (순서 없는 목록, 순서 있는 목록)</li>
+          <li>표 삽입 및 편집</li>
+          <li>구분선(HR) 삽입</li>
           <li>링크 및 이미지 삽입</li>
           <li>유튜브 동영상 삽입</li>
           <li>HTML 코드 보기/편집</li>
@@ -258,6 +260,10 @@ export default function MyComponent() {
               <td>목록 (순서 없는 목록, 순서 있는 목록)</td>
             </tr>
             <tr>
+              <td><code>'hr'</code></td>
+              <td>구분선 삽입</td>
+            </tr>
+            <tr>
               <td><code>'table'</code></td>
               <td>표 삽입</td>
             </tr>
@@ -326,6 +332,7 @@ export default function MyComponent() {
               'color',
               'align',
               'list',
+              'hr',
               'table',
               'link',
               'image',
@@ -352,6 +359,7 @@ export default function MyComponent() {
         'color',
         'align',
         'list',
+        'hr',
         'table',
         'link',
         'image',

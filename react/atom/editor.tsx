@@ -14,6 +14,7 @@ export type ToolbarItem =
   | 'link'           // 링크
   | 'image'          // 이미지
   | 'youtube'        // 유튜브
+  | 'hr'             // 구분선
   | 'format'         // 서식 지우기
   | 'code';          // 코드 보기
 
@@ -148,6 +149,7 @@ const Editor = ({
     'link',
     'image',
     'youtube',
+    'hr',
     'format',
     'code',
   ];
@@ -1915,6 +1917,43 @@ const Editor = ({
     handleInput();
   };
 
+  // HR(구분선) 삽입
+  const insertHR = () => {
+    if (!editorRef.current) return;
+
+    editorRef.current.focus();
+    const selection = window.getSelection();
+
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+
+    // HR 엘리먼트 생성
+    const hr = document.createElement('hr');
+    hr.style.border = 'none';
+    hr.style.borderTop = '1px solid #ddd';
+    hr.style.margin = '10px 0';
+
+    // 새 문단 생성 (HR 다음에 커서를 위치시키기 위함)
+    const newP = document.createElement('p');
+    newP.innerHTML = '<br>';
+
+    // HR과 새 문단 삽입
+    range.deleteContents();
+    range.insertNode(hr);
+    hr.after(newP);
+
+    // 커서를 새 문단으로 이동
+    const newRange = document.createRange();
+    newRange.selectNodeContents(newP);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+
+    editorRef.current.focus();
+    handleInput();
+  };
+
   // 다중 셀 선택 범위 계산
   const getCellsInRange = (startCell: HTMLTableCellElement, endCell: HTMLTableCellElement): HTMLTableCellElement[] => {
     const table = startCell.closest('table');
@@ -3301,6 +3340,17 @@ const Editor = ({
                 <i className={styles.listOl} />
               </button>
             </>
+          )}
+
+          {isToolbarItemEnabled('hr') && (
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={insertHR}
+              title="구분선"
+            >
+              <i className={styles.hr} />
+            </button>
           )}
 
           {isToolbarItemEnabled('table') && (
