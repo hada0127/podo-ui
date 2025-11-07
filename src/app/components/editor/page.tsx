@@ -9,6 +9,8 @@ export default function EditorPage() {
   const [content, setContent] = useState('');
   const [content2, setContent2] = useState('');
   const [content3, setContent3] = useState('');
+  const [basicContent, setBasicContent] = useState('');
+  const [advancedContent, setAdvancedContent] = useState('');
 
   return (
     <>
@@ -203,8 +205,179 @@ export default function MyComponent() {
               <td>-</td>
               <td>Zod 검증 스키마</td>
             </tr>
+            <tr>
+              <td>toolbar</td>
+              <td>ToolbarItem[]</td>
+              <td>전체 툴바</td>
+              <td>표시할 툴바 아이템 목록 (없으면 전체 표시)</td>
+            </tr>
           </tbody>
         </table>
+      </section>
+
+      <section className={styles.section}>
+        <h2>툴바 커스터마이징</h2>
+        <p>
+          toolbar prop을 사용하여 원하는 툴바 아이템만 선택적으로 표시할 수 있습니다.
+        </p>
+        <p>
+          <strong>참고:</strong> toolbar prop을 전달하지 않으면 모든 툴바 아이템이 기본으로 표시됩니다.
+        </p>
+
+        <h3>사용 가능한 툴바 아이템</h3>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>아이템</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>'undo-redo'</code></td>
+              <td>실행 취소, 다시 실행</td>
+            </tr>
+            <tr>
+              <td><code>'paragraph'</code></td>
+              <td>문단 형식 (제목 1-6, 본문, 인용 등)</td>
+            </tr>
+            <tr>
+              <td><code>'text-style'</code></td>
+              <td>텍스트 서식 (굵게, 기울임, 밑줄, 취소선)</td>
+            </tr>
+            <tr>
+              <td><code>'color'</code></td>
+              <td>글꼴 색상, 배경 색상</td>
+            </tr>
+            <tr>
+              <td><code>'align'</code></td>
+              <td>정렬 (왼쪽, 가운데, 오른쪽)</td>
+            </tr>
+            <tr>
+              <td><code>'list'</code></td>
+              <td>목록 (순서 없는 목록, 순서 있는 목록)</td>
+            </tr>
+            <tr>
+              <td><code>'table'</code></td>
+              <td>표 삽입</td>
+            </tr>
+            <tr>
+              <td><code>'link'</code></td>
+              <td>링크 삽입</td>
+            </tr>
+            <tr>
+              <td><code>'image'</code></td>
+              <td>이미지 삽입</td>
+            </tr>
+            <tr>
+              <td><code>'youtube'</code></td>
+              <td>유튜브 동영상 삽입</td>
+            </tr>
+            <tr>
+              <td><code>'format'</code></td>
+              <td>서식 지우기</td>
+            </tr>
+            <tr>
+              <td><code>'code'</code></td>
+              <td>HTML 코드 보기</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>기본 에디터 (텍스트 편집만):</div>
+          <Editor
+            value={basicContent}
+            onChange={setBasicContent}
+            height="300px"
+            placeholder="텍스트만 편집할 수 있습니다..."
+            toolbar={['undo-redo', 'text-style', 'paragraph', 'color']}
+          />
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>기본 에디터 코드</div>
+          <pre><code>{`import { Editor } from 'podo-ui';
+
+export default function MyComponent() {
+  const [content, setContent] = useState('');
+
+  return (
+    <Editor
+      value={content}
+      onChange={setContent}
+      toolbar={['undo-redo', 'text-style', 'paragraph', 'color']}
+    />
+  );
+}`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>고급 에디터 (이미지, 링크, 표 포함):</div>
+          <Editor
+            value={advancedContent}
+            onChange={setAdvancedContent}
+            height="300px"
+            placeholder="이미지, 링크, 표 등 모든 기능을 사용할 수 있습니다..."
+            toolbar={[
+              'undo-redo',
+              'paragraph',
+              'text-style',
+              'color',
+              'align',
+              'list',
+              'table',
+              'link',
+              'image',
+              'code'
+            ]}
+          />
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>고급 에디터 코드</div>
+          <pre><code>{`import { Editor } from 'podo-ui';
+
+export default function MyComponent() {
+  const [content, setContent] = useState('');
+
+  return (
+    <Editor
+      value={content}
+      onChange={setContent}
+      toolbar={[
+        'undo-redo',
+        'paragraph',
+        'text-style',
+        'color',
+        'align',
+        'list',
+        'table',
+        'link',
+        'image',
+        'code'
+      ]}
+    />
+  );
+}`}</code></pre>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>전체 툴바 (기본값)</div>
+          <pre><code>{`import { Editor } from 'podo-ui';
+
+export default function MyComponent() {
+  const [content, setContent] = useState('');
+
+  return (
+    <Editor
+      value={content}
+      onChange={setContent}
+      // toolbar prop을 전달하지 않으면 모든 툴바가 표시됩니다
+    />
+  );
+}`}</code></pre>
+        </div>
       </section>
 
       <section className={styles.section}>

@@ -3,6 +3,20 @@ import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import styles from './editor.module.scss';
 
+export type ToolbarItem =
+  | 'undo-redo'      // 실행 취소/다시 실행
+  | 'paragraph'      // 문단 형식
+  | 'text-style'     // 굵게, 기울임, 밑줄, 취소선
+  | 'color'          // 글꼴 색상, 배경 색상
+  | 'align'          // 정렬
+  | 'list'           // 목록, 번호 목록
+  | 'table'          // 표
+  | 'link'           // 링크
+  | 'image'          // 이미지
+  | 'youtube'        // 유튜브
+  | 'format'         // 서식 지우기
+  | 'code';          // 코드 보기
+
 export interface EditorProps {
   value: string;
   width?: string;
@@ -13,6 +27,7 @@ export interface EditorProps {
   onChange: (content: string) => void;
   validator?: z.ZodType<unknown>;
   placeholder?: string;
+  toolbar?: ToolbarItem[]; // 사용할 툴바 아이템 (없으면 전부)
 }
 
 const Editor = ({
@@ -25,6 +40,7 @@ const Editor = ({
   onChange,
   validator,
   placeholder = '내용을 입력하세요...',
+  toolbar,
 }: EditorProps) => {
   const [message, setMessage] = useState('');
   const [statusClass, setStatusClass] = useState('');
@@ -120,20 +136,40 @@ const Editor = ({
   const justFinishedDraggingRef = useRef(false); // 드래그가 방금 끝났는지 추적
   const isMouseDownRef = useRef(false); // 마우스 버튼이 눌려있는지 추적
 
+  // 툴바 설정 (기본값: 모든 툴)
+  const defaultToolbar: ToolbarItem[] = [
+    'undo-redo',
+    'paragraph',
+    'text-style',
+    'color',
+    'align',
+    'list',
+    'table',
+    'link',
+    'image',
+    'youtube',
+    'format',
+    'code',
+  ];
+  const activeToolbar = toolbar || defaultToolbar;
+
+  // 특정 툴바 아이템이 활성화되어 있는지 확인
+  const isToolbarItemEnabled = (item: ToolbarItem) => activeToolbar.includes(item);
+
   // 색상 팔레트 정의 (이미지 기반)
   const colorPalette = [
-    // 첫 번째 줄: 순수 색상
-    ['#ff0000', '#ff8000', '#ffff00', '#80ff00', '#00ffff', '#0080ff', '#0000ff', '#8000ff', '#ff00ff', '#000000'],
+    // 첫 번째 줄: 순수 색상 + 흰색/검은색
+    ['#ff0000', '#ff8000', '#ffff00', '#80ff00', '#00ffff', '#0080ff', '#0000ff', '#8000ff', '#ff00ff', '#ffffff', '#000000'],
     // 두 번째 줄: 매우 밝은 톤 (90% 밝기)
-    ['#ffcccc', '#ffe0cc', '#ffffcc', '#e0ffcc', '#ccffff', '#cce0ff', '#ccccff', '#e0ccff', '#ffccff', '#cccccc'],
+    ['#ffcccc', '#ffe0cc', '#ffffcc', '#e0ffcc', '#ccffff', '#cce0ff', '#ccccff', '#e0ccff', '#ffccff', '#f5f5f5', '#cccccc'],
     // 세 번째 줄: 밝은 톤 (70% 밝기)
-    ['#ff9999', '#ffcc99', '#ffff99', '#ccff99', '#99ffff', '#99ccff', '#9999ff', '#cc99ff', '#ff99ff', '#999999'],
+    ['#ff9999', '#ffcc99', '#ffff99', '#ccff99', '#99ffff', '#99ccff', '#9999ff', '#cc99ff', '#ff99ff', '#e6e6e6', '#999999'],
     // 네 번째 줄: 중간 톤 (50% 밝기)
-    ['#ff6666', '#ffb366', '#ffff66', '#b3ff66', '#66ffff', '#66b3ff', '#6666ff', '#b366ff', '#ff66ff', '#666666'],
+    ['#ff6666', '#ffb366', '#ffff66', '#b3ff66', '#66ffff', '#66b3ff', '#6666ff', '#b366ff', '#ff66ff', '#d9d9d9', '#666666'],
     // 다섯 번째 줄: 어두운 톤 (30% 밝기)
-    ['#cc0000', '#cc6600', '#cccc00', '#66cc00', '#00cccc', '#0066cc', '#0000cc', '#6600cc', '#cc00cc', '#333333'],
+    ['#cc0000', '#cc6600', '#cccc00', '#66cc00', '#00cccc', '#0066cc', '#0000cc', '#6600cc', '#cc00cc', '#b3b3b3', '#333333'],
     // 여섯 번째 줄: 매우 어두운 톤 (15% 밝기)
-    ['#800000', '#804000', '#808000', '#408000', '#008080', '#004080', '#000080', '#400080', '#800080', '#1a1a1a'],
+    ['#800000', '#804000', '#808000', '#408000', '#008080', '#004080', '#000080', '#400080', '#800080', '#808080', '#1a1a1a'],
   ];
 
   // 정렬 옵션 정의
@@ -429,7 +465,8 @@ const Editor = ({
       // 지원하는 태그와 스타일 정의
       const allowedTags = ['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'S', 'STRIKE', 'DEL',
                           'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE',
-                          'UL', 'OL', 'LI', 'A', 'IMG', 'SPAN', 'DIV'];
+                          'UL', 'OL', 'LI', 'A', 'IMG', 'SPAN', 'DIV',
+                          'TABLE', 'THEAD', 'TBODY', 'TFOOT', 'TR', 'TH', 'TD'];
       const allowedStyles = ['color', 'background-color', 'text-align'];
 
       // 모든 요소를 순회하면서 정리
@@ -470,14 +507,45 @@ const Editor = ({
           }
         }
 
+        // Table 요소에 에디터 기본 스타일 적용 (insertTable과 동일)
+        if (tagName === 'TABLE') {
+          newElement.style.borderCollapse = 'collapse';
+          newElement.style.width = '100%';
+          newElement.style.margin = '10px 0';
+          newElement.setAttribute('border', '1');
+          newElement.style.border = '1px solid #ddd';
+        }
+        if (tagName === 'TH' || tagName === 'TD') {
+          newElement.style.border = '1px solid #ddd';
+          newElement.style.padding = '8px';
+          if (tagName === 'TD') {
+            newElement.style.minWidth = '50px';
+          }
+        }
+        if (tagName === 'TH') {
+          newElement.style.fontWeight = 'bold';
+        }
+
         // 스타일 복원 (허용된 것만)
         if (element instanceof HTMLElement && element.style) {
-          allowedStyles.forEach(styleName => {
-            const value = element.style.getPropertyValue(styleName);
-            if (value) {
-              (newElement as HTMLElement).style.setProperty(styleName, value);
-            }
-          });
+          // 테이블 셀의 경우 배경색과 정렬만 허용
+          if (tagName === 'TD' || tagName === 'TH') {
+            const cellAllowedStyles = ['background-color', 'text-align'];
+            cellAllowedStyles.forEach(styleName => {
+              const value = element.style.getPropertyValue(styleName);
+              if (value) {
+                (newElement as HTMLElement).style.setProperty(styleName, value);
+              }
+            });
+          } else {
+            // 일반 요소는 허용된 스타일만
+            allowedStyles.forEach(styleName => {
+              const value = element.style.getPropertyValue(styleName);
+              if (value) {
+                (newElement as HTMLElement).style.setProperty(styleName, value);
+              }
+            });
+          }
         }
 
         // 자식 요소 처리
@@ -576,6 +644,12 @@ const Editor = ({
       }, 0);
     } else {
       // 일반 모드에서 코드보기로 전환
+
+      // 셀 선택 상태 해제
+      if (selectedTableCells.length > 0) {
+        clearCellSelection();
+      }
+
       if (editorRef.current) {
         // height가 contents일 때 현재 에디터 높이 저장
         if (height === 'contents') {
@@ -1078,6 +1152,12 @@ const Editor = ({
     const cell = target.closest('td') as HTMLTableCellElement;
 
     if (cell && editorRef.current?.contains(cell)) {
+      // 이미지나 이미지 컨테이너를 드래그하는 경우 셀 선택 방지
+      if (target.tagName === 'IMG' || target.classList.contains('image-container')) {
+        console.log('🔵 handleCellMouseDown - 이미지 드래그 감지, 셀 선택 무시');
+        return;
+      }
+
       console.log('🔵 handleCellMouseDown - 셀 클릭');
 
       // 마우스 다운 상태 설정
@@ -1866,6 +1946,33 @@ const Editor = ({
     handleInput();
   };
 
+  // 셀 배경색 초기화
+  const resetTableCellBackgroundColor = () => {
+    if (selectedTableCells.length > 0) {
+      selectedTableCells.forEach(cell => {
+        cell.style.backgroundColor = '';
+      });
+    } else if (selectedTableCell) {
+      selectedTableCell.style.backgroundColor = '';
+    }
+
+    setIsTableCellColorOpen(false);
+    handleInput();
+  };
+
+  // 셀 정렬 설정
+  const changeTableCellAlign = (align: 'left' | 'center' | 'right') => {
+    if (selectedTableCells.length > 0) {
+      selectedTableCells.forEach(cell => {
+        cell.style.textAlign = align;
+      });
+    } else if (selectedTableCell) {
+      selectedTableCell.style.textAlign = align;
+    }
+
+    handleInput();
+  };
+
   // 행 추가 (위/아래)
   const addTableRow = (position: 'above' | 'below') => {
     if (!selectedTableCell) return;
@@ -2262,13 +2369,129 @@ const Editor = ({
 
     const range = selection.getRangeAt(0);
 
-    // 선택된 텍스트를 span으로 감싸기
+    // 선택 영역에 포함된 모든 표 셀 찾기
+    const getSelectedTableCells = (): HTMLTableCellElement[] => {
+      const cells: HTMLTableCellElement[] = [];
+      const container = range.commonAncestorContainer;
+
+      // 컨테이너가 표인지 확인
+      let tableElement: HTMLElement | null = null;
+      let current = container.nodeType === Node.TEXT_NODE ? container.parentElement : container as HTMLElement;
+
+      while (current && current !== editorRef.current) {
+        if (current.tagName === 'TABLE' || current.tagName === 'TBODY' || current.tagName === 'TR') {
+          // 상위 table 요소 찾기
+          let table = current;
+          while (table && table.tagName !== 'TABLE') {
+            table = table.parentElement as HTMLElement;
+          }
+          tableElement = table;
+          break;
+        }
+        current = current.parentElement;
+      }
+
+      if (!tableElement) return cells;
+
+      // 표 내의 모든 셀 확인
+      const allCells = tableElement.querySelectorAll('td, th');
+      allCells.forEach(cell => {
+        if (range.intersectsNode(cell)) {
+          cells.push(cell as HTMLTableCellElement);
+        }
+      });
+
+      return cells;
+    };
+
+    const selectedCells = getSelectedTableCells();
+
+    // 여러 표 셀이 선택된 경우
+    if (selectedCells.length > 1) {
+      selectedCells.forEach(cell => {
+        // 각 셀의 모든 내용을 span으로 감싸기
+        const cellContents = Array.from(cell.childNodes);
+
+        cellContents.forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+            // 텍스트 노드를 span으로 감싸기
+            const span = document.createElement('span');
+            if (styleProperty === 'color') {
+              span.style.color = color;
+            } else if (styleProperty === 'background-color') {
+              span.style.backgroundColor = color;
+            }
+            span.textContent = node.textContent;
+            cell.replaceChild(span, node);
+          } else if (node.nodeType === Node.ELEMENT_NODE) {
+            // 기존 요소에 스타일 적용
+            const element = node as HTMLElement;
+            if (styleProperty === 'color') {
+              element.style.color = color;
+            } else if (styleProperty === 'background-color') {
+              element.style.backgroundColor = color;
+            }
+          }
+        });
+      });
+
+      // 선택 해제
+      selection.removeAllRanges();
+      editorRef.current?.focus();
+      handleInput();
+      return;
+    }
+
+    // 단일 셀 내부 또는 일반 텍스트
+    const commonAncestor = range.commonAncestorContainer;
+
+    // 선택 영역이 표 셀 내부인지 확인
+    const isInTableCell = (node: Node): boolean => {
+      let current = node.nodeType === Node.TEXT_NODE ? node.parentElement : node as Element;
+      while (current && current !== editorRef.current) {
+        if (current.tagName === 'TD' || current.tagName === 'TH') {
+          return true;
+        }
+        current = current.parentElement;
+      }
+      return false;
+    };
+
+    // 표 셀 내부에서의 색상 변경 (단일 셀)
+    if (isInTableCell(commonAncestor)) {
+      try {
+        const contents = range.extractContents();
+        const span = document.createElement('span');
+
+        if (styleProperty === 'color') {
+          span.style.color = color;
+        } else if (styleProperty === 'background-color') {
+          span.style.backgroundColor = color;
+        }
+
+        span.appendChild(contents);
+        range.insertNode(span);
+
+        // 커서 위치 조정
+        range.setStartAfter(span);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        editorRef.current?.focus();
+        handleInput();
+        return;
+      } catch (error) {
+        console.error('표 셀 내부 색상 변경 오류:', error);
+      }
+    }
+
+    // 일반 텍스트에 대한 색상 변경
     const span = document.createElement('span');
 
     try {
       const contents = range.extractContents();
 
-      // 스타일 적용 - setAttribute를 사용하여 !important 포함
       if (styleProperty === 'color') {
         span.setAttribute('style', `color: ${color} !important;`);
       } else if (styleProperty === 'background-color') {
@@ -2278,14 +2501,12 @@ const Editor = ({
       span.appendChild(contents);
       range.insertNode(span);
 
-      // 커서 위치 조정
       range.selectNodeContents(span);
       range.collapse(false);
       selection.removeAllRanges();
       selection.addRange(range);
 
     } catch {
-      // 폴백: execCommand 사용
       if (styleProperty === 'color') {
         document.execCommand('foreColor', false, color);
       } else {
@@ -2559,7 +2780,7 @@ const Editor = ({
 
   // 표 셀 드래그 선택 이벤트 등록
   useEffect(() => {
-    if (!editorRef.current) return;
+    if (!editorRef.current || isCodeView) return;
 
     const editor = editorRef.current;
 
@@ -2572,7 +2793,7 @@ const Editor = ({
       document.removeEventListener('mousemove', handleCellMouseMove as EventListener);
       document.removeEventListener('mouseup', handleCellMouseUp as EventListener);
     };
-  }, [handleCellMouseDown, handleCellMouseMove, handleCellMouseUp]);
+  }, [handleCellMouseDown, handleCellMouseMove, handleCellMouseUp, isCodeView]);
 
   // 스크롤, 리사이즈 및 이미지/유튜브 드래그 시 편집창 숨기기
   useEffect(() => {
@@ -2770,40 +2991,43 @@ const Editor = ({
   return (
     <div className={`${styles.editor} ${statusClass}`} style={{ width, position: 'relative' }}>
       <div className={styles.toolbar}>
-        <div className={styles.toolbarGroup}>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('undo')}
-            disabled={historyIndex <= 0}
-            title="실행 취소"
-            style={{
-              opacity: historyIndex <= 0 ? 0.65 : 1,
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: historyIndex <= 0 ? 'not-allowed' : 'pointer'
-            }}
-          >
-            <i className={styles.undo} />
-          </button>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('redo')}
-            disabled={historyIndex >= history.length - 1}
-            title="다시 실행"
-            style={{
-              opacity: historyIndex >= history.length - 1 ? 0.65 : 1,
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: historyIndex >= history.length - 1 ? 'not-allowed' : 'pointer'
-            }}
-          >
-            <i className={styles.redo} />
-          </button>
-        </div>
+        {isToolbarItemEnabled('undo-redo') && (
+          <div className={styles.toolbarGroup}>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={() => execCommand('undo')}
+              disabled={historyIndex <= 0}
+              title="실행 취소"
+              style={{
+                opacity: historyIndex <= 0 ? 0.65 : 1,
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: historyIndex <= 0 ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <i className={styles.undo} />
+            </button>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={() => execCommand('redo')}
+              disabled={historyIndex >= history.length - 1}
+              title="다시 실행"
+              style={{
+                opacity: historyIndex >= history.length - 1 ? 0.65 : 1,
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: historyIndex >= history.length - 1 ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <i className={styles.redo} />
+            </button>
+          </div>
+        )}
 
-        <div className={styles.toolbarGroup} ref={paragraphButtonRef}>
+        {isToolbarItemEnabled('paragraph') && (
+          <div className={styles.toolbarGroup} ref={paragraphButtonRef}>
           <button
             type="button"
             className={styles.paragraphButton}
@@ -2847,44 +3071,48 @@ const Editor = ({
               ))}
             </div>
           )}
-        </div>
+          </div>
+        )}
 
-        <div className={styles.toolbarGroup}>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('bold')}
-            title="굵게"
-          >
-            <i className={styles.bold} />
-          </button>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('italic')}
-            title="기울임"
-          >
-            <i className={styles.italic} />
-          </button>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('underline')}
-            title="밑줄"
-          >
-            <i className={styles.underline} />
-          </button>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('strikeThrough')}
-            title="취소선"
-          >
-            <i className={styles.strikethrough} />
-          </button>
-        </div>
+        {isToolbarItemEnabled('text-style') && (
+          <div className={styles.toolbarGroup}>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={() => execCommand('bold')}
+              title="굵게"
+            >
+              <i className={styles.bold} />
+            </button>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={() => execCommand('italic')}
+              title="기울임"
+            >
+              <i className={styles.italic} />
+            </button>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={() => execCommand('underline')}
+              title="밑줄"
+            >
+              <i className={styles.underline} />
+            </button>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={() => execCommand('strikeThrough')}
+              title="취소선"
+            >
+              <i className={styles.strikethrough} />
+            </button>
+          </div>
+        )}
 
-        <div className={styles.toolbarGroup}>
+        {isToolbarItemEnabled('color') && (
+          <div className={styles.toolbarGroup}>
           <div ref={textColorButtonRef} style={{ position: 'relative' }}>
             <button
               type="button"
@@ -2980,75 +3208,84 @@ const Editor = ({
               </div>
             )}
           </div>
-        </div>
-
-        <div className={styles.toolbarGroup}>
-          <div ref={alignButtonRef} style={{ position: 'relative' }}>
-            <button
-              type="button"
-              className={styles.toolbarButton}
-              onClick={() => {
-                setIsAlignDropdownOpen(!isAlignDropdownOpen);
-                setIsParagraphDropdownOpen(false);
-                setIsTextColorOpen(false);
-                setIsBgColorOpen(false);
-              }}
-              title={getCurrentAlignLabel()}
-            >
-              <i className={getCurrentAlignIcon()} />
-            </button>
-
-            {isAlignDropdownOpen && (
-              <div
-                className={styles.alignDropdown}
-                style={{
-                  top: alignButtonRef.current?.getBoundingClientRect().bottom ?? 0,
-                  left: alignButtonRef.current?.getBoundingClientRect().left ?? 0
-                }}
-              >
-                {alignOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={`${styles.alignOption} ${currentAlign === option.value ? styles.active : ''}`}
-                    onClick={() => {
-                      if (option.value === 'left') {
-                        execCommand('justifyLeft');
-                      } else if (option.value === 'center') {
-                        execCommand('justifyCenter');
-                      } else if (option.value === 'right') {
-                        execCommand('justifyRight');
-                      }
-                      setCurrentAlign(option.value);
-                      setIsAlignDropdownOpen(false);
-                    }}
-                    title={option.label}
-                  >
-                    <i className={styles[option.icon]} />
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
+        )}
 
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('insertUnorderedList')}
-            title="목록"
-          >
-            <i className={styles.listUl} />
-          </button>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('insertOrderedList')}
-            title="번호 목록"
-          >
-            <i className={styles.listOl} />
-          </button>
+        {(isToolbarItemEnabled('align') || isToolbarItemEnabled('list') || isToolbarItemEnabled('table')) && (
+          <div className={styles.toolbarGroup}>
+          {isToolbarItemEnabled('align') && (
+            <div ref={alignButtonRef} style={{ position: 'relative' }}>
+              <button
+                type="button"
+                className={styles.toolbarButton}
+                onClick={() => {
+                  setIsAlignDropdownOpen(!isAlignDropdownOpen);
+                  setIsParagraphDropdownOpen(false);
+                  setIsTextColorOpen(false);
+                  setIsBgColorOpen(false);
+                }}
+                title={getCurrentAlignLabel()}
+              >
+                <i className={getCurrentAlignIcon()} />
+              </button>
 
-          <div ref={tableButtonRef} style={{ position: 'relative' }}>
+              {isAlignDropdownOpen && (
+                <div
+                  className={styles.alignDropdown}
+                  style={{
+                    top: alignButtonRef.current?.getBoundingClientRect().bottom ?? 0,
+                    left: alignButtonRef.current?.getBoundingClientRect().left ?? 0
+                  }}
+                >
+                  {alignOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`${styles.alignOption} ${currentAlign === option.value ? styles.active : ''}`}
+                      onClick={() => {
+                        if (option.value === 'left') {
+                          execCommand('justifyLeft');
+                        } else if (option.value === 'center') {
+                          execCommand('justifyCenter');
+                        } else if (option.value === 'right') {
+                          execCommand('justifyRight');
+                        }
+                        setCurrentAlign(option.value);
+                        setIsAlignDropdownOpen(false);
+                      }}
+                      title={option.label}
+                    >
+                      <i className={styles[option.icon]} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {isToolbarItemEnabled('list') && (
+            <>
+              <button
+                type="button"
+                className={styles.toolbarButton}
+                onClick={() => execCommand('insertUnorderedList')}
+                title="목록"
+              >
+                <i className={styles.listUl} />
+              </button>
+              <button
+                type="button"
+                className={styles.toolbarButton}
+                onClick={() => execCommand('insertOrderedList')}
+                title="번호 목록"
+              >
+                <i className={styles.listOl} />
+              </button>
+            </>
+          )}
+
+          {isToolbarItemEnabled('table') && (
+            <div ref={tableButtonRef} style={{ position: 'relative' }}>
             <button
               type="button"
               className={styles.toolbarButton}
@@ -3101,11 +3338,15 @@ const Editor = ({
                 </div>
               </div>
             )}
+            </div>
+          )}
           </div>
-        </div>
+        )}
 
-        <div className={styles.toolbarGroup}>
-          <div ref={linkButtonRef} style={{ position: 'relative' }}>
+        {(isToolbarItemEnabled('link') || isToolbarItemEnabled('image') || isToolbarItemEnabled('youtube')) && (
+          <div className={styles.toolbarGroup}>
+          {isToolbarItemEnabled('link') && (
+            <div ref={linkButtonRef} style={{ position: 'relative' }}>
             <button
               type="button"
               className={styles.toolbarButton}
@@ -3177,9 +3418,11 @@ const Editor = ({
                 </div>
               </div>
             )}
-          </div>
+            </div>
+          )}
 
-          <div ref={imageButtonRef} style={{ position: 'relative' }}>
+          {isToolbarItemEnabled('image') && (
+            <div ref={imageButtonRef} style={{ position: 'relative' }}>
             <button
               type="button"
               className={styles.toolbarButton}
@@ -3367,9 +3610,11 @@ const Editor = ({
                 </div>
               </div>
             )}
-          </div>
+            </div>
+          )}
 
-          <div ref={youtubeButtonRef} style={{ position: 'relative' }}>
+          {isToolbarItemEnabled('youtube') && (
+            <div ref={youtubeButtonRef} style={{ position: 'relative' }}>
             <button
               type="button"
               className={styles.toolbarButton}
@@ -3518,30 +3763,36 @@ const Editor = ({
                 </div>
               </div>
             )}
+            </div>
+          )}
           </div>
-        </div>
+        )}
 
-        <div className={styles.toolbarGroup}>
-          <button
-            type="button"
-            className={styles.toolbarButton}
-            onClick={() => execCommand('removeFormat')}
-            title="서식 지우기"
-          >
-            <i className={styles.eraser} />
-          </button>
-        </div>
+        {isToolbarItemEnabled('format') && (
+          <div className={styles.toolbarGroup}>
+            <button
+              type="button"
+              className={styles.toolbarButton}
+              onClick={() => execCommand('removeFormat')}
+              title="서식 지우기"
+            >
+              <i className={styles.eraser} />
+            </button>
+          </div>
+        )}
 
-        <div className={styles.toolbarGroup}>
-          <button
-            type="button"
-            className={`${styles.toolbarButton} ${isCodeView ? styles.active : ''}`}
-            onClick={toggleCodeView}
-            title={isCodeView ? "에디터로 전환" : "HTML 코드보기"}
-          >
-            <i className={styles.code} />
-          </button>
-        </div>
+        {isToolbarItemEnabled('code') && (
+          <div className={styles.toolbarGroup}>
+            <button
+              type="button"
+              className={`${styles.toolbarButton} ${isCodeView ? styles.active : ''}`}
+              onClick={toggleCodeView}
+              title={isCodeView ? "에디터로 전환" : "HTML 코드보기"}
+            >
+              <i className={styles.code} />
+            </button>
+          </div>
+        )}
       </div>
 
       <div
@@ -3981,6 +4232,38 @@ const Editor = ({
               </div>
             )}
           </div>
+
+          <button
+            type="button"
+            onClick={resetTableCellBackgroundColor}
+            className={styles.tableContextMenuButton}
+          >
+            배경색 초기화
+          </button>
+
+          <div className={styles.tableContextMenuDivider} />
+
+          <button
+            type="button"
+            onClick={() => changeTableCellAlign('left')}
+            className={styles.tableContextMenuButton}
+          >
+            왼쪽 정렬
+          </button>
+          <button
+            type="button"
+            onClick={() => changeTableCellAlign('center')}
+            className={styles.tableContextMenuButton}
+          >
+            가운데 정렬
+          </button>
+          <button
+            type="button"
+            onClick={() => changeTableCellAlign('right')}
+            className={styles.tableContextMenuButton}
+          >
+            오른쪽 정렬
+          </button>
 
           <div className={styles.tableContextMenuDivider} />
 
