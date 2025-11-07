@@ -465,7 +465,7 @@ const Editor = ({
       // 지원하는 태그와 스타일 정의
       const allowedTags = ['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'S', 'STRIKE', 'DEL',
                           'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE',
-                          'UL', 'OL', 'LI', 'A', 'IMG', 'SPAN', 'DIV',
+                          'UL', 'OL', 'LI', 'A', 'IMG', 'SPAN', 'DIV', 'HR',
                           'TABLE', 'THEAD', 'TBODY', 'TFOOT', 'TR', 'TH', 'TD'];
       const allowedStyles = ['color', 'background-color', 'text-align'];
 
@@ -590,13 +590,66 @@ const Editor = ({
         selection.addRange(range);
       }
     } else if (text) {
-      // HTML이 없으면 일반 텍스트 삽입
+      // HTML이 없으면 일반 텍스트 삽입 (줄바꿈을 <br> 및 <p> 태그로 변환)
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         range.deleteContents();
-        range.insertNode(document.createTextNode(text));
+
+        // 텍스트를 줄 단위로 분리 (연속된 줄바꿈은 문단 구분으로 처리)
+        const lines = text.split('\n');
+        const paragraphs: string[][] = [];
+        let currentParagraph: string[] = [];
+
+        lines.forEach((line) => {
+          if (line.trim() === '') {
+            // 빈 줄이면 현재 문단을 저장하고 새 문단 시작
+            if (currentParagraph.length > 0) {
+              paragraphs.push(currentParagraph);
+              currentParagraph = [];
+            }
+          } else {
+            currentParagraph.push(line);
+          }
+        });
+
+        // 마지막 문단 추가
+        if (currentParagraph.length > 0) {
+          paragraphs.push(currentParagraph);
+        }
+
+        // 문단이 없으면 빈 문자열 처리
+        if (paragraphs.length === 0) {
+          range.insertNode(document.createTextNode(text));
+          range.collapse(false);
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        paragraphs.forEach((paragraph) => {
+          if (paragraph.length === 1) {
+            // 한 줄짜리 문단은 <p> 태그로 감싸기
+            const p = document.createElement('p');
+            p.textContent = paragraph[0];
+            fragment.appendChild(p);
+          } else if (paragraph.length > 1) {
+            // 여러 줄은 <p> 태그로 감싸고 내부는 <br>로 구분
+            const p = document.createElement('p');
+            paragraph.forEach((line, lIndex) => {
+              p.appendChild(document.createTextNode(line));
+              if (lIndex < paragraph.length - 1) {
+                p.appendChild(document.createElement('br'));
+              }
+            });
+            fragment.appendChild(p);
+          }
+        });
+
+        range.insertNode(fragment);
         range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
       }
     }
 
@@ -1114,20 +1167,14 @@ const Editor = ({
 
     // 표 셀 클릭 시에는 선택 유지
     const clickedCell = target.closest('td');
-    console.log('⚪ handleEditorClick - 에디터 클릭');
-    console.log('  - clickedCell:', !!clickedCell);
-    console.log('  - selectedTableCells.length:', selectedTableCells.length);
-    console.log('  - justFinishedDraggingRef.current:', justFinishedDraggingRef.current);
 
     // 드래그가 방금 끝난 경우 선택 해제하지 않음
     if (justFinishedDraggingRef.current) {
-      console.log('  - 드래그 직후이므로 선택 유지');
       return;
     }
 
     // 표 셀 외부를 클릭한 경우에만 선택 해제
     if (!clickedCell && selectedTableCells.length > 0) {
-      console.log('  - 표 외부 클릭, 선택 해제 호출');
       clearCellSelection();
     }
 
@@ -1154,32 +1201,23 @@ const Editor = ({
     if (cell && editorRef.current?.contains(cell)) {
       // 이미지나 이미지 컨테이너를 드래그하는 경우 셀 선택 방지
       if (target.tagName === 'IMG' || target.classList.contains('image-container')) {
-        console.log('🔵 handleCellMouseDown - 이미지 드래그 감지, 셀 선택 무시');
         return;
       }
 
-      console.log('🔵 handleCellMouseDown - 셀 클릭');
-
       // 마우스 다운 상태 설정
       isMouseDownRef.current = true;
-      console.log('  - isMouseDownRef.current = true');
 
       // 드래그 시작 셀 설정
       setSelectionStartCell(cell);
 
       // 이미 선택된 셀을 클릭한 경우 선택 유지
       const isAlreadySelected = cell.classList.contains('selected-cell');
-      console.log('  - isAlreadySelected:', isAlreadySelected);
-      console.log('  - shift 키:', e.shiftKey);
 
       // 새로운 셀을 클릭하거나 Shift 키를 누르지 않은 경우에만 기존 선택 해제
       if (!isAlreadySelected && !e.shiftKey) {
         const allCells = editorRef.current.querySelectorAll('.selected-cell');
-        console.log('  - 기존 선택 해제, 선택된 셀 수:', allCells.length);
         allCells.forEach(c => c.classList.remove('selected-cell'));
         setSelectedTableCells([]);
-      } else {
-        console.log('  - 기존 선택 유지');
       }
     }
   }, []);
@@ -1193,13 +1231,11 @@ const Editor = ({
 
     // 마우스가 눌려있지 않으면 드래그 불가
     if (!isMouseDownRef.current) {
-      console.log('🟢 handleCellMouseMove - 마우스가 눌려있지 않음, 무시');
       return;
     }
 
     // selectionStartCell이 있고, 다른 셀로 이동한 경우에만 드래그 선택 모드 활성화
     if (selectionStartCell && cell !== selectionStartCell && !isSelectingCellsRef.current) {
-      console.log('🟢 handleCellMouseMove - 드래그 선택 모드 활성화');
       isSelectingCellsRef.current = true;
       setIsSelectingCells(true);
       e.preventDefault();
@@ -1213,7 +1249,6 @@ const Editor = ({
 
     // 범위 내 모든 셀 선택
     const cellsInRange = getCellsInRange(selectionStartCell, cell);
-    console.log('🟢 handleCellMouseMove - 범위 선택, 셀 수:', cellsInRange.length);
 
     // 기존 선택 클래스 제거
     const allSelectedCells = editorRef.current.querySelectorAll('.selected-cell');
@@ -1229,15 +1264,8 @@ const Editor = ({
     const target = e.target as HTMLElement;
     const cell = target.closest('td') as HTMLTableCellElement;
 
-    console.log('🟡 handleCellMouseUp - 마우스 업');
-    console.log('  - isSelectingCellsRef.current:', isSelectingCellsRef.current);
-    console.log('  - isMouseDownRef.current:', isMouseDownRef.current);
-    console.log('  - 현재 선택된 셀 수:', editorRef.current?.querySelectorAll('.selected-cell').length);
-
     // 드래그 선택 중이었다면 플래그 설정
     if (isSelectingCellsRef.current) {
-      console.log('  - 드래그 중이었음, 플래그 설정');
-
       // 셀 내부에서 마우스 업한 경우 이벤트 방지
       if (cell && editorRef.current?.contains(cell)) {
         e.preventDefault();
@@ -1246,31 +1274,24 @@ const Editor = ({
 
       // 드래그가 방금 끝났음을 표시
       justFinishedDraggingRef.current = true;
-      console.log('  - justFinishedDraggingRef.current = true');
 
       // 50ms 후 플래그 해제 (클릭 이벤트가 처리된 후)
       setTimeout(() => {
         justFinishedDraggingRef.current = false;
-        console.log('  - justFinishedDraggingRef.current = false (타이머)');
       }, 50);
     }
 
     // 마우스 다운 상태 해제 (가장 중요!)
     isMouseDownRef.current = false;
-    console.log('  - isMouseDownRef.current = false');
 
     // 드래그 선택 모드 무조건 종료 (선택된 셀은 유지)
     isSelectingCellsRef.current = false;
     setIsSelectingCells(false);
-    console.log('  - 드래그 모드 종료, 선택 상태는 유지해야 함');
     // selectionStartCell은 유지하여 선택 상태 보존
   }, []);
 
   // 셀 선택 해제
   const clearCellSelection = () => {
-    console.log('🔴 clearCellSelection - 셀 선택 해제 호출됨');
-    console.log('  - 해제할 셀 수:', selectedTableCells.length);
-    console.trace('  - 호출 스택:');
     selectedTableCells.forEach(cell => cell.classList.remove('selected-cell'));
     setSelectedTableCells([]);
     setSelectionStartCell(null);
@@ -1390,8 +1411,7 @@ const Editor = ({
         });
 
         imageSrc = imageUrl;
-      } catch (error) {
-        console.error('Image validation failed:', error);
+      } catch {
         alert(`이미지를 불러올 수 없습니다.\n\n가능한 원인:\n1. 잘못된 이미지 URL\n2. CORS 정책으로 인한 차단 (외부 도메인)\n3. 네트워크 연결 문제\n4. 이미지가 존재하지 않음\n\nURL: ${imageUrl}\n\n💡 팁: CORS 정책으로 차단된 경우, 이미지를 직접 다운로드 후 파일 업로드를 사용해주세요.`);
         return;
       }
@@ -1410,7 +1430,6 @@ const Editor = ({
 
     // 이미지 로드 에러 처리
     img.onerror = () => {
-      console.error('Image load failed:', imageSrc);
       alert(`이미지를 불러올 수 없습니다.\n\n가능한 원인:\n1. 잘못된 이미지 URL\n2. CORS 정책으로 인한 차단\n3. 네트워크 연결 문제\n\nURL: ${imageSrc}`);
 
       // 에러 발생 시 삽입된 이미지 제거
@@ -2481,8 +2500,8 @@ const Editor = ({
         editorRef.current?.focus();
         handleInput();
         return;
-      } catch (error) {
-        console.error('표 셀 내부 색상 변경 오류:', error);
+      } catch {
+        // 오류 무시
       }
     }
 
