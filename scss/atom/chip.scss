@@ -1,0 +1,232 @@
+@use '../color/function' as *;
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px; // round=no (기본값)
+  font-family: var(--font-family);
+  font-weight: 400;
+  line-height: 1.6;
+  cursor: default;
+  user-select: none;
+  transition: all 0.2s;
+
+  // 기본 스타일 (theme: default, type: default, size: md)
+  // type: default = 진한 배경
+  padding: 2px 8px;
+  font-size: 16px;
+  background-color: color('default-deep');
+  color: color('default-deep-reverse');
+  border: none;
+
+  // 아이콘
+  i {
+    flex-shrink: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 0 !important;
+
+    &::before {
+      font-size: 24px !important;
+    }
+  }
+
+  // 삭제 버튼 (chip 하위 button 요소)
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+    line-height: 1;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+    color: inherit;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    // union 아이콘 사용
+    &::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 24px;
+      background-color: currentColor;
+      mask-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.39339 4.39339C4.65143 4.13535 5.06764 4.13535 5.32568 4.39339L9 8.06771L12.6743 4.39339C12.9324 4.13535 13.3486 4.13535 13.6066 4.39339C13.8647 4.65143 13.8647 5.06764 13.6066 5.32568L9.93229 9L13.6066 12.6743C13.8647 12.9324 13.8647 13.3486 13.6066 13.6066C13.3486 13.8647 12.9324 13.8647 12.6743 13.6066L9 9.93229L5.32568 13.6066C5.06764 13.8647 4.65143 13.8647 4.39339 13.6066C4.13535 13.3486 4.13535 12.9324 4.39339 12.6743L8.06771 9L4.39339 5.32568C4.13535 5.06764 4.13535 4.65143 4.39339 4.39339Z' fill='black'/%3E%3C/svg%3E");
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: contain;
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.39339 4.39339C4.65143 4.13535 5.06764 4.13535 5.32568 4.39339L9 8.06771L12.6743 4.39339C12.9324 4.13535 13.3486 4.13535 13.6066 4.39339C13.8647 4.65143 13.8647 5.06764 13.6066 5.32568L9.93229 9L13.6066 12.6743C13.8647 12.9324 13.8647 13.3486 13.6066 13.6066C13.3486 13.8647 12.9324 13.8647 12.6743 13.6066L9 9.93229L5.32568 13.6066C5.06764 13.8647 4.65143 13.8647 4.39339 13.6066C4.13535 13.3486 4.13535 12.9324 4.39339 12.6743L8.06771 9L4.39339 5.32568C4.13535 5.06764 4.13535 4.65143 4.39339 4.39339Z' fill='black'/%3E%3C/svg%3E");
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      -webkit-mask-size: contain;
+    }
+  }
+
+  // round=yes variant (완전히 둥근 모서리)
+  &.round {
+    border-radius: 100px;
+  }
+
+  // Size variants
+  &.sm {
+    padding: 2px 8px;
+    font-size: 12px;
+    gap: 4px;
+
+    i {
+      width: 16px;
+      height: 16px;
+
+      &::before {
+        font-size: 16px !important;
+      }
+    }
+
+    button {
+      width: 16px;
+      height: 16px;
+
+      &::before {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  &.md {
+    padding: 2px 8px;
+    font-size: 16px;
+    gap: 4px;
+
+    i {
+      width: 24px;
+      height: 24px;
+
+      &::before {
+        font-size: 24px !important;
+      }
+    }
+
+    button {
+      width: 24px;
+      height: 24px;
+
+      &::before {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  // Theme colors - type: default (진한 배경)
+  &.blue {
+    background-color: color('info');
+    color: color('info-reverse');
+  }
+
+  &.green {
+    background-color: color('success');
+    color: color('success-reverse');
+  }
+
+  &.yellow,
+  &.orange {
+    background-color: color('warning');
+    color: color('warning-reverse');
+  }
+
+  &.red {
+    background-color: color('danger');
+    color: color('danger-reverse');
+  }
+
+  // Type: fill (옅은 배경)
+  &.fill {
+    background-color: color('default-fill');
+    color: color('text-sub');
+
+    i {
+      color: color('text-body');
+    }
+
+    &.blue {
+      background-color: color('info-fill');
+      color: color('info-hover');
+
+      i {
+        color: color('info');
+      }
+    }
+
+    &.green {
+      background-color: color('success-fill');
+      color: color('success-hover');
+
+      i {
+        color: color('success');
+      }
+    }
+
+    &.yellow,
+    &.orange {
+      background-color: color('warning-fill');
+      color: color('warning-hover');
+
+      i {
+        color: color('warning');
+      }
+    }
+
+    &.red {
+      background-color: color('danger-fill');
+      color: color('danger-hover');
+
+      i {
+        color: color('danger');
+      }
+    }
+  }
+
+  // Type: border (테두리만)
+  &.border {
+    background-color: transparent;
+    border: 1px solid;
+    color: color('text-sub');
+    border-color: color('border');
+
+    &.blue {
+      color: color('info');
+      border-color: color('info');
+    }
+
+    &.green {
+      color: color('success');
+      border-color: color('success');
+    }
+
+    &.yellow,
+    &.orange {
+      color: color('warning');
+      border-color: color('warning');
+    }
+
+    &.red {
+      color: color('danger');
+      border-color: color('danger');
+    }
+  }
+}

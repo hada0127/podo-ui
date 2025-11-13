@@ -44,6 +44,7 @@ const menuItems = [
       { label: '토글', path: '/components/toggle' },
       { label: '파일 업로드', path: '/components/file' },
       { label: '에디터', path: '/components/editor' },
+      { label: '칩', path: '/components/chip' },
       { label: '필드', path: '/components/field' },
       { label: '테이블', path: '/components/table' },
       { label: '탭', path: '/components/tab' },
