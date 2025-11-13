@@ -14,14 +14,14 @@ export type ToastPosition =
   | 'bottom-center'
   | 'bottom-right';
 
-export type ToastVariant = 'default' | 'primary' | 'info' | 'success' | 'warning' | 'danger';
+export type ToastTheme = 'default' | 'primary' | 'info' | 'success' | 'warning' | 'danger';
 
 export interface ToastProps {
   id: string;
   header?: string;
   message: string;
-  variant?: ToastVariant;
-  type?: 'type01' | 'type02';
+  theme?: ToastTheme;
+  border?: boolean;
   long?: boolean;
   duration?: number;
   width?: string | number;
@@ -32,8 +32,8 @@ const Toast: React.FC<ToastProps> = ({
   id,
   header,
   message,
-  variant = 'default',
-  type = 'type01',
+  theme = 'default',
+  border = false,
   long = false,
   duration = 3000,
   width,
@@ -67,9 +67,9 @@ const Toast: React.FC<ToastProps> = ({
 
   const toastClasses = [
     'toast',
-    variant,
-    type === 'type02' ? 'toast-border' : '',
-    long ? 'toast-long' : '',
+    theme,
+    border ? 'border' : '',
+    long ? 'long' : '',
     styles.toastAnimation,
     isVisible && !isClosing ? styles.fadeIn : '',
     isClosing ? styles.fadeOut : '',
@@ -82,7 +82,7 @@ const Toast: React.FC<ToastProps> = ({
   };
 
   const getIcon = () => {
-    switch (variant) {
+    switch (theme) {
       case 'success':
         return 'icon-check';
       case 'warning':
@@ -99,16 +99,12 @@ const Toast: React.FC<ToastProps> = ({
 
   return (
     <div className={toastClasses} style={toastStyle}>
-      <div className="toast-icon">
-        <i className={getIcon()}></i>
-      </div>
+      <i className={getIcon()}></i>
       <div className="toast-content">
         {header && !long && <div className="toast-header">{header}</div>}
         <div className="toast-body">{message}</div>
       </div>
-      <button className="toast-close" onClick={handleClose}>
-        <i className="icon-close"></i>
-      </button>
+      <button onClick={handleClose} aria-label="닫기" />
     </div>
   );
 };

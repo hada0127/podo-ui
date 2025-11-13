@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import Toast, { ToastProps, ToastPosition, ToastVariant } from './toast';
+import Toast, { ToastProps, ToastPosition, ToastTheme } from './toast';
 import styles from './toast-container.module.scss';
 
 interface ToastData extends Omit<ToastProps, 'id' | 'onClose'> {
@@ -13,8 +13,8 @@ interface ToastData extends Omit<ToastProps, 'id' | 'onClose'> {
 interface ToastOptions {
   header?: string;
   message: string;
-  variant?: ToastVariant;
-  type?: 'type01' | 'type02';
+  theme?: ToastTheme;
+  border?: boolean;
   long?: boolean;
   duration?: number;
   width?: string | number;
@@ -55,8 +55,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         position,
         header: options.header,
         message: options.message,
-        variant: options.variant,
-        type: options.type,
+        theme: options.theme,
+        border: options.border,
         long: options.long,
         duration: options.duration,
         width: options.width,
@@ -104,8 +104,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                       id={toast.id}
                       header={toast.header}
                       message={toast.message}
-                      variant={toast.variant}
-                      type={toast.type}
+                      theme={toast.theme}
+                      border={toast.border}
                       long={toast.long}
                       duration={toast.duration}
                       width={toast.width}

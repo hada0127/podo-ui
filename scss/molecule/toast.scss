@@ -7,25 +7,27 @@
   align-items: flex-start;
   gap: s(3);
   padding: s(4) s(5);
-  border-radius: r(1);
-  background-color: color('bg-elevation-1');
+  border-radius: r(1); // 2px (border=no 기본값)
+  background-color: color('default-fill');
   border: none;
-  border-top: 4px solid color('border');
+  border-top: 4px solid color('default-deep');
   position: relative;
   min-width: 320px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  // Icon area
-  .toast-icon {
+  // Icon (직접 i 요소 사용)
+  > i {
     flex-shrink: 0;
     width: 24px;
     height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: color('text-sub');
+    margin: 0 !important;
 
-    i {
-      font-size: 20px;
+    &::before {
+      font-size: 24px !important;
+      margin: 0 !important;
     }
   }
 
@@ -34,7 +36,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: s(1);
+    gap: 4px;
   }
 
   .toast-header {
@@ -50,8 +52,8 @@
     color: color('text-body');
   }
 
-  // Close button
-  .toast-close {
+  // Close button (toast 하위 button 요소)
+  button {
     flex-shrink: 0;
     width: 24px;
     height: 24px;
@@ -59,22 +61,37 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: color('text-action');
+    color: color('text-sub');
     background: none;
     border: none;
     padding: 0;
+    margin: 0;
+    transition: opacity 0.2s;
 
     &:hover {
-      color: color('text-action-hover');
+      opacity: 0.7;
     }
 
-    i {
-      font-size: 16px;
+    // union 아이콘 (X) 사용
+    &::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 24px;
+      background-color: currentColor;
+      mask-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.39339 4.39339C4.65143 4.13535 5.06764 4.13535 5.32568 4.39339L9 8.06771L12.6743 4.39339C12.9324 4.13535 13.3486 4.13535 13.6066 4.39339C13.8647 4.65143 13.8647 5.06764 13.6066 5.32568L9.93229 9L13.6066 12.6743C13.8647 12.9324 13.8647 13.3486 13.6066 13.6066C13.3486 13.8647 12.9324 13.8647 12.6743 13.6066L9 9.93229L5.32568 13.6066C5.06764 13.8647 4.65143 13.8647 4.39339 13.6066C4.13535 13.3486 4.13535 12.9324 4.39339 12.6743L8.06771 9L4.39339 5.32568C4.13535 5.06764 4.13535 4.65143 4.39339 4.39339Z' fill='black'/%3E%3C/svg%3E");
+      mask-repeat: no-repeat;
+      mask-position: center;
+      mask-size: contain;
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M4.39339 4.39339C4.65143 4.13535 5.06764 4.13535 5.32568 4.39339L9 8.06771L12.6743 4.39339C12.9324 4.13535 13.3486 4.13535 13.6066 4.39339C13.8647 4.65143 13.8647 5.06764 13.6066 5.32568L9.93229 9L13.6066 12.6743C13.8647 12.9324 13.8647 13.3486 13.6066 13.6066C13.3486 13.8647 12.9324 13.8647 12.6743 13.6066L9 9.93229L5.32568 13.6066C5.06764 13.8647 4.65143 13.8647 4.39339 13.6066C4.13535 13.3486 4.13535 12.9324 4.39339 12.6743L8.06771 9L4.39339 5.32568C4.13535 5.06764 4.13535 4.65143 4.39339 4.39339Z' fill='black'/%3E%3C/svg%3E");
+      -webkit-mask-repeat: no-repeat;
+      -webkit-mask-position: center;
+      -webkit-mask-size: contain;
     }
   }
 
   // Long variant (horizontal layout, left border)
-  &.toast-long {
+  &.long {
     .toast-content {
       flex-direction: row;
       align-items: center;
@@ -89,19 +106,20 @@
       white-space: nowrap;
     }
 
-    &:not(.toast-border) {
+    &:not(.border) {
       border-top: none;
       border-left: 4px solid color('border');
     }
   }
 
-  // Type 02 - Only full outline border (no thick colored border)
-  &.toast-border {
-    border: 1px solid color('border');
+  // Border variant - Full outline border with rounded corners
+  &.border {
+    border: 1px solid color('default-pressed');
+    border-radius: r(6); // 16px
+    padding: s(5); // 16px all sides
 
-    &.toast-long {
-      border: 1px solid color('border');
-      border-top: 1px solid color('border');
+    &.long {
+      border: 1px solid color('default-pressed');
     }
   }
 
@@ -110,16 +128,21 @@
     background-color: color('info-fill');
     border-top-color: color('info');
 
-    .toast-icon {
+    > i {
       color: color('info');
     }
 
-    &.toast-long:not(.toast-border) {
+    .toast-header,
+    .toast-body {
+      color: color('info');
+    }
+
+    &.long:not(.border) {
       border-top: none;
       border-left-color: color('info');
     }
 
-    &.toast-border {
+    &.border {
       border-color: color('info');
     }
   }
@@ -128,16 +151,16 @@
     background-color: color('success-fill');
     border-top-color: color('success');
 
-    .toast-icon {
+    > i {
       color: color('success');
     }
 
-    &.toast-long:not(.toast-border) {
+    &.long:not(.border) {
       border-top: none;
       border-left-color: color('success');
     }
 
-    &.toast-border {
+    &.border {
       border-color: color('success');
     }
   }
@@ -146,16 +169,16 @@
     background-color: color('warning-fill');
     border-top-color: color('warning');
 
-    .toast-icon {
+    > i {
       color: color('warning');
     }
 
-    &.toast-long:not(.toast-border) {
+    &.long:not(.border) {
       border-top: none;
       border-left-color: color('warning');
     }
 
-    &.toast-border {
+    &.border {
       border-color: color('warning');
     }
   }
@@ -164,16 +187,16 @@
     background-color: color('danger-fill');
     border-top-color: color('danger');
 
-    .toast-icon {
+    > i {
       color: color('danger');
     }
 
-    &.toast-long:not(.toast-border) {
+    &.long:not(.border) {
       border-top: none;
       border-left-color: color('danger');
     }
 
-    &.toast-border {
+    &.border {
       border-color: color('danger');
     }
   }
@@ -183,16 +206,16 @@
     background-color: color('default-fill');
     border-top-color: color('default-deep');
 
-    .toast-icon {
-      color: color('text-action');
+    > i {
+      color: color('text-sub');
     }
 
-    &.toast-long:not(.toast-border) {
+    &.long:not(.border) {
       border-top: none;
       border-left-color: color('default-deep');
     }
 
-    &.toast-border {
+    &.border {
       border-color: color('default-pressed');
     }
   }
@@ -202,16 +225,21 @@
     background-color: color('primary-fill');
     border-top-color: color('primary');
 
-    .toast-icon {
+    > i {
       color: color('primary');
     }
 
-    &.toast-long:not(.toast-border) {
+    .toast-header,
+    .toast-body {
+      color: color('primary');
+    }
+
+    &.long:not(.border) {
       border-top: none;
       border-left-color: color('primary');
     }
 
-    &.toast-border {
+    &.border {
       border-color: color('primary');
     }
   }
