@@ -1,8 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import styles from '../input/page.module.scss';
+import Chip from '../../../../react/atom/chip';
 
 export default function ChipPage() {
+  const [tags, setTags] = useState([
+    { id: 1, label: 'React' },
+    { id: 2, label: 'TypeScript' },
+    { id: 3, label: 'Next.js' },
+  ]);
+
+  const handleDelete = (id: number) => {
+    setTags(tags.filter((tag) => tag.id !== id));
+  };
+
   return (
     <>
       <section className={styles.section}>
@@ -661,7 +673,202 @@ export default function ChipPage() {
       </section>
 
       <section className={styles.section}>
-        <h2>사용 예제</h2>
+        <h2>React 컴포넌트</h2>
+        <p>
+          React 환경에서는 Chip 컴포넌트를 import하여 사용할 수 있습니다.
+        </p>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>기본 사용법:</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <Chip theme="blue" icon="icon-ellipse">
+              Label
+            </Chip>
+            <Chip theme="green" icon="icon-ellipse">
+              Label
+            </Chip>
+            <Chip theme="orange" icon="icon-ellipse">
+              Label
+            </Chip>
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>basic.tsx</div>
+          <pre><code>{`import Chip from '@/react/atom/chip';
+
+function App() {
+  return (
+    <>
+      <Chip theme="blue" icon="icon-ellipse">
+        Label
+      </Chip>
+      <Chip theme="green" icon="icon-ellipse">
+        Label
+      </Chip>
+      <Chip theme="orange" icon="icon-ellipse">
+        Label
+      </Chip>
+    </>
+  );
+}`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>삭제 기능이 있는 태그 목록:</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {tags.map((tag) => (
+              <Chip
+                key={tag.id}
+                theme="blue"
+                round
+                icon="icon-ellipse"
+                onDelete={() => handleDelete(tag.id)}
+              >
+                {tag.label}
+              </Chip>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>with-delete.tsx</div>
+          <pre><code>{`import { useState } from 'react';
+import Chip from '@/react/atom/chip';
+
+function TagList() {
+  const [tags, setTags] = useState([
+    { id: 1, label: 'React' },
+    { id: 2, label: 'TypeScript' },
+    { id: 3, label: 'Next.js' },
+  ]);
+
+  const handleDelete = (id: number) => {
+    setTags(tags.filter((tag) => tag.id !== id));
+  };
+
+  return (
+    <>
+      {tags.map((tag) => (
+        <Chip
+          key={tag.id}
+          theme="blue"
+          round
+          icon="icon-ellipse"
+          onDelete={() => handleDelete(tag.id)}
+        >
+          {tag.label}
+        </Chip>
+      ))}
+    </>
+  );
+}`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>다양한 조합:</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <Chip size="sm" theme="blue" icon="icon-user">
+              Small
+            </Chip>
+            <Chip theme="green" type="fill" icon="icon-check">
+              Fill Type
+            </Chip>
+            <Chip theme="orange" type="border" round>
+              Border Round
+            </Chip>
+            <Chip theme="red" icon="icon-warning" onDelete={() => alert('삭제')}>
+              With Delete
+            </Chip>
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>variants.tsx</div>
+          <pre><code>{`<Chip size="sm" theme="blue" icon="icon-user">
+  Small
+</Chip>
+
+<Chip theme="green" type="fill" icon="icon-check">
+  Fill Type
+</Chip>
+
+<Chip theme="orange" type="border" round>
+  Border Round
+</Chip>
+
+<Chip theme="red" icon="icon-warning" onDelete={() => alert('삭제')}>
+  With Delete
+</Chip>`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Props</h2>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>children</code></td>
+              <td><code>React.ReactNode</code></td>
+              <td>-</td>
+              <td>Chip 내부에 표시될 내용 (필수)</td>
+            </tr>
+            <tr>
+              <td><code>theme</code></td>
+              <td><code>'default' | 'blue' | 'green' | 'orange' | 'yellow' | 'red'</code></td>
+              <td><code>'default'</code></td>
+              <td>색상 테마</td>
+            </tr>
+            <tr>
+              <td><code>type</code></td>
+              <td><code>'default' | 'fill' | 'border'</code></td>
+              <td><code>'default'</code></td>
+              <td>스타일 타입 (진한 배경 / 옅은 배경 / 테두리만)</td>
+            </tr>
+            <tr>
+              <td><code>size</code></td>
+              <td><code>'sm' | 'md'</code></td>
+              <td><code>'md'</code></td>
+              <td>크기</td>
+            </tr>
+            <tr>
+              <td><code>round</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>완전히 둥근 모서리 여부</td>
+            </tr>
+            <tr>
+              <td><code>icon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>좌측 아이콘 클래스 (예: 'icon-ellipse')</td>
+            </tr>
+            <tr>
+              <td><code>onDelete</code></td>
+              <td><code>() =&gt; void</code></td>
+              <td>-</td>
+              <td>삭제 버튼 클릭 핸들러 (제공시 삭제 버튼 표시)</td>
+            </tr>
+            <tr>
+              <td><code>className</code></td>
+              <td><code>string</code></td>
+              <td><code>''</code></td>
+              <td>추가 CSS 클래스</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section className={styles.section}>
+        <h2>HTML 사용 예제</h2>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>example.html</div>
