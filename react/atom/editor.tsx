@@ -131,7 +131,6 @@ const Editor = ({
 
   // 다중 셀 선택 관련 상태
   const [selectedTableCells, setSelectedTableCells] = useState<HTMLTableCellElement[]>([]);
-  const [isSelectingCells, setIsSelectingCells] = useState(false);
   const [selectionStartCell, setSelectionStartCell] = useState<HTMLTableCellElement | null>(null);
   const isSelectingCellsRef = useRef(false); // 최신 상태 추적을 위한 ref
   const justFinishedDraggingRef = useRef(false); // 드래그가 방금 끝났는지 추적
@@ -1239,7 +1238,6 @@ const Editor = ({
     // selectionStartCell이 있고, 다른 셀로 이동한 경우에만 드래그 선택 모드 활성화
     if (selectionStartCell && cell !== selectionStartCell && !isSelectingCellsRef.current) {
       isSelectingCellsRef.current = true;
-      setIsSelectingCells(true);
       e.preventDefault();
       e.stopPropagation();
     }
@@ -1288,7 +1286,6 @@ const Editor = ({
 
     // 드래그 선택 모드 무조건 종료 (선택된 셀은 유지)
     isSelectingCellsRef.current = false;
-    setIsSelectingCells(false);
     // selectionStartCell은 유지하여 선택 상태 보존
   }, []);
 
