@@ -26,13 +26,13 @@ export default function Icons() {
     <>
       <section className={styles.section}>
         <h1>아이콘</h1>
-        <p>Podo UI가 제공하는 119개의 아이콘과 사용법을 안내합니다</p>
+        <p>Podo UI가 제공하는 아이콘과 사용법을 안내합니다</p>
       </section>
 
       <section className={styles.section}>
         <h2>아이콘 시스템</h2>
         <p>
-          Podo UI는 총 119개의 아이콘 폰트를 제공합니다. 모든 아이콘은 벡터 기반으로 제작되어 크기와 색상을 자유롭게 조정할 수 있습니다.
+          Podo UI는 아이콘 폰트를 제공합니다. 모든 아이콘은 벡터 기반으로 제작되어 크기와 색상을 자유롭게 조정할 수 있습니다.
         </p>
       </section>
 

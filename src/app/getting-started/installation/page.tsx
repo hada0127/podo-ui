@@ -93,19 +93,7 @@ import 'podo-ui/vite-fonts.scss'; // Vite용 폰트 경로 재정의`}</code></p
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>일반 React 프로젝트</div>
-          <pre><code>{`import { Input, Textarea, Editor, Field } from 'podo-ui';`}</code></pre>
-        </div>
-
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>Next.js 프로젝트</div>
-          <pre><code>{`import { Input, Textarea, Editor, Field } from 'podo-ui/next';`}</code></pre>
-        </div>
-
-        <div className={styles.note}>
-          <i className="icon-info"></i>
-          <div>
-            <strong>참고:</strong> Next.js용 export는 'use client' 지시어가 포함되어 있으며, Editor 컴포넌트는 SSR이 비활성화되어 있습니다.
-          </div>
+          <pre><code>{`import { Input, Textarea, Editor, Field, Toast, Chip } from 'podo-ui';`}</code></pre>
         </div>
       </section>
 

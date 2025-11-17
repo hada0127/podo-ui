@@ -147,18 +147,6 @@ function MyForm() {
 }`}</code></pre>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>Next.js</div>
-          <pre><code>{`import { Input, Textarea, Editor, Field } from 'podo-ui/next';
-
-function MyForm() {
-  return (
-    <Field label="설명" required>
-      <Textarea placeholder="설명을 입력하세요" />
-    </Field>
-  );
-}`}</code></pre>
-        </div>
       </section>
 
       <section className={styles.section}>
