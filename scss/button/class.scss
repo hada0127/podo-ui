@@ -13,6 +13,7 @@ button {
   background-color: color('default');
   border: 1px solid color('default');
   outline: none;
+  justify-content: center;
   &:hover {
     background-color: color('default-hover');
   }
@@ -121,6 +122,14 @@ button {
     border: none;
     outline: none;
     cursor: not-allowed;
+  }
+
+  &.text-left {
+    justify-content: flex-start;
+  }
+
+  &.text-right {
+    justify-content: flex-end;
   }
 }
 @each $type in (primary, default-deep, info, link, success, warning, danger) {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import ThemeToggle from './ThemeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
 import MobileMenuButton from './MobileMenuButton';
 import styles from './Navigation.module.scss';
 
@@ -89,7 +90,10 @@ export default function Navigation() {
             <Image src="/logo.svg" alt="Podo UI" width={32} height={32} />
             <h1>Podo UI</h1>
           </Link>
-          <ThemeToggle />
+          <div className={styles.controls}>
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
         </div>
 
         <div className={styles.menu}>

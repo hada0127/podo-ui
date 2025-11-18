@@ -1,3 +1,6 @@
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { cookies } from 'next/headers';
 import '../../global.scss';
 import '../styles/custom.scss';
 import '../styles/font-family.scss'; // custom path
@@ -8,22 +11,28 @@ import styles from './layout.module.scss';
 export const runtime = 'edge';
 
 export const metadata = {
-  title: 'Podo UI - SCSS Module 기반 디자인 시스템',
-  description: 'React와 SCSS를 위한 모던 UI 컴포넌트 라이브러리',
+  title: 'Podo UI - Modern SCSS Module Design System',
+  description: 'A modern UI component library for React and SCSS',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const locale = cookieStore.get('locale')?.value || 'en';
+  const messages = await getMessages();
+
   return (
-    <html lang="ko">
+    <html lang={locale}>
       <body>
-        <div className={styles.container}>
-          <Navigation />
-          <main className={styles.main}>{children}</main>
-        </div>
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <div className={styles.container}>
+            <Navigation />
+            <main className={styles.main}>{children}</main>
+          </div>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

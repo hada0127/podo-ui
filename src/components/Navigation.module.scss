@@ -127,7 +127,10 @@
     }
   }
 
-  :global(.ThemeToggle_toggle__oQ8uJ) {
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: s(3);
     margin-top: s(4);
   }
 }

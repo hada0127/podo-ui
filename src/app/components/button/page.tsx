@@ -232,6 +232,56 @@ export default function Button() {
       </section>
 
       <section className={styles.section}>
+        <h2>텍스트 정렬</h2>
+        <p>버튼 내 텍스트의 정렬을 왼쪽, 가운데, 오른쪽으로 설정할 수 있습니다. 기본값은 가운데 정렬입니다:</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<!-- 가운데 정렬 (기본값) -->
+<button class="primary">가운데 정렬</button>
+
+<!-- 왼쪽 정렬 -->
+<button class="primary text-left">왼쪽 정렬</button>
+
+<!-- 오른쪽 정렬 -->
+<button class="primary text-right">오른쪽 정렬</button>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.alignDemo}>
+            <button className="primary" style={{ width: '200px' }}>
+              가운데 정렬
+            </button>
+            <button className="primary text-left" style={{ width: '200px' }}>
+              왼쪽 정렬
+            </button>
+            <button className="primary text-right" style={{ width: '200px' }}>
+              오른쪽 정렬
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>아이콘과 함께 사용:</div>
+          <div className={styles.alignDemo}>
+            <button className="success text-left" style={{ width: '200px' }}>
+              <i className="icon-check"></i>
+              왼쪽 정렬
+            </button>
+            <button className="info" style={{ width: '200px' }}>
+              <i className="icon-download"></i>
+              가운데 정렬
+            </button>
+            <button className="warning text-right" style={{ width: '200px' }}>
+              오른쪽 정렬
+              <i className="icon-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.section}>
         <h2>버튼 그룹</h2>
         <p>여러 버튼을 그룹으로 묶어 사용할 수 있습니다:</p>
 

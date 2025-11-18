@@ -165,6 +165,23 @@
   }
 }
 
+// Align Demo
+.alignDemo {
+  display: flex;
+  flex-direction: column;
+  gap: s(4);
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: s(2);
+
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
 // Group Demo
 .groupDemo {
   display: flex;

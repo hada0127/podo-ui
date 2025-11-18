@@ -1,0 +1,35 @@
+@use '../../mixin' as *;
+
+.languageSwitcher {
+  display: flex;
+  gap: s(2);
+  align-items: center;
+}
+
+.langButton {
+  @include p4;
+  padding: s(2) s(3);
+  border-radius: r(2);
+  background: transparent;
+  border: 1px solid color(border);
+  color: color(text-body);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: color(default-fill);
+    border-color: color(primary-base);
+  }
+
+  &.active {
+    background: color(primary-base);
+    border-color: color(primary-base);
+    color: color(primary-reverse);
+    font-weight: 600;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
