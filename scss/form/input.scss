@@ -28,7 +28,7 @@ input[type='datetime'] {
     border: 1px solid color('border-disabled');
     outline: none;
   }
-  &:placeholder {
+  &::placeholder {
     color: color('text-action-disabled');
   }
   &:focus-visible:not(:disabled):not(:read-only),
