@@ -1,24 +1,26 @@
 # Podo UI
 
-> SCSS Module 기반 디자인 시스템
+> Modern SCSS Module-based Design System
 
-## 설치
+English | [한국어](./README.ko.md)
+
+## Installation
 
 ```bash
 npm install podo-ui
 ```
 
-## 빠른 시작
+## Quick Start
 
-### Global SCSS 적용
+### Apply Global SCSS
 
 ```typescript
 // main.tsx
 import 'podo-ui/global.scss';
-import 'podo-ui/vite-fonts.scss'; // Vite 사용 시
+import 'podo-ui/vite-fonts.scss'; // When using Vite
 ```
 
-### SCSS Module에서 사용
+### Use in SCSS Modules
 
 ```scss
 // component.module.scss
@@ -31,34 +33,34 @@ import 'podo-ui/vite-fonts.scss'; // Vite 사용 시
 }
 ```
 
-### React 컴포넌트
+### React Components
 
 ```tsx
-// Named imports로 개별 컴포넌트 가져오기
+// Import individual components using named imports
 import { Input, Textarea, Editor, EditorView, Field, Pagination } from 'podo-ui';
 
-// 또는 개별 컴포넌트 직접 import (레거시 방식)
+// Or import components directly (legacy method)
 import Input from 'podo-ui/react/atom/input';
 import Field from 'podo-ui/react/molecule/field';
 ```
 
-## 주요 기능
+## Key Features
 
-- CSS 클래스 기반 디자인 시스템
-- 반응형 그리드 시스템 (PC 12, Tablet 6, Mobile 4)
-- 색상 시스템 및 다크 모드 지원
-- React 컴포넌트 제공 (Input, Textarea, Editor, Field)
+- CSS class-based design system
+- Responsive grid system (PC 12, Tablet 6, Mobile 4)
+- Color system with dark mode support
+- React components (Input, Textarea, Editor, Field)
 
-## 문서
+## Documentation
 
-상세한 사용법은 [공식 설명서](https://podoui.com)를 참고하세요.
+For detailed usage, please refer to the [official documentation](https://podoui.com).
 
-## 링크
+## Links
 
-- [공식 설명서](https://podoui.com)
-- [GitHub 저장소](https://github.com/hada0127/podo-ui)
-- [이슈 제보](https://github.com/hada0127/podo-ui/issues)
+- [Official Documentation](https://podoui.com)
+- [GitHub Repository](https://github.com/hada0127/podo-ui)
+- [Report Issues](https://github.com/hada0127/podo-ui/issues)
 
-## 라이선스
+## License
 
 MIT
