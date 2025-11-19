@@ -1,9 +1,11 @@
 'use client';
 
 import Field from '../../../../react/molecule/field';
+import { useTranslations } from 'next-intl';
 import styles from '../input/page.module.scss';
 
 export default function FieldPage() {
+  const t = useTranslations('field');
   return (
     <>
       <section className={styles.section}>

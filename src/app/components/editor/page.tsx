@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import Editor from '../../../../react/atom/editor';
 import EditorView from '../../../../react/atom/editor-view';
+import { useTranslations } from 'next-intl';
 import styles from '../input/page.module.scss';
 
 export default function EditorPage() {
+  const t = useTranslations('editor');
   const [content, setContent] = useState('');
   const [content2, setContent2] = useState('');
   const [content3, setContent3] = useState('');

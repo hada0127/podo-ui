@@ -1,74 +1,76 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Button() {
+  const t = useTranslations('button');
+
   const variants = [
-    { name: 'primary', label: 'Primary', description: '주요 액션' },
-    { name: 'default', label: 'Default', description: '기본 버튼' },
-    { name: 'info', label: 'Info', description: '정보성 액션' },
-    { name: 'link', label: 'Link', description: '링크형 액션' },
-    { name: 'success', label: 'Success', description: '성공/완료 액션' },
-    { name: 'warning', label: 'Warning', description: '경고 액션' },
-    { name: 'danger', label: 'Danger', description: '위험/삭제 액션' },
+    { name: 'primary', key: 'primary' },
+    { name: 'default', key: 'default' },
+    { name: 'info', key: 'info' },
+    { name: 'link', key: 'link' },
+    { name: 'success', key: 'success' },
+    { name: 'warning', key: 'warning' },
+    { name: 'danger', key: 'danger' },
   ];
 
   const buttonStyles = [
-    { suffix: '', label: 'Solid', description: '기본 스타일' },
-    { suffix: '-fill', label: 'Fill', description: '연한 배경' },
-    { suffix: '-border', label: 'Border', description: '테두리만' },
-    { suffix: '-text', label: 'Text', description: '텍스트만' },
+    { suffix: '', key: 'solid' },
+    { suffix: '-fill', key: 'fill' },
+    { suffix: '-border', key: 'border' },
+    { suffix: '-text', key: 'text' },
   ];
 
   return (
     <>
       <section className={styles.section}>
-        <h1>버튼</h1>
-        <p>Podo UI의 버튼 컴포넌트와 다양한 변형 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>기본 사용법</h2>
-        <p>
-          HTML button 태그에 컬러 클래스를 추가하여 버튼을 만들 수 있습니다.
-          클래스명만으로 다양한 스타일의 버튼을 구현할 수 있습니다.
-        </p>
+        <h2>{t('basicUsage.title')}</h2>
+        <p>{t('basicUsage.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<button>기본 버튼</button>
-<button class="primary">Primary 버튼</button>
-<button class="danger">Danger 버튼</button>
-<button disabled>비활성화 버튼</button>`}</code></pre>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
+          <pre><code>{`<button>${t('basicUsage.examples.basic')}</button>
+<button class="primary">${t('basicUsage.examples.primary')}</button>
+<button class="danger">${t('basicUsage.examples.danger')}</button>
+<button disabled>${t('basicUsage.examples.disabled')}</button>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.buttonGroup}>
-            <button>기본 버튼</button>
-            <button className="primary">Primary 버튼</button>
-            <button className="danger">Danger 버튼</button>
-            <button disabled>비활성화 버튼</button>
+            <button>{t('basicUsage.examples.basic')}</button>
+            <button className="primary">{t('basicUsage.examples.primary')}</button>
+            <button className="danger">{t('basicUsage.examples.danger')}</button>
+            <button disabled>{t('basicUsage.examples.disabled')}</button>
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>버튼 변형</h2>
-        <p>7가지 시맨틱 컬러로 다양한 목적의 버튼을 만들 수 있습니다:</p>
+        <h2>{t('variants.title')}</h2>
+        <p>{t('variants.description')}</p>
 
         <div className={styles.variantsShowcase}>
           {variants.map((variant) => (
             <div key={variant.name} className={styles.variantCard}>
               <div className={styles.variantHeader}>
-                <h3>{variant.label}</h3>
-                <p>{variant.description}</p>
+                <h3>{t(`variants.${variant.key}.label`)}</h3>
+                <p>{t(`variants.${variant.key}.description`)}</p>
               </div>
-              <button className={variant.name}>{variant.label} 버튼</button>
+              <button className={variant.name}>{t(`variants.${variant.key}.label`)}</button>
             </div>
           ))}
         </div>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<button class="primary">Primary</button>
 <button class="default">Default</button>
 <button class="info">Info</button>
@@ -80,37 +82,37 @@ export default function Button() {
       </section>
 
       <section className={styles.section}>
-        <h2>버튼 스타일</h2>
-        <p>각 컬러 변형마다 4가지 스타일(Solid, Fill, Border, Text)을 사용할 수 있습니다:</p>
+        <h2>{t('styles.title')}</h2>
+        <p>{t('styles.description')}</p>
 
         {buttonStyles.map((style) => (
           <div key={style.suffix} className={styles.styleSection}>
-            <h3>{style.label} Style</h3>
-            <p>{style.description}</p>
+            <h3>{t(`styles.${style.key}.label`)}</h3>
+            <p>{t(`styles.${style.key}.description`)}</p>
 
             <div className={styles.buttonGroup}>
               {variants.map((variant) => (
                 <button key={variant.name} className={`${variant.name}${style.suffix}`}>
-                  {variant.label}
+                  {t(`variants.${variant.key}.label`)}
                 </button>
               ))}
             </div>
 
             <div className={styles.codeBlock}>
-              <pre><code>{`<button class="primary${style.suffix}">${style.label}</button>
-<button class="success${style.suffix}">${style.label}</button>
-<button class="danger${style.suffix}">${style.label}</button>`}</code></pre>
+              <pre><code>{`<button class="primary${style.suffix}">${t(`styles.${style.key}.label`)}</button>
+<button class="success${style.suffix}">${t(`styles.${style.key}.label`)}</button>
+<button class="danger${style.suffix}">${t(`styles.${style.key}.label`)}</button>`}</code></pre>
             </div>
           </div>
         ))}
       </section>
 
       <section className={styles.section}>
-        <h2>버튼 크기</h2>
-        <p>CSS를 사용하여 버튼의 크기를 조절할 수 있습니다:</p>
+        <h2>{t('sizes.title')}</h2>
+        <p>{t('sizes.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<!-- Small -->
 <button class="primary xs">
   xs Button
@@ -132,7 +134,7 @@ export default function Button() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.sizeDemo}>
             <button className="primary xs">
               xs Button
@@ -154,50 +156,100 @@ export default function Button() {
       </section>
 
       <section className={styles.section}>
-        <h2>아이콘과 함께 사용</h2>
-        <p>버튼 내부에 아이콘을 추가하여 더욱 직관적인 UI를 만들 수 있습니다:</p>
+        <h2>{t('alignment.title')}</h2>
+        <p>{t('alignment.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
+          <pre><code>{`<!-- ${t('alignment.center')} -->
+<button class="primary">${t('alignment.center')}</button>
+
+<!-- ${t('alignment.left')} -->
+<button class="primary text-left">${t('alignment.left')}</button>
+
+<!-- ${t('alignment.right')} -->
+<button class="primary text-right">${t('alignment.right')}</button>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.alignDemo}>
+            <button className="primary" style={{ width: '200px' }}>
+              {t('alignment.center')}
+            </button>
+            <button className="primary text-left" style={{ width: '200px' }}>
+              {t('alignment.left')}
+            </button>
+            <button className="primary text-right" style={{ width: '200px' }}>
+              {t('alignment.right')}
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('alignment.withIcons')}</div>
+          <div className={styles.alignDemo}>
+            <button className="success text-left" style={{ width: '200px' }}>
+              <i className="icon-check"></i>
+              {t('alignment.left')}
+            </button>
+            <button className="info" style={{ width: '200px' }}>
+              <i className="icon-download"></i>
+              {t('alignment.center')}
+            </button>
+            <button className="warning text-right" style={{ width: '200px' }}>
+              {t('alignment.right')}
+              <i className="icon-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('icons.title')}</h2>
+        <p>{t('icons.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<button class="primary">
   <i class="icon-plus"></i>
-  새로 만들기
+  ${t('icons.examples.create')}
 </button>
 
 <button class="success">
   <i class="icon-check"></i>
-  확인
+  ${t('icons.examples.confirm')}
 </button>
 
 <button class="danger">
   <i class="icon-trash"></i>
-  삭제
+  ${t('icons.examples.delete')}
 </button>
 
-<!-- 아이콘만 -->
+<!-- Icon only -->
 <button class="primary">
   <i class="icon-search"></i>
 </button>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.iconButtonDemo}>
             <button className="primary">
               <i className="icon-plus"></i>
-              새로 만들기
+              {t('icons.examples.create')}
             </button>
             <button className="success">
               <i className="icon-check"></i>
-              확인
+              {t('icons.examples.confirm')}
             </button>
             <button className="danger">
               <i className="icon-trash"></i>
-              삭제
+              {t('icons.examples.delete')}
             </button>
             <button className="info">
               <i className="icon-download"></i>
-              다운로드
+              {t('icons.examples.download')}
             </button>
             <button className="primary">
               <i className="icon-search"></i>
@@ -210,18 +262,18 @@ export default function Button() {
       </section>
 
       <section className={styles.section}>
-        <h2>비활성화 상태</h2>
-        <p>disabled 속성을 추가하여 버튼을 비활성화할 수 있습니다:</p>
+        <h2>{t('disabled.title')}</h2>
+        <p>{t('disabled.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<button class="primary" disabled>Disabled</button>
 <button class="success" disabled>Disabled</button>
 <button class="danger" disabled>Disabled</button>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.buttonGroup}>
             <button className="primary" disabled>Primary</button>
             <button className="default" disabled>Default</button>
@@ -232,92 +284,42 @@ export default function Button() {
       </section>
 
       <section className={styles.section}>
-        <h2>텍스트 정렬</h2>
-        <p>버튼 내 텍스트의 정렬을 왼쪽, 가운데, 오른쪽으로 설정할 수 있습니다. 기본값은 가운데 정렬입니다:</p>
+        <h2>{t('groups.title')}</h2>
+        <p>{t('groups.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 가운데 정렬 (기본값) -->
-<button class="primary">가운데 정렬</button>
-
-<!-- 왼쪽 정렬 -->
-<button class="primary text-left">왼쪽 정렬</button>
-
-<!-- 오른쪽 정렬 -->
-<button class="primary text-right">오른쪽 정렬</button>`}</code></pre>
-        </div>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
-          <div className={styles.alignDemo}>
-            <button className="primary" style={{ width: '200px' }}>
-              가운데 정렬
-            </button>
-            <button className="primary text-left" style={{ width: '200px' }}>
-              왼쪽 정렬
-            </button>
-            <button className="primary text-right" style={{ width: '200px' }}>
-              오른쪽 정렬
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>아이콘과 함께 사용:</div>
-          <div className={styles.alignDemo}>
-            <button className="success text-left" style={{ width: '200px' }}>
-              <i className="icon-check"></i>
-              왼쪽 정렬
-            </button>
-            <button className="info" style={{ width: '200px' }}>
-              <i className="icon-download"></i>
-              가운데 정렬
-            </button>
-            <button className="warning text-right" style={{ width: '200px' }}>
-              오른쪽 정렬
-              <i className="icon-arrow-right"></i>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>버튼 그룹</h2>
-        <p>여러 버튼을 그룹으로 묶어 사용할 수 있습니다:</p>
-
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<div style="display: flex; gap: 0.5rem;">
-  <button class="primary">저장</button>
-  <button class="default">취소</button>
+  <button class="primary">${t('groups.examples.save')}</button>
+  <button class="default">${t('groups.examples.cancel')}</button>
 </div>
 
 <div style="display: flex; gap: 0.5rem;">
   <button class="primary">
     <i class="icon-arrow-left"></i>
-    이전
+    ${t('groups.examples.previous')}
   </button>
   <button class="primary">
-    다음
+    ${t('groups.examples.next')}
     <i class="icon-arrow-right"></i>
   </button>
 </div>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.groupDemo}>
             <div className={styles.buttonRow}>
-              <button className="primary">저장</button>
-              <button className="default">취소</button>
+              <button className="primary">{t('groups.examples.save')}</button>
+              <button className="default">{t('groups.examples.cancel')}</button>
             </div>
             <div className={styles.buttonRow}>
               <button className="primary">
                 <i className="icon-arrow-left"></i>
-                이전
+                {t('groups.examples.previous')}
               </button>
               <button className="primary">
-                다음
+                {t('groups.examples.next')}
                 <i className="icon-arrow-right"></i>
               </button>
             </div>
@@ -326,8 +328,8 @@ export default function Button() {
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
-        <p>SCSS 모듈에서 버튼 스타일을 커스터마이징할 수 있습니다:</p>
+        <h2>{t('scss.title')}</h2>
+        <p>{t('scss.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>
@@ -390,15 +392,15 @@ export default function Button() {
       </section>
 
       <section className={styles.section}>
-        <h2>전체 변형 쇼케이스</h2>
-        <p>모든 컬러 변형과 스타일을 한눈에 확인하세요:</p>
+        <h2>{t('showcase.title')}</h2>
+        <p>{t('showcase.description')}</p>
 
         <div className={styles.showcase}>
           {variants.map((variant) => (
             <div key={variant.name} className={styles.showcaseRow}>
               <div className={styles.showcaseLabel}>
-                <strong>{variant.label}</strong>
-                <span>{variant.description}</span>
+                <strong>{t(`variants.${variant.key}.label`)}</strong>
+                <span>{t(`variants.${variant.key}.description`)}</span>
               </div>
               <div className={styles.showcaseButtons}>
                 <button className={variant.name}>Solid</button>

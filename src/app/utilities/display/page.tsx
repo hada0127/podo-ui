@@ -1,6 +1,10 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Display() {
+  const t = useTranslations('display');
   return (
     <>
       <section className={styles.section}>

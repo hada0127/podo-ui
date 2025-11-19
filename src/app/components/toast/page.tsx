@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 import { ToastProvider, useToast } from '../../../../react/molecule/toast-provider';
 
@@ -107,6 +108,7 @@ function ToastExamples() {
 }
 
 export default function Toast() {
+  const t = useTranslations('toast');
   const variants = [
     { name: 'default', label: 'Default', description: '기본 알림' },
     { name: 'primary', label: 'Primary', description: '주요 알림' },

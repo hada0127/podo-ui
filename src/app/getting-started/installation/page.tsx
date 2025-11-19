@@ -1,11 +1,16 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Installation() {
+  const t = useTranslations('installation');
+
   return (
     <>
       <section className={styles.section}>
-        <h1>설치</h1>
-        <p>Podo UI를 프로젝트에 설치하고 설정하는 방법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

@@ -1,13 +1,15 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function CheckboxRadio() {
+  const t = useTranslations('checkboxRadio');
   return (
     <>
       <section className={styles.section}>
-        <h1>체크박스 & 라디오</h1>
-        <p>Podo UI의 Checkbox와 Radio 컴포넌트 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

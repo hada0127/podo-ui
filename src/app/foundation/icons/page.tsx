@@ -1,8 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Icons() {
+  const t = useTranslations('icons');
   const icons = [
     'star', 'star-fill', 'exchange-horizontally', 'exchange-vertical', 'new-window', 'tag',
     'notification', 'notification-stroke', 'mail', 'global', 'trash', 'dm', 'currency', 'print',
@@ -25,8 +27,8 @@ export default function Icons() {
   return (
     <>
       <section className={styles.section}>
-        <h1>아이콘</h1>
-        <p>Podo UI가 제공하는 아이콘과 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

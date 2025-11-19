@@ -1,0 +1,114 @@
+{
+  "title": "버튼",
+  "description": "Podo UI의 버튼 컴포넌트와 다양한 변형 사용법을 안내합니다",
+  "basicUsage": {
+    "title": "기본 사용법",
+    "description": "HTML button 태그에 컬러 클래스를 추가하여 버튼을 만들 수 있습니다. 클래스명만으로 다양한 스타일의 버튼을 구현할 수 있습니다.",
+    "examples": {
+      "basic": "기본 버튼",
+      "primary": "Primary 버튼",
+      "danger": "Danger 버튼",
+      "disabled": "비활성화 버튼"
+    }
+  },
+  "variants": {
+    "title": "버튼 변형",
+    "description": "7가지 시맨틱 컬러로 다양한 목적의 버튼을 만들 수 있습니다:",
+    "primary": {
+      "label": "Primary",
+      "description": "주요 액션"
+    },
+    "default": {
+      "label": "Default",
+      "description": "기본 버튼"
+    },
+    "info": {
+      "label": "Info",
+      "description": "정보성 액션"
+    },
+    "link": {
+      "label": "Link",
+      "description": "링크형 액션"
+    },
+    "success": {
+      "label": "Success",
+      "description": "성공/완료 액션"
+    },
+    "warning": {
+      "label": "Warning",
+      "description": "경고 액션"
+    },
+    "danger": {
+      "label": "Danger",
+      "description": "위험/삭제 액션"
+    }
+  },
+  "styles": {
+    "title": "버튼 스타일",
+    "description": "각 컬러 변형마다 4가지 스타일(Solid, Fill, Border, Text)을 사용할 수 있습니다:",
+    "solid": {
+      "label": "Solid",
+      "description": "기본 스타일"
+    },
+    "fill": {
+      "label": "Fill",
+      "description": "연한 배경"
+    },
+    "border": {
+      "label": "Border",
+      "description": "테두리만"
+    },
+    "text": {
+      "label": "Text",
+      "description": "텍스트만"
+    }
+  },
+  "sizes": {
+    "title": "버튼 크기",
+    "description": "CSS를 사용하여 버튼의 크기를 조절할 수 있습니다:"
+  },
+  "alignment": {
+    "title": "텍스트 정렬",
+    "description": "버튼 내 텍스트의 정렬을 왼쪽, 가운데, 오른쪽으로 설정할 수 있습니다. 기본값은 가운데 정렬입니다:",
+    "center": "가운데 정렬",
+    "left": "왼쪽 정렬",
+    "right": "오른쪽 정렬",
+    "withIcons": "아이콘과 함께 사용:"
+  },
+  "icons": {
+    "title": "아이콘과 함께 사용",
+    "description": "버튼 내부에 아이콘을 추가하여 더욱 직관적인 UI를 만들 수 있습니다:",
+    "examples": {
+      "create": "새로 만들기",
+      "confirm": "확인",
+      "delete": "삭제",
+      "download": "다운로드"
+    }
+  },
+  "disabled": {
+    "title": "비활성화 상태",
+    "description": "disabled 속성을 추가하여 버튼을 비활성화할 수 있습니다:"
+  },
+  "groups": {
+    "title": "버튼 그룹",
+    "description": "여러 버튼을 그룹으로 묶어 사용할 수 있습니다:",
+    "examples": {
+      "save": "저장",
+      "cancel": "취소",
+      "previous": "이전",
+      "next": "다음"
+    }
+  },
+  "scss": {
+    "title": "SCSS에서 사용하기",
+    "description": "SCSS 모듈에서 버튼 스타일을 커스터마이징할 수 있습니다:"
+  },
+  "showcase": {
+    "title": "전체 변형 쇼케이스",
+    "description": "모든 컬러 변형과 스타일을 한눈에 확인하세요:"
+  },
+  "demo": {
+    "title": "실제 예제:",
+    "codeHeader": "HTML"
+  }
+}

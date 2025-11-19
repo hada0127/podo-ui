@@ -1,14 +1,17 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import styles from './page.module.scss';
 
 export default function Usage() {
+  const t = useTranslations('usage');
+
   return (
     <>
       <section className={styles.section}>
-        <h1>사용법</h1>
-        <p>
-          Podo UI의 기본 사용법과 주요 기능을 소개합니다.
-        </p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

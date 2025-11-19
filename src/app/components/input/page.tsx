@@ -1,11 +1,15 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Input() {
+  const t = useTranslations('input');
   return (
     <>
       <section className={styles.section}>
-        <h1>입력</h1>
-        <p>Podo UI의 Input 컴포넌트와 다양한 변형 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

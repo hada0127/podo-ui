@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import styles from '../input/page.module.scss';
 import Chip from '../../../../react/atom/chip';
 
 export default function ChipPage() {
+  const t = useTranslations('chip');
   const [tags, setTags] = useState([
     { id: 1, label: 'React' },
     { id: 2, label: 'TypeScript' },

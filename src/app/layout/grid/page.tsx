@@ -1,11 +1,15 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Grid() {
+  const t = useTranslations('grid');
   return (
     <>
       <section className={styles.section}>
-        <h1>그리드</h1>
-        <p>Podo UI의 그리드 시스템과 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

@@ -1,6 +1,11 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Colors() {
+  const t = useTranslations('colors');
+
   const colors = [
     { name: 'primary', label: 'Primary', description: '주요 액션 및 브랜드 색상' },
     { name: 'default', label: 'Default', description: '기본 UI 요소' },
@@ -25,8 +30,8 @@ export default function Colors() {
   return (
     <>
       <section className={styles.section}>
-        <h1>컬러</h1>
-        <p>Podo UI의 시맨틱 컬러 시스템과 테마 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

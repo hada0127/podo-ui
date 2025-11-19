@@ -1,6 +1,11 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Typography() {
+  const t = useTranslations('typography');
+
   const displayStyles = [
     { name: 'display1', fontSize: '60px', fontWeight: 600, lineHeight: 1.2, mobile: '36px' },
     { name: 'display2', fontSize: '54px', fontWeight: 600, lineHeight: 1.2, mobile: '32px' },
@@ -31,8 +36,8 @@ export default function Typography() {
   return (
     <>
       <section className={styles.section}>
-        <h1>타이포그래피</h1>
-        <p>Podo UI의 타이포그래피 시스템과 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

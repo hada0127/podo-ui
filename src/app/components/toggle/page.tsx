@@ -1,13 +1,15 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Toggle() {
+  const t = useTranslations('toggle');
   return (
     <>
       <section className={styles.section}>
-        <h1>토글</h1>
-        <p>Podo UI의 Toggle 스위치 컴포넌트 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

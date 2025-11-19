@@ -1,6 +1,11 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Spacing() {
+  const t = useTranslations('spacing');
+
   const spacingValues = [
     { key: 0, value: '0' },
     { key: 1, value: '2px' },
@@ -32,8 +37,8 @@ export default function Spacing() {
   return (
     <>
       <section className={styles.section}>
-        <h1>간격</h1>
-        <p>Podo UI의 여백과 모서리 반경 시스템을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

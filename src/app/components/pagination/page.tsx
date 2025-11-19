@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import Pagination from '../../../../react/molecule/pagination';
+import { useTranslations } from 'next-intl';
 import styles from '../input/page.module.scss';
 
 export default function PaginationPage() {
+  const t = useTranslations('pagination');
   const [currentPage1, setCurrentPage1] = useState(1);
   const [currentPage2, setCurrentPage2] = useState(3);
   const [currentPage3, setCurrentPage3] = useState(7);
@@ -12,8 +14,8 @@ export default function PaginationPage() {
   return (
     <>
       <section className={styles.section}>
-        <h1>페이지네이션</h1>
-        <p>Podo UI의 Pagination 컴포넌트 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

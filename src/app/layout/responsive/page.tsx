@@ -1,11 +1,15 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Responsive() {
+  const t = useTranslations('responsive');
   return (
     <>
       <section className={styles.section}>
-        <h1>반응형</h1>
-        <p>Podo UI의 반응형 디자인 시스템과 미디어 쿼리 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

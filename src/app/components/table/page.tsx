@@ -1,6 +1,10 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Table() {
+  const t = useTranslations('table');
   return (
     <>
       <section className={styles.section}>

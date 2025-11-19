@@ -1,6 +1,10 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Textarea() {
+  const t = useTranslations('textarea');
   return (
     <>
       <section className={styles.section}>

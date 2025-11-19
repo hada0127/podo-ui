@@ -1,11 +1,25 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import SectionHeader from '@/components/home/SectionHeader';
 import BrowserWindow from '@/components/home/BrowserWindow';
 import FeatureCard from '@/components/home/FeatureCard';
 import styles from './home.module.scss';
 
 export default function Home() {
+  const t = useTranslations('home');
+
+  const formatText = (text: string) => {
+    return text.split('\n').map((line, i, arr) => (
+      <span key={i}>
+        {line}
+        {i < arr.length - 1 && <br />}
+      </span>
+    ));
+  };
+
   return (
     <div className={styles.homePage}>
       {/* Hero Section */}
@@ -15,14 +29,12 @@ export default function Home() {
             <Image src="/logo.svg" alt="Podo UI" width={64} height={64} priority />
           </div>
           <h1 className={styles.heroTitle}>
-            HELLO 환영합니다
+            {t('hero.greeting')}
             <br />
-            <span className={styles.brandName}>Podo UI</span>
+            <span className={styles.brandName}>{t('hero.brandName')}</span>
           </h1>
           <p className={styles.heroDescription}>
-            SCSS Module 기반의 가볍고 유연한 디자인 시스템입니다.
-            <br />
-            체계적인 디자인 토큰과 다양한 컴포넌트로 빠르게 아름다운 웹을 만들어보세요.
+            {formatText(t('hero.description'))}
           </p>
           <div className={styles.heroLinks}>
             <a
@@ -50,7 +62,7 @@ export default function Home() {
           </div>
           <div className={styles.heroActions}>
             <Link href="/getting-started/installation" className={styles.btnPrimary}>
-              Get started
+              {t('hero.getStarted')}
             </Link>
           </div>
         </div>
@@ -59,16 +71,8 @@ export default function Home() {
       {/* Features Section */}
       <section className={styles.featuresSection}>
         <SectionHeader
-          title="SCSS Module 기반 디자인 시스템"
-          description={
-            <>
-              HTML과 SCSS만으로 아름다운 UI를 구현할 수 있는 디자인 시스템입니다.
-              <br />
-              색상, 간격, 타이포그래피 등 체계적인 디자인 토큰을 제공하며,
-              <br />
-              다양한 프레임워크와 함께 사용할 수 있는 유연한 구조를 갖추고 있습니다.
-            </>
-          }
+          title={t('features.title')}
+          description={t('features.description')}
         />
 
         {/* Browser Mockup */}
@@ -135,8 +139,8 @@ export default function Home() {
               <circle cx="32" cy="28" r="3" fill="#ffffff" />
             </svg>
           }
-          title="가볍고 빠른 성능"
-          description="순수 SCSS로 구성되어 번들 크기가 작고, 런타임 오버헤드 없이 빠른 성능을 제공합니다."
+          title={t('featureCards.performance.title')}
+          description={t('featureCards.performance.description')}
         />
         <FeatureCard
           icon={
@@ -158,8 +162,8 @@ export default function Home() {
               <circle cx="36" cy="36" r="3" fill="#43e97b" />
             </svg>
           }
-          title="체계적인 디자인 토큰"
-          description="색상, 간격, 타이포그래피, 반경 등 디자인 시스템의 모든 요소를 함수로 제공하여 일관성 있는 UI를 구축합니다."
+          title={t('featureCards.tokens.title')}
+          description={t('featureCards.tokens.description')}
         />
         <FeatureCard
           icon={
@@ -188,8 +192,8 @@ export default function Home() {
               />
             </svg>
           }
-          title="다크모드 기본 지원"
-          description="라이트/다크 모드를 기본으로 지원하며, Warm 톤 설정으로 사용자 환경에 최적화된 경험을 제공합니다."
+          title={t('featureCards.darkMode.title')}
+          description={t('featureCards.darkMode.description')}
         />
         <FeatureCard
           icon={
@@ -220,22 +224,16 @@ export default function Home() {
               <rect x="42" y="46" width="10" height="6" rx="2" fill="url(#grid-gradient-2)" />
             </svg>
           }
-          title="반응형 그리드 시스템"
-          description="PC(12), Tablet(6), Mobile(4) 그리드로 자동 변환되는 유연한 레이아웃 시스템을 통해 모든 기기에 대응합니다."
+          title={t('featureCards.responsive.title')}
+          description={t('featureCards.responsive.description')}
         />
       </section>
 
       {/* API Section */}
       <section className={styles.apiSection}>
         <SectionHeader
-          title="강력한 SCSS 함수 시스템"
-          description={
-            <>
-              color(), s(), r() 등의 직관적인 함수로 디자인 토큰을 사용할 수 있습니다.
-              <br />
-              팀 내 일관된 디자인 시스템을 구축하고, 손쉽게 커스터마이징할 수 있습니다.
-            </>
-          }
+          title={t('api.title')}
+          description={t('api.description')}
         />
 
         <div className={styles.apiDemo}>
@@ -265,14 +263,8 @@ export default function Home() {
       {/* Components Section */}
       <section className={styles.componentsSection}>
         <SectionHeader
-          title="다양한 UI 컴포넌트 제공"
-          description={
-            <>
-              버튼, 폼 요소, 테이블, 탭 등 웹 개발에 필요한 필수 컴포넌트를 제공합니다.
-              <br />
-              CSS 클래스 기반으로 작동하여 자유롭게 커스터마이징하고 확장할 수 있습니다.
-            </>
-          }
+          title={t('components.title')}
+          description={t('components.description')}
         />
 
         <div className={styles.componentsDemo}>
@@ -352,11 +344,9 @@ export default function Home() {
           <div className={styles.logoContainer}>
             <Image src="/logo.svg" alt="Podo UI" width={48} height={48} />
           </div>
-          <h2 className={styles.ctaTitle}>Podo UI를 응원해주세요</h2>
+          <h2 className={styles.ctaTitle}>{t('cta.title')}</h2>
           <p className={styles.ctaDescription}>
-            오픈소스 프로젝트 Podo UI를 GitHub에서 Star로 응원해주세요.
-            <br />
-            더 많은 분들이 편리하게 사용할 수 있도록 함께 만들어가요!
+            {formatText(t('cta.description'))}
           </p>
           <a
             href="https://github.com/hada0127/podo-ui"
@@ -364,7 +354,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className={styles.btnPrimary}
           >
-            GitHub에서 응원하기
+            {t('cta.button')}
           </a>
         </div>
       </section>

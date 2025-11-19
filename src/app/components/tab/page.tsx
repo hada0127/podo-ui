@@ -1,11 +1,15 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Tab() {
+  const t = useTranslations('tab');
   return (
     <>
       <section className={styles.section}>
-        <h1>탭</h1>
-        <p>Podo UI의 Tab 네비게이션 컴포넌트 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>

@@ -1,0 +1,43 @@
+{
+  "hero": {
+    "greeting": "HELLO Welcome",
+    "brandName": "Podo UI",
+    "description": "A lightweight and flexible SCSS Module-based design system. Build beautiful websites quickly with systematic design tokens and various components.",
+    "getStarted": "Get started"
+  },
+  "features": {
+    "title": "SCSS Module-based Design System",
+    "description": "A design system that allows you to implement beautiful UI with just HTML and SCSS. It provides systematic design tokens such as colors, spacing, and typography, with a flexible structure that can be used with various frameworks."
+  },
+  "featureCards": {
+    "performance": {
+      "title": "Lightweight & Fast",
+      "description": "Built with pure SCSS for a small bundle size and fast performance without runtime overhead."
+    },
+    "tokens": {
+      "title": "Systematic Design Tokens",
+      "description": "Build consistent UI with design system functions for colors, spacing, typography, radius, and more."
+    },
+    "darkMode": {
+      "title": "Dark Mode Support",
+      "description": "Built-in support for light/dark modes with warm tone settings for an optimized user experience."
+    },
+    "responsive": {
+      "title": "Responsive Grid System",
+      "description": "Flexible layout system that automatically adapts to PC(12), Tablet(6), and Mobile(4) grids for all devices."
+    }
+  },
+  "api": {
+    "title": "Powerful SCSS Function System",
+    "description": "Use design tokens with intuitive functions like color(), s(), r(). Build a consistent design system within your team and customize easily."
+  },
+  "components": {
+    "title": "Rich UI Component Library",
+    "description": "Essential components for web development including buttons, form elements, tables, tabs, and more. CSS class-based architecture allows free customization and extension."
+  },
+  "cta": {
+    "title": "Support Podo UI",
+    "description": "Support the open-source Podo UI project with a Star on GitHub. Let's build it together so more people can use it conveniently!",
+    "button": "Star on GitHub"
+  }
+}

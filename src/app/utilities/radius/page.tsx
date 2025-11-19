@@ -1,6 +1,10 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import styles from './page.module.scss';
 
 export default function Radius() {
+  const t = useTranslations('radius');
   return (
     <>
       <section className={styles.section}>

@@ -1,0 +1,114 @@
+{
+  "title": "Button",
+  "description": "Explore the Button component and its various usage patterns in Podo UI",
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "Create buttons by adding color classes to HTML button tags. You can implement various button styles with class names alone.",
+    "examples": {
+      "basic": "Basic Button",
+      "primary": "Primary Button",
+      "danger": "Danger Button",
+      "disabled": "Disabled Button"
+    }
+  },
+  "variants": {
+    "title": "Button Variants",
+    "description": "Create buttons for various purposes with 7 semantic colors:",
+    "primary": {
+      "label": "Primary",
+      "description": "Primary action"
+    },
+    "default": {
+      "label": "Default",
+      "description": "Default button"
+    },
+    "info": {
+      "label": "Info",
+      "description": "Informational action"
+    },
+    "link": {
+      "label": "Link",
+      "description": "Link-style action"
+    },
+    "success": {
+      "label": "Success",
+      "description": "Success/completion action"
+    },
+    "warning": {
+      "label": "Warning",
+      "description": "Warning action"
+    },
+    "danger": {
+      "label": "Danger",
+      "description": "Danger/delete action"
+    }
+  },
+  "styles": {
+    "title": "Button Styles",
+    "description": "Each color variant offers 4 styles (Solid, Fill, Border, Text):",
+    "solid": {
+      "label": "Solid",
+      "description": "Default style"
+    },
+    "fill": {
+      "label": "Fill",
+      "description": "Light background"
+    },
+    "border": {
+      "label": "Border",
+      "description": "Border only"
+    },
+    "text": {
+      "label": "Text",
+      "description": "Text only"
+    }
+  },
+  "sizes": {
+    "title": "Button Sizes",
+    "description": "Adjust button sizes using CSS:"
+  },
+  "alignment": {
+    "title": "Text Alignment",
+    "description": "Set text alignment within buttons to left, center, or right. The default is center alignment:",
+    "center": "Center Align",
+    "left": "Left Align",
+    "right": "Right Align",
+    "withIcons": "With Icons:"
+  },
+  "icons": {
+    "title": "Using with Icons",
+    "description": "Add icons inside buttons for a more intuitive UI:",
+    "examples": {
+      "create": "Create New",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "download": "Download"
+    }
+  },
+  "disabled": {
+    "title": "Disabled State",
+    "description": "Add the disabled attribute to disable buttons:"
+  },
+  "groups": {
+    "title": "Button Groups",
+    "description": "Group multiple buttons together:",
+    "examples": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "scss": {
+    "title": "Using in SCSS",
+    "description": "Customize button styles in SCSS modules:"
+  },
+  "showcase": {
+    "title": "Complete Variants Showcase",
+    "description": "View all color variants and styles at a glance:"
+  },
+  "demo": {
+    "title": "Live Examples:",
+    "codeHeader": "HTML"
+  }
+}

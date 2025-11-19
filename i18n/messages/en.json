@@ -4,6 +4,40 @@
     "english": "English",
     "korean": "Korean"
   },
+  "navigation": {
+    "gettingStarted": "Getting Started",
+    "introduction": "Introduction",
+    "installation": "Installation",
+    "usage": "Usage",
+    "foundation": "Foundation",
+    "colors": "Colors",
+    "typography": "Typography",
+    "icons": "Icons",
+    "spacing": "Spacing",
+    "layout": "Layout",
+    "grid": "Grid",
+    "responsive": "Responsive",
+    "components": "Components",
+    "button": "Button",
+    "input": "Input",
+    "textarea": "Textarea",
+    "select": "Select",
+    "checkboxRadio": "Checkbox & Radio",
+    "toggle": "Toggle",
+    "fileUpload": "File Upload",
+    "editor": "Editor",
+    "chip": "Chip",
+    "field": "Field",
+    "table": "Table",
+    "tab": "Tab",
+    "pagination": "Pagination",
+    "toast": "Toast",
+    "utilities": "Utilities",
+    "border": "Border",
+    "radius": "Border Radius",
+    "elevation": "Background & Elevation",
+    "display": "Display & Visibility"
+  },
   "button": {
     "title": "Button",
     "description": "Explore the Button component and its various usage patterns in Podo UI",
@@ -116,6 +150,18 @@
     "demo": {
       "title": "Live Examples:",
       "codeHeader": "HTML"
+    }
+  },
+  "home": {
+    "hero": {
+      "greeting": "HELLO Welcome",
+      "brandName": "Podo UI",
+      "description": "A lightweight and flexible SCSS Module-based design system. Build beautiful websites quickly with systematic design tokens and various components.",
+      "getStarted": "Get started"
+    },
+    "features": {
+      "title": "SCSS Module-based Design System",
+      "description": "A design system that allows you to implement beautiful UI with just HTML and SCSS. It provides systematic design tokens such as colors, spacing, and typography, with a flexible structure that can be used with various frameworks."
     }
   }
 }
