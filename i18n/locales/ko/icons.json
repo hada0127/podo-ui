@@ -1,4 +1,41 @@
 {
   "title": "아이콘",
-  "description": "아이콘 시스템"
+  "description": "아이콘 시스템",
+  "sections": {
+    "iconSystem": {
+      "title": "아이콘 시스템",
+      "description": "Podo UI는 아이콘 폰트를 제공합니다. 모든 아이콘은 벡터 기반으로 제작되어 크기와 색상을 자유롭게 조정할 수 있습니다."
+    },
+    "htmlUsage": {
+      "title": "HTML에서 사용하기",
+      "description": "<i> 태그에 icon-* 클래스를 추가하여 아이콘을 사용할 수 있습니다:",
+      "codeHeader": "HTML",
+      "demoTitle": "실제 예제:"
+    },
+    "reactUsage": {
+      "title": "React/TSX에서 사용하기",
+      "codeHeader": "component.tsx"
+    },
+    "scssUsage": {
+      "title": "SCSS에서 사용하기",
+      "codeHeader": "component.module.scss"
+    },
+    "allIcons": {
+      "title": "전체 아이콘",
+      "description": "아이콘을 클릭하면 클래스명이 클립보드에 복사됩니다.",
+      "count": "개"
+    },
+    "categories": {
+      "title": "아이콘 카테고리",
+      "generalUI": "일반 UI",
+      "arrows": "화살표",
+      "fileDocument": "파일 & 문서",
+      "socialMedia": "소셜 미디어",
+      "status": "상태"
+    },
+    "note": {
+      "title": "팁:",
+      "description": "아이콘은 폰트 기반이므로 font-size와 color 속성으로 크기와 색상을 자유롭게 조정할 수 있습니다."
+    }
+  }
 }

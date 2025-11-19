@@ -1,4 +1,45 @@
 {
   "title": "표시 & 가시성",
-  "description": "표시와 가시성 유틸리티"
+  "description": "반응형 디자인을 위한 요소 표시 및 숨김 유틸리티입니다.",
+  "hideClasses": {
+    "title": "숨김 클래스",
+    "description": "디바이스 크기에 따라 요소를 선택적으로 숨길 수 있습니다:",
+    "demoTitle": "숨김 예제 (브라우저 크기를 조절해보세요):",
+    "examples": {
+      "hidePC": "PC에서만 숨김 (1280px+)",
+      "hideTB": "Tablet에서만 숨김 (768-1279px)",
+      "hideMO": "Mobile에서만 숨김 (~767px)"
+    }
+  },
+  "breakpoints": {
+    "title": "중단점",
+    "description": "Podo UI는 3가지 주요 중단점을 사용합니다:",
+    "pc": "1280px 이상",
+    "tablet": "768px - 1279px",
+    "mobile": "767px 이하"
+  },
+  "mediaQuery": {
+    "title": "미디어 쿼리 믹스인",
+    "description": "SCSS에서 반응형 스타일을 적용하기 위한 믹스인을 제공합니다:"
+  },
+  "currentSize": {
+    "title": "현재 화면 크기",
+    "description": "현재 브라우저 크기에 따라 표시되는 내용:",
+    "pc": {
+      "label": "PC",
+      "size": "1280px 이상"
+    },
+    "tablet": {
+      "label": "Tablet",
+      "size": "768px - 1279px"
+    },
+    "mobile": {
+      "label": "Mobile",
+      "size": "767px 이하"
+    }
+  },
+  "realWorld": {
+    "title": "실제 사용 예제",
+    "description": "반응형 디자인을 위한 실제 활용 예제:"
+  }
 }

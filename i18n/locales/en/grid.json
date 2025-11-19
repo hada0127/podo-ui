@@ -1,4 +1,62 @@
 {
   "title": "Grid",
-  "description": "Responsive grid system"
+  "description": "Responsive grid system",
+  "gridSystem": {
+    "title": "Grid System",
+    "description": "Podo UI provides a responsive grid system. It automatically adjusts to 12 columns on PC, 6 columns on tablet, and 4 columns on mobile.",
+    "pc": {
+      "title": "PC (1280px~)",
+      "columns": "12-column grid"
+    },
+    "tablet": {
+      "title": "Tablet (768px~1279px)",
+      "columns": "6-column grid"
+    },
+    "mobile": {
+      "title": "Mobile (~767px)",
+      "columns": "4-column grid"
+    }
+  },
+  "basicGrid": {
+    "title": "Basic Grid",
+    "description": "Use the grid class to create an automatic responsive grid:",
+    "example": "Live Example:"
+  },
+  "gridSize": {
+    "title": "Grid Column Sizes",
+    "description": "You can use w-1 through w-12:",
+    "allSizes": "All Column Sizes:"
+  },
+  "fixedGrid": {
+    "title": "Fixed Column Grid",
+    "description": "You can create grids with fixed column counts using grid-fix-N classes (2-6 columns):",
+    "twoColumn": "2-column fixed (grid-fix-2):",
+    "threeColumn": "3-column fixed (grid-fix-3):",
+    "fourColumn": "4-column fixed (grid-fix-4):",
+    "fiveColumn": "5-column fixed (grid-fix-5):",
+    "sixColumn": "6-column fixed (grid-fix-6):"
+  },
+  "fullWidth": {
+    "title": "Full Width",
+    "description": "The w-full class takes the full width of the current grid:",
+    "example": "Live Example:"
+  },
+  "responsive": {
+    "title": "Responsive Behavior",
+    "description": "The grid automatically adjusts based on screen size. Try resizing your browser window to see it in action:",
+    "breakpoints": "Breakpoints:",
+    "pc": "PC: 1280px and above (12-column grid, 24px gap)",
+    "tablet": "Tablet: 768px ~ 1279px (6-column grid, 16px gap)",
+    "mobile": "Mobile: 767px and below (4-column grid, 16px gap)"
+  },
+  "code": {
+    "columns": "4 columns (33.33%)",
+    "sixColumns": "6 columns (50%)",
+    "twelveColumns": "12 columns (100%)",
+    "fullWidth": "Full width (PC: 12 columns, Tablet: 6 columns, Mobile: 4 columns)",
+    "twoColumnFixed": "2-column fixed grid",
+    "threeColumnFixed": "3-column fixed grid",
+    "fourColumnFixed": "4-column fixed grid",
+    "fourColumns": "4 columns"
+  }
 }

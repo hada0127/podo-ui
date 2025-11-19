@@ -1,4 +1,55 @@
 {
   "title": "타이포그래피",
-  "description": "폰트 스타일과 텍스트 서식"
+  "description": "폰트 스타일과 텍스트 서식",
+  "sections": {
+    "typographySystem": {
+      "title": "타이포그래피 시스템",
+      "description": "Podo UI는 Display, Paragraph, Heading 스타일을 제공하며, 각 스타일은 모바일 환경에 맞춰 자동으로 조정됩니다. Pretendard 폰트를 기본으로 사용합니다."
+    },
+    "displayStyles": {
+      "title": "Display 스타일",
+      "description": "대형 제목과 히어로 섹션에 사용되는 Display 스타일입니다.",
+      "sampleText": "타이포그래피"
+    },
+    "paragraphStyles": {
+      "title": "Paragraph 스타일",
+      "description": "본문과 설명 텍스트에 사용되는 Paragraph 스타일입니다.",
+      "sampleText": "본문 텍스트는 읽기 쉽고 명확해야 합니다."
+    },
+    "headingStyles": {
+      "title": "Heading 스타일",
+      "description": "기본 HTML 태그에 자동으로 적용되는 스타일입니다."
+    },
+    "cssClasses": {
+      "title": "CSS 클래스로 사용하기",
+      "description": "HTML 요소에 직접 타이포그래피 클래스를 적용할 수 있습니다:",
+      "codeHeader": "HTML",
+      "demoTitle": "실제 예제:",
+      "sampleHeading": "Display 4 제목",
+      "sampleP2": "P2 크기의 본문 텍스트입니다.",
+      "sampleP3": "P3 크기의 본문 텍스트입니다.",
+      "sampleP3Semibold": "P3 Semibold 강조된 텍스트입니다."
+    },
+    "scssUsage": {
+      "title": "SCSS에서 사용하기",
+      "description": "SCSS 모듈에서 믹스인을 사용하여 타이포그래피를 적용할 수 있습니다:",
+      "codeHeader": "component.module.scss"
+    },
+    "fontFamily": {
+      "title": "폰트 패밀리",
+      "description": "기본 폰트로 Pretendard를 사용하며, CSS 변수로 커스터마이징이 가능합니다:",
+      "codeHeader": "CSS"
+    },
+    "responsive": {
+      "title": "반응형",
+      "description": "모든 타이포그래피 스타일은 모바일 환경에 맞춰 자동으로 크기가 조정됩니다.",
+      "note": "팁:",
+      "noteDescription": "모바일 브레이크포인트는 768px 이하입니다. 창 크기를 조정하여 타이포그래피 변화를 확인해보세요."
+    }
+  },
+  "specs": {
+    "size": "Size:",
+    "weight": "Weight:",
+    "lineHeight": "Line Height:"
+  }
 }

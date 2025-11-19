@@ -8,15 +8,14 @@ export default function Radius() {
   return (
     <>
       <section className={styles.section}>
-        <h1>모서리 반경</h1>
-        <p>Podo UI의 Border Radius 유틸리티 클래스 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>기본 사용법</h2>
+        <h2>{t('basicUsage.title')}</h2>
         <p>
-          Podo UI는 0부터 full까지 8단계의 border-radius 값을 제공합니다.
-          <code>r()</code> 함수 또는 CSS 클래스로 사용할 수 있습니다.
+          {t('basicUsage.description')}
         </p>
 
         <div className={styles.codeBlock}>
@@ -29,11 +28,11 @@ export default function Radius() {
       </section>
 
       <section className={styles.section}>
-        <h2>모든 반경 값</h2>
-        <p>사용 가능한 모든 border-radius 값입니다:</p>
+        <h2>{t('allValues.title')}</h2>
+        <p>{t('allValues.description')}</p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('allValues.demoTitle')}</div>
           <div className={styles.radiusGrid}>
             <div className={styles.radiusBox} style={{ borderRadius: '0' }}>
               <div>r-0</div>
@@ -72,8 +71,8 @@ export default function Radius() {
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
-        <p>SCSS 모듈에서 <code>r()</code> 함수를 사용하여 border-radius를 적용할 수 있습니다:</p>
+        <h2>{t('scssUsage.title')}</h2>
+        <p>{t('scssUsage.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>
@@ -105,34 +104,34 @@ export default function Radius() {
       </section>
 
       <section className={styles.section}>
-        <h2>실전 예제</h2>
-        <p>다양한 border-radius를 활용한 예제:</p>
+        <h2>{t('realWorld.title')}</h2>
+        <p>{t('realWorld.description')}</p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>버튼 예제:</div>
+          <div className={styles.demoTitle}>{t('realWorld.buttonDemo')}</div>
           <div className={styles.buttonExample}>
-            <button style={{ borderRadius: '4px' }}>r-2 버튼</button>
-            <button style={{ borderRadius: '8px' }}>r-4 버튼</button>
-            <button style={{ borderRadius: '9999px' }}>r-full 버튼</button>
+            <button style={{ borderRadius: '4px' }}>r-2 {t('realWorld.button')}</button>
+            <button style={{ borderRadius: '8px' }}>r-4 {t('realWorld.button')}</button>
+            <button style={{ borderRadius: '9999px' }}>r-full {t('realWorld.button')}</button>
           </div>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>카드 예제:</div>
+          <div className={styles.demoTitle}>{t('realWorld.cardDemo')}</div>
           <div className={styles.cardExample}>
             <div className={styles.card} style={{ borderRadius: '6px' }}>
-              <h2>r-3 카드</h2>
-              <p>6px 반경의 모서리</p>
+              <h2>{t('realWorld.card.r3.title')}</h2>
+              <p>{t('realWorld.card.r3.description')}</p>
             </div>
             <div className={styles.card} style={{ borderRadius: '12px' }}>
-              <h2>r-5 카드</h2>
-              <p>12px 반경의 모서리</p>
+              <h2>{t('realWorld.card.r5.title')}</h2>
+              <p>{t('realWorld.card.r5.description')}</p>
             </div>
           </div>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>아바타 예제:</div>
+          <div className={styles.demoTitle}>{t('realWorld.avatarDemo')}</div>
           <div className={styles.avatarExample}>
             <div className={styles.avatar} style={{ borderRadius: '8px' }}>
               <span>A</span>

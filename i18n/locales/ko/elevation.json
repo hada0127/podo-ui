@@ -1,4 +1,53 @@
 {
   "title": "배경 & 입체감",
-  "description": "배경과 입체감 유틸리티"
+  "description": "배경 색상과 그림자를 사용하여 UI에 깊이감을 부여하는 유틸리티입니다.",
+  "background": {
+    "title": "배경 색상",
+    "description": "다양한 레벨의 배경 색상으로 UI에 계층 구조를 표현할 수 있습니다:",
+    "demoTitle": "배경 색상 예제:",
+    "bgModal": "모달 및 팝업",
+    "bgBlock": "카드 및 블록",
+    "bgElevation": "1단계 입체감",
+    "bgElevation1": "2단계 입체감"
+  },
+  "elevation": {
+    "title": "입체감 레벨",
+    "description": "배경 색상과 그림자를 조합하여 다양한 입체감을 표현할 수 있습니다:",
+    "demoTitle": "입체감 예제:",
+    "level0": {
+      "title": "레벨 0",
+      "description": "기본 배경, 그림자 없음"
+    },
+    "level1": {
+      "title": "레벨 1",
+      "description": "가벼운 그림자와 배경"
+    },
+    "level2": {
+      "title": "레벨 2",
+      "description": "더 강한 그림자와 배경"
+    }
+  },
+  "shadow": {
+    "title": "그림자",
+    "description": "box-shadow를 사용하여 요소에 깊이감을 추가할 수 있습니다:",
+    "demoTitle": "그림자 예제:"
+  },
+  "realWorld": {
+    "title": "실제 사용 예제",
+    "description": "배경과 그림자를 활용한 실제 UI 컴포넌트 예제:",
+    "cards": {
+      "basic": {
+        "title": "기본 카드",
+        "description": "그림자 없는 기본 카드입니다."
+      },
+      "shadow": {
+        "title": "그림자 카드",
+        "description": "가벼운 그림자가 적용된 카드입니다."
+      },
+      "elevated": {
+        "title": "입체감 카드",
+        "description": "배경과 그림자가 모두 적용된 카드입니다."
+      }
+    }
+  }
 }

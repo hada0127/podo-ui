@@ -13,10 +13,9 @@ export default function Grid() {
       </section>
 
       <section className={styles.section}>
-        <h2>그리드 시스템</h2>
+        <h2>{t('gridSystem.title')}</h2>
         <p>
-          Podo UI는 반응형 그리드 시스템을 제공합니다.
-          PC에서는 12칸, 태블릿에서는 6칸, 모바일에서는 4칸으로 자동 조정됩니다.
+          {t('gridSystem.description')}
         </p>
 
         <div className={styles.infoGrid}>
@@ -26,8 +25,8 @@ export default function Grid() {
                 <div key={i} className={styles.gridCol}></div>
               ))}
             </div>
-            <h2>PC (1280px~)</h2>
-            <p>12칸 그리드</p>
+            <h2>{t('gridSystem.pc.title')}</h2>
+            <p>{t('gridSystem.pc.columns')}</p>
           </div>
           <div className={styles.infoCard}>
             <div className={styles.gridPreview} data-cols="6">
@@ -35,8 +34,8 @@ export default function Grid() {
                 <div key={i} className={styles.gridCol}></div>
               ))}
             </div>
-            <h2>Tablet (768px~1279px)</h2>
-            <p>6칸 그리드</p>
+            <h2>{t('gridSystem.tablet.title')}</h2>
+            <p>{t('gridSystem.tablet.columns')}</p>
           </div>
           <div className={styles.infoCard}>
             <div className={styles.gridPreview} data-cols="4">
@@ -44,30 +43,30 @@ export default function Grid() {
                 <div key={i} className={styles.gridCol}></div>
               ))}
             </div>
-            <h2>Mobile (~767px)</h2>
-            <p>4칸 그리드</p>
+            <h2>{t('gridSystem.mobile.title')}</h2>
+            <p>{t('gridSystem.mobile.columns')}</p>
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>기본 그리드</h2>
-        <p>grid 클래스를 사용하여 자동 반응형 그리드를 생성합니다:</p>
+        <h2>{t('basicGrid.title')}</h2>
+        <p>{t('basicGrid.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
           <pre><code>{`<section class="grid">
-  <div class="w-4">4칸 (33.33%)</div>
-  <div class="w-4">4칸 (33.33%)</div>
-  <div class="w-4">4칸 (33.33%)</div>
-  <div class="w-6">6칸 (50%)</div>
-  <div class="w-6">6칸 (50%)</div>
-  <div class="w-12">12칸 (100%)</div>
+  <div class="w-4">${t('code.columns')}</div>
+  <div class="w-4">${t('code.columns')}</div>
+  <div class="w-4">${t('code.columns')}</div>
+  <div class="w-6">${t('code.sixColumns')}</div>
+  <div class="w-6">${t('code.sixColumns')}</div>
+  <div class="w-12">${t('code.twelveColumns')}</div>
 </section>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('basicGrid.example')}</div>
           <section className="grid">
             <div className="w-4">
               <div className={styles.gridItem}>w-4</div>
@@ -92,11 +91,11 @@ export default function Grid() {
       </section>
 
       <section className={styles.section}>
-        <h2>그리드 칸 크기</h2>
-        <p>w-1부터 w-12까지 사용 가능합니다:</p>
+        <h2>{t('gridSize.title')}</h2>
+        <p>{t('gridSize.description')}</p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>모든 칸 크기:</div>
+          <div className={styles.demoTitle}>{t('gridSize.allSizes')}</div>
           <section className="grid">
             <div className="w-12"><div className={styles.gridItem}>w-12 (100%)</div></div>
             <div className="w-11"><div className={styles.gridItem}>w-11</div></div>
@@ -116,24 +115,24 @@ export default function Grid() {
       </section>
 
       <section className={styles.section}>
-        <h2>고정 칼럼 그리드</h2>
-        <p>grid-fix-N 클래스를 사용하여 고정된 칼럼 수의 그리드를 만들 수 있습니다 (2~6칸):</p>
+        <h2>{t('fixedGrid.title')}</h2>
+        <p>{t('fixedGrid.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 2칸 고정 그리드 -->
+          <pre><code>{`<!-- ${t('code.twoColumnFixed')} -->
 <section class="grid grid-fix-2">
   <div class="w-1_2">50%</div>
   <div class="w-1_2">50%</div>
 </section>
 
-<!-- 3칸 고정 그리드 -->
+<!-- ${t('code.threeColumnFixed')} -->
 <section class="grid grid-fix-3">
   <div class="w-1_3">33.33%</div>
   <div class="w-2_3">66.67%</div>
 </section>
 
-<!-- 4칸 고정 그리드 -->
+<!-- ${t('code.fourColumnFixed')} -->
 <section class="grid grid-fix-4">
   <div class="w-1_4">25%</div>
   <div class="w-3_4">75%</div>
@@ -141,32 +140,32 @@ export default function Grid() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>2칸 고정 (grid-fix-2):</div>
+          <div className={styles.demoTitle}>{t('fixedGrid.twoColumn')}</div>
           <section className="grid grid-fix-2">
             <div className="w-1_2"><div className={styles.gridItem}>w-1_2 (50%)</div></div>
             <div className="w-1_2"><div className={styles.gridItem}>w-1_2 (50%)</div></div>
           </section>
 
-          <div className={styles.demoTitle}>3칸 고정 (grid-fix-3):</div>
+          <div className={styles.demoTitle}>{t('fixedGrid.threeColumn')}</div>
           <section className="grid grid-fix-3">
             <div className="w-1_3"><div className={styles.gridItem}>w-1_3</div></div>
             <div className="w-2_3"><div className={styles.gridItem}>w-2_3</div></div>
           </section>
 
-          <div className={styles.demoTitle}>4칸 고정 (grid-fix-4):</div>
+          <div className={styles.demoTitle}>{t('fixedGrid.fourColumn')}</div>
           <section className="grid grid-fix-4">
             <div className="w-1_4"><div className={styles.gridItem}>w-1_4</div></div>
             <div className="w-1_4"><div className={styles.gridItem}>w-1_4</div></div>
             <div className="w-2_4"><div className={styles.gridItem}>w-2_4</div></div>
           </section>
 
-          <div className={styles.demoTitle}>5칸 고정 (grid-fix-5):</div>
+          <div className={styles.demoTitle}>{t('fixedGrid.fiveColumn')}</div>
           <section className="grid grid-fix-5">
             <div className="w-2_5"><div className={styles.gridItem}>w-2_5</div></div>
             <div className="w-3_5"><div className={styles.gridItem}>w-3_5</div></div>
           </section>
 
-          <div className={styles.demoTitle}>6칸 고정 (grid-fix-6):</div>
+          <div className={styles.demoTitle}>{t('fixedGrid.sixColumn')}</div>
           <section className="grid grid-fix-6">
             <div className="w-2_6"><div className={styles.gridItem}>w-2_6</div></div>
             <div className="w-4_6"><div className={styles.gridItem}>w-4_6</div></div>
@@ -175,21 +174,21 @@ export default function Grid() {
       </section>
 
       <section className={styles.section}>
-        <h2>전체 너비</h2>
-        <p>w-full 클래스는 현재 그리드의 전체 너비를 차지합니다:</p>
+        <h2>{t('fullWidth.title')}</h2>
+        <p>{t('fullWidth.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
           <pre><code>{`<section class="grid">
-  <div class="w-4">4칸</div>
-  <div class="w-4">4칸</div>
-  <div class="w-4">4칸</div>
-  <div class="w-full">전체 너비 (PC: 12칸, Tablet: 6칸, Mobile: 4칸)</div>
+  <div class="w-4">${t('code.fourColumns')}</div>
+  <div class="w-4">${t('code.fourColumns')}</div>
+  <div class="w-4">${t('code.fourColumns')}</div>
+  <div class="w-full">${t('code.fullWidth')}</div>
 </section>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('fullWidth.example')}</div>
           <section className="grid">
             <div className="w-4"><div className={styles.gridItem}>w-4</div></div>
             <div className="w-4"><div className={styles.gridItem}>w-4</div></div>
@@ -200,17 +199,17 @@ export default function Grid() {
       </section>
 
       <section className={styles.section}>
-        <h2>반응형 동작</h2>
-        <p>그리드는 화면 크기에 따라 자동으로 조정됩니다. 브라우저 창 크기를 조절하여 확인해보세요:</p>
+        <h2>{t('responsive.title')}</h2>
+        <p>{t('responsive.description')}</p>
 
         <div className={styles.note}>
           <i className="icon-info"></i>
           <div>
-            <strong>브레이크포인트:</strong>
+            <strong>{t('responsive.breakpoints')}</strong>
             <ul style={{ margin: '8px 0 0 0', paddingLeft: '20px' }}>
-              <li>PC: 1280px 이상 (12칸 그리드, 간격 24px)</li>
-              <li>Tablet: 768px ~ 1279px (6칸 그리드, 간격 16px)</li>
-              <li>Mobile: 767px 이하 (4칸 그리드, 간격 16px)</li>
+              <li>{t('responsive.pc')}</li>
+              <li>{t('responsive.tablet')}</li>
+              <li>{t('responsive.mobile')}</li>
             </ul>
           </div>
         </div>

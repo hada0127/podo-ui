@@ -1,4 +1,52 @@
 {
   "title": "Pagination",
-  "description": "Pagination component"
+  "description": "Pagination component",
+  "overview": {
+    "title": "Overview",
+    "description": "The Pagination component is used to divide large amounts of data into multiple pages. It provides previous/next buttons and page number buttons, visually highlighting the current page."
+  },
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "Use by passing props.",
+    "demoTitle": "Live Example (Total 10 pages):",
+    "currentPage": "Current Page: {page}",
+    "codeHeader": "component.tsx"
+  },
+  "manyPages": {
+    "title": "Many Pages",
+    "description": "When there are many pages, they are displayed in groups of 5 by default. Only the pages in the group containing the current page are shown.",
+    "demoTitle": "Live Example (Total 20 pages):",
+    "currentPage": "Current Page: {page}"
+  },
+  "customVisiblePages": {
+    "title": "Change Visible Pages Count",
+    "description": "You can adjust the maximum number of pages to display at once using the prop.",
+    "demoTitle": "Live Example (Display 3 at a time):",
+    "currentPage": "Current Page: {page}",
+    "codeHeader": "component.tsx"
+  },
+  "props": {
+    "title": "Props",
+    "codeHeader": "PaginationProps",
+    "currentPage": "Current page (starts from 1)",
+    "totalPages": "Total number of pages",
+    "onPageChange": "Page change callback",
+    "maxVisiblePages": "Maximum number of visible pages (default: 5)"
+  },
+  "features": {
+    "title": "Key Features",
+    "prevNext": "Previous/Next page navigation buttons",
+    "directSelection": "Direct page number selection",
+    "visualHighlight": "Visual highlighting of current page",
+    "grouping": "Page grouping (5 pages or custom)",
+    "autoDisable": "Automatic button disabling on first/last page",
+    "accessibility": "Accessibility support"
+  },
+  "example": {
+    "title": "Real-world Example",
+    "description": "A complete example using with a data list:",
+    "codeHeader": "list-with-pagination.tsx",
+    "commentAllData": "All data",
+    "commentExtractCurrentPageData": "Extract only current page data"
+  }
 }

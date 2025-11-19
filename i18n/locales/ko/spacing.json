@@ -1,4 +1,52 @@
 {
   "title": "간격",
-  "description": "간격 스케일 시스템"
+  "description": "간격 스케일 시스템",
+  "sections": {
+    "spacingSystem": {
+      "title": "간격 시스템",
+      "description": "Podo UI는 0부터 13까지 14단계의 여백 값을 제공합니다. 일관된 여백을 사용하여 시각적 리듬을 만들고 정돈된 레이아웃을 구성할 수 있습니다."
+    },
+    "spacingValues": {
+      "title": "간격 값",
+      "description": "사용 가능한 모든 간격 값입니다:"
+    },
+    "scssUsage": {
+      "title": "SCSS에서 사용하기",
+      "description": "SCSS 모듈에서 s() 함수를 사용하여 간격을 적용할 수 있습니다:",
+      "codeHeader": "component.module.scss"
+    },
+    "cssClasses": {
+      "title": "CSS 클래스로 사용하기",
+      "description": "HTML 요소에 직접 클래스를 적용할 수 있습니다:",
+      "codeHeader": "HTML",
+      "demoTitle": "실제 예제:"
+    },
+    "borderRadius": {
+      "title": "모서리 반경",
+      "description": "Podo UI는 8가지 모서리 반경 값을 제공합니다. r() 함수를 사용합니다:"
+    },
+    "borderRadiusScss": {
+      "title": "Border Radius SCSS 사용법",
+      "codeHeader": "component.module.scss"
+    },
+    "borderRadiusClasses": {
+      "title": "Border Radius CSS 클래스",
+      "codeHeader": "HTML",
+      "demoTitle": "실제 예제:"
+    },
+    "practicalExample": {
+      "title": "실전 예제",
+      "description": "간격과 모서리 반경을 함께 사용한 카드 컴포넌트 예제:",
+      "codeHeader": "component.module.scss",
+      "demoTitle": "실제 렌더링:",
+      "cardTitle": "카드 제목",
+      "cardContent": "이 카드는 s() 함수로 일관된 여백을 적용하고, r() 함수로 모서리를 둥글게 만들었습니다. 모든 간격이 디자인 시스템의 값을 따르고 있습니다.",
+      "confirm": "확인",
+      "cancel": "취소"
+    },
+    "note": {
+      "title": "팁:",
+      "description": "일관된 간격 시스템을 사용하면 시각적으로 안정감 있는 레이아웃을 만들 수 있습니다. 임의의 픽셀 값 대신 항상 디자인 시스템의 값을 사용하세요."
+    }
+  }
 }

@@ -41,29 +41,28 @@ export default function Typography() {
       </section>
 
       <section className={styles.section}>
-        <h2>타이포그래피 시스템</h2>
+        <h2>{t('sections.typographySystem.title')}</h2>
         <p>
-          Podo UI는 Display, Paragraph, Heading 스타일을 제공하며, 각 스타일은 모바일 환경에 맞춰 자동으로 조정됩니다.
-          Pretendard 폰트를 기본으로 사용합니다.
+          {t('sections.typographySystem.description')}
         </p>
       </section>
 
       <section className={styles.section}>
-        <h2>Display 스타일</h2>
-        <p>대형 제목과 히어로 섹션에 사용되는 Display 스타일입니다.</p>
+        <h2>{t('sections.displayStyles.title')}</h2>
+        <p>{t('sections.displayStyles.description')}</p>
 
         <div className={styles.typeGrid}>
           {displayStyles.map((style) => (
             <div key={style.name} className={styles.typeCard}>
               <div className={styles.typePreview}>
-                <div className={style.name}>타이포그래피</div>
+                <div className={style.name}>{t('sections.displayStyles.sampleText')}</div>
               </div>
               <div className={styles.typeInfo}>
                 <h2>{style.name}</h2>
                 <div className={styles.typeSpecs}>
-                  <div><strong>Size:</strong> {style.fontSize} (Mobile: {style.mobile})</div>
-                  <div><strong>Weight:</strong> {style.fontWeight}</div>
-                  <div><strong>Line Height:</strong> {style.lineHeight}</div>
+                  <div><strong>{t('specs.size')}</strong> {style.fontSize} (Mobile: {style.mobile})</div>
+                  <div><strong>{t('specs.weight')}</strong> {style.fontWeight}</div>
+                  <div><strong>{t('specs.lineHeight')}</strong> {style.lineHeight}</div>
                 </div>
               </div>
             </div>
@@ -72,23 +71,23 @@ export default function Typography() {
       </section>
 
       <section className={styles.section}>
-        <h2>Paragraph 스타일</h2>
-        <p>본문과 설명 텍스트에 사용되는 Paragraph 스타일입니다.</p>
+        <h2>{t('sections.paragraphStyles.title')}</h2>
+        <p>{t('sections.paragraphStyles.description')}</p>
 
         <div className={styles.typeGrid}>
           {paragraphStyles.map((style) => (
             <div key={style.name} className={styles.typeCard}>
               <div className={styles.typePreview}>
                 <div className={style.name}>
-                  본문 텍스트는 읽기 쉽고 명확해야 합니다.
+                  {t('sections.paragraphStyles.sampleText')}
                 </div>
               </div>
               <div className={styles.typeInfo}>
                 <h2>{style.name}</h2>
                 <div className={styles.typeSpecs}>
-                  <div><strong>Size:</strong> {style.fontSize} (Mobile: {style.mobile})</div>
-                  <div><strong>Weight:</strong> {style.fontWeight}</div>
-                  <div><strong>Line Height:</strong> {style.lineHeight}</div>
+                  <div><strong>{t('specs.size')}</strong> {style.fontSize} (Mobile: {style.mobile})</div>
+                  <div><strong>{t('specs.weight')}</strong> {style.fontWeight}</div>
+                  <div><strong>{t('specs.lineHeight')}</strong> {style.lineHeight}</div>
                 </div>
               </div>
             </div>
@@ -97,8 +96,8 @@ export default function Typography() {
       </section>
 
       <section className={styles.section}>
-        <h2>Heading 스타일</h2>
-        <p>기본 HTML 태그에 자동으로 적용되는 스타일입니다.</p>
+        <h2>{t('sections.headingStyles.title')}</h2>
+        <p>{t('sections.headingStyles.description')}</p>
 
         <div className={styles.typeGrid}>
           {headingStyles.map((style) => (
@@ -111,9 +110,9 @@ export default function Typography() {
               <div className={styles.typeInfo}>
                 <h2>{style.name}</h2>
                 <div className={styles.typeSpecs}>
-                  <div><strong>Size:</strong> {style.fontSize} (Mobile: {style.mobile})</div>
-                  <div><strong>Weight:</strong> {style.fontWeight}</div>
-                  <div><strong>Line Height:</strong> {style.lineHeight}</div>
+                  <div><strong>{t('specs.size')}</strong> {style.fontSize} (Mobile: {style.mobile})</div>
+                  <div><strong>{t('specs.weight')}</strong> {style.fontWeight}</div>
+                  <div><strong>{t('specs.lineHeight')}</strong> {style.lineHeight}</div>
                 </div>
               </div>
             </div>
@@ -122,11 +121,11 @@ export default function Typography() {
       </section>
 
       <section className={styles.section}>
-        <h2>CSS 클래스로 사용하기</h2>
-        <p>HTML 요소에 직접 타이포그래피 클래스를 적용할 수 있습니다:</p>
+        <h2>{t('sections.cssClasses.title')}</h2>
+        <p>{t('sections.cssClasses.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
           <pre><code>{`<!-- Display 스타일 -->
 <div class="display1">대형 제목</div>
 <div class="display4">중형 제목</div>
@@ -140,20 +139,20 @@ export default function Typography() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
-          <div className="display4" style={{ marginBottom: '16px' }}>Display 4 제목</div>
-          <div className="p2" style={{ marginBottom: '12px' }}>P2 크기의 본문 텍스트입니다.</div>
-          <div className="p3">P3 크기의 본문 텍스트입니다.</div>
-          <div className="p3-semibold">P3 Semibold 강조된 텍스트입니다.</div>
+          <div className={styles.demoTitle}>{t('sections.cssClasses.demoTitle')}</div>
+          <div className="display4" style={{ marginBottom: '16px' }}>{t('sections.cssClasses.sampleHeading')}</div>
+          <div className="p2" style={{ marginBottom: '12px' }}>{t('sections.cssClasses.sampleP2')}</div>
+          <div className="p3">{t('sections.cssClasses.sampleP3')}</div>
+          <div className="p3-semibold">{t('sections.cssClasses.sampleP3Semibold')}</div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
-        <p>SCSS 모듈에서 믹스인을 사용하여 타이포그래피를 적용할 수 있습니다:</p>
+        <h2>{t('sections.scssUsage.title')}</h2>
+        <p>{t('sections.scssUsage.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
+          <div className={styles.codeHeader}>{t('sections.scssUsage.codeHeader')}</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .title {
@@ -179,11 +178,11 @@ export default function Typography() {
       </section>
 
       <section className={styles.section}>
-        <h2>폰트 패밀리</h2>
-        <p>기본 폰트로 Pretendard를 사용하며, CSS 변수로 커스터마이징이 가능합니다:</p>
+        <h2>{t('sections.fontFamily.title')}</h2>
+        <p>{t('sections.fontFamily.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>CSS</div>
+          <div className={styles.codeHeader}>{t('sections.fontFamily.codeHeader')}</div>
           <pre><code>{`:root {
   --base-font-family: 'Pretendard', sans-serif;
 }
@@ -196,13 +195,13 @@ export default function Typography() {
       </section>
 
       <section className={styles.section}>
-        <h2>반응형</h2>
-        <p>모든 타이포그래피 스타일은 모바일 환경에 맞춰 자동으로 크기가 조정됩니다.</p>
+        <h2>{t('sections.responsive.title')}</h2>
+        <p>{t('sections.responsive.description')}</p>
 
         <div className={styles.note}>
           <i className="icon-info"></i>
           <div>
-            <strong>팁:</strong> 모바일 브레이크포인트는 768px 이하입니다. 창 크기를 조정하여 타이포그래피 변화를 확인해보세요.
+            <strong>{t('sections.responsive.note')}</strong> {t('sections.responsive.noteDescription')}
           </div>
         </div>
       </section>

@@ -8,14 +8,14 @@ export default function Elevation() {
   return (
     <>
       <section className={styles.section}>
-        <h1>배경 & 입체감</h1>
-        <p>Podo UI의 Background와 Elevation 유틸리티 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>배경 색상</h2>
+        <h2>{t('background.title')}</h2>
         <p>
-          Podo UI는 다양한 배경 색상을 제공합니다. 각 배경은 테마에 따라 자동으로 조정됩니다.
+          {t('background.description')}
         </p>
 
         <div className={styles.codeBlock}>
@@ -44,57 +44,56 @@ export default function Elevation() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>배경 색상 예제:</div>
+          <div className={styles.demoTitle}>{t('background.demoTitle')}</div>
           <div className={styles.bgGrid}>
             <div className={styles.bgBox} style={{ background: 'var(--bg-modal)' }}>
               <strong>bg-modal</strong>
-              <span>모달/카드 배경</span>
+              <span>{t('background.bgModal')}</span>
             </div>
             <div className={styles.bgBox} style={{ background: 'var(--bg-block)' }}>
               <strong>bg-block</strong>
-              <span>블록 요소 배경</span>
+              <span>{t('background.bgBlock')}</span>
             </div>
             <div className={styles.bgBox} style={{ background: 'var(--bg-elevation)' }}>
               <strong>bg-elevation</strong>
-              <span>입체감 배경</span>
+              <span>{t('background.bgElevation')}</span>
             </div>
             <div className={styles.bgBox} style={{ background: 'var(--bg-elevation-1)' }}>
               <strong>bg-elevation-1</strong>
-              <span>입체감 배경 1단계</span>
+              <span>{t('background.bgElevation1')}</span>
             </div>
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>입체감 (Elevation)</h2>
+        <h2>{t('elevation.title')}</h2>
         <p>
-          배경색의 미묘한 차이로 레이어 간의 깊이감을 표현할 수 있습니다.
-          elevation 값이 높을수록 위에 떠있는 느낌을 줍니다.
+          {t('elevation.description')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>입체감 예제:</div>
+          <div className={styles.demoTitle}>{t('elevation.demoTitle')}</div>
           <div className={styles.elevationExample}>
             <div className={styles.elevationCard} style={{ background: 'var(--bg-modal)' }}>
-              <h2>Level 0</h2>
-              <p>기본 배경</p>
+              <h2>{t('elevation.level0.title')}</h2>
+              <p>{t('elevation.level0.description')}</p>
             </div>
             <div className={styles.elevationCard} style={{ background: 'var(--bg-elevation)', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-              <h2>Level 1</h2>
-              <p>약간 띄워진 느낌</p>
+              <h2>{t('elevation.level1.title')}</h2>
+              <p>{t('elevation.level1.description')}</p>
             </div>
             <div className={styles.elevationCard} style={{ background: 'var(--bg-elevation-1)', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-              <h2>Level 2</h2>
-              <p>더 띄워진 느낌</p>
+              <h2>{t('elevation.level2.title')}</h2>
+              <p>{t('elevation.level2.description')}</p>
             </div>
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>그림자 효과</h2>
-        <p>배경색과 함께 box-shadow를 사용하여 입체감을 강조할 수 있습니다:</p>
+        <h2>{t('shadow.title')}</h2>
+        <p>{t('shadow.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>SCSS</div>
@@ -120,7 +119,7 @@ export default function Elevation() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>그림자 예제 (마우스를 올려보세요):</div>
+          <div className={styles.demoTitle}>{t('shadow.demoTitle')}</div>
           <div className={styles.shadowGrid}>
             <div className={styles.shadowBox} style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>
               Shadow 1
@@ -139,22 +138,22 @@ export default function Elevation() {
       </section>
 
       <section className={styles.section}>
-        <h2>실전 예제</h2>
-        <p>배경과 입체감을 활용한 카드 디자인:</p>
+        <h2>{t('realWorld.title')}</h2>
+        <p>{t('realWorld.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.cardShowcase}>
             <div className={styles.showcaseCard}>
-              <h2>기본 카드</h2>
-              <p>bg-modal 배경과 기본 테두리</p>
+              <h2>{t('realWorld.cards.basic.title')}</h2>
+              <p>{t('realWorld.cards.basic.description')}</p>
             </div>
             <div className={styles.showcaseCard} style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-              <h2>그림자 카드</h2>
-              <p>bg-modal 배경과 그림자 효과</p>
+              <h2>{t('realWorld.cards.shadow.title')}</h2>
+              <p>{t('realWorld.cards.shadow.description')}</p>
             </div>
             <div className={styles.showcaseCard} style={{ background: 'var(--bg-elevation)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-              <h2>입체 카드</h2>
-              <p>bg-elevation 배경과 강한 그림자</p>
+              <h2>{t('realWorld.cards.elevated.title')}</h2>
+              <p>{t('realWorld.cards.elevated.description')}</p>
             </div>
           </div>
         </div>

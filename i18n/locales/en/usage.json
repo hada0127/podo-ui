@@ -1,4 +1,102 @@
 {
   "title": "Usage",
-  "description": "Learn how to use Podo UI"
+  "description": "Learn how to use Podo UI",
+  "cssClasses": {
+    "title": "Using CSS Classes",
+    "description": "Podo UI uses a CSS-first approach. Most styles are applied through HTML classes.",
+    "buttonExample": {
+      "title": "Button Example"
+    },
+    "buttonVariants": {
+      "title": "Button Variants"
+    },
+    "inputExample": {
+      "title": "Input Example",
+      "placeholderDefault": "Default Input"
+    }
+  },
+  "scssFunctions": {
+    "title": "SCSS Functions and Mixins",
+    "description": "You can write custom styles using Podo UI's design tokens in SCSS modules.",
+    "colorFunction": {
+      "title": "Color Function",
+      "comments": {
+        "primaryColor": "Primary color",
+        "reverseColor": "Primary reverse color",
+        "hoverColor": "Primary hover color"
+      }
+    },
+    "spacingFunction": {
+      "title": "Spacing Function",
+      "comments": {
+        "margin": "12px",
+        "padding": "20px",
+        "gap": "8px",
+        "available": "Available from 0-13",
+        "marginTop": "28px"
+      }
+    },
+    "radiusFunction": {
+      "title": "Border Radius Function",
+      "comments": {
+        "r2": "4px",
+        "r3": "8px",
+        "r4": "12px"
+      }
+    },
+    "typographyMixin": {
+      "title": "Typography Mixins",
+      "comments": {
+        "display1": "Largest heading",
+        "display4": "Medium heading",
+        "p2": "Body text",
+        "p5": "Small text"
+      }
+    }
+  },
+  "reactComponents": {
+    "title": "React Components",
+    "description": "Some complex components are provided as React components.",
+    "codeHeader": "General React",
+    "example": {
+      "label": "Name",
+      "placeholder": "Enter your name"
+    }
+  },
+  "theme": {
+    "title": "Theme (Light/Dark Mode)",
+    "description": "Podo UI automatically supports light mode and dark mode.",
+    "codeHeader": "Theme Setup",
+    "comments": {
+      "light": "Set to light mode",
+      "dark": "Set to dark mode",
+      "system": "Follow system settings"
+    },
+    "note": {
+      "title": "Note:",
+      "content": "All colors automatically adapt to the theme when using the color() function."
+    }
+  },
+  "nextSteps": {
+    "title": "Next Steps",
+    "description": "Refer to the documentation in each section for more details:",
+    "links": {
+      "colors": {
+        "title": "Color System",
+        "description": "8 semantic colors and variants"
+      },
+      "typography": {
+        "title": "Typography",
+        "description": "Font styles and mixins"
+      },
+      "icons": {
+        "title": "Icons",
+        "description": "119 icon fonts"
+      },
+      "components": {
+        "title": "Components",
+        "description": "Explore UI components"
+      }
+    }
+  }
 }

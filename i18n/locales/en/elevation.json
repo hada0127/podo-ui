@@ -1,4 +1,53 @@
 {
   "title": "Background & Elevation",
-  "description": "Background and elevation utilities"
+  "description": "Utilities to add depth to UI using background colors and shadows.",
+  "background": {
+    "title": "Background Colors",
+    "description": "Express UI hierarchy with various levels of background colors:",
+    "demoTitle": "Background Examples:",
+    "bgModal": "Modals & Popups",
+    "bgBlock": "Cards & Blocks",
+    "bgElevation": "1st Level Elevation",
+    "bgElevation1": "2nd Level Elevation"
+  },
+  "elevation": {
+    "title": "Elevation Levels",
+    "description": "Create various elevation effects by combining background colors and shadows:",
+    "demoTitle": "Elevation Examples:",
+    "level0": {
+      "title": "Level 0",
+      "description": "Basic background, no shadow"
+    },
+    "level1": {
+      "title": "Level 1",
+      "description": "Light shadow with background"
+    },
+    "level2": {
+      "title": "Level 2",
+      "description": "Stronger shadow with background"
+    }
+  },
+  "shadow": {
+    "title": "Shadows",
+    "description": "Add depth to elements using box-shadow:",
+    "demoTitle": "Shadow Examples:"
+  },
+  "realWorld": {
+    "title": "Real World Examples",
+    "description": "Practical UI component examples using backgrounds and shadows:",
+    "cards": {
+      "basic": {
+        "title": "Basic Card",
+        "description": "A basic card without shadows."
+      },
+      "shadow": {
+        "title": "Shadow Card",
+        "description": "A card with light shadow applied."
+      },
+      "elevated": {
+        "title": "Elevated Card",
+        "description": "A card with both background and shadow."
+      }
+    }
+  }
 }

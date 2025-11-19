@@ -1,4 +1,138 @@
 {
   "title": "Toast",
-  "description": "Toast notification component"
+  "description": "Toast notification component",
+  "examples": {
+    "borderFalseSuccessTopRight": "border=false - Success (Top Right)",
+    "borderTrueInfoTopCenter": "border=true - Info (Top Center)",
+    "longTrueWarningBottomRight": "long=true - Warning (Bottom Right)",
+    "longTrueBorderTrueDangerBottomCenter": "long=true, border=true - Danger (Bottom Center)",
+    "primaryCenterManualClose": "Primary - Center (Manual Close)",
+    "customWidthBottomLeft": "Custom Width - Bottom Left",
+    "success": "Success",
+    "successMessage": "File uploaded successfully!",
+    "notification": "Notification",
+    "newMessageNotification": "You have a new message",
+    "unsavedChanges": "You have unsaved changes",
+    "errorOccurred": "An error occurred",
+    "importantNotification": "Important Notice",
+    "manualCloseMessage": "This message requires manual close",
+    "wideToast": "Wide Toast",
+    "wideToastMessage": "This is a toast with width set to 500px"
+  },
+  "variants": {
+    "default": {
+      "label": "Default",
+      "description": "Default notification"
+    },
+    "primary": {
+      "label": "Primary",
+      "description": "Primary notification"
+    },
+    "info": {
+      "label": "Info",
+      "description": "Informational notification"
+    },
+    "success": {
+      "label": "Success",
+      "description": "Success notification"
+    },
+    "warning": {
+      "label": "Warning",
+      "description": "Warning notification"
+    },
+    "danger": {
+      "label": "Danger",
+      "description": "Danger notification"
+    }
+  },
+  "sections": {
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "Toasts can be created using the .toast class. They can include an icon, header, body, and close button.",
+      "demo": "Live Example:",
+      "closeLabel": "Close"
+    },
+    "styleProperties": {
+      "title": "Style Properties",
+      "description": "Toasts provide various styles by combining border and long properties:",
+      "borderProperty": "Border Property",
+      "borderFalseDefault": "border=false (default): 4px thick accent border",
+      "borderTrue": "border=true (.border): 1px full outline only (no accent border)",
+      "longProperty": "Long Property",
+      "longFalseDefault": "long=false (default): Vertical layout, 4px accent border on top when border=false",
+      "longTrue": "long=true (.long): Horizontal layout, 4px accent border on left when border=false",
+      "borderFalseAccent": "border=false - Accent Border",
+      "borderFalseDescription": "The default style displays a 4px thick accent border on top.",
+      "borderTrueOutline": "border=true - Full Outline",
+      "borderTrueDescription": "Adding the .border class displays only a 1px full outline (no accent border).",
+      "commentBorderFalse": "border=false (4px accent border)",
+      "commentBorderTrue": "border=true (1px full outline only)",
+      "borderFalseAccentBorder": "border=false (4px accent border)",
+      "borderTrueOutlineBorder": "border=true (1px outline)"
+    },
+    "longStyle": {
+      "title": "Long Style",
+      "description": "Adding the .long class changes to horizontal layout, and the border position changes from top to left. Useful when displaying toasts in narrow spaces.",
+      "longTrueBorderFalse": "long=true, border=false",
+      "longTrueBorderFalseDescription": "Displays a 4px thick accent border on the left.",
+      "longTrueBorderTrue": "long=true, border=true",
+      "longTrueBorderTrueDescription": "Displays only a 1px full outline (no accent border).",
+      "commentLongTrueBorderFalse": "long=true, border=false (4px accent border on left)",
+      "commentLongTrueBorderTrue": "long=true, border=true (1px full outline only)",
+      "fileUploadSuccess": "File uploaded successfully"
+    },
+    "colorVariants": {
+      "title": "Color Variants",
+      "description": "Use 6 color variants to convey different messages:",
+      "longBorderFalse": "long=true, border=false",
+      "longBorderTrue": "long=true, border=true"
+    },
+    "combinationExamples": {
+      "title": "Combination Examples",
+      "description": "Adding the .long class changes to horizontal layout and displays in one line. Useful when displaying toasts in narrow spaces.",
+      "commentLongBorder": "Long + Border"
+    },
+    "simpleMessage": {
+      "title": "Simple Message",
+      "description": "You can also display only the body without a header:"
+    },
+    "reactComponentExample": {
+      "title": "React Component Example",
+      "description": "Click the buttons to see various Toast styles:"
+    },
+    "reactUsage": {
+      "title": "Using in React",
+      "description": "You can use the Toast component in React applications.",
+      "step1Title": "1. ToastProvider Setup",
+      "step1Description": "First, add the ToastProvider at the top level of your application:",
+      "step2Title": "2. Using useToast Hook",
+      "step2Description": "Use the useToast hook in your component to display toasts:",
+      "step3Title": "3. Toast Options",
+      "step4Title": "4. Usage Examples",
+      "messageRequired": "Required: Toast message",
+      "headerOptional": "Optional: Header text (not displayed when long)",
+      "borderOption": "true: 1px full outline, false: 4px accent border (default)",
+      "longOption": "true: Horizontal layout",
+      "durationOption": "Auto-close time (ms), 0 for no auto-close",
+      "widthOption": "Width (default: auto)",
+      "exampleComment1": "border=false (4px accent border)",
+      "exampleMessage1": "File uploaded",
+      "exampleComment2": "border=true (1px full outline)",
+      "exampleHeader2": "Notification",
+      "exampleMessage2": "You have a new message",
+      "exampleComment3": "Long style",
+      "exampleMessage3": "Saved",
+      "exampleComment4": "Custom width",
+      "exampleMessage4": "This is a wide toast",
+      "exampleComment5": "No auto-close",
+      "exampleHeader5": "Important Notice",
+      "exampleMessage5": "This message must be closed manually",
+      "saveButton": "Save",
+      "savedMessage": "Saved!"
+    },
+    "scssUsage": {
+      "title": "Using in SCSS",
+      "description": "You can customize toast styles in SCSS modules:"
+    }
+  }
 }

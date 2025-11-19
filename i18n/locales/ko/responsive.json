@@ -1,4 +1,73 @@
 {
   "title": "반응형",
-  "description": "반응형 디자인 유틸리티"
+  "description": "반응형 디자인 유틸리티",
+  "breakpoints": {
+    "title": "브레이크포인트",
+    "description": "Podo UI는 3가지 브레이크포인트를 제공합니다: PC, Tablet, Mobile. 각 디바이스에 최적화된 레이아웃을 쉽게 구성할 수 있습니다.",
+    "pc": {
+      "title": "PC",
+      "range": "1280px 이상"
+    },
+    "tablet": {
+      "title": "Tablet",
+      "range": "768px ~ 1279px"
+    },
+    "mobile": {
+      "title": "Mobile",
+      "range": "767px 이하"
+    }
+  },
+  "mediaQueries": {
+    "title": "SCSS 미디어 쿼리 믹스인",
+    "description": "SCSS에서 미디어 쿼리 믹스인을 사용하여 반응형 스타일을 적용할 수 있습니다:"
+  },
+  "hiding": {
+    "title": "반응형 숨김",
+    "description": "특정 디바이스에서만 요소를 숨기는 클래스를 제공합니다:",
+    "example": "실제 예제 (창 크기를 조절해보세요):",
+    "hideOnPc": "PC에서 숨김",
+    "hideOnTablet": "Tablet에서 숨김",
+    "hideOnMobile": "Mobile에서 숨김",
+    "alwaysHide": "항상 숨김",
+    "hideOnPcOnly": "PC에서만 숨김",
+    "hideOnTabletOnly": "Tablet에서만 숨김",
+    "hideOnMobileOnly": "Mobile에서만 숨김"
+  },
+  "gridExample": {
+    "title": "반응형 그리드 예제",
+    "description": "그리드 시스템은 자동으로 반응형으로 동작합니다:",
+    "example": "실제 예제:"
+  },
+  "typography": {
+    "title": "반응형 타이포그래피",
+    "description": "모든 타이포그래피 스타일은 자동으로 모바일에서 작아집니다:",
+    "example": "실제 예제:",
+    "h1Example": "H1 제목 (PC: 54px, Mobile: 24px)",
+    "p3Example": "P3 본문 (PC: 16px, Mobile: 14px)"
+  },
+  "minWidth": {
+    "title": "모바일 최소 너비",
+    "description": "모바일 디바이스의 최소 너비는 375px로 설정되어 있습니다."
+  },
+  "practicalExample": {
+    "title": "실전 반응형 예제",
+    "description": "실제 프로젝트에서 사용하는 반응형 레이아웃 예제:"
+  },
+  "tip": {
+    "title": "팁:",
+    "description": "브라우저 개발자 도구의 반응형 모드를 사용하여 다양한 디바이스에서의 레이아웃을 테스트해보세요. Chrome: Ctrl/Cmd + Shift + M"
+  },
+  "currentDevice": {
+    "title": "현재 화면 크기 확인",
+    "pc": "현재: PC",
+    "tablet": "현재: Tablet",
+    "mobile": "현재: Mobile",
+    "pcRange": "1280px 이상",
+    "tabletRange": "768px ~ 1279px",
+    "mobileRange": "767px 이하"
+  },
+  "code": {
+    "autoAdjust": "PC: 12칸, Tablet: 6칸, Mobile: 4칸으로 자동 조정",
+    "w3": "w-3 (25%)"
+  }
 }

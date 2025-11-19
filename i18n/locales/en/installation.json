@@ -1,4 +1,68 @@
 {
   "title": "Installation",
-  "description": "Install Podo UI in your project"
+  "description": "Install Podo UI in your project",
+  "npm": {
+    "title": "NPM Installation",
+    "description": "You can install Podo UI using npm, yarn, or pnpm:"
+  },
+  "setup": {
+    "title": "Basic Setup",
+    "globalScss": {
+      "title": "1. Apply Global SCSS",
+      "description": "Import global styles at your application's entry point:",
+      "codeHeader": "main.tsx or App.tsx",
+      "note": {
+        "title": "Note:",
+        "content": "global.scss includes all basic styles including reset, colors, layout, typography, icons, buttons, forms, etc."
+      }
+    },
+    "vite": {
+      "title": "2. Additional Setup for Vite Projects",
+      "warning": {
+        "title": "Important:",
+        "content": "Font path override is required when using Vite!"
+      },
+      "description": "Vite may not correctly handle relative paths inside node_modules. Additionally import vite-fonts.scss:",
+      "codeHeader": "main.tsx (Vite)",
+      "codeComment": "Override font paths for Vite",
+      "note": {
+        "title": "Note:",
+        "content": "Other bundlers like Next.js or Create React App can be used without vite-fonts.scss."
+      }
+    },
+    "scssModule": {
+      "title": "3. Using Variables/Functions/Mixins in SCSS Modules",
+      "description": "To use Podo UI's functions and mixins in your component's SCSS modules, import them as follows:",
+      "codeHeader": "component.module.scss",
+      "comments": {
+        "color": "Color function",
+        "spacing": "Spacing function (12px)",
+        "radius": "Radius function",
+        "typography": "Typography mixin"
+      }
+    }
+  },
+  "reactComponents": {
+    "title": "Using React Components",
+    "description": "Podo UI provides some React components. You can import and use them as follows:",
+    "codeHeader": "General React Projects"
+  },
+  "nextSteps": {
+    "title": "Next Steps",
+    "description": "Installation complete! Now refer to the following documentation to use Podo UI:",
+    "links": {
+      "usage": {
+        "title": "Usage",
+        "description": "Basic usage and examples"
+      },
+      "colors": {
+        "title": "Color System",
+        "description": "Themes and color usage"
+      },
+      "components": {
+        "title": "Components",
+        "description": "Explore UI components"
+      }
+    }
+  }
 }

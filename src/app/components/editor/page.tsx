@@ -17,38 +17,36 @@ export default function EditorPage() {
   return (
     <>
       <section className={styles.section}>
-        <h1>에디터</h1>
-        <p>Podo UI의 에디터 컴포넌트와 사용법을 안내합니다.</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>개요</h2>
-        <p>
-          React 환경에서 사용할 수 있으며, Podo UI 디자인 시스템과 통합되어 있습니다.
-        </p>
+        <h2>{t('overview.title')}</h2>
+        <p>{t('overview.description')}</p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <Editor
             value={content}
             onChange={setContent}
             height="400px"
-            placeholder="내용을 입력하세요..."
+            placeholder={t('overview.placeholder')}
           />
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>미리보기 (EditorView):</div>
+          <div className={styles.demoTitle}>{t('demo.preview')}</div>
           <EditorView value={content} />
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>React에서 사용하기</h2>
-        <p>React 컴포넌트로 제공되며, 다양한 에디터 기능을 설정할 수 있습니다:</p>
+        <h2>{t('react.title')}</h2>
+        <p>{t('react.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.tsx</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`import { Editor } from 'podo-ui';
 
 export default function MyComponent() {
@@ -59,7 +57,7 @@ export default function MyComponent() {
       value={content}
       onChange={setContent}
       height="400px"
-      placeholder="내용을 입력하세요..."
+      placeholder="${t('overview.placeholder')}"
     />
   );
 }`}</code></pre>
@@ -67,57 +65,57 @@ export default function MyComponent() {
       </section>
 
       <section className={styles.section}>
-        <h2>주요 기능</h2>
+        <h2>{t('features.title')}</h2>
         <ul>
-          <li>텍스트 서식 (굵게, 기울임, 밑줄, 취소선)</li>
-          <li>폰트 및 크기 설정</li>
-          <li>단락 형식 (제목 1-6, 본문, 인용, 서식있는 텍스트)</li>
-          <li>글꼴 색상 및 배경색</li>
-          <li>정렬 (왼쪽, 가운데, 오른쪽, 양쪽)</li>
-          <li>목록 (순서 없는 목록, 순서 있는 목록)</li>
-          <li>표 삽입 및 편집</li>
-          <li>구분선(HR) 삽입</li>
-          <li>링크 및 이미지 삽입</li>
-          <li>유튜브 동영상 삽입</li>
-          <li>HTML 코드 보기/편집</li>
-          <li>서식 지우기</li>
-          <li>실행 취소/다시 실행</li>
+          <li>{t('features.textFormat')}</li>
+          <li>{t('features.font')}</li>
+          <li>{t('features.paragraph')}</li>
+          <li>{t('features.color')}</li>
+          <li>{t('features.align')}</li>
+          <li>{t('features.list')}</li>
+          <li>{t('features.table')}</li>
+          <li>{t('features.hr')}</li>
+          <li>{t('features.link')}</li>
+          <li>{t('features.youtube')}</li>
+          <li>{t('features.code')}</li>
+          <li>{t('features.format')}</li>
+          <li>{t('features.undo')}</li>
         </ul>
       </section>
 
       <section className={styles.section}>
-        <h2>높이 설정 옵션</h2>
+        <h2>{t('height.title')}</h2>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>자동 높이 (height="contents"):</div>
+          <div className={styles.demoTitle}>{t('height.auto')}</div>
           <Editor
             value={content2}
             onChange={setContent2}
             height="contents"
             minHeight="150px"
             maxHeight="500px"
-            placeholder="내용에 따라 자동으로 높이가 조절됩니다..."
+            placeholder={t('height.autoPlaceholder')}
           />
         </div>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>자동 높이 예제</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<Editor
   value={content}
   onChange={setContent}
   height="contents"
   minHeight="150px"
   maxHeight="500px"
-  placeholder="내용에 따라 자동으로 높이가 조절됩니다..."
+  placeholder="${t('height.autoPlaceholder')}"
 />`}</code></pre>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>크기 조절 가능 에디터</h2>
+        <h2>{t('resizable.title')}</h2>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>리사이즈 가능 (resizable={true}):</div>
+          <div className={styles.demoTitle}>{t('resizable.description')}</div>
           <Editor
             value={content3}
             onChange={setContent3}
@@ -125,12 +123,12 @@ export default function MyComponent() {
             minHeight="200px"
             maxHeight="600px"
             resizable={true}
-            placeholder="우측 하단을 드래그하여 크기를 조절할 수 있습니다..."
+            placeholder={t('resizable.placeholder')}
           />
         </div>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>리사이즈 예제</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<Editor
   value={content}
   onChange={setContent}
@@ -138,20 +136,20 @@ export default function MyComponent() {
   minHeight="200px"
   maxHeight="600px"
   resizable={true}
-  placeholder="우측 하단을 드래그하여 크기를 조절할 수 있습니다..."
+  placeholder="${t('resizable.placeholder')}"
 />`}</code></pre>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>Editor Props</h2>
+        <h2>{t('props.title')}</h2>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>속성</th>
-              <th>타입</th>
-              <th>기본값</th>
-              <th>설명</th>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
             </tr>
           </thead>
           <tbody>
@@ -159,174 +157,153 @@ export default function MyComponent() {
               <td>value</td>
               <td>string</td>
               <td>''</td>
-              <td>에디터의 HTML 내용</td>
+              <td>{t('props.value')}</td>
             </tr>
             <tr>
               <td>onChange</td>
               <td>function</td>
               <td>-</td>
-              <td>내용 변경 시 호출되는 콜백 함수</td>
+              <td>{t('props.onChange')}</td>
             </tr>
             <tr>
               <td>height</td>
               <td>string | 'contents'</td>
               <td>'400px'</td>
-              <td>에디터 높이 (px 단위 또는 'contents')</td>
+              <td>{t('props.height')}</td>
             </tr>
             <tr>
               <td>minHeight</td>
               <td>string</td>
               <td>-</td>
-              <td>최소 높이 (px 단위)</td>
+              <td>{t('props.minHeight')}</td>
             </tr>
             <tr>
               <td>maxHeight</td>
               <td>string</td>
               <td>-</td>
-              <td>최대 높이 (px 단위)</td>
+              <td>{t('props.maxHeight')}</td>
             </tr>
             <tr>
               <td>width</td>
               <td>string</td>
               <td>'100%'</td>
-              <td>에디터 너비</td>
+              <td>{t('props.width')}</td>
             </tr>
             <tr>
               <td>resizable</td>
               <td>boolean</td>
               <td>false</td>
-              <td>크기 조절 가능 여부</td>
+              <td>{t('props.resizable')}</td>
             </tr>
             <tr>
               <td>placeholder</td>
               <td>string</td>
-              <td>'내용을 입력하세요...'</td>
-              <td>빈 에디터에 표시될 플레이스홀더</td>
+              <td>''</td>
+              <td>{t('props.placeholder')}</td>
             </tr>
             <tr>
               <td>validator</td>
               <td>z.ZodType</td>
               <td>-</td>
-              <td>Zod 검증 스키마</td>
+              <td>{t('props.validator')}</td>
             </tr>
             <tr>
               <td>toolbar</td>
               <td>ToolbarItem[]</td>
-              <td>전체 툴바</td>
-              <td>표시할 툴바 아이템 목록 (없으면 전체 표시)</td>
+              <td>-</td>
+              <td>{t('props.toolbar')}</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section className={styles.section}>
-        <h2>툴바 커스터마이징</h2>
-        <p>
-          toolbar prop을 사용하여 원하는 툴바 아이템만 선택적으로 표시할 수 있습니다.
-        </p>
-        <p>
-          <strong>참고:</strong> toolbar prop을 전달하지 않으면 모든 툴바 아이템이 기본으로 표시됩니다.
-        </p>
+        <h2>{t('toolbar.title')}</h2>
+        <p>{t('toolbar.description')}</p>
+        <p><strong>{t('toolbar.note')}</strong></p>
 
-        <h3>사용 가능한 툴바 아이템</h3>
+        <h3>{t('toolbar.availableItems')}</h3>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>아이템</th>
-              <th>설명</th>
+              <th>Item</th>
+              <th>Description</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>'undo-redo'</code></td>
-              <td>실행 취소, 다시 실행</td>
+              <td>{t('toolbar.items.undoRedo')}</td>
             </tr>
             <tr>
               <td><code>'paragraph'</code></td>
-              <td>문단 형식 (제목 1-6, 본문, 인용 등)</td>
+              <td>{t('toolbar.items.paragraph')}</td>
             </tr>
             <tr>
               <td><code>'text-style'</code></td>
-              <td>텍스트 서식 (굵게, 기울임, 밑줄, 취소선)</td>
+              <td>{t('toolbar.items.textStyle')}</td>
             </tr>
             <tr>
               <td><code>'color'</code></td>
-              <td>글꼴 색상, 배경 색상</td>
+              <td>{t('toolbar.items.color')}</td>
             </tr>
             <tr>
               <td><code>'align'</code></td>
-              <td>정렬 (왼쪽, 가운데, 오른쪽)</td>
+              <td>{t('toolbar.items.align')}</td>
             </tr>
             <tr>
               <td><code>'list'</code></td>
-              <td>목록 (순서 없는 목록, 순서 있는 목록)</td>
+              <td>{t('toolbar.items.list')}</td>
             </tr>
             <tr>
               <td><code>'hr'</code></td>
-              <td>구분선 삽입</td>
+              <td>{t('toolbar.items.hr')}</td>
             </tr>
             <tr>
               <td><code>'table'</code></td>
-              <td>표 삽입</td>
+              <td>{t('toolbar.items.table')}</td>
             </tr>
             <tr>
               <td><code>'link'</code></td>
-              <td>링크 삽입</td>
+              <td>{t('toolbar.items.link')}</td>
             </tr>
             <tr>
               <td><code>'image'</code></td>
-              <td>이미지 삽입</td>
+              <td>{t('toolbar.items.image')}</td>
             </tr>
             <tr>
               <td><code>'youtube'</code></td>
-              <td>유튜브 동영상 삽입</td>
+              <td>{t('toolbar.items.youtube')}</td>
             </tr>
             <tr>
               <td><code>'format'</code></td>
-              <td>서식 지우기</td>
+              <td>{t('toolbar.items.format')}</td>
             </tr>
             <tr>
               <td><code>'code'</code></td>
-              <td>HTML 코드 보기</td>
+              <td>{t('toolbar.items.code')}</td>
             </tr>
           </tbody>
         </table>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>기본 에디터 (텍스트 편집만):</div>
+          <div className={styles.demoTitle}>{t('toolbar.basicEditor')}</div>
           <Editor
             value={basicContent}
             onChange={setBasicContent}
             height="300px"
-            placeholder="텍스트만 편집할 수 있습니다..."
+            placeholder={t('toolbar.basicPlaceholder')}
             toolbar={['undo-redo', 'text-style', 'paragraph', 'color']}
           />
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>기본 에디터 코드</div>
-          <pre><code>{`import { Editor } from 'podo-ui';
-
-export default function MyComponent() {
-  const [content, setContent] = useState('');
-
-  return (
-    <Editor
-      value={content}
-      onChange={setContent}
-      toolbar={['undo-redo', 'text-style', 'paragraph', 'color']}
-    />
-  );
-}`}</code></pre>
-        </div>
-
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>고급 에디터 (이미지, 링크, 표 포함):</div>
+          <div className={styles.demoTitle}>{t('toolbar.advancedEditor')}</div>
           <Editor
             value={advancedContent}
             onChange={setAdvancedContent}
             height="300px"
-            placeholder="이미지, 링크, 표 등 모든 기능을 사용할 수 있습니다..."
+            placeholder={t('toolbar.advancedPlaceholder')}
             toolbar={[
               'undo-redo',
               'paragraph',
@@ -342,63 +319,14 @@ export default function MyComponent() {
             ]}
           />
         </div>
-
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>고급 에디터 코드</div>
-          <pre><code>{`import { Editor } from 'podo-ui';
-
-export default function MyComponent() {
-  const [content, setContent] = useState('');
-
-  return (
-    <Editor
-      value={content}
-      onChange={setContent}
-      toolbar={[
-        'undo-redo',
-        'paragraph',
-        'text-style',
-        'color',
-        'align',
-        'list',
-        'hr',
-        'table',
-        'link',
-        'image',
-        'code'
-      ]}
-    />
-  );
-}`}</code></pre>
-        </div>
-
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>전체 툴바 (기본값)</div>
-          <pre><code>{`import { Editor } from 'podo-ui';
-
-export default function MyComponent() {
-  const [content, setContent] = useState('');
-
-  return (
-    <Editor
-      value={content}
-      onChange={setContent}
-      // toolbar prop을 전달하지 않으면 모든 툴바가 표시됩니다
-    />
-  );
-}`}</code></pre>
-        </div>
       </section>
 
       <section className={styles.section}>
-        <h2>EditorView (미리보기 컴포넌트)</h2>
-        <p>
-          EditorView는 Editor로 작성한 HTML 콘텐츠를 읽기 전용으로 표시하는 컴포넌트입니다.
-          편집 기능 없이 순수하게 내용만 렌더링하며, 다크모드를 지원합니다.
-        </p>
+        <h2>{t('editorView.title')}</h2>
+        <p>{t('editorView.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>EditorView 사용 예제</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`import { EditorView } from 'podo-ui';
 
 export default function MyComponent() {
@@ -411,7 +339,7 @@ export default function MyComponent() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 미리보기 예제:</div>
+          <div className={styles.demoTitle}>{t('editorView.preview')}</div>
           <div style={{
             padding: '20px',
             background: 'var(--bg-elevation)',
@@ -423,14 +351,14 @@ export default function MyComponent() {
       </section>
 
       <section className={styles.section}>
-        <h2>EditorView Props</h2>
+        <h2>{t('editorView.props.title')}</h2>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>속성</th>
-              <th>타입</th>
-              <th>기본값</th>
-              <th>설명</th>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
             </tr>
           </thead>
           <tbody>
@@ -438,24 +366,24 @@ export default function MyComponent() {
               <td>value</td>
               <td>string</td>
               <td>''</td>
-              <td>표시할 HTML 콘텐츠</td>
+              <td>{t('editorView.props.value')}</td>
             </tr>
             <tr>
               <td>className</td>
               <td>string</td>
               <td>-</td>
-              <td>추가 CSS 클래스</td>
+              <td>{t('editorView.props.className')}</td>
             </tr>
           </tbody>
         </table>
 
-        <h3>특징</h3>
+        <h3>{t('editorView.features.title')}</h3>
         <ul>
-          <li>Editor로 작성한 모든 서식 지원 (제목, 목록, 링크, 이미지 등)</li>
-          <li>다크모드 자동 지원</li>
-          <li>코드 블록 및 인라인 코드 스타일링</li>
-          <li>반응형 이미지 및 유튜브 임베드</li>
-          <li>편집 기능 없이 읽기 전용으로만 표시</li>
+          <li>{t('editorView.features.formatting')}</li>
+          <li>{t('editorView.features.darkMode')}</li>
+          <li>{t('editorView.features.code')}</li>
+          <li>{t('editorView.features.responsive')}</li>
+          <li>{t('editorView.features.readOnly')}</li>
         </ul>
       </section>
     </>

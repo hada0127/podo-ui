@@ -1,4 +1,73 @@
 {
   "title": "Responsive",
-  "description": "Responsive design utilities"
+  "description": "Responsive design utilities",
+  "breakpoints": {
+    "title": "Breakpoints",
+    "description": "Podo UI provides 3 breakpoints: PC, Tablet, Mobile. You can easily configure layouts optimized for each device.",
+    "pc": {
+      "title": "PC",
+      "range": "1280px and above"
+    },
+    "tablet": {
+      "title": "Tablet",
+      "range": "768px ~ 1279px"
+    },
+    "mobile": {
+      "title": "Mobile",
+      "range": "767px and below"
+    }
+  },
+  "mediaQueries": {
+    "title": "SCSS Media Query Mixins",
+    "description": "You can use media query mixins in SCSS to apply responsive styles:"
+  },
+  "hiding": {
+    "title": "Responsive Hiding",
+    "description": "We provide classes to hide elements on specific devices:",
+    "example": "Live Example (try resizing your window):",
+    "hideOnPc": "Hidden on PC",
+    "hideOnTablet": "Hidden on Tablet",
+    "hideOnMobile": "Hidden on Mobile",
+    "alwaysHide": "Always hidden",
+    "hideOnPcOnly": "Hidden on PC only",
+    "hideOnTabletOnly": "Hidden on Tablet only",
+    "hideOnMobileOnly": "Hidden on Mobile only"
+  },
+  "gridExample": {
+    "title": "Responsive Grid Example",
+    "description": "The grid system automatically works responsively:",
+    "example": "Live Example:"
+  },
+  "typography": {
+    "title": "Responsive Typography",
+    "description": "All typography styles automatically scale down on mobile:",
+    "example": "Live Example:",
+    "h1Example": "H1 Heading (PC: 54px, Mobile: 24px)",
+    "p3Example": "P3 Body Text (PC: 16px, Mobile: 14px)"
+  },
+  "minWidth": {
+    "title": "Mobile Minimum Width",
+    "description": "The minimum width for mobile devices is set to 375px."
+  },
+  "practicalExample": {
+    "title": "Practical Responsive Example",
+    "description": "Responsive layout examples used in real projects:"
+  },
+  "tip": {
+    "title": "Tip:",
+    "description": "Use your browser's responsive mode to test layouts on various devices. Chrome: Ctrl/Cmd + Shift + M"
+  },
+  "currentDevice": {
+    "title": "Current Screen Size",
+    "pc": "Current: PC",
+    "tablet": "Current: Tablet",
+    "mobile": "Current: Mobile",
+    "pcRange": "1280px and above",
+    "tabletRange": "768px ~ 1279px",
+    "mobileRange": "767px and below"
+  },
+  "code": {
+    "autoAdjust": "Auto-adjusts to PC: 12 columns, Tablet: 6 columns, Mobile: 4 columns",
+    "w3": "w-3 (25%)"
+  }
 }

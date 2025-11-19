@@ -1,4 +1,35 @@
 {
   "title": "모서리 반경",
-  "description": "모서리 반경 유틸리티"
+  "description": "요소의 모서리를 둥글게 만드는 유틸리티 클래스입니다.",
+  "basicUsage": {
+    "title": "기본 사용법",
+    "description": "HTML 요소에 반경 클래스를 직접 적용할 수 있습니다:"
+  },
+  "allValues": {
+    "title": "모든 반경 값",
+    "description": "사용 가능한 모든 모서리 반경 값:",
+    "demoTitle": "반경 스케일:"
+  },
+  "scssUsage": {
+    "title": "SCSS에서 사용하기",
+    "description": "SCSS 모듈에서 r() 함수를 사용하여 모서리 반경을 적용할 수 있습니다:"
+  },
+  "realWorld": {
+    "title": "실제 사용 예제",
+    "description": "다양한 모서리 반경을 활용한 실제 UI 컴포넌트 예제:",
+    "buttonDemo": "버튼 예제:",
+    "button": "버튼",
+    "cardDemo": "카드 예제:",
+    "avatarDemo": "아바타 예제:",
+    "card": {
+      "r3": {
+        "title": "r-3 카드",
+        "description": "6px 모서리 반경을 사용한 카드입니다."
+      },
+      "r5": {
+        "title": "r-5 카드",
+        "description": "12px 모서리 반경을 사용한 카드입니다."
+      }
+    }
+  }
 }

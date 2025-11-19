@@ -7,24 +7,24 @@ export default function Colors() {
   const t = useTranslations('colors');
 
   const colors = [
-    { name: 'primary', label: 'Primary', description: '주요 액션 및 브랜드 색상' },
-    { name: 'default', label: 'Default', description: '기본 UI 요소' },
-    { name: 'default-deep', label: 'Default Deep', description: '강조된 기본 색상' },
-    { name: 'info', label: 'Info', description: '정보성 메시지' },
-    { name: 'link', label: 'Link', description: '링크 및 네비게이션' },
-    { name: 'success', label: 'Success', description: '성공 상태 표시' },
-    { name: 'warning', label: 'Warning', description: '경고 메시지' },
-    { name: 'danger', label: 'Danger', description: '위험/오류 상태' },
+    { name: 'primary', label: t('colors.primary.label'), description: t('colors.primary.description') },
+    { name: 'default', label: t('colors.default.label'), description: t('colors.default.description') },
+    { name: 'default-deep', label: t('colors.default-deep.label'), description: t('colors.default-deep.description') },
+    { name: 'info', label: t('colors.info.label'), description: t('colors.info.description') },
+    { name: 'link', label: t('colors.link.label'), description: t('colors.link.description') },
+    { name: 'success', label: t('colors.success.label'), description: t('colors.success.description') },
+    { name: 'warning', label: t('colors.warning.label'), description: t('colors.warning.description') },
+    { name: 'danger', label: t('colors.danger.label'), description: t('colors.danger.description') },
   ];
 
   const variants = [
-    { name: 'base', label: 'Base', description: '기본 색상' },
-    { name: 'hover', label: 'Hover', description: '호버 상태' },
-    { name: 'pressed', label: 'Pressed', description: '눌림 상태' },
-    { name: 'focus', label: 'Focus', description: '포커스 상태' },
-    { name: 'fill', label: 'Fill', description: '배경 색상' },
-    { name: 'reverse', label: 'Reverse', description: '반전 색상 (텍스트)' },
-    { name: 'outline', label: 'Outline', description: '아웃라인 색상' },
+    { name: 'base', label: t('variants.base.label'), description: t('variants.base.description') },
+    { name: 'hover', label: t('variants.hover.label'), description: t('variants.hover.description') },
+    { name: 'pressed', label: t('variants.pressed.label'), description: t('variants.pressed.description') },
+    { name: 'focus', label: t('variants.focus.label'), description: t('variants.focus.description') },
+    { name: 'fill', label: t('variants.fill.label'), description: t('variants.fill.description') },
+    { name: 'reverse', label: t('variants.reverse.label'), description: t('variants.reverse.description') },
+    { name: 'outline', label: t('variants.outline.label'), description: t('variants.outline.description') },
   ];
 
   return (
@@ -35,15 +35,14 @@ export default function Colors() {
       </section>
 
       <section className={styles.section}>
-        <h2>색상 시스템</h2>
+        <h2>{t('sections.colorSystem.title')}</h2>
         <p>
-          Podo UI는 8가지 시맨틱 컬러를 제공하며, 각 컬러는 7가지 변형(base, hover, pressed, focus, fill, reverse, outline)을 가집니다.
-          CSS 변수 기반으로 구축되어 있어 라이트/다크 모드를 쉽게 전환할 수 있습니다.
+          {t('sections.colorSystem.description')}
         </p>
       </section>
 
       <section className={styles.section}>
-        <h2>컬러 팔레트</h2>
+        <h2>{t('sections.colorPalette.title')}</h2>
         <div className={styles.colorGrid}>
           {colors.map((color) => (
             <div key={color.name} className={styles.colorCard}>
@@ -59,8 +58,8 @@ export default function Colors() {
       </section>
 
       <section className={styles.section}>
-        <h2>컬러 변형</h2>
-        <p>각 컬러는 다양한 상태에 대응하는 7가지 변형을 제공합니다:</p>
+        <h2>{t('sections.colorVariants.title')}</h2>
+        <p>{t('sections.colorVariants.description')}</p>
 
         <div className={styles.variantsGrid}>
           {variants.map((variant) => (
@@ -77,11 +76,11 @@ export default function Colors() {
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
-        <p>SCSS 모듈에서 color() 함수를 사용하여 컬러를 적용할 수 있습니다:</p>
+        <h2>{t('sections.scssUsage.title')}</h2>
+        <p>{t('sections.scssUsage.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
+          <div className={styles.codeHeader}>{t('sections.scssUsage.codeHeader')}</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .button {
@@ -117,11 +116,11 @@ export default function Colors() {
       </section>
 
       <section className={styles.section}>
-        <h2>CSS 클래스로 사용하기</h2>
-        <p>HTML 요소에 직접 컬러 클래스를 적용할 수 있습니다:</p>
+        <h2>{t('sections.cssClasses.title')}</h2>
+        <p>{t('sections.cssClasses.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
           <pre><code>{`<!-- 텍스트 색상 -->
 <div class="primary">Primary 색상 텍스트</div>
 <div class="danger">Danger 색상 텍스트</div>
@@ -136,7 +135,7 @@ export default function Colors() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.cssClasses.demoTitle')}</div>
           <div className={styles.demoGrid}>
             <div className="primary">Primary Text</div>
             <div className="info">Info Text</div>
@@ -148,14 +147,13 @@ export default function Colors() {
       </section>
 
       <section className={styles.section}>
-        <h2>다크 모드</h2>
+        <h2>{t('sections.darkMode.title')}</h2>
         <p>
-          Podo UI는 자동으로 다크 모드를 지원합니다.
-          오른쪽 상단의 테마 토글 버튼을 클릭하여 라이트/다크 모드를 전환해보세요.
+          {t('sections.darkMode.description')}
         </p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>JavaScript</div>
+          <div className={styles.codeHeader}>{t('sections.darkMode.codeHeader')}</div>
           <pre><code>{`// Light 모드
 document.documentElement.setAttribute('data-color-mode', 'light');
 
@@ -169,14 +167,14 @@ document.documentElement.setAttribute('data-color-mode', '');`}</code></pre>
         <div className={styles.note}>
           <i className="icon-info"></i>
           <div>
-            <strong>팁:</strong> CSS 변수 기반으로 구축되어 있어 페이지 새로고침 없이 즉시 테마가 전환됩니다.
+            <strong>{t('sections.darkMode.note')}</strong> {t('sections.darkMode.noteDescription')}
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>전체 컬러 스와치</h2>
-        <p>모든 컬러와 변형을 한눈에 확인하세요:</p>
+        <h2>{t('sections.colorSwatches.title')}</h2>
+        <p>{t('sections.colorSwatches.description')}</p>
 
         {colors.map((color) => (
           <div key={color.name} className={styles.swatchSection}>

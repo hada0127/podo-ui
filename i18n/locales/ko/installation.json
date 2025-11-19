@@ -1,4 +1,68 @@
 {
   "title": "설치",
-  "description": "프로젝트에 Podo UI를 설치하세요"
+  "description": "프로젝트에 Podo UI를 설치하세요",
+  "npm": {
+    "title": "NPM 설치",
+    "description": "npm, yarn, 또는 pnpm을 사용하여 Podo UI를 설치할 수 있습니다:"
+  },
+  "setup": {
+    "title": "기본 설정",
+    "globalScss": {
+      "title": "1. Global SCSS 적용",
+      "description": "애플리케이션의 진입점에서 전역 스타일을 import합니다:",
+      "codeHeader": "main.tsx 또는 App.tsx",
+      "note": {
+        "title": "참고:",
+        "content": "global.scss는 리셋, 컬러, 레이아웃, 타이포그래피, 아이콘, 버튼, 폼 등 모든 기본 스타일을 포함합니다."
+      }
+    },
+    "vite": {
+      "title": "2. Vite 프로젝트 추가 설정",
+      "warning": {
+        "title": "중요:",
+        "content": "Vite를 사용하는 경우 폰트 경로 재정의가 필요합니다!"
+      },
+      "description": "Vite에서는 node_modules 내의 상대 경로를 올바르게 처리하지 못할 수 있습니다. vite-fonts.scss를 추가로 import하세요:",
+      "codeHeader": "main.tsx (Vite)",
+      "codeComment": "Vite용 폰트 경로 재정의",
+      "note": {
+        "title": "참고:",
+        "content": "Next.js나 Create React App 등 다른 번들러는 vite-fonts.scss 없이 사용 가능합니다."
+      }
+    },
+    "scssModule": {
+      "title": "3. SCSS Module에서 변수/함수/믹스인 사용",
+      "description": "컴포넌트의 SCSS 모듈에서 Podo UI의 함수와 믹스인을 사용하려면 다음과 같이 import합니다:",
+      "codeHeader": "component.module.scss",
+      "comments": {
+        "color": "컬러 함수",
+        "spacing": "간격 함수 (12px)",
+        "radius": "반경 함수",
+        "typography": "타이포그래피 믹스인"
+      }
+    }
+  },
+  "reactComponents": {
+    "title": "React 컴포넌트 사용",
+    "description": "Podo UI는 일부 React 컴포넌트를 제공합니다. 다음과 같이 import하여 사용할 수 있습니다:",
+    "codeHeader": "일반 React 프로젝트"
+  },
+  "nextSteps": {
+    "title": "다음 단계",
+    "description": "설치가 완료되었습니다! 이제 다음 문서를 참고하여 Podo UI를 사용해보세요:",
+    "links": {
+      "usage": {
+        "title": "사용법",
+        "description": "기본 사용법과 예제"
+      },
+      "colors": {
+        "title": "컬러 시스템",
+        "description": "테마와 컬러 사용법"
+      },
+      "components": {
+        "title": "컴포넌트",
+        "description": "UI 컴포넌트 둘러보기"
+      }
+    }
+  }
 }

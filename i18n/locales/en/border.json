@@ -1,4 +1,40 @@
 {
   "title": "Border",
-  "description": "Border utilities"
+  "description": "Utility classes to control border styles and directions.",
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "Apply border classes directly to HTML elements:",
+    "demoTitle": "Live Example:",
+    "examples": {
+      "all": "All Border",
+      "top": "Top Border",
+      "right": "Right Border",
+      "bottom": "Bottom Border",
+      "left": "Left Border"
+    }
+  },
+  "scssUsage": {
+    "title": "SCSS Usage",
+    "description": "Use the color() function in SCSS modules to apply border colors:"
+  },
+  "colors": {
+    "title": "Border Colors",
+    "description": "Apply various semantic colors to borders:",
+    "demoTitle": "Color Examples:"
+  },
+  "realWorld": {
+    "title": "Real World Examples",
+    "description": "Practical UI component examples using borders:",
+    "demoTitle": "Card Examples:",
+    "cards": {
+      "basic": {
+        "title": "Basic Card",
+        "description": "A card with default border style."
+      },
+      "primary": {
+        "title": "Primary Card",
+        "description": "A card with primary color border."
+      }
+    }
+  }
 }

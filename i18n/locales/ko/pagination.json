@@ -1,4 +1,52 @@
 {
   "title": "페이지네이션",
-  "description": "페이지네이션 컴포넌트"
+  "description": "페이지네이션 컴포넌트",
+  "overview": {
+    "title": "개요",
+    "description": "Pagination 컴포넌트는 많은 데이터를 여러 페이지로 나누어 표시할 때 사용합니다. 이전/다음 버튼과 페이지 번호 버튼을 제공하며, 현재 페이지를 시각적으로 강조합니다."
+  },
+  "basicUsage": {
+    "title": "기본 사용법",
+    "description": "props를 전달하여 사용합니다.",
+    "demoTitle": "실제 예제 (총 10페이지):",
+    "currentPage": "현재 페이지: {page}",
+    "codeHeader": "component.tsx"
+  },
+  "manyPages": {
+    "title": "많은 페이지 수",
+    "description": "페이지가 많을 경우 기본적으로 5개씩 묶어서 표시됩니다. 현재 페이지가 속한 그룹의 페이지들만 보여집니다.",
+    "demoTitle": "실제 예제 (총 20페이지):",
+    "currentPage": "현재 페이지: {page}"
+  },
+  "customVisiblePages": {
+    "title": "표시 페이지 수 변경",
+    "description": "prop으로 한 번에 표시할 최대 페이지 수를 조절할 수 있습니다.",
+    "demoTitle": "실제 예제 (한 번에 3개씩 표시):",
+    "currentPage": "현재 페이지: {page}",
+    "codeHeader": "component.tsx"
+  },
+  "props": {
+    "title": "Props",
+    "codeHeader": "PaginationProps",
+    "currentPage": "현재 페이지 (1부터 시작)",
+    "totalPages": "전체 페이지 수",
+    "onPageChange": "페이지 변경 콜백",
+    "maxVisiblePages": "표시할 최대 페이지 수 (기본: 5)"
+  },
+  "features": {
+    "title": "주요 기능",
+    "prevNext": "이전/다음 페이지 이동 버튼",
+    "directSelection": "페이지 번호 직접 선택",
+    "visualHighlight": "현재 페이지 시각적 강조",
+    "grouping": "페이지 그룹화 (5개씩 또는 사용자 지정)",
+    "autoDisable": "첫 페이지/마지막 페이지에서 버튼 자동 비활성화",
+    "accessibility": "접근성(Accessibility) 지원"
+  },
+  "example": {
+    "title": "실제 사용 예제",
+    "description": "데이터 목록과 함께 사용하는 완전한 예제입니다:",
+    "codeHeader": "list-with-pagination.tsx",
+    "commentAllData": "전체 데이터",
+    "commentExtractCurrentPageData": "현재 페이지의 데이터만 추출"
+  }
 }

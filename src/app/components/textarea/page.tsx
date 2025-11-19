@@ -8,59 +8,54 @@ export default function Textarea() {
   return (
     <>
       <section className={styles.section}>
-        <h1>텍스트 영역</h1>
-        <p>Podo UI의 Textarea 컴포넌트와 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>기본 사용법</h2>
-        <p>
-          HTML textarea 태그를 사용하여 여러 줄의 텍스트를 입력할 수 있습니다.
-        </p>
+        <h2>{t('basicUsage.title')}</h2>
+        <p>{t('basicUsage.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<textarea placeholder="내용을 입력하세요"></textarea>
-<textarea placeholder="내용을 입력하세요" rows="5"></textarea>
-<textarea placeholder="비활성화" disabled></textarea>`}</code></pre>
+          <pre><code>{`<textarea placeholder="${t('basicUsage.placeholders.content')}"></textarea>
+<textarea placeholder="${t('basicUsage.placeholders.content')}" rows="5"></textarea>
+<textarea placeholder="${t('basicUsage.placeholders.disabled')}" disabled></textarea>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.textareaGroup}>
-            <textarea placeholder="내용을 입력하세요"></textarea>
-            <textarea placeholder="내용을 입력하세요" rows={5}></textarea>
-            <textarea placeholder="비활성화" disabled></textarea>
+            <textarea placeholder={t('basicUsage.placeholders.content')}></textarea>
+            <textarea placeholder={t('basicUsage.placeholders.content')} rows={5}></textarea>
+            <textarea placeholder={t('basicUsage.placeholders.disabled')} disabled></textarea>
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>Textarea 크기 조절</h2>
-        <p>
-          <code>.resize-none</code> 클래스를 사용하여 크기 조절을 방지할 수 있습니다.
-          기본적으로 textarea는 사용자가 크기를 조절할 수 있습니다.
-        </p>
+        <h2>{t('resize.title')}</h2>
+        <p>{t('resize.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 기본 (크기 조절 가능) -->
-<textarea rows="4" placeholder="크기 조절 가능"></textarea>
+          <pre><code>{`<!-- ${t('resize.resizable')} -->
+<textarea rows="4" placeholder="${t('resize.placeholders.resizable')}"></textarea>
 
-<!-- 크기 조절 방지 (resize: none) -->
-<textarea class="resize-none" rows="4" placeholder="크기 고정"></textarea>`}</code></pre>
+<!-- ${t('resize.fixed')} (resize: none) -->
+<textarea class="resize-none" rows="4" placeholder="${t('resize.placeholders.fixed')}"></textarea>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.textareaGroup}>
             <div>
-              <label className={styles.label}>크기 조절 가능</label>
-              <textarea rows={4} placeholder="크기 조절 가능"></textarea>
+              <label className={styles.label}>{t('resize.resizable')}</label>
+              <textarea rows={4} placeholder={t('resize.placeholders.resizable')}></textarea>
             </div>
             <div>
-              <label className={styles.label}>크기 고정 (.resize-none)</label>
-              <textarea className="resize-none" rows={4} placeholder="크기 고정"></textarea>
+              <label className={styles.label}>{t('resize.fixedLabel')}</label>
+              <textarea className="resize-none" rows={4} placeholder={t('resize.placeholders.fixed')}></textarea>
             </div>
           </div>
         </div>
@@ -74,52 +69,49 @@ export default function Textarea() {
       </section>
 
       <section className={styles.section}>
-        <h2>Textarea 상태</h2>
-        <p>
-          <code>.success</code>, <code>.danger</code> 클래스로 유효성 검증 상태를 표시할 수 있으며,
-          <code>disabled</code>, <code>readonly</code> 속성으로 비활성화 및 읽기 전용 상태를 만들 수 있습니다.
-        </p>
+        <h2>{t('states.title')}</h2>
+        <p>{t('states.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 기본 -->
-<textarea placeholder="기본 상태"></textarea>
+          <pre><code>{`<!-- ${t('states.default')} -->
+<textarea placeholder="${t('states.default')}"></textarea>
 
-<!-- 성공 (유효한 입력) -->
-<textarea class="success">유효한 내용입니다.</textarea>
+<!-- ${t('states.success')} -->
+<textarea class="success">${t('states.successText')}</textarea>
 
-<!-- 위험 (유효하지 않은 입력) -->
-<textarea class="danger">유효하지 않은 내용입니다.</textarea>
+<!-- ${t('states.danger')} -->
+<textarea class="danger">${t('states.dangerText')}</textarea>
 
-<!-- 비활성화 -->
-<textarea placeholder="비활성화" disabled></textarea>
+<!-- ${t('states.disabled')} -->
+<textarea placeholder="${t('states.disabled')}" disabled></textarea>
 
-<!-- 읽기 전용 -->
-<textarea readonly>읽기 전용 텍스트입니다.</textarea>`}</code></pre>
+<!-- ${t('states.readonly')} -->
+<textarea readonly>${t('states.readonlyText')}</textarea>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.textareaGroup}>
             <div>
-              <label className={styles.label}>기본 상태</label>
-              <textarea rows={3} placeholder="기본 상태"></textarea>
+              <label className={styles.label}>{t('states.default')}</label>
+              <textarea rows={3} placeholder={t('states.default')}></textarea>
             </div>
             <div>
-              <label className={styles.label}>성공 상태 (.success)</label>
-              <textarea className="success" rows={3} value="유효한 내용입니다." readOnly></textarea>
+              <label className={styles.label}>{t('states.successLabel')}</label>
+              <textarea className="success" rows={3} value={t('states.successText')} readOnly></textarea>
             </div>
             <div>
-              <label className={styles.label}>위험 상태 (.danger)</label>
-              <textarea className="danger" rows={3} value="유효하지 않은 내용입니다." readOnly></textarea>
+              <label className={styles.label}>{t('states.dangerLabel')}</label>
+              <textarea className="danger" rows={3} value={t('states.dangerText')} readOnly></textarea>
             </div>
             <div>
-              <label className={styles.label}>비활성화 (disabled)</label>
-              <textarea rows={3} placeholder="비활성화" disabled></textarea>
+              <label className={styles.label}>{t('states.disabledLabel')}</label>
+              <textarea rows={3} placeholder={t('states.disabled')} disabled></textarea>
             </div>
             <div>
-              <label className={styles.label}>읽기 전용 (readonly)</label>
-              <textarea className="resize-none" rows={3} readOnly value="읽기 전용 텍스트입니다."></textarea>
+              <label className={styles.label}>{t('states.readonlyLabel')}</label>
+              <textarea className="resize-none" rows={3} readOnly value={t('states.readonlyText')}></textarea>
             </div>
           </div>
         </div>
@@ -159,8 +151,8 @@ textarea:read-only {
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
-        <p>SCSS 모듈에서 실제 textarea.scss 소스를 참조하여 스타일을 적용할 수 있습니다:</p>
+        <h2>{t('scss.title')}</h2>
+        <p>{t('scss.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>
@@ -221,33 +213,33 @@ textarea:read-only {
       </section>
 
       <section className={styles.section}>
-        <h2>실전 예제</h2>
-        <p>다양한 상황에서 textarea를 활용한 예제입니다:</p>
+        <h2>{t('examples.title')}</h2>
+        <p>{t('examples.description')}</p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>댓글 입력 폼:</div>
+          <div className={styles.demoTitle}>{t('examples.commentForm')}</div>
           <div style={{ maxWidth: '600px' }}>
             <textarea
               rows={4}
-              placeholder="댓글을 입력하세요..."
+              placeholder={t('examples.commentPlaceholder')}
               style={{ width: '100%', marginBottom: '8px' }}
             ></textarea>
             <div style={{ textAlign: 'right', fontSize: '12px', color: 'var(--default-base)' }}>
-              0 / 500자
+              {t('examples.characterCount')}
             </div>
           </div>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>피드백 폼:</div>
+          <div className={styles.demoTitle}>{t('examples.feedbackForm')}</div>
           <div style={{ maxWidth: '600px' }}>
             <label className={styles.label} style={{ display: 'block', marginBottom: '8px' }}>
-              의견을 남겨주세요 *
+              {t('examples.feedbackLabel')}
             </label>
             <textarea
               className="resize-none"
               rows={6}
-              placeholder="여러분의 소중한 의견을 들려주세요."
+              placeholder={t('examples.feedbackPlaceholder')}
               style={{ width: '100%' }}
             ></textarea>
           </div>

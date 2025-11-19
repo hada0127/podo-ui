@@ -1,4 +1,40 @@
 {
   "title": "테두리",
-  "description": "테두리 유틸리티"
+  "description": "테두리 스타일과 방향을 제어하는 유틸리티 클래스입니다.",
+  "basicUsage": {
+    "title": "기본 사용법",
+    "description": "HTML 요소에 테두리 클래스를 직접 적용할 수 있습니다:",
+    "demoTitle": "실제 예제:",
+    "examples": {
+      "all": "전체 테두리",
+      "top": "상단 테두리",
+      "right": "우측 테두리",
+      "bottom": "하단 테두리",
+      "left": "좌측 테두리"
+    }
+  },
+  "scssUsage": {
+    "title": "SCSS에서 사용하기",
+    "description": "SCSS 모듈에서 color() 함수를 사용하여 테두리 색상을 적용할 수 있습니다:"
+  },
+  "colors": {
+    "title": "테두리 컬러",
+    "description": "다양한 시맨틱 컬러를 테두리에 적용할 수 있습니다:",
+    "demoTitle": "컬러 예제:"
+  },
+  "realWorld": {
+    "title": "실제 사용 예제",
+    "description": "테두리를 활용한 실제 UI 컴포넌트 예제:",
+    "demoTitle": "카드 예제:",
+    "cards": {
+      "basic": {
+        "title": "기본 카드",
+        "description": "기본 테두리 스타일을 사용한 카드입니다."
+      },
+      "primary": {
+        "title": "Primary 카드",
+        "description": "Primary 색상의 테두리를 사용한 카드입니다."
+      }
+    }
+  }
 }

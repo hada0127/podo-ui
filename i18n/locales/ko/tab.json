@@ -1,4 +1,55 @@
 {
   "title": "탭",
-  "description": "탭 네비게이션 컴포넌트"
+  "description": "탭 네비게이션 컴포넌트",
+  "sections": {
+    "basicUsage": {
+      "title": "기본 사용법",
+      "description": "구조를 사용하면 탭 네비게이션 스타일이 자동으로 적용됩니다. 활성화된 탭에는 클래스를 추가합니다.",
+      "codeHeader": "HTML",
+      "demoTitle": "실제 예제:"
+    },
+    "fillStyle": {
+      "title": "Fill 스타일",
+      "description": "클래스를 추가하면 각 탭이 동일한 너비로 확장되어 전체 너비를 채웁니다.",
+      "codeHeader": "HTML",
+      "demoTitle": "실제 예제:"
+    },
+    "manyTabs": {
+      "title": "많은 탭",
+      "description": "탭이 많을 경우 자동으로 가로 스크롤이 가능합니다:",
+      "demoTitle": "실제 예제:"
+    },
+    "practicalExample": {
+      "title": "실제 사용 예제",
+      "description": "탭과 콘텐츠를 함께 사용한 예제입니다:"
+    },
+    "scssUsage": {
+      "title": "SCSS에서 사용하기",
+      "codeHeader": "component.module.scss",
+      "fillStyleComment": "Fill 스타일",
+      "activeTabComment": "활성 탭"
+    }
+  },
+  "tabs": {
+    "tab1": "탭 1",
+    "tab2": "탭 2",
+    "tab3": "탭 3",
+    "home": "홈",
+    "profile": "프로필",
+    "settings": "설정",
+    "all": "전체",
+    "notice": "공지사항",
+    "event": "이벤트",
+    "promotion": "프로모션",
+    "faq": "FAQ",
+    "customerService": "고객센터",
+    "inquiry": "문의",
+    "overview": "개요",
+    "features": "기능",
+    "pricing": "가격"
+  },
+  "content": {
+    "overviewTitle": "개요",
+    "overviewContent": "Podo UI는 현대적인 디자인 시스템입니다."
+  }
 }

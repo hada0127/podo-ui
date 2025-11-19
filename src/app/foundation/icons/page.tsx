@@ -32,18 +32,18 @@ export default function Icons() {
       </section>
 
       <section className={styles.section}>
-        <h2>아이콘 시스템</h2>
+        <h2>{t('sections.iconSystem.title')}</h2>
         <p>
-          Podo UI는 아이콘 폰트를 제공합니다. 모든 아이콘은 벡터 기반으로 제작되어 크기와 색상을 자유롭게 조정할 수 있습니다.
+          {t('sections.iconSystem.description')}
         </p>
       </section>
 
       <section className={styles.section}>
-        <h2>HTML에서 사용하기</h2>
-        <p><code>&lt;i&gt;</code> 태그에 <code>icon-*</code> 클래스를 추가하여 아이콘을 사용할 수 있습니다:</p>
+        <h2>{t('sections.htmlUsage.title')}</h2>
+        <p dangerouslySetInnerHTML={{ __html: t('sections.htmlUsage.description') }} />
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('sections.htmlUsage.codeHeader')}</div>
           <pre><code>{`<i class="icon-star"></i>
 <i class="icon-search"></i>
 <i class="icon-check"></i>
@@ -60,7 +60,7 @@ export default function Icons() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.htmlUsage.demoTitle')}</div>
           <div className={styles.iconDemo}>
             <i className="icon-star"></i>
             <i className="icon-search"></i>
@@ -74,10 +74,10 @@ export default function Icons() {
       </section>
 
       <section className={styles.section}>
-        <h2>React/TSX에서 사용하기</h2>
+        <h2>{t('sections.reactUsage.title')}</h2>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.tsx</div>
+          <div className={styles.codeHeader}>{t('sections.reactUsage.codeHeader')}</div>
           <pre><code>{`export default function MyComponent() {
   return (
     <div>
@@ -96,10 +96,10 @@ export default function Icons() {
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
+        <h2>{t('sections.scssUsage.title')}</h2>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
+          <div className={styles.codeHeader}>{t('sections.scssUsage.codeHeader')}</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .button {
@@ -131,8 +131,8 @@ export default function Icons() {
       </section>
 
       <section className={styles.section}>
-        <h2>전체 아이콘 ({icons.length}개)</h2>
-        <p>아이콘을 클릭하면 클래스명이 클립보드에 복사됩니다.</p>
+        <h2>{t('sections.allIcons.title')} ({icons.length}{t('sections.allIcons.count')})</h2>
+        <p>{t('sections.allIcons.description')}</p>
 
         <div className={styles.iconGrid}>
           {icons.map((icon) => (
@@ -154,10 +154,10 @@ export default function Icons() {
       </section>
 
       <section className={styles.section}>
-        <h2>아이콘 카테고리</h2>
+        <h2>{t('sections.categories.title')}</h2>
 
         <div className={styles.categorySection}>
-          <h2>일반 UI</h2>
+          <h2>{t('sections.categories.generalUI')}</h2>
           <div className={styles.iconList}>
             {['search', 'close', 'check', 'plus', 'minus', 'menu', 'more', 'more-horizontal'].map(icon => (
               <div key={icon} className={styles.iconItem}>
@@ -169,7 +169,7 @@ export default function Icons() {
         </div>
 
         <div className={styles.categorySection}>
-          <h2>화살표</h2>
+          <h2>{t('sections.categories.arrows')}</h2>
           <div className={styles.iconList}>
             {['arrow-left', 'arrow-right', 'arrow-up', 'arrow-down', 'arrow-dropdown', 'arrow-dropdown-up', 'expand-left', 'expand-right', 'expand-up', 'expand-down'].map(icon => (
               <div key={icon} className={styles.iconItem}>
@@ -181,7 +181,7 @@ export default function Icons() {
         </div>
 
         <div className={styles.categorySection}>
-          <h2>파일 & 문서</h2>
+          <h2>{t('sections.categories.fileDocument')}</h2>
           <div className={styles.iconList}>
             {['file', 'paper', 'folder', 'upload', 'download', 'import', 'export', 'save'].map(icon => (
               <div key={icon} className={styles.iconItem}>
@@ -193,7 +193,7 @@ export default function Icons() {
         </div>
 
         <div className={styles.categorySection}>
-          <h2>소셜 미디어</h2>
+          <h2>{t('sections.categories.socialMedia')}</h2>
           <div className={styles.iconList}>
             {['facebook', 'naver', 'insta', 'tiktok', 'youtube', 'kakao', 'x', 'apple', 'google'].map(icon => (
               <div key={icon} className={styles.iconItem}>
@@ -205,7 +205,7 @@ export default function Icons() {
         </div>
 
         <div className={styles.categorySection}>
-          <h2>상태</h2>
+          <h2>{t('sections.categories.status')}</h2>
           <div className={styles.iconList}>
             {['info', 'warning', 'danger', 'danger-fill', 'check-circle-stroke', 'check-circle-fill'].map(icon => (
               <div key={icon} className={styles.iconItem}>
@@ -221,7 +221,7 @@ export default function Icons() {
         <div className={styles.note}>
           <i className="icon-info"></i>
           <div>
-            <strong>팁:</strong> 아이콘은 폰트 기반이므로 <code>font-size</code>와 <code>color</code> 속성으로 크기와 색상을 자유롭게 조정할 수 있습니다.
+            <strong>{t('sections.note.title')}</strong> {t('sections.note.description')}
           </div>
         </div>
       </section>

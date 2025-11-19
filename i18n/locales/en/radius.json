@@ -1,4 +1,35 @@
 {
   "title": "Border Radius",
-  "description": "Border radius utilities"
+  "description": "Utility classes to round the corners of elements.",
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "Apply radius classes directly to HTML elements:"
+  },
+  "allValues": {
+    "title": "All Radius Values",
+    "description": "All available border radius values:",
+    "demoTitle": "Radius Scale:"
+  },
+  "scssUsage": {
+    "title": "SCSS Usage",
+    "description": "Use the r() function in SCSS modules to apply border radius:"
+  },
+  "realWorld": {
+    "title": "Real World Examples",
+    "description": "Practical UI component examples using various border radius values:",
+    "buttonDemo": "Button Examples:",
+    "button": "Button",
+    "cardDemo": "Card Examples:",
+    "avatarDemo": "Avatar Examples:",
+    "card": {
+      "r3": {
+        "title": "r-3 Card",
+        "description": "A card with 6px border radius."
+      },
+      "r5": {
+        "title": "r-5 Card",
+        "description": "A card with 12px border radius."
+      }
+    }
+  }
 }

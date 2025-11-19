@@ -5,15 +5,16 @@ import styles from './page.module.scss';
 import { ToastProvider, useToast } from '../../../../react/molecule/toast-provider';
 
 function ToastExamples() {
+  const t = useTranslations('toast');
   const { showToast } = useToast();
 
   const examples = [
     {
-      label: 'border=false - Success (Top Right)',
+      label: t('examples.borderFalseSuccessTopRight'),
       onClick: () => {
         showToast({
-          header: '성공',
-          message: '파일이 성공적으로 업로드되었습니다!',
+          header: t('examples.success'),
+          message: t('examples.successMessage'),
           theme: 'success',
           border: false,
           position: 'top-right',
@@ -22,11 +23,11 @@ function ToastExamples() {
       },
     },
     {
-      label: 'border=true - Info (Top Center)',
+      label: t('examples.borderTrueInfoTopCenter'),
       onClick: () => {
         showToast({
-          header: '알림',
-          message: '새로운 메시지가 있습니다',
+          header: t('examples.notification'),
+          message: t('examples.newMessageNotification'),
           theme: 'info',
           border: true,
           position: 'top-center',
@@ -35,10 +36,10 @@ function ToastExamples() {
       },
     },
     {
-      label: 'long=true - Warning (Bottom Right)',
+      label: t('examples.longTrueWarningBottomRight'),
       onClick: () => {
         showToast({
-          message: '저장되지 않은 변경사항이 있습니다',
+          message: t('examples.unsavedChanges'),
           theme: 'warning',
           border: false,
           long: true,
@@ -48,10 +49,10 @@ function ToastExamples() {
       },
     },
     {
-      label: 'long=true, border=true - Danger (Bottom Center)',
+      label: t('examples.longTrueBorderTrueDangerBottomCenter'),
       onClick: () => {
         showToast({
-          message: '오류가 발생했습니다',
+          message: t('examples.errorOccurred'),
           theme: 'danger',
           border: true,
           long: true,
@@ -61,11 +62,11 @@ function ToastExamples() {
       },
     },
     {
-      label: 'Primary - Center (수동 닫기)',
+      label: t('examples.primaryCenterManualClose'),
       onClick: () => {
         showToast({
-          header: '중요 알림',
-          message: '이 메시지는 닫기 버튼을 눌러야 닫힙니다',
+          header: t('examples.importantNotification'),
+          message: t('examples.manualCloseMessage'),
           theme: 'primary',
           border: false,
           position: 'center',
@@ -75,11 +76,11 @@ function ToastExamples() {
       },
     },
     {
-      label: 'Custom Width - Bottom Left',
+      label: t('examples.customWidthBottomLeft'),
       onClick: () => {
         showToast({
-          header: '넓은 토스트',
-          message: '너비를 500px로 지정한 토스트입니다',
+          header: t('examples.wideToast'),
+          message: t('examples.wideToastMessage'),
           theme: 'info',
           border: true,
           position: 'bottom-left',
@@ -110,38 +111,37 @@ function ToastExamples() {
 export default function Toast() {
   const t = useTranslations('toast');
   const variants = [
-    { name: 'default', label: 'Default', description: '기본 알림' },
-    { name: 'primary', label: 'Primary', description: '주요 알림' },
-    { name: 'info', label: 'Info', description: '정보성 알림' },
-    { name: 'success', label: 'Success', description: '성공 알림' },
-    { name: 'warning', label: 'Warning', description: '경고 알림' },
-    { name: 'danger', label: 'Danger', description: '위험 알림' },
+    { name: 'default', label: t('variants.default.label'), description: t('variants.default.description') },
+    { name: 'primary', label: t('variants.primary.label'), description: t('variants.primary.description') },
+    { name: 'info', label: t('variants.info.label'), description: t('variants.info.description') },
+    { name: 'success', label: t('variants.success.label'), description: t('variants.success.description') },
+    { name: 'warning', label: t('variants.warning.label'), description: t('variants.warning.description') },
+    { name: 'danger', label: t('variants.danger.label'), description: t('variants.danger.description') },
   ];
 
   return (
     <ToastProvider>
       <>
         <section className={styles.section}>
-          <h1>토스트</h1>
-          <p>사용자에게 알림이나 피드백을 전달하는 Toast 컴포넌트입니다</p>
+          <h1>{t('title')}</h1>
+          <p>{t('description')}</p>
         </section>
 
       <section className={styles.section}>
-        <h2>기본 사용법</h2>
+        <h2>{t('sections.basicUsage.title')}</h2>
         <p>
-          토스트는 .toast 클래스를 사용하여 만들 수 있습니다.
-          아이콘, 헤더, 본문, 닫기 버튼을 포함할 수 있습니다.
+          {t('sections.basicUsage.description')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
           <div className="toast">
             <i className="icon-info"></i>
             <div className="toast-content">
               <div className="toast-header">Header</div>
               <div className="toast-body">Lorem ipsum dolor sit amet</div>
             </div>
-            <button aria-label="닫기"></button>
+            <button aria-label={t('sections.basicUsage.closeLabel')}></button>
           </div>
         </div>
 
@@ -153,36 +153,36 @@ export default function Toast() {
     <div class="toast-header">Header</div>
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
-  <button aria-label="닫기"></button>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
 </div>`}</code></pre>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>스타일 속성</h2>
+        <h2>{t('sections.styleProperties.title')}</h2>
         <p>
-          토스트는 border와 long 속성을 조합하여 다양한 스타일을 제공합니다:
+          {t('sections.styleProperties.description')}
         </p>
 
-        <h3>Border 속성</h3>
+        <h3>{t('sections.styleProperties.borderProperty')}</h3>
         <ul>
-          <li><strong>border=false (기본)</strong>: 4px 두꺼운 강조 색상 테두리</li>
-          <li><strong>border=true (.border)</strong>: 1px 전체 외곽선만 (강조 색상 테두리 없음)</li>
+          <li><strong>{t('sections.styleProperties.borderFalseDefault')}</strong></li>
+          <li><strong>{t('sections.styleProperties.borderTrue')}</strong></li>
         </ul>
 
-        <h3>Long 속성</h3>
+        <h3>{t('sections.styleProperties.longProperty')}</h3>
         <ul>
-          <li><strong>long=false (기본)</strong>: 세로 레이아웃, border=false일 때 상단에 4px 강조 테두리</li>
-          <li><strong>long=true (.long)</strong>: 가로 레이아웃, border=false일 때 왼쪽에 4px 강조 테두리</li>
+          <li><strong>{t('sections.styleProperties.longFalseDefault')}</strong></li>
+          <li><strong>{t('sections.styleProperties.longTrue')}</strong></li>
         </ul>
 
-        <h3>border=false - 강조 색상 테두리</h3>
+        <h3>{t('sections.styleProperties.borderFalseAccent')}</h3>
         <p>
-          기본 스타일은 상단에 4px 두꺼운 강조 색상 테두리가 표시됩니다.
+          {t('sections.styleProperties.borderFalseDescription')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
           <div className={styles.toastGroup}>
             <div className="toast info">
               <i className="icon-info"></i>
@@ -190,31 +190,31 @@ export default function Toast() {
                 <div className="toast-header">Header</div>
                 <div className="toast-body">Lorem ipsum dolor sit amet</div>
               </div>
-              <button aria-label="닫기"></button>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
             </div>
           </div>
         </div>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- border=false (4px 강조 색상 테두리) -->
+          <pre><code>{`<!-- ${t('sections.styleProperties.commentBorderFalse')} -->
 <div class="toast info">
   <i class="icon-info"></i>
   <div class="toast-content">
     <div class="toast-header">Header</div>
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
-  <button aria-label="닫기"></button>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
 </div>`}</code></pre>
         </div>
 
-        <h3>border=true - 전체 외곽선</h3>
+        <h3>{t('sections.styleProperties.borderTrueOutline')}</h3>
         <p>
-          .border 클래스를 추가하면 1px 전체 외곽선만 표시됩니다 (강조 색상 테두리 없음).
+          {t('sections.styleProperties.borderTrueDescription')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
           <div className={styles.toastGroup}>
             <div className="toast border info">
               <i className="icon-info"></i>
@@ -222,96 +222,95 @@ export default function Toast() {
                 <div className="toast-header">Header</div>
                 <div className="toast-body">Lorem ipsum dolor sit amet</div>
               </div>
-              <button aria-label="닫기"></button>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
             </div>
           </div>
         </div>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- border=true (1px 전체 외곽선만) -->
+          <pre><code>{`<!-- ${t('sections.styleProperties.commentBorderTrue')} -->
 <div class="toast border info">
   <i class="icon-info"></i>
   <div class="toast-content">
     <div class="toast-header">Header</div>
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
-  <button aria-label="닫기"></button>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
 </div>`}</code></pre>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>Long 스타일</h2>
+        <h2>{t('sections.longStyle.title')}</h2>
         <p>
-          .long 클래스를 추가하면 가로 레이아웃으로 변경되며, 테두리 위치가 상단에서 왼쪽으로 바뀝니다.
-          좁은 공간에 토스트를 표시할 때 유용합니다.
+          {t('sections.longStyle.description')}
         </p>
 
-        <h3>long=true, border=false</h3>
+        <h3>{t('sections.longStyle.longTrueBorderFalse')}</h3>
         <p>
-          왼쪽에 4px 두꺼운 강조 색상 테두리가 표시됩니다.
+          {t('sections.longStyle.longTrueBorderFalseDescription')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
           <div className={styles.toastGroup}>
             <div className="toast long info">
               <i className="icon-info"></i>
               <div className="toast-content">
                 <div className="toast-body">Lorem ipsum dolor sit amet</div>
               </div>
-              <button aria-label="닫기"></button>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
             </div>
           </div>
         </div>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- long=true, border=false (왼쪽에 4px 강조 테두리) -->
+          <pre><code>{`<!-- ${t('sections.longStyle.commentLongTrueBorderFalse')} -->
 <div class="toast long info">
   <i class="icon-info"></i>
   <div class="toast-content">
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
-  <button aria-label="닫기"></button>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
 </div>`}</code></pre>
         </div>
 
-        <h3>long=true, border=true</h3>
+        <h3>{t('sections.longStyle.longTrueBorderTrue')}</h3>
         <p>
-          1px 전체 외곽선만 표시됩니다 (강조 색상 테두리 없음).
+          {t('sections.longStyle.longTrueBorderTrueDescription')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
           <div className={styles.toastGroup}>
             <div className="toast long border success">
               <i className="icon-check"></i>
               <div className="toast-content">
-                <div className="toast-body">파일이 성공적으로 업로드되었습니다</div>
+                <div className="toast-body">{t('sections.longStyle.fileUploadSuccess')}</div>
               </div>
-              <button aria-label="닫기"></button>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
             </div>
           </div>
         </div>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- long=true, border=true (1px 전체 외곽선만) -->
+          <pre><code>{`<!-- ${t('sections.longStyle.commentLongTrueBorderTrue')} -->
 <div class="toast long border success">
   <i class="icon-check"></i>
   <div class="toast-content">
-    <div class="toast-body">파일이 성공적으로 업로드되었습니다</div>
+    <div class="toast-body">${t('sections.longStyle.fileUploadSuccess')}</div>
   </div>
-  <button aria-label="닫기"></button>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
 </div>`}</code></pre>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>색상 변형</h2>
-        <p>6가지 색상 변형을 사용하여 다양한 메시지를 전달할 수 있습니다:</p>
+        <h2>{t('sections.colorVariants.title')}</h2>
+        <p>{t('sections.colorVariants.description')}</p>
 
         <div className={styles.variantsShowcase}>
           {variants.map((variant) => (
@@ -325,31 +324,31 @@ export default function Toast() {
                   <i className="icon-info"></i>
                   <div className="toast-content">
                     <div className="toast-header">{variant.label}</div>
-                    <div className="toast-body">border=false (4px 강조 테두리)</div>
+                    <div className="toast-body">{t('sections.styleProperties.borderFalseAccentBorder')}</div>
                   </div>
-                  <button aria-label="닫기"></button>
+                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
                 </div>
                 <div className={`toast border ${variant.name}`}>
                   <i className="icon-info"></i>
                   <div className="toast-content">
                     <div className="toast-header">{variant.label}</div>
-                    <div className="toast-body">border=true (1px 외곽선)</div>
+                    <div className="toast-body">{t('sections.styleProperties.borderTrueOutlineBorder')}</div>
                   </div>
-                  <button aria-label="닫기"></button>
+                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
                 </div>
                 <div className={`toast long ${variant.name}`}>
                   <i className="icon-info"></i>
                   <div className="toast-content">
-                    <div className="toast-body">long=true, border=false</div>
+                    <div className="toast-body">{t('sections.colorVariants.longBorderFalse')}</div>
                   </div>
-                  <button aria-label="닫기"></button>
+                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
                 </div>
                 <div className={`toast long border ${variant.name}`}>
                   <i className="icon-info"></i>
                   <div className="toast-content">
-                    <div className="toast-body">long=true, border=true</div>
+                    <div className="toast-body">{t('sections.colorVariants.longBorderTrue')}</div>
                   </div>
-                  <button aria-label="닫기"></button>
+                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
                 </div>
               </div>
             </div>
@@ -376,28 +375,27 @@ export default function Toast() {
       </section>
 
       <section className={styles.section}>
-        <h2>조합 예제</h2>
+        <h2>{t('sections.combinationExamples.title')}</h2>
         <p>
-          .long 클래스를 추가하면 가로 레이아웃으로 변경되며 한 줄로 표시됩니다.
-          좁은 공간에 토스트를 표시할 때 유용합니다.
+          {t('sections.combinationExamples.description')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
           <div className={styles.toastGroup}>
             <div className="toast long info">
               <i className="icon-info"></i>
               <div className="toast-content">
                 <div className="toast-body">Lorem ipsum dolor sit amet</div>
               </div>
-              <button aria-label="닫기"></button>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
             </div>
             <div className="toast long border success">
               <i className="icon-check"></i>
               <div className="toast-content">
-                <div className="toast-body">파일이 성공적으로 업로드되었습니다</div>
+                <div className="toast-body">{t('sections.longStyle.fileUploadSuccess')}</div>
               </div>
-              <button aria-label="닫기"></button>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
             </div>
           </div>
         </div>
@@ -409,40 +407,40 @@ export default function Toast() {
   <div class="toast-content">
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
-  <button aria-label="닫기"></button>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
 </div>
 
-<!-- Long + Border -->
+<!-- ${t('sections.combinationExamples.commentLongBorder')} -->
 <div class="toast long border success">
   <i class="icon-check"></i>
   <div class="toast-content">
-    <div class="toast-body">파일이 성공적으로 업로드되었습니다</div>
+    <div class="toast-body">${t('sections.longStyle.fileUploadSuccess')}</div>
   </div>
-  <button aria-label="닫기"></button>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
 </div>`}</code></pre>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>간단한 메시지</h2>
-        <p>헤더 없이 본문만 표시할 수도 있습니다:</p>
+        <h2>{t('sections.simpleMessage.title')}</h2>
+        <p>{t('sections.simpleMessage.description')}</p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
           <div className={styles.toastGroup}>
             <div className="toast border info">
               <i className="icon-info"></i>
               <div className="toast-content">
                 <div className="toast-body">Lorem ipsum dolor sit amet</div>
               </div>
-              <button aria-label="닫기"></button>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
             </div>
             <div className="toast success">
               <i className="icon-check"></i>
               <div className="toast-content">
-                <div className="toast-body">파일이 성공적으로 업로드되었습니다</div>
+                <div className="toast-body">{t('sections.longStyle.fileUploadSuccess')}</div>
               </div>
-              <button aria-label="닫기"></button>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
             </div>
           </div>
         </div>
@@ -454,24 +452,24 @@ export default function Toast() {
   <div class="toast-content">
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
-  <button aria-label="닫기"></button>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
 </div>`}</code></pre>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>React 컴포넌트 예제</h2>
-        <p>버튼을 클릭하여 다양한 Toast 스타일을 확인해보세요:</p>
+        <h2>{t('sections.reactComponentExample.title')}</h2>
+        <p>{t('sections.reactComponentExample.description')}</p>
 
         <ToastExamples />
       </section>
 
       <section className={styles.section}>
-        <h2>React에서 사용하기</h2>
-        <p>React 애플리케이션에서 Toast 컴포넌트를 사용할 수 있습니다.</p>
+        <h2>{t('sections.reactUsage.title')}</h2>
+        <p>{t('sections.reactUsage.description')}</p>
 
-        <h3>1. ToastProvider 설정</h3>
-        <p>먼저 애플리케이션의 최상위에 ToastProvider를 추가합니다:</p>
+        <h3>{t('sections.reactUsage.step1Title')}</h3>
+        <p>{t('sections.reactUsage.step1Description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>app/layout.tsx</div>
@@ -490,8 +488,8 @@ export default function RootLayout({ children }) {
 }`}</code></pre>
         </div>
 
-        <h3>2. useToast Hook 사용</h3>
-        <p>컴포넌트에서 useToast hook을 사용하여 토스트를 표시합니다:</p>
+        <h3>{t('sections.reactUsage.step2Title')}</h3>
+        <p>{t('sections.reactUsage.step2Description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.tsx</div>
@@ -502,8 +500,8 @@ function MyComponent() {
 
   const handleClick = () => {
     showToast({
-      message: '저장되었습니다!',
-      header: '성공',
+      message: '${t('sections.reactUsage.savedMessage')}',
+      header: '${t('variants.success.label')}',
       theme: 'success',
       border: false,
       position: 'top-right',
@@ -511,66 +509,66 @@ function MyComponent() {
     });
   };
 
-  return <button onClick={handleClick}>저장</button>;
+  return <button onClick={handleClick}>${t('sections.reactUsage.saveButton')}</button>;
 }`}</code></pre>
         </div>
 
-        <h3>3. Toast 옵션</h3>
+        <h3>{t('sections.reactUsage.step3Title')}</h3>
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TypeScript</div>
           <pre><code>{`interface ToastOptions {
-  message: string;           // 필수: 토스트 메시지
-  header?: string;           // 선택: 헤더 텍스트 (long일 때는 표시 안됨)
+  message: string;           // ${t('sections.reactUsage.messageRequired')}
+  header?: string;           // ${t('sections.reactUsage.headerOptional')}
   theme?: 'default' | 'primary' | 'info' | 'success' | 'warning' | 'danger';
-  border?: boolean;          // true: 1px 전체 외곽선, false: 4px 강조 테두리 (기본)
-  long?: boolean;            // true: 가로 레이아웃
-  duration?: number;         // 자동 닫힘 시간(ms), 0이면 자동으로 닫히지 않음
-  width?: string | number;   // 너비 (기본: auto)
+  border?: boolean;          // ${t('sections.reactUsage.borderOption')}
+  long?: boolean;            // ${t('sections.reactUsage.longOption')}
+  duration?: number;         // ${t('sections.reactUsage.durationOption')}
+  width?: string | number;   // ${t('sections.reactUsage.widthOption')}
   position?: 'top-left' | 'top-center' | 'top-right'
            | 'center-left' | 'center' | 'center-right'
            | 'bottom-left' | 'bottom-center' | 'bottom-right';
 }`}</code></pre>
         </div>
 
-        <h3>4. 사용 예제</h3>
+        <h3>{t('sections.reactUsage.step4Title')}</h3>
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// border=false (4px 강조 테두리)
+          <pre><code>{`// ${t('sections.reactUsage.exampleComment1')}
 showToast({
-  message: '파일이 업로드되었습니다',
+  message: '${t('sections.reactUsage.exampleMessage1')}',
   theme: 'success',
   position: 'top-right',
 });
 
-// border=true (1px 전체 외곽선)
+// ${t('sections.reactUsage.exampleComment2')}
 showToast({
-  header: '알림',
-  message: '새로운 메시지가 있습니다',
+  header: '${t('sections.reactUsage.exampleHeader2')}',
+  message: '${t('sections.reactUsage.exampleMessage2')}',
   theme: 'info',
   border: true,
   position: 'bottom-center',
 });
 
-// Long 스타일
+// ${t('sections.reactUsage.exampleComment3')}
 showToast({
-  message: '저장 완료',
+  message: '${t('sections.reactUsage.exampleMessage3')}',
   theme: 'success',
   long: true,
   position: 'bottom-right',
   duration: 2000,
 });
 
-// 너비 지정
+// ${t('sections.reactUsage.exampleComment4')}
 showToast({
-  message: '이것은 넓은 토스트입니다',
+  message: '${t('sections.reactUsage.exampleMessage4')}',
   width: 400,
   position: 'top-center',
 });
 
-// 자동으로 닫히지 않음
+// ${t('sections.reactUsage.exampleComment5')}
 showToast({
-  header: '중요 알림',
-  message: '이 메시지는 수동으로 닫아야 합니다',
+  header: '${t('sections.reactUsage.exampleHeader5')}',
+  message: '${t('sections.reactUsage.exampleMessage5')}',
   theme: 'warning',
   duration: 0,
   position: 'center',
@@ -579,8 +577,8 @@ showToast({
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
-        <p>SCSS 모듈에서 토스트 스타일을 커스터마이징할 수 있습니다:</p>
+        <h2>{t('sections.scssUsage.title')}</h2>
+        <p>{t('sections.scssUsage.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>

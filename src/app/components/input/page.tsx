@@ -13,43 +13,41 @@ export default function Input() {
       </section>
 
       <section className={styles.section}>
-        <h2>기본 사용법</h2>
-        <p>
-          HTML input 태그를 사용하여 텍스트 입력 필드를 만들 수 있습니다.
-        </p>
+        <h2>{t('basicUsage.title')}</h2>
+        <p>{t('basicUsage.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<input type="text" placeholder="텍스트를 입력하세요" />
-<input type="email" placeholder="이메일을 입력하세요" />
-<input type="password" placeholder="비밀번호를 입력하세요" />
-<input type="number" placeholder="숫자를 입력하세요" />`}</code></pre>
+          <pre><code>{`<input type="text" placeholder="${t('basicUsage.placeholders.text')}" />
+<input type="email" placeholder="${t('basicUsage.placeholders.email')}" />
+<input type="password" placeholder="${t('basicUsage.placeholders.password')}" />
+<input type="number" placeholder="${t('basicUsage.placeholders.number')}" />`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.inputGroup}>
-            <input type="text" placeholder="텍스트를 입력하세요" />
-            <input type="email" placeholder="이메일을 입력하세요" />
-            <input type="password" placeholder="비밀번호를 입력하세요" />
-            <input type="number" placeholder="숫자를 입력하세요" />
+            <input type="text" placeholder={t('basicUsage.placeholders.text')} />
+            <input type="email" placeholder={t('basicUsage.placeholders.email')} />
+            <input type="password" placeholder={t('basicUsage.placeholders.password')} />
+            <input type="number" placeholder={t('basicUsage.placeholders.number')} />
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>지원하는 Input 타입</h2>
-        <p>Podo UI는 다음 12가지 input 타입을 지원합니다:</p>
+        <h2>{t('types.title')}</h2>
+        <p>{t('types.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<input type="text" placeholder="일반 텍스트" />
-<input type="email" placeholder="이메일" />
-<input type="password" placeholder="비밀번호" />
-<input type="number" placeholder="숫자" />
-<input type="tel" placeholder="전화번호" />
-<input type="url" placeholder="URL" />
-<input type="search" placeholder="검색" />
+          <pre><code>{`<input type="text" placeholder="${t('types.placeholders.text')}" />
+<input type="email" placeholder="${t('types.placeholders.email')}" />
+<input type="password" placeholder="${t('types.placeholders.password')}" />
+<input type="number" placeholder="${t('types.placeholders.number')}" />
+<input type="tel" placeholder="${t('types.placeholders.tel')}" />
+<input type="url" placeholder="${t('types.placeholders.url')}" />
+<input type="search" placeholder="${t('types.placeholders.search')}" />
 <input type="date" />
 <input type="time" />
 <input type="month" />
@@ -58,11 +56,11 @@ export default function Input() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.typeGrid}>
             <div className={styles.typeCard}>
               <label>text</label>
-              <input type="text" placeholder="일반 텍스트" />
+              <input type="text" placeholder={t('types.placeholders.text')} />
             </div>
             <div className={styles.typeCard}>
               <label>email</label>
@@ -86,7 +84,7 @@ export default function Input() {
             </div>
             <div className={styles.typeCard}>
               <label>search</label>
-              <input type="search" placeholder="검색..." />
+              <input type="search" placeholder={t('types.placeholders.search')} />
             </div>
             <div className={styles.typeCard}>
               <label>date</label>
@@ -113,38 +111,35 @@ export default function Input() {
       </section>
 
       <section className={styles.section}>
-        <h2>Input 상태</h2>
-        <p>
-          <code>.success</code>, <code>.danger</code> 클래스로 유효성 검증 상태를 표시할 수 있으며,
-          <code>disabled</code>, <code>readonly</code> 속성으로 비활성화 및 읽기 전용 상태를 만들 수 있습니다.
-        </p>
+        <h2>{t('states.title')}</h2>
+        <p>{t('states.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 기본 -->
-<input type="text" placeholder="기본 상태" />
+          <pre><code>{`<!-- ${t('states.default')} -->
+<input type="text" placeholder="${t('states.default')}" />
 
-<!-- 성공 (유효한 입력) -->
+<!-- ${t('states.success')} -->
 <input type="text" class="success" value="valid@email.com" />
 
-<!-- 위험 (유효하지 않은 입력) -->
+<!-- ${t('states.danger')} -->
 <input type="text" class="danger" value="invalid-email" />
 
-<!-- 비활성화 -->
-<input type="text" placeholder="비활성화" disabled />
+<!-- ${t('states.disabled')} -->
+<input type="text" placeholder="${t('states.disabled')}" disabled />
 
-<!-- 읽기 전용 -->
-<input type="text" value="읽기 전용 텍스트" readonly />`}</code></pre>
+<!-- ${t('states.readonly')} -->
+<input type="text" value="${t('states.readonlyText')}" readonly />`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.inputGroup}>
-            <input type="text" placeholder="기본 상태" />
+            <input type="text" placeholder={t('states.default')} />
             <input type="text" className="success" value="valid@email.com" />
             <input type="text" className="danger" value="invalid-email" />
-            <input type="text" placeholder="비활성화" disabled />
-            <input type="text" value="읽기 전용 텍스트" readOnly />
+            <input type="text" placeholder={t('states.disabled')} disabled />
+            <input type="text" value={t('states.readonlyText')} readOnly />
           </div>
         </div>
 
@@ -183,33 +178,31 @@ input:read-only {
       </section>
 
       <section className={styles.section}>
-        <h2>Input 변형</h2>
-        <p>
-          <code>.fill</code>, <code>.text</code>, <code>.underline</code> 클래스로 다양한 스타일 변형을 사용할 수 있습니다.
-        </p>
+        <h2>{t('variants.title')}</h2>
+        <p>{t('variants.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 기본 -->
-<input type="text" placeholder="기본 스타일" />
+          <pre><code>{`<!-- ${t('variants.default')} -->
+<input type="text" placeholder="${t('variants.default')}" />
 
-<!-- Fill (채워진 배경) -->
-<input type="text" class="fill" placeholder="채워진 배경" />
+<!-- ${t('variants.fill')} -->
+<input type="text" class="fill" placeholder="${t('variants.fill')}" />
 
-<!-- Text (테두리 없음) -->
-<input type="text" class="text" placeholder="텍스트만" />
+<!-- ${t('variants.text')} -->
+<input type="text" class="text" placeholder="${t('variants.text')}" />
 
-<!-- Underline (밑줄만) -->
-<input type="text" class="underline" placeholder="밑줄 스타일" />`}</code></pre>
+<!-- ${t('variants.underline')} -->
+<input type="text" class="underline" placeholder="${t('variants.underline')}" />`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.inputGroup}>
-            <input type="text" placeholder="기본 스타일" />
-            <input type="text" className="fill" placeholder="채워진 배경" />
-            <input type="text" className="text" placeholder="텍스트만" />
-            <input type="text" className="underline" placeholder="밑줄 스타일" />
+            <input type="text" placeholder={t('variants.default')} />
+            <input type="text" className="fill" placeholder={t('variants.fill')} />
+            <input type="text" className="text" placeholder={t('variants.text')} />
+            <input type="text" className="underline" placeholder={t('variants.underline')} />
           </div>
         </div>
 
@@ -239,29 +232,27 @@ input.underline {
       </section>
 
       <section className={styles.section}>
-        <h2>Input 크기</h2>
-        <p>
-          <code>.md</code>, <code>.lg</code> 클래스로 더 큰 크기의 input을 만들 수 있습니다.
-        </p>
+        <h2>{t('sizes.title')}</h2>
+        <p>{t('sizes.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 기본 크기 (padding: s(3) s(4), border-radius: r(3)) -->
-<input type="text" placeholder="기본 크기" />
+          <pre><code>{`<!-- ${t('sizes.default')} (padding: s(3) s(4), border-radius: r(3)) -->
+<input type="text" placeholder="${t('sizes.default')}" />
 
-<!-- 중간 크기 (padding: s(4) s(4), border-radius: r(5)) -->
-<input type="text" class="md" placeholder="중간 크기" />
+<!-- ${t('sizes.medium')} (padding: s(4) s(4), border-radius: r(5)) -->
+<input type="text" class="md" placeholder="${t('sizes.medium')}" />
 
-<!-- 큰 크기 (padding: s(5) s(4), border-radius: r(6)) -->
-<input type="text" class="lg" placeholder="큰 크기" />`}</code></pre>
+<!-- ${t('sizes.large')} (padding: s(5) s(4), border-radius: r(6)) -->
+<input type="text" class="lg" placeholder="${t('sizes.large')}" />`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.inputGroup}>
-            <input type="text" placeholder="기본 크기" />
-            <input type="text" className="md" placeholder="중간 크기" />
-            <input type="text" className="lg" placeholder="큰 크기" />
+            <input type="text" placeholder={t('sizes.default')} />
+            <input type="text" className="md" placeholder={t('sizes.medium')} />
+            <input type="text" className="lg" placeholder={t('sizes.large')} />
           </div>
         </div>
 
@@ -288,40 +279,37 @@ input.lg {
       </section>
 
       <section className={styles.section}>
-        <h2>아이콘과 함께 사용</h2>
-        <p>
-          <code>.with-icon</code> 또는 <code>.with-right-icon</code> 래퍼를 사용하여
-          input 필드 왼쪽이나 오른쪽에 아이콘을 배치할 수 있습니다.
-        </p>
+        <h2>{t('icons.title')}</h2>
+        <p>{t('icons.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 왼쪽 아이콘 (input padding-left: s(8), 아이콘 left: s(3)) -->
+          <pre><code>{`<!-- ${t('icons.leftIcon')} (input padding-left: s(8), ${t('icons.icon')} left: s(3)) -->
 <div class="with-icon">
   <i class="icon-search"></i>
-  <input type="text" placeholder="검색..." />
+  <input type="text" placeholder="${t('icons.placeholders.search')}" />
 </div>
 
-<!-- 오른쪽 아이콘 (input padding-right: s(7), 아이콘 right: s(3)) -->
+<!-- ${t('icons.rightIcon')} (input padding-right: s(7), ${t('icons.icon')} right: s(3)) -->
 <div class="with-right-icon">
-  <input type="email" placeholder="이메일" />
+  <input type="email" placeholder="${t('icons.placeholders.email')}" />
   <i class="icon-mail"></i>
 </div>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.inputGroup}>
             <div className="with-icon">
               <i className="icon-search"></i>
-              <input type="text" placeholder="검색..." />
+              <input type="text" placeholder={t('icons.placeholders.search')} />
             </div>
             <div className="with-icon">
               <i className="icon-user"></i>
-              <input type="text" placeholder="사용자명" />
+              <input type="text" placeholder={t('icons.placeholders.username')} />
             </div>
             <div className="with-right-icon">
-              <input type="email" placeholder="이메일" />
+              <input type="email" placeholder={t('icons.placeholders.email')} />
               <i className="icon-mail"></i>
             </div>
           </div>
@@ -364,8 +352,8 @@ input.lg {
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
-        <p>SCSS 모듈에서 실제 input.scss 소스를 참조하여 스타일을 적용할 수 있습니다:</p>
+        <h2>{t('scss.title')}</h2>
+        <p>{t('scss.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>

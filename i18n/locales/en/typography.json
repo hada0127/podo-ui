@@ -1,4 +1,55 @@
 {
   "title": "Typography",
-  "description": "Font styles and text formatting"
+  "description": "Font styles and text formatting",
+  "sections": {
+    "typographySystem": {
+      "title": "Typography System",
+      "description": "Podo UI provides Display, Paragraph, and Heading styles, each automatically adjusted for mobile environments. Pretendard is used as the default font."
+    },
+    "displayStyles": {
+      "title": "Display Styles",
+      "description": "Display styles used for large headings and hero sections.",
+      "sampleText": "Typography"
+    },
+    "paragraphStyles": {
+      "title": "Paragraph Styles",
+      "description": "Paragraph styles used for body text and descriptions.",
+      "sampleText": "Body text should be readable and clear."
+    },
+    "headingStyles": {
+      "title": "Heading Styles",
+      "description": "Styles automatically applied to default HTML tags."
+    },
+    "cssClasses": {
+      "title": "Using with CSS Classes",
+      "description": "You can directly apply typography classes to HTML elements:",
+      "codeHeader": "HTML",
+      "demoTitle": "Live Examples:",
+      "sampleHeading": "Display 4 Heading",
+      "sampleP2": "P2 size body text.",
+      "sampleP3": "P3 size body text.",
+      "sampleP3Semibold": "P3 Semibold emphasized text."
+    },
+    "scssUsage": {
+      "title": "Using in SCSS",
+      "description": "You can apply typography using mixins in SCSS modules:",
+      "codeHeader": "component.module.scss"
+    },
+    "fontFamily": {
+      "title": "Font Family",
+      "description": "Pretendard is used as the default font, customizable via CSS variables:",
+      "codeHeader": "CSS"
+    },
+    "responsive": {
+      "title": "Responsive",
+      "description": "All typography styles automatically adjust for mobile environments.",
+      "note": "Tip:",
+      "noteDescription": "The mobile breakpoint is below 768px. Resize your window to see typography changes."
+    }
+  },
+  "specs": {
+    "size": "Size:",
+    "weight": "Weight:",
+    "lineHeight": "Line Height:"
+  }
 }

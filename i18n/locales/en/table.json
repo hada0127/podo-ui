@@ -1,4 +1,150 @@
 {
   "title": "Table",
-  "description": "Data table component"
+  "description": "Data table component",
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "When you use HTML table tags, Podo UI's default styles are automatically applied.",
+    "codeHeader": "HTML",
+    "demoTitle": "Live Example:",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "data": {
+        "user1": {
+          "name": "John Doe",
+          "email": "john@example.com",
+          "role": "Admin"
+        },
+        "user2": {
+          "name": "Jane Smith",
+          "email": "jane@example.com",
+          "role": "User"
+        },
+        "user3": {
+          "name": "Mike Johnson",
+          "email": "mike@example.com",
+          "role": "User"
+        }
+      }
+    }
+  },
+  "listStyle": {
+    "title": "List Style",
+    "description": "Adding the .list class applies a hover effect to rows, making them look like a clickable list.",
+    "demoTitle": "Live Example (hover over the rows):",
+    "table": {
+      "title": "Title",
+      "author": "Author",
+      "date": "Date",
+      "data": {
+        "post1": {
+          "title": "Announcement Title",
+          "author": "Admin",
+          "date": "2024-01-15"
+        },
+        "post2": {
+          "title": "Post Title",
+          "author": "User1",
+          "date": "2024-01-14"
+        },
+        "post3": {
+          "title": "Another Post",
+          "author": "User2",
+          "date": "2024-01-13"
+        }
+      }
+    }
+  },
+  "borderStyle": {
+    "title": "Border Style",
+    "description": "Adding the .border class displays a bottom border on each cell.",
+    "demoTitle": "Live Example:",
+    "table": {
+      "product": "Product",
+      "price": "Price",
+      "stock": "Stock",
+      "data": {
+        "product1": {
+          "name": "Product A",
+          "price": "$100",
+          "stock": "50"
+        },
+        "product2": {
+          "name": "Product B",
+          "price": "$200",
+          "stock": "30"
+        },
+        "product3": {
+          "name": "Product C",
+          "price": "$150",
+          "stock": "100"
+        }
+      }
+    }
+  },
+  "fillStyle": {
+    "title": "Fill Style",
+    "description": "Adding the .fill class applies background color to rows.",
+    "demoTitle": "Live Example:",
+    "table": {
+      "name": "Name",
+      "department": "Department",
+      "position": "Position",
+      "data": {
+        "employee1": {
+          "name": "John Doe",
+          "department": "Development",
+          "position": "Team Lead"
+        },
+        "employee2": {
+          "name": "Jane Smith",
+          "department": "Design",
+          "position": "Associate"
+        },
+        "employee3": {
+          "name": "Mike Johnson",
+          "department": "Marketing",
+          "position": "Manager"
+        }
+      }
+    }
+  },
+  "combinedStyle": {
+    "title": "Combined Styles",
+    "description": "You can combine multiple classes. .list.fill applies both background color and hover effect.",
+    "demoTitle": "Live Example (.list.fill):",
+    "table": {
+      "rank": "Rank",
+      "name": "Name",
+      "score": "Score",
+      "data": {
+        "rank1": {
+          "rank": "1",
+          "name": "Kim XX",
+          "score": "95"
+        },
+        "rank2": {
+          "rank": "2",
+          "name": "Lee XX",
+          "score": "92"
+        },
+        "rank3": {
+          "rank": "3",
+          "name": "Park XX",
+          "score": "88"
+        }
+      }
+    }
+  },
+  "scssUsage": {
+    "title": "Using in SCSS",
+    "codeHeader": "component.module.scss",
+    "comments": {
+      "listStyle": "List style (hover effect)",
+      "borderStyle": "Border style",
+      "fillStyle": "Fill style",
+      "cellPadding": "Cell padding"
+    }
+  }
 }

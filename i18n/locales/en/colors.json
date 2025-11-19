@@ -1,4 +1,103 @@
 {
   "title": "Colors",
-  "description": "Color system and theme"
+  "description": "Color system and theme",
+  "sections": {
+    "colorSystem": {
+      "title": "Color System",
+      "description": "Podo UI provides 8 semantic colors, each with 7 variants (base, hover, pressed, focus, fill, reverse, outline). Built on CSS variables, allowing easy light/dark mode switching."
+    },
+    "colorPalette": {
+      "title": "Color Palette"
+    },
+    "colorVariants": {
+      "title": "Color Variants",
+      "description": "Each color provides 7 variants corresponding to various states:"
+    },
+    "scssUsage": {
+      "title": "Using in SCSS",
+      "description": "You can apply colors using the color() function in SCSS modules:",
+      "codeHeader": "component.module.scss"
+    },
+    "cssClasses": {
+      "title": "Using with CSS Classes",
+      "description": "You can directly apply color classes to HTML elements:",
+      "codeHeader": "HTML",
+      "demoTitle": "Live Examples:"
+    },
+    "darkMode": {
+      "title": "Dark Mode",
+      "description": "Podo UI automatically supports dark mode. Click the theme toggle button in the top right corner to switch between light and dark modes.",
+      "codeHeader": "JavaScript",
+      "note": "Tip:",
+      "noteDescription": "Built on CSS variables, the theme switches instantly without page refresh."
+    },
+    "colorSwatches": {
+      "title": "All Color Swatches",
+      "description": "View all colors and variants at a glance:"
+    }
+  },
+  "colors": {
+    "primary": {
+      "label": "Primary",
+      "description": "Primary actions and brand color"
+    },
+    "default": {
+      "label": "Default",
+      "description": "Default UI elements"
+    },
+    "default-deep": {
+      "label": "Default Deep",
+      "description": "Emphasized default color"
+    },
+    "info": {
+      "label": "Info",
+      "description": "Informational messages"
+    },
+    "link": {
+      "label": "Link",
+      "description": "Links and navigation"
+    },
+    "success": {
+      "label": "Success",
+      "description": "Success state indication"
+    },
+    "warning": {
+      "label": "Warning",
+      "description": "Warning messages"
+    },
+    "danger": {
+      "label": "Danger",
+      "description": "Danger/error state"
+    }
+  },
+  "variants": {
+    "base": {
+      "label": "Base",
+      "description": "Base color"
+    },
+    "hover": {
+      "label": "Hover",
+      "description": "Hover state"
+    },
+    "pressed": {
+      "label": "Pressed",
+      "description": "Pressed state"
+    },
+    "focus": {
+      "label": "Focus",
+      "description": "Focus state"
+    },
+    "fill": {
+      "label": "Fill",
+      "description": "Background color"
+    },
+    "reverse": {
+      "label": "Reverse",
+      "description": "Reverse color (text)"
+    },
+    "outline": {
+      "label": "Outline",
+      "description": "Outline color"
+    }
+  }
 }

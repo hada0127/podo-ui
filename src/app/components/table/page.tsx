@@ -8,66 +8,66 @@ export default function Table() {
   return (
     <>
       <section className={styles.section}>
-        <h1>테이블</h1>
-        <p>Podo UI의 Table 컴포넌트와 다양한 변형 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>기본 사용법</h2>
+        <h2>{t('basicUsage.title')}</h2>
         <p>
-          HTML table 태그를 사용하면 Podo UI의 기본 스타일이 자동으로 적용됩니다.
+          {t('basicUsage.description')}
         </p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('basicUsage.codeHeader')}</div>
           <pre><code>{`<table>
   <thead>
     <tr>
-      <th>이름</th>
-      <th>이메일</th>
-      <th>역할</th>
+      <th>${t('basicUsage.table.name')}</th>
+      <th>${t('basicUsage.table.email')}</th>
+      <th>${t('basicUsage.table.role')}</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>홍길동</td>
-      <td>hong@example.com</td>
-      <td>관리자</td>
+      <td>${t('basicUsage.table.data.user1.name')}</td>
+      <td>${t('basicUsage.table.data.user1.email')}</td>
+      <td>${t('basicUsage.table.data.user1.role')}</td>
     </tr>
     <tr>
-      <td>김철수</td>
-      <td>kim@example.com</td>
-      <td>사용자</td>
+      <td>${t('basicUsage.table.data.user2.name')}</td>
+      <td>${t('basicUsage.table.data.user2.email')}</td>
+      <td>${t('basicUsage.table.data.user2.role')}</td>
     </tr>
   </tbody>
 </table>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('basicUsage.demoTitle')}</div>
           <table>
             <thead>
               <tr>
-                <th>이름</th>
-                <th>이메일</th>
-                <th>역할</th>
+                <th>{t('basicUsage.table.name')}</th>
+                <th>{t('basicUsage.table.email')}</th>
+                <th>{t('basicUsage.table.role')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>홍길동</td>
-                <td>hong@example.com</td>
-                <td>관리자</td>
+                <td>{t('basicUsage.table.data.user1.name')}</td>
+                <td>{t('basicUsage.table.data.user1.email')}</td>
+                <td>{t('basicUsage.table.data.user1.role')}</td>
               </tr>
               <tr>
-                <td>김철수</td>
-                <td>kim@example.com</td>
-                <td>사용자</td>
+                <td>{t('basicUsage.table.data.user2.name')}</td>
+                <td>{t('basicUsage.table.data.user2.email')}</td>
+                <td>{t('basicUsage.table.data.user2.role')}</td>
               </tr>
               <tr>
-                <td>이영희</td>
-                <td>lee@example.com</td>
-                <td>사용자</td>
+                <td>{t('basicUsage.table.data.user3.name')}</td>
+                <td>{t('basicUsage.table.data.user3.email')}</td>
+                <td>{t('basicUsage.table.data.user3.role')}</td>
               </tr>
             </tbody>
           </table>
@@ -75,36 +75,36 @@ export default function Table() {
       </section>
 
       <section className={styles.section}>
-        <h2>List 스타일</h2>
+        <h2>{t('listStyle.title')}</h2>
         <p>
-          <code>.list</code> 클래스를 추가하면 행에 호버 효과가 적용되어 클릭 가능한 목록처럼 보입니다.
+          {t('listStyle.description')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제 (행에 마우스를 올려보세요):</div>
+          <div className={styles.demoTitle}>{t('listStyle.demoTitle')}</div>
           <table className="list">
             <thead>
               <tr>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>작성일</th>
+                <th>{t('listStyle.table.title')}</th>
+                <th>{t('listStyle.table.author')}</th>
+                <th>{t('listStyle.table.date')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>공지사항 제목입니다</td>
-                <td>관리자</td>
-                <td>2024-01-15</td>
+                <td>{t('listStyle.table.data.post1.title')}</td>
+                <td>{t('listStyle.table.data.post1.author')}</td>
+                <td>{t('listStyle.table.data.post1.date')}</td>
               </tr>
               <tr>
-                <td>게시글 제목입니다</td>
-                <td>사용자1</td>
-                <td>2024-01-14</td>
+                <td>{t('listStyle.table.data.post2.title')}</td>
+                <td>{t('listStyle.table.data.post2.author')}</td>
+                <td>{t('listStyle.table.data.post2.date')}</td>
               </tr>
               <tr>
-                <td>또 다른 게시글</td>
-                <td>사용자2</td>
-                <td>2024-01-13</td>
+                <td>{t('listStyle.table.data.post3.title')}</td>
+                <td>{t('listStyle.table.data.post3.author')}</td>
+                <td>{t('listStyle.table.data.post3.date')}</td>
               </tr>
             </tbody>
           </table>
@@ -112,36 +112,36 @@ export default function Table() {
       </section>
 
       <section className={styles.section}>
-        <h2>Border 스타일</h2>
+        <h2>{t('borderStyle.title')}</h2>
         <p>
-          <code>.border</code> 클래스를 추가하면 각 셀에 하단 테두리가 표시됩니다.
+          {t('borderStyle.description')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('borderStyle.demoTitle')}</div>
           <table className="border">
             <thead>
               <tr>
-                <th>상품명</th>
-                <th>가격</th>
-                <th>재고</th>
+                <th>{t('borderStyle.table.product')}</th>
+                <th>{t('borderStyle.table.price')}</th>
+                <th>{t('borderStyle.table.stock')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>상품 A</td>
-                <td>10,000원</td>
-                <td>50</td>
+                <td>{t('borderStyle.table.data.product1.name')}</td>
+                <td>{t('borderStyle.table.data.product1.price')}</td>
+                <td>{t('borderStyle.table.data.product1.stock')}</td>
               </tr>
               <tr>
-                <td>상품 B</td>
-                <td>20,000원</td>
-                <td>30</td>
+                <td>{t('borderStyle.table.data.product2.name')}</td>
+                <td>{t('borderStyle.table.data.product2.price')}</td>
+                <td>{t('borderStyle.table.data.product2.stock')}</td>
               </tr>
               <tr>
-                <td>상품 C</td>
-                <td>15,000원</td>
-                <td>100</td>
+                <td>{t('borderStyle.table.data.product3.name')}</td>
+                <td>{t('borderStyle.table.data.product3.price')}</td>
+                <td>{t('borderStyle.table.data.product3.stock')}</td>
               </tr>
             </tbody>
           </table>
@@ -149,36 +149,36 @@ export default function Table() {
       </section>
 
       <section className={styles.section}>
-        <h2>Fill 스타일</h2>
+        <h2>{t('fillStyle.title')}</h2>
         <p>
-          <code>.fill</code> 클래스를 추가하면 행에 배경색이 적용됩니다.
+          {t('fillStyle.description')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('fillStyle.demoTitle')}</div>
           <table className="fill">
             <thead>
               <tr>
-                <th>이름</th>
-                <th>부서</th>
-                <th>직급</th>
+                <th>{t('fillStyle.table.name')}</th>
+                <th>{t('fillStyle.table.department')}</th>
+                <th>{t('fillStyle.table.position')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>홍길동</td>
-                <td>개발팀</td>
-                <td>팀장</td>
+                <td>{t('fillStyle.table.data.employee1.name')}</td>
+                <td>{t('fillStyle.table.data.employee1.department')}</td>
+                <td>{t('fillStyle.table.data.employee1.position')}</td>
               </tr>
               <tr>
-                <td>김철수</td>
-                <td>디자인팀</td>
-                <td>대리</td>
+                <td>{t('fillStyle.table.data.employee2.name')}</td>
+                <td>{t('fillStyle.table.data.employee2.department')}</td>
+                <td>{t('fillStyle.table.data.employee2.position')}</td>
               </tr>
               <tr>
-                <td>이영희</td>
-                <td>마케팅팀</td>
-                <td>과장</td>
+                <td>{t('fillStyle.table.data.employee3.name')}</td>
+                <td>{t('fillStyle.table.data.employee3.department')}</td>
+                <td>{t('fillStyle.table.data.employee3.position')}</td>
               </tr>
             </tbody>
           </table>
@@ -186,36 +186,36 @@ export default function Table() {
       </section>
 
       <section className={styles.section}>
-        <h2>복합 스타일</h2>
+        <h2>{t('combinedStyle.title')}</h2>
         <p>
-          여러 클래스를 조합하여 사용할 수 있습니다. <code>.list.fill</code>은 배경색과 호버 효과를 모두 적용합니다.
+          {t('combinedStyle.description')}
         </p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제 (.list.fill):</div>
+          <div className={styles.demoTitle}>{t('combinedStyle.demoTitle')}</div>
           <table className="list fill">
             <thead>
               <tr>
-                <th>순위</th>
-                <th>이름</th>
-                <th>점수</th>
+                <th>{t('combinedStyle.table.rank')}</th>
+                <th>{t('combinedStyle.table.name')}</th>
+                <th>{t('combinedStyle.table.score')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>1</td>
-                <td>김OO</td>
-                <td>95</td>
+                <td>{t('combinedStyle.table.data.rank1.rank')}</td>
+                <td>{t('combinedStyle.table.data.rank1.name')}</td>
+                <td>{t('combinedStyle.table.data.rank1.score')}</td>
               </tr>
               <tr>
-                <td>2</td>
-                <td>이OO</td>
-                <td>92</td>
+                <td>{t('combinedStyle.table.data.rank2.rank')}</td>
+                <td>{t('combinedStyle.table.data.rank2.name')}</td>
+                <td>{t('combinedStyle.table.data.rank2.score')}</td>
               </tr>
               <tr>
-                <td>3</td>
-                <td>박OO</td>
-                <td>88</td>
+                <td>{t('combinedStyle.table.data.rank3.rank')}</td>
+                <td>{t('combinedStyle.table.data.rank3.name')}</td>
+                <td>{t('combinedStyle.table.data.rank3.score')}</td>
               </tr>
             </tbody>
           </table>
@@ -223,9 +223,9 @@ export default function Table() {
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
+        <h2>{t('scssUsage.title')}</h2>
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
+          <div className={styles.codeHeader}>{t('scssUsage.codeHeader')}</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 table {
@@ -234,7 +234,7 @@ table {
   border-radius: r(2);
   border: 1px solid color(border);
 
-  // 리스트 스타일 (호버 효과)
+  // ${t('scssUsage.comments.listStyle')}
   &.list > tbody > tr {
     &:hover {
       cursor: pointer;
@@ -242,7 +242,7 @@ table {
     }
   }
 
-  // 테두리 스타일
+  // ${t('scssUsage.comments.borderStyle')}
   &.border > thead,
   &.border > tbody {
     > tr > th,
@@ -251,7 +251,7 @@ table {
     }
   }
 
-  // Fill 스타일
+  // ${t('scssUsage.comments.fillStyle')}
   &.fill > thead,
   &.fill > tbody {
     > tr {
@@ -259,7 +259,7 @@ table {
     }
   }
 
-  // 셀 패딩
+  // ${t('scssUsage.comments.cellPadding')}
   > thead,
   > tbody {
     > tr {

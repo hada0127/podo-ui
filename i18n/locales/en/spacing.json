@@ -1,4 +1,52 @@
 {
   "title": "Spacing",
-  "description": "Spacing scale system"
+  "description": "Spacing scale system",
+  "sections": {
+    "spacingSystem": {
+      "title": "Spacing System",
+      "description": "Podo UI provides 14 spacing levels from 0 to 13. Use consistent spacing to create visual rhythm and organize layouts."
+    },
+    "spacingValues": {
+      "title": "Spacing Values",
+      "description": "All available spacing values:"
+    },
+    "scssUsage": {
+      "title": "Using in SCSS",
+      "description": "You can apply spacing using the s() function in SCSS modules:",
+      "codeHeader": "component.module.scss"
+    },
+    "cssClasses": {
+      "title": "Using with CSS Classes",
+      "description": "You can directly apply classes to HTML elements:",
+      "codeHeader": "HTML",
+      "demoTitle": "Live Examples:"
+    },
+    "borderRadius": {
+      "title": "Border Radius",
+      "description": "Podo UI provides 8 border radius values. Use the r() function:"
+    },
+    "borderRadiusScss": {
+      "title": "Border Radius SCSS Usage",
+      "codeHeader": "component.module.scss"
+    },
+    "borderRadiusClasses": {
+      "title": "Border Radius CSS Classes",
+      "codeHeader": "HTML",
+      "demoTitle": "Live Examples:"
+    },
+    "practicalExample": {
+      "title": "Practical Example",
+      "description": "Card component example using spacing and border radius together:",
+      "codeHeader": "component.module.scss",
+      "demoTitle": "Live Rendering:",
+      "cardTitle": "Card Title",
+      "cardContent": "This card applies consistent spacing using the s() function and rounds corners using the r() function. All spacing follows design system values.",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "note": {
+      "title": "Tip:",
+      "description": "Using a consistent spacing system creates visually stable layouts. Always use design system values instead of arbitrary pixel values."
+    }
+  }
 }

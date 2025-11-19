@@ -8,14 +8,14 @@ export default function Border() {
   return (
     <>
       <section className={styles.section}>
-        <h1>테두리</h1>
-        <p>Podo UI의 Border 유틸리티 클래스 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>기본 사용법</h2>
+        <h2>{t('basicUsage.title')}</h2>
         <p>
-          HTML 요소에 테두리 관련 클래스를 추가하여 다양한 테두리 스타일을 적용할 수 있습니다.
+          {t('basicUsage.description')}
         </p>
 
         <div className={styles.codeBlock}>
@@ -34,30 +34,30 @@ export default function Border() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('basicUsage.demoTitle')}</div>
           <div className={styles.borderGrid}>
             <div className={styles.borderBox} style={{ border: '1px solid' }}>
-              전체 테두리
+              {t('basicUsage.examples.all')}
             </div>
             <div className={styles.borderBox} style={{ borderTop: '1px solid' }}>
-              상단 테두리
+              {t('basicUsage.examples.top')}
             </div>
             <div className={styles.borderBox} style={{ borderRight: '1px solid' }}>
-              우측 테두리
+              {t('basicUsage.examples.right')}
             </div>
             <div className={styles.borderBox} style={{ borderBottom: '1px solid' }}>
-              하단 테두리
+              {t('basicUsage.examples.bottom')}
             </div>
             <div className={styles.borderBox} style={{ borderLeft: '1px solid' }}>
-              좌측 테두리
+              {t('basicUsage.examples.left')}
             </div>
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
-        <p>SCSS 모듈에서 테두리를 적용할 수 있습니다:</p>
+        <h2>{t('scssUsage.title')}</h2>
+        <p>{t('scssUsage.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>
@@ -89,11 +89,11 @@ export default function Border() {
       </section>
 
       <section className={styles.section}>
-        <h2>테두리 색상</h2>
-        <p>Podo UI의 시맨틱 컬러를 테두리에 사용할 수 있습니다:</p>
+        <h2>{t('colors.title')}</h2>
+        <p>{t('colors.description')}</p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('colors.demoTitle')}</div>
           <div className={styles.borderGrid}>
             <div className={styles.borderBox} style={{ border: '2px solid var(--primary)' }}>
               Primary
@@ -133,19 +133,19 @@ export default function Border() {
       </section>
 
       <section className={styles.section}>
-        <h2>실전 예제</h2>
-        <p>테두리를 활용한 카드 컴포넌트 예제:</p>
+        <h2>{t('realWorld.title')}</h2>
+        <p>{t('realWorld.description')}</p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('realWorld.demoTitle')}</div>
           <div className={styles.cardExample}>
             <div className={styles.card}>
-              <h2>기본 카드</h2>
-              <p>기본 테두리 스타일을 사용한 카드입니다.</p>
+              <h2>{t('realWorld.cards.basic.title')}</h2>
+              <p>{t('realWorld.cards.basic.description')}</p>
             </div>
             <div className={styles.card} style={{ borderColor: 'var(--primary)' }}>
-              <h2>Primary 카드</h2>
-              <p>Primary 색상의 테두리를 사용한 카드입니다.</p>
+              <h2>{t('realWorld.cards.primary.title')}</h2>
+              <p>{t('realWorld.cards.primary.description')}</p>
             </div>
           </div>
         </div>

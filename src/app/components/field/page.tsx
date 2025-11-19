@@ -9,34 +9,31 @@ export default function FieldPage() {
   return (
     <>
       <section className={styles.section}>
-        <h1>필드</h1>
-        <p>Podo UI의 Field 컴포넌트 (레이블 + 입력 + 도움말) 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>개요</h2>
-        <p>
-          Field 컴포넌트는 레이블, 입력 요소, 도움말 텍스트를 하나로 묶은 React 컴포넌트입니다.
-          폼 구성을 일관되고 쉽게 만들 수 있습니다.
-        </p>
+        <h2>{t('overview.title')}</h2>
+        <p>{t('overview.description')}</p>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.fieldGroup}>
-            <Field label="이메일" helper="이메일 주소를 입력하세요">
-              <input type="email" placeholder="example@email.com" />
+            <Field label={t('overview.email.label')} helper={t('overview.email.helper')}>
+              <input type="email" placeholder={t('overview.email.placeholder')} />
             </Field>
 
-            <Field label="비밀번호" helper="8자 이상 입력하세요">
-              <input type="password" placeholder="••••••••" />
+            <Field label={t('overview.password.label')} helper={t('overview.password.helper')}>
+              <input type="password" placeholder={t('overview.password.placeholder')} />
             </Field>
 
-            <Field label="카테고리">
+            <Field label={t('overview.category.label')}>
               <select>
-                <option value="">선택하세요</option>
-                <option value="1">옵션 1</option>
-                <option value="2">옵션 2</option>
-                <option value="3">옵션 3</option>
+                <option value="">{t('overview.category.placeholder')}</option>
+                <option value="1">{t('overview.category.option')} 1</option>
+                <option value="2">{t('overview.category.option')} 2</option>
+                <option value="3">{t('overview.category.option')} 3</option>
               </select>
             </Field>
           </div>
@@ -44,33 +41,33 @@ export default function FieldPage() {
       </section>
 
       <section className={styles.section}>
-        <h2>React에서 사용하기</h2>
-        <p>Field 컴포넌트는 children으로 입력 요소를 받아 레이블과 함께 표시합니다:</p>
+        <h2>{t('react.title')}</h2>
+        <p>{t('react.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.tsx</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`import { Field } from 'podo-ui';
 
 export default function MyForm() {
   return (
     <div>
-      <Field label="이메일" helper="이메일 주소를 입력하세요">
-        <input type="email" placeholder="example@email.com" />
+      <Field label="${t('overview.email.label')}" helper="${t('overview.email.helper')}">
+        <input type="email" placeholder="${t('overview.email.placeholder')}" />
       </Field>
 
-      <Field label="비밀번호" helper="8자 이상 입력하세요">
-        <input type="password" placeholder="••••••••" />
+      <Field label="${t('overview.password.label')}" helper="${t('overview.password.helper')}">
+        <input type="password" placeholder="${t('overview.password.placeholder')}" />
       </Field>
 
-      <Field label="설명" helper="최대 500자까지 입력 가능합니다">
-        <textarea rows={4} placeholder="내용을 입력하세요"></textarea>
+      <Field label="${t('react.description2.label')}" helper="${t('react.description2.helper')}">
+        <textarea rows={4} placeholder="${t('react.description2.placeholder')}"></textarea>
       </Field>
 
-      <Field label="카테고리">
+      <Field label="${t('overview.category.label')}">
         <select>
-          <option value="" disabled selected>선택하세요</option>
-          <option value="1">옵션 1</option>
-          <option value="2">옵션 2</option>
+          <option value="" disabled selected>${t('overview.category.placeholder')}</option>
+          <option value="1">${t('overview.category.option')} 1</option>
+          <option value="2">${t('overview.category.option')} 2</option>
         </select>
       </Field>
     </div>
@@ -80,18 +77,18 @@ export default function MyForm() {
       </section>
 
       <section className={styles.section}>
-        <h2>구조</h2>
-        <p>Field 컴포넌트는 다음과 같은 구조로 이루어져 있습니다:</p>
+        <h2>{t('structure.title')}</h2>
+        <p>{t('structure.description')}</p>
         <ul>
-          <li><strong>label:</strong> 입력 필드의 레이블 텍스트</li>
-          <li><strong>children:</strong> 실제 입력 요소 (input, select, textarea 등)</li>
-          <li><strong>helper:</strong> 입력 필드 아래에 표시되는 도움말 텍스트 (선택사항)</li>
+          <li><strong>label:</strong> {t('structure.label')}</li>
+          <li><strong>children:</strong> {t('structure.children')}</li>
+          <li><strong>helper:</strong> {t('structure.helper')}</li>
         </ul>
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS 스타일</h2>
-        <p>Field 컴포넌트의 기본 스타일:</p>
+        <h2>{t('scss.title')}</h2>
+        <p>{t('scss.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>field.module.scss</div>

@@ -8,15 +8,14 @@ export default function Display() {
   return (
     <>
       <section className={styles.section}>
-        <h1>표시 & 가시성</h1>
-        <p>Podo UI의 Display와 Visibility 유틸리티 클래스 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>반응형 숨김 클래스</h2>
+        <h2>{t('hideClasses.title')}</h2>
         <p>
-          특정 디바이스에서만 요소를 숨기는 클래스를 제공합니다.
-          브라우저 창 크기를 조절하여 확인해보세요.
+          {t('hideClasses.description')}
         </p>
 
         <div className={styles.codeBlock}>
@@ -35,34 +34,34 @@ export default function Display() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제 (창 크기를 조절해보세요):</div>
+          <div className={styles.demoTitle}>{t('hideClasses.demoTitle')}</div>
           <div className={styles.hideDemo}>
             <div className="hide-pc">
-              <div className={styles.demoBox}>PC에서 숨김</div>
+              <div className={styles.demoBox}>{t('hideClasses.examples.hidePC')}</div>
             </div>
             <div className="hide-tb">
-              <div className={styles.demoBox}>Tablet에서 숨김</div>
+              <div className={styles.demoBox}>{t('hideClasses.examples.hideTB')}</div>
             </div>
             <div className="hide-mo">
-              <div className={styles.demoBox}>Mobile에서 숨김</div>
+              <div className={styles.demoBox}>{t('hideClasses.examples.hideMO')}</div>
             </div>
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>브레이크포인트</h2>
-        <p>Podo UI의 반응형 브레이크포인트:</p>
+        <h2>{t('breakpoints.title')}</h2>
+        <p>{t('breakpoints.description')}</p>
         <ul>
-          <li><strong>PC:</strong> 1280px 이상</li>
-          <li><strong>Tablet:</strong> 768px ~ 1279px</li>
-          <li><strong>Mobile:</strong> 767px 이하</li>
+          <li><strong>PC:</strong> {t('breakpoints.pc')}</li>
+          <li><strong>Tablet:</strong> {t('breakpoints.tablet')}</li>
+          <li><strong>Mobile:</strong> {t('breakpoints.mobile')}</li>
         </ul>
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS 미디어 쿼리</h2>
-        <p>SCSS에서 미디어 쿼리 믹스인을 사용하여 반응형 스타일을 적용할 수 있습니다:</p>
+        <h2>{t('mediaQuery.title')}</h2>
+        <p>{t('mediaQuery.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>
@@ -107,8 +106,8 @@ export default function Display() {
       </section>
 
       <section className={styles.section}>
-        <h2>현재 화면 크기</h2>
-        <p>현재 보고 계신 화면의 디바이스 타입입니다:</p>
+        <h2>{t('currentSize.title')}</h2>
+        <p>{t('currentSize.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.deviceIndicator}>
@@ -116,8 +115,8 @@ export default function Display() {
               <div className={styles.deviceBox}>
                 <i className="icon-menu"></i>
                 <div>
-                  <strong>현재: PC</strong>
-                  <p>1280px 이상</p>
+                  <strong>{t('currentSize.pc.label')}</strong>
+                  <p>{t('currentSize.pc.size')}</p>
                 </div>
               </div>
             </div>
@@ -125,8 +124,8 @@ export default function Display() {
               <div className={styles.deviceBox}>
                 <i className="icon-menu"></i>
                 <div>
-                  <strong>현재: Tablet</strong>
-                  <p>768px ~ 1279px</p>
+                  <strong>{t('currentSize.tablet.label')}</strong>
+                  <p>{t('currentSize.tablet.size')}</p>
                 </div>
               </div>
             </div>
@@ -134,8 +133,8 @@ export default function Display() {
               <div className={styles.deviceBox}>
                 <i className="icon-menu"></i>
                 <div>
-                  <strong>현재: Mobile</strong>
-                  <p>767px 이하</p>
+                  <strong>{t('currentSize.mobile.label')}</strong>
+                  <p>{t('currentSize.mobile.size')}</p>
                 </div>
               </div>
             </div>
@@ -144,8 +143,8 @@ export default function Display() {
       </section>
 
       <section className={styles.section}>
-        <h2>실전 예제</h2>
-        <p>반응형 레이아웃 예제:</p>
+        <h2>{t('realWorld.title')}</h2>
+        <p>{t('realWorld.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>

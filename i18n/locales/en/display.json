@@ -1,4 +1,45 @@
 {
   "title": "Display & Visibility",
-  "description": "Display and visibility utilities"
+  "description": "Utilities for showing and hiding elements for responsive design.",
+  "hideClasses": {
+    "title": "Hide Classes",
+    "description": "Selectively hide elements based on device size:",
+    "demoTitle": "Hide Examples (Try resizing your browser):",
+    "examples": {
+      "hidePC": "Hidden on PC only (1280px+)",
+      "hideTB": "Hidden on Tablet only (768-1279px)",
+      "hideMO": "Hidden on Mobile only (~767px)"
+    }
+  },
+  "breakpoints": {
+    "title": "Breakpoints",
+    "description": "Podo UI uses 3 main breakpoints:",
+    "pc": "1280px and above",
+    "tablet": "768px - 1279px",
+    "mobile": "767px and below"
+  },
+  "mediaQuery": {
+    "title": "Media Query Mixins",
+    "description": "Mixins provided for applying responsive styles in SCSS:"
+  },
+  "currentSize": {
+    "title": "Current Screen Size",
+    "description": "Content displayed based on current browser size:",
+    "pc": {
+      "label": "PC",
+      "size": "1280px and above"
+    },
+    "tablet": {
+      "label": "Tablet",
+      "size": "768px - 1279px"
+    },
+    "mobile": {
+      "label": "Mobile",
+      "size": "767px and below"
+    }
+  },
+  "realWorld": {
+    "title": "Real World Examples",
+    "description": "Practical examples for responsive design:"
+  }
 }

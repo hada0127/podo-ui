@@ -1,4 +1,102 @@
 {
   "title": "사용법",
-  "description": "Podo UI 사용 방법을 알아보세요"
+  "description": "Podo UI 사용 방법을 알아보세요",
+  "cssClasses": {
+    "title": "CSS 클래스 사용하기",
+    "description": "Podo UI는 CSS 우선 접근 방식을 사용합니다. 대부분의 스타일은 HTML 클래스를 통해 적용됩니다.",
+    "buttonExample": {
+      "title": "버튼 예제"
+    },
+    "buttonVariants": {
+      "title": "버튼 변형"
+    },
+    "inputExample": {
+      "title": "Input 예제",
+      "placeholderDefault": "기본 Input"
+    }
+  },
+  "scssFunctions": {
+    "title": "SCSS 함수와 믹스인",
+    "description": "SCSS 모듈에서 Podo UI의 디자인 토큰을 사용하여 커스텀 스타일을 작성할 수 있습니다.",
+    "colorFunction": {
+      "title": "컬러 함수",
+      "comments": {
+        "primaryColor": "Primary 색상",
+        "reverseColor": "Primary 반전 색상",
+        "hoverColor": "Primary hover 색상"
+      }
+    },
+    "spacingFunction": {
+      "title": "간격 함수 (Spacing)",
+      "comments": {
+        "margin": "12px",
+        "padding": "20px",
+        "gap": "8px",
+        "available": "0-13까지 사용 가능",
+        "marginTop": "28px"
+      }
+    },
+    "radiusFunction": {
+      "title": "Border Radius 함수",
+      "comments": {
+        "r2": "4px",
+        "r3": "8px",
+        "r4": "12px"
+      }
+    },
+    "typographyMixin": {
+      "title": "타이포그래피 믹스인",
+      "comments": {
+        "display1": "가장 큰 제목",
+        "display4": "중간 크기 제목",
+        "p2": "본문 텍스트",
+        "p5": "작은 텍스트"
+      }
+    }
+  },
+  "reactComponents": {
+    "title": "React 컴포넌트",
+    "description": "일부 복잡한 컴포넌트는 React 컴포넌트로 제공됩니다.",
+    "codeHeader": "일반 React",
+    "example": {
+      "label": "이름",
+      "placeholder": "이름을 입력하세요"
+    }
+  },
+  "theme": {
+    "title": "테마 (Light/Dark Mode)",
+    "description": "Podo UI는 라이트 모드와 다크 모드를 자동으로 지원합니다.",
+    "codeHeader": "테마 설정",
+    "comments": {
+      "light": "라이트 모드로 설정",
+      "dark": "다크 모드로 설정",
+      "system": "시스템 설정 따르기"
+    },
+    "note": {
+      "title": "참고:",
+      "content": "모든 색상은 color() 함수를 사용하면 자동으로 테마에 대응됩니다."
+    }
+  },
+  "nextSteps": {
+    "title": "다음 단계",
+    "description": "더 자세한 내용은 각 섹션의 문서를 참고하세요:",
+    "links": {
+      "colors": {
+        "title": "컬러 시스템",
+        "description": "8가지 시맨틱 컬러와 변형"
+      },
+      "typography": {
+        "title": "타이포그래피",
+        "description": "폰트 스타일과 믹스인"
+      },
+      "icons": {
+        "title": "아이콘",
+        "description": "119개 아이콘 폰트"
+      },
+      "components": {
+        "title": "컴포넌트",
+        "description": "UI 컴포넌트 둘러보기"
+      }
+    }
+  }
 }

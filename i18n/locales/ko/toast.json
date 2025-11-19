@@ -1,4 +1,138 @@
 {
   "title": "토스트",
-  "description": "토스트 알림 컴포넌트"
+  "description": "토스트 알림 컴포넌트",
+  "examples": {
+    "borderFalseSuccessTopRight": "border=false - Success (Top Right)",
+    "borderTrueInfoTopCenter": "border=true - Info (Top Center)",
+    "longTrueWarningBottomRight": "long=true - Warning (Bottom Right)",
+    "longTrueBorderTrueDangerBottomCenter": "long=true, border=true - Danger (Bottom Center)",
+    "primaryCenterManualClose": "Primary - Center (수동 닫기)",
+    "customWidthBottomLeft": "Custom Width - Bottom Left",
+    "success": "성공",
+    "successMessage": "파일이 성공적으로 업로드되었습니다!",
+    "notification": "알림",
+    "newMessageNotification": "새로운 메시지가 있습니다",
+    "unsavedChanges": "저장되지 않은 변경사항이 있습니다",
+    "errorOccurred": "오류가 발생했습니다",
+    "importantNotification": "중요 알림",
+    "manualCloseMessage": "이 메시지는 닫기 버튼을 눌러야 닫힙니다",
+    "wideToast": "넓은 토스트",
+    "wideToastMessage": "너비를 500px로 지정한 토스트입니다"
+  },
+  "variants": {
+    "default": {
+      "label": "Default",
+      "description": "기본 알림"
+    },
+    "primary": {
+      "label": "Primary",
+      "description": "주요 알림"
+    },
+    "info": {
+      "label": "Info",
+      "description": "정보성 알림"
+    },
+    "success": {
+      "label": "Success",
+      "description": "성공 알림"
+    },
+    "warning": {
+      "label": "Warning",
+      "description": "경고 알림"
+    },
+    "danger": {
+      "label": "Danger",
+      "description": "위험 알림"
+    }
+  },
+  "sections": {
+    "basicUsage": {
+      "title": "기본 사용법",
+      "description": "토스트는 .toast 클래스를 사용하여 만들 수 있습니다. 아이콘, 헤더, 본문, 닫기 버튼을 포함할 수 있습니다.",
+      "demo": "실제 예제:",
+      "closeLabel": "닫기"
+    },
+    "styleProperties": {
+      "title": "스타일 속성",
+      "description": "토스트는 border와 long 속성을 조합하여 다양한 스타일을 제공합니다:",
+      "borderProperty": "Border 속성",
+      "borderFalseDefault": "border=false (기본): 4px 두꺼운 강조 색상 테두리",
+      "borderTrue": "border=true (.border): 1px 전체 외곽선만 (강조 색상 테두리 없음)",
+      "longProperty": "Long 속성",
+      "longFalseDefault": "long=false (기본): 세로 레이아웃, border=false일 때 상단에 4px 강조 테두리",
+      "longTrue": "long=true (.long): 가로 레이아웃, border=false일 때 왼쪽에 4px 강조 테두리",
+      "borderFalseAccent": "border=false - 강조 색상 테두리",
+      "borderFalseDescription": "기본 스타일은 상단에 4px 두꺼운 강조 색상 테두리가 표시됩니다.",
+      "borderTrueOutline": "border=true - 전체 외곽선",
+      "borderTrueDescription": ".border 클래스를 추가하면 1px 전체 외곽선만 표시됩니다 (강조 색상 테두리 없음).",
+      "commentBorderFalse": "border=false (4px 강조 색상 테두리)",
+      "commentBorderTrue": "border=true (1px 전체 외곽선만)",
+      "borderFalseAccentBorder": "border=false (4px 강조 테두리)",
+      "borderTrueOutlineBorder": "border=true (1px 외곽선)"
+    },
+    "longStyle": {
+      "title": "Long 스타일",
+      "description": ".long 클래스를 추가하면 가로 레이아웃으로 변경되며, 테두리 위치가 상단에서 왼쪽으로 바뀝니다. 좁은 공간에 토스트를 표시할 때 유용합니다.",
+      "longTrueBorderFalse": "long=true, border=false",
+      "longTrueBorderFalseDescription": "왼쪽에 4px 두꺼운 강조 색상 테두리가 표시됩니다.",
+      "longTrueBorderTrue": "long=true, border=true",
+      "longTrueBorderTrueDescription": "1px 전체 외곽선만 표시됩니다 (강조 색상 테두리 없음).",
+      "commentLongTrueBorderFalse": "long=true, border=false (왼쪽에 4px 강조 테두리)",
+      "commentLongTrueBorderTrue": "long=true, border=true (1px 전체 외곽선만)",
+      "fileUploadSuccess": "파일이 성공적으로 업로드되었습니다"
+    },
+    "colorVariants": {
+      "title": "색상 변형",
+      "description": "6가지 색상 변형을 사용하여 다양한 메시지를 전달할 수 있습니다:",
+      "longBorderFalse": "long=true, border=false",
+      "longBorderTrue": "long=true, border=true"
+    },
+    "combinationExamples": {
+      "title": "조합 예제",
+      "description": ".long 클래스를 추가하면 가로 레이아웃으로 변경되며 한 줄로 표시됩니다. 좁은 공간에 토스트를 표시할 때 유용합니다.",
+      "commentLongBorder": "Long + Border"
+    },
+    "simpleMessage": {
+      "title": "간단한 메시지",
+      "description": "헤더 없이 본문만 표시할 수도 있습니다:"
+    },
+    "reactComponentExample": {
+      "title": "React 컴포넌트 예제",
+      "description": "버튼을 클릭하여 다양한 Toast 스타일을 확인해보세요:"
+    },
+    "reactUsage": {
+      "title": "React에서 사용하기",
+      "description": "React 애플리케이션에서 Toast 컴포넌트를 사용할 수 있습니다.",
+      "step1Title": "1. ToastProvider 설정",
+      "step1Description": "먼저 애플리케이션의 최상위에 ToastProvider를 추가합니다:",
+      "step2Title": "2. useToast Hook 사용",
+      "step2Description": "컴포넌트에서 useToast hook을 사용하여 토스트를 표시합니다:",
+      "step3Title": "3. Toast 옵션",
+      "step4Title": "4. 사용 예제",
+      "messageRequired": "필수: 토스트 메시지",
+      "headerOptional": "선택: 헤더 텍스트 (long일 때는 표시 안됨)",
+      "borderOption": "true: 1px 전체 외곽선, false: 4px 강조 테두리 (기본)",
+      "longOption": "true: 가로 레이아웃",
+      "durationOption": "자동 닫힘 시간(ms), 0이면 자동으로 닫히지 않음",
+      "widthOption": "너비 (기본: auto)",
+      "exampleComment1": "border=false (4px 강조 테두리)",
+      "exampleMessage1": "파일이 업로드되었습니다",
+      "exampleComment2": "border=true (1px 전체 외곽선)",
+      "exampleHeader2": "알림",
+      "exampleMessage2": "새로운 메시지가 있습니다",
+      "exampleComment3": "Long 스타일",
+      "exampleMessage3": "저장 완료",
+      "exampleComment4": "너비 지정",
+      "exampleMessage4": "이것은 넓은 토스트입니다",
+      "exampleComment5": "자동으로 닫히지 않음",
+      "exampleHeader5": "중요 알림",
+      "exampleMessage5": "이 메시지는 수동으로 닫아야 합니다",
+      "saveButton": "저장",
+      "savedMessage": "저장되었습니다!"
+    },
+    "scssUsage": {
+      "title": "SCSS에서 사용하기",
+      "description": "SCSS 모듈에서 토스트 스타일을 커스터마이징할 수 있습니다:"
+    }
+  }
 }

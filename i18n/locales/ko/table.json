@@ -1,4 +1,150 @@
 {
   "title": "테이블",
-  "description": "데이터 테이블 컴포넌트"
+  "description": "데이터 테이블 컴포넌트",
+  "basicUsage": {
+    "title": "기본 사용법",
+    "description": "HTML table 태그를 사용하면 Podo UI의 기본 스타일이 자동으로 적용됩니다.",
+    "codeHeader": "HTML",
+    "demoTitle": "실제 예제:",
+    "table": {
+      "name": "이름",
+      "email": "이메일",
+      "role": "역할",
+      "data": {
+        "user1": {
+          "name": "홍길동",
+          "email": "hong@example.com",
+          "role": "관리자"
+        },
+        "user2": {
+          "name": "김철수",
+          "email": "kim@example.com",
+          "role": "사용자"
+        },
+        "user3": {
+          "name": "이영희",
+          "email": "lee@example.com",
+          "role": "사용자"
+        }
+      }
+    }
+  },
+  "listStyle": {
+    "title": "List 스타일",
+    "description": ".list 클래스를 추가하면 행에 호버 효과가 적용되어 클릭 가능한 목록처럼 보입니다.",
+    "demoTitle": "실제 예제 (행에 마우스를 올려보세요):",
+    "table": {
+      "title": "제목",
+      "author": "작성자",
+      "date": "작성일",
+      "data": {
+        "post1": {
+          "title": "공지사항 제목입니다",
+          "author": "관리자",
+          "date": "2024-01-15"
+        },
+        "post2": {
+          "title": "게시글 제목입니다",
+          "author": "사용자1",
+          "date": "2024-01-14"
+        },
+        "post3": {
+          "title": "또 다른 게시글",
+          "author": "사용자2",
+          "date": "2024-01-13"
+        }
+      }
+    }
+  },
+  "borderStyle": {
+    "title": "Border 스타일",
+    "description": ".border 클래스를 추가하면 각 셀에 하단 테두리가 표시됩니다.",
+    "demoTitle": "실제 예제:",
+    "table": {
+      "product": "상품명",
+      "price": "가격",
+      "stock": "재고",
+      "data": {
+        "product1": {
+          "name": "상품 A",
+          "price": "10,000원",
+          "stock": "50"
+        },
+        "product2": {
+          "name": "상품 B",
+          "price": "20,000원",
+          "stock": "30"
+        },
+        "product3": {
+          "name": "상품 C",
+          "price": "15,000원",
+          "stock": "100"
+        }
+      }
+    }
+  },
+  "fillStyle": {
+    "title": "Fill 스타일",
+    "description": ".fill 클래스를 추가하면 행에 배경색이 적용됩니다.",
+    "demoTitle": "실제 예제:",
+    "table": {
+      "name": "이름",
+      "department": "부서",
+      "position": "직급",
+      "data": {
+        "employee1": {
+          "name": "홍길동",
+          "department": "개발팀",
+          "position": "팀장"
+        },
+        "employee2": {
+          "name": "김철수",
+          "department": "디자인팀",
+          "position": "대리"
+        },
+        "employee3": {
+          "name": "이영희",
+          "department": "마케팅팀",
+          "position": "과장"
+        }
+      }
+    }
+  },
+  "combinedStyle": {
+    "title": "복합 스타일",
+    "description": "여러 클래스를 조합하여 사용할 수 있습니다. .list.fill은 배경색과 호버 효과를 모두 적용합니다.",
+    "demoTitle": "실제 예제 (.list.fill):",
+    "table": {
+      "rank": "순위",
+      "name": "이름",
+      "score": "점수",
+      "data": {
+        "rank1": {
+          "rank": "1",
+          "name": "김OO",
+          "score": "95"
+        },
+        "rank2": {
+          "rank": "2",
+          "name": "이OO",
+          "score": "92"
+        },
+        "rank3": {
+          "rank": "3",
+          "name": "박OO",
+          "score": "88"
+        }
+      }
+    }
+  },
+  "scssUsage": {
+    "title": "SCSS에서 사용하기",
+    "codeHeader": "component.module.scss",
+    "comments": {
+      "listStyle": "리스트 스타일 (호버 효과)",
+      "borderStyle": "테두리 스타일",
+      "fillStyle": "Fill 스타일",
+      "cellPadding": "셀 패딩"
+    }
+  }
 }

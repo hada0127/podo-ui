@@ -42,16 +42,15 @@ export default function Spacing() {
       </section>
 
       <section className={styles.section}>
-        <h2>간격 시스템</h2>
+        <h2>{t('sections.spacingSystem.title')}</h2>
         <p>
-          Podo UI는 0부터 13까지 14단계의 여백 값을 제공합니다.
-          일관된 여백을 사용하여 시각적 리듬을 만들고 정돈된 레이아웃을 구성할 수 있습니다.
+          {t('sections.spacingSystem.description')}
         </p>
       </section>
 
       <section className={styles.section}>
-        <h2>간격 값</h2>
-        <p>사용 가능한 모든 간격 값입니다:</p>
+        <h2>{t('sections.spacingValues.title')}</h2>
+        <p>{t('sections.spacingValues.description')}</p>
 
         <div className={styles.spacingGrid}>
           {spacingValues.map((spacing) => (
@@ -72,11 +71,11 @@ export default function Spacing() {
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
-        <p>SCSS 모듈에서 s() 함수를 사용하여 간격을 적용할 수 있습니다:</p>
+        <h2>{t('sections.scssUsage.title')}</h2>
+        <p>{t('sections.scssUsage.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
+          <div className={styles.codeHeader}>{t('sections.scssUsage.codeHeader')}</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .container {
@@ -100,11 +99,11 @@ export default function Spacing() {
       </section>
 
       <section className={styles.section}>
-        <h2>CSS 클래스로 사용하기</h2>
-        <p>HTML 요소에 직접 클래스를 적용할 수 있습니다:</p>
+        <h2>{t('sections.cssClasses.title')}</h2>
+        <p>{t('sections.cssClasses.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
           <pre><code>{`<!-- 마진 -->
 <div class="m-4">Margin 12px</div>
 <div class="m-t-5">Margin Top 16px</div>
@@ -121,7 +120,7 @@ export default function Spacing() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.cssClasses.demoTitle')}</div>
           <div className={styles.spacingDemo}>
             <div className="p-4" style={{ background: '#f3e8ff', border: '1px solid #7c3aed' }}>
               Padding 12px (p-4)
@@ -137,8 +136,8 @@ export default function Spacing() {
       </section>
 
       <section className={styles.section}>
-        <h2>모서리 반경</h2>
-        <p>Podo UI는 8가지 모서리 반경 값을 제공합니다. r() 함수를 사용합니다:</p>
+        <h2>{t('sections.borderRadius.title')}</h2>
+        <p>{t('sections.borderRadius.description')}</p>
 
         <div className={styles.radiusGrid}>
           {radiusValues.map((radius) => (
@@ -159,10 +158,10 @@ export default function Spacing() {
       </section>
 
       <section className={styles.section}>
-        <h2>Border Radius SCSS 사용법</h2>
+        <h2>{t('sections.borderRadiusScss.title')}</h2>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
+          <div className={styles.codeHeader}>{t('sections.borderRadiusScss.codeHeader')}</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .card {
@@ -188,10 +187,10 @@ export default function Spacing() {
       </section>
 
       <section className={styles.section}>
-        <h2>Border Radius CSS 클래스</h2>
+        <h2>{t('sections.borderRadiusClasses.title')}</h2>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('sections.borderRadiusClasses.codeHeader')}</div>
           <pre><code>{`<div class="r-0">No Radius</div>
 <div class="r-2">Radius 4px</div>
 <div class="r-4">Radius 8px</div>
@@ -199,7 +198,7 @@ export default function Spacing() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('sections.borderRadiusClasses.demoTitle')}</div>
           <div className={styles.radiusDemo}>
             <div className="r-0 p-4" style={{ background: '#f3e8ff', border: '1px solid #7c3aed' }}>
               r-0
@@ -221,11 +220,11 @@ export default function Spacing() {
       </section>
 
       <section className={styles.section}>
-        <h2>실전 예제</h2>
-        <p>간격과 모서리 반경을 함께 사용한 카드 컴포넌트 예제:</p>
+        <h2>{t('sections.practicalExample.title')}</h2>
+        <p>{t('sections.practicalExample.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
+          <div className={styles.codeHeader}>{t('sections.practicalExample.codeHeader')}</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .card {
@@ -262,18 +261,17 @@ export default function Spacing() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 렌더링:</div>
+          <div className={styles.demoTitle}>{t('sections.practicalExample.demoTitle')}</div>
           <div className={styles.cardExample}>
             <div className={styles.cardHeader}>
-              <h2>카드 제목</h2>
+              <h2>{t('sections.practicalExample.cardTitle')}</h2>
             </div>
             <div className={styles.cardContent}>
-              이 카드는 s() 함수로 일관된 여백을 적용하고, r() 함수로 모서리를 둥글게 만들었습니다.
-              모든 간격이 디자인 시스템의 값을 따르고 있습니다.
+              {t('sections.practicalExample.cardContent')}
             </div>
             <div className={styles.cardFooter}>
-              <button className="primary">확인</button>
-              <button className="default-deep">취소</button>
+              <button className="primary">{t('sections.practicalExample.confirm')}</button>
+              <button className="default-deep">{t('sections.practicalExample.cancel')}</button>
             </div>
           </div>
         </div>
@@ -283,8 +281,7 @@ export default function Spacing() {
         <div className={styles.note}>
           <i className="icon-info"></i>
           <div>
-            <strong>팁:</strong> 일관된 간격 시스템을 사용하면 시각적으로 안정감 있는 레이아웃을 만들 수 있습니다.
-            임의의 픽셀 값 대신 항상 디자인 시스템의 값을 사용하세요.
+            <strong>{t('sections.note.title')}</strong> {t('sections.note.description')}
           </div>
         </div>
       </section>

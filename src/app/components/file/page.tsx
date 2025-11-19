@@ -8,19 +8,16 @@ export default function File() {
   return (
     <>
       <section className={styles.section}>
-        <h1>파일 업로드</h1>
-        <p>Podo UI의 File Input 컴포넌트와 사용법을 안내합니다</p>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
       </section>
 
       <section className={styles.section}>
-        <h2>기본 사용법</h2>
-        <p>
-          HTML <code>input[type="file"]</code>을 사용하면 Podo UI의 커스텀 스타일이 자동으로 적용됩니다.
-          업로드 클라우드 아이콘이 포함되어 있습니다.
-        </p>
+        <h2>{t('basicUsage.title')}</h2>
+        <p>{t('basicUsage.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<input type="file" />
 <input type="file" multiple />
 <input type="file" accept="image/*" />
@@ -28,7 +25,7 @@ export default function File() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.inputGroup}>
             <input type="file" />
             <input type="file" multiple />
@@ -39,11 +36,11 @@ export default function File() {
       </section>
 
       <section className={styles.section}>
-        <h2>파일 타입 제한</h2>
-        <p><code>accept</code> 속성으로 특정 파일 타입만 선택할 수 있도록 제한할 수 있습니다:</p>
+        <h2>{t('fileTypes.title')}</h2>
+        <p>{t('fileTypes.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<!-- 이미지만 -->
 <input type="file" accept="image/*" />
 
@@ -59,17 +56,17 @@ export default function File() {
       </section>
 
       <section className={styles.section}>
-        <h2>다중 파일 선택</h2>
-        <p><code>multiple</code> 속성으로 여러 파일을 동시에 선택할 수 있습니다:</p>
+        <h2>{t('multiple.title')}</h2>
+        <p>{t('multiple.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
+          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<input type="file" multiple />
 <input type="file" accept="image/*" multiple />`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.inputGroup}>
             <input type="file" multiple />
           </div>
@@ -77,7 +74,7 @@ export default function File() {
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS에서 사용하기</h2>
+        <h2>{t('scss.title')}</h2>
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;

@@ -13,10 +13,9 @@ export default function Responsive() {
       </section>
 
       <section className={styles.section}>
-        <h2>브레이크포인트</h2>
+        <h2>{t('breakpoints.title')}</h2>
         <p>
-          Podo UI는 3가지 브레이크포인트를 제공합니다: PC, Tablet, Mobile.
-          각 디바이스에 최적화된 레이아웃을 쉽게 구성할 수 있습니다.
+          {t('breakpoints.description')}
         </p>
 
         <div className={styles.breakpointGrid}>
@@ -24,32 +23,32 @@ export default function Responsive() {
             <div className={styles.breakpointIcon}>
               <i className="icon-menu"></i>
             </div>
-            <h2>PC</h2>
-            <p className={styles.breakpointValue}>1280px 이상</p>
+            <h2>{t('breakpoints.pc.title')}</h2>
+            <p className={styles.breakpointValue}>{t('breakpoints.pc.range')}</p>
             <code>@include pc</code>
           </div>
           <div className={styles.breakpointCard}>
             <div className={styles.breakpointIcon}>
               <i className="icon-menu"></i>
             </div>
-            <h2>Tablet</h2>
-            <p className={styles.breakpointValue}>768px ~ 1279px</p>
+            <h2>{t('breakpoints.tablet.title')}</h2>
+            <p className={styles.breakpointValue}>{t('breakpoints.tablet.range')}</p>
             <code>@include tb</code>
           </div>
           <div className={styles.breakpointCard}>
             <div className={styles.breakpointIcon}>
               <i className="icon-menu"></i>
             </div>
-            <h2>Mobile</h2>
-            <p className={styles.breakpointValue}>767px 이하</p>
+            <h2>{t('breakpoints.mobile.title')}</h2>
+            <p className={styles.breakpointValue}>{t('breakpoints.mobile.range')}</p>
             <code>@include mo</code>
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>SCSS 미디어 쿼리 믹스인</h2>
-        <p>SCSS에서 미디어 쿼리 믹스인을 사용하여 반응형 스타일을 적용할 수 있습니다:</p>
+        <h2>{t('mediaQueries.title')}</h2>
+        <p>{t('mediaQueries.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>
@@ -81,41 +80,41 @@ export default function Responsive() {
       </section>
 
       <section className={styles.section}>
-        <h2>반응형 숨김</h2>
-        <p>특정 디바이스에서만 요소를 숨기는 클래스를 제공합니다:</p>
+        <h2>{t('hiding.title')}</h2>
+        <p>{t('hiding.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 모든 디바이스에서 숨김 -->
-<div class="hide">항상 숨김</div>
+          <pre><code>{`<!-- ${t('hiding.alwaysHide')} -->
+<div class="hide">${t('hiding.alwaysHide')}</div>
 
-<!-- PC에서만 숨김 -->
-<div class="hide-pc">PC에서만 숨김</div>
+<!-- ${t('hiding.hideOnPcOnly')} -->
+<div class="hide-pc">${t('hiding.hideOnPcOnly')}</div>
 
-<!-- Tablet에서만 숨김 -->
-<div class="hide-tb">Tablet에서만 숨김</div>
+<!-- ${t('hiding.hideOnTabletOnly')} -->
+<div class="hide-tb">${t('hiding.hideOnTabletOnly')}</div>
 
-<!-- Mobile에서만 숨김 -->
-<div class="hide-mo">Mobile에서만 숨김</div>`}</code></pre>
+<!-- ${t('hiding.hideOnMobileOnly')} -->
+<div class="hide-mo">${t('hiding.hideOnMobileOnly')}</div>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제 (창 크기를 조절해보세요):</div>
+          <div className={styles.demoTitle}>{t('hiding.example')}</div>
           <div className={styles.hideDemo}>
-            <div className="hide-pc"><div className={styles.demoBox}>PC에서 숨김</div></div>
-            <div className="hide-tb"><div className={styles.demoBox}>Tablet에서 숨김</div></div>
-            <div className="hide-mo"><div className={styles.demoBox}>Mobile에서 숨김</div></div>
+            <div className="hide-pc"><div className={styles.demoBox}>{t('hiding.hideOnPc')}</div></div>
+            <div className="hide-tb"><div className={styles.demoBox}>{t('hiding.hideOnTablet')}</div></div>
+            <div className="hide-mo"><div className={styles.demoBox}>{t('hiding.hideOnMobile')}</div></div>
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>반응형 그리드 예제</h2>
-        <p>그리드 시스템은 자동으로 반응형으로 동작합니다:</p>
+        <h2>{t('gridExample.title')}</h2>
+        <p>{t('gridExample.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- PC: 12칸, Tablet: 6칸, Mobile: 4칸으로 자동 조정 -->
+          <pre><code>{`<!-- ${t('code.autoAdjust')} -->
 <section class="grid">
   <div class="w-3">25%</div>
   <div class="w-3">25%</div>
@@ -125,19 +124,19 @@ export default function Responsive() {
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
+          <div className={styles.demoTitle}>{t('gridExample.example')}</div>
           <section className="grid">
-            <div className="w-3"><div className={styles.gridItem}>w-3 (25%)</div></div>
-            <div className="w-3"><div className={styles.gridItem}>w-3 (25%)</div></div>
-            <div className="w-3"><div className={styles.gridItem}>w-3 (25%)</div></div>
-            <div className="w-3"><div className={styles.gridItem}>w-3 (25%)</div></div>
+            <div className="w-3"><div className={styles.gridItem}>{t('code.w3')}</div></div>
+            <div className="w-3"><div className={styles.gridItem}>{t('code.w3')}</div></div>
+            <div className="w-3"><div className={styles.gridItem}>{t('code.w3')}</div></div>
+            <div className="w-3"><div className={styles.gridItem}>{t('code.w3')}</div></div>
           </section>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>반응형 타이포그래피</h2>
-        <p>모든 타이포그래피 스타일은 자동으로 모바일에서 작아집니다:</p>
+        <h2>{t('typography.title')}</h2>
+        <p>{t('typography.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>예시</div>
@@ -155,15 +154,15 @@ PC: 16px → Mobile: 14px`}</code></pre>
         </div>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>실제 예제:</div>
-          <h2>H1 제목 (PC: 54px, Mobile: 24px)</h2>
-          <p className="p3">P3 본문 (PC: 16px, Mobile: 14px)</p>
+          <div className={styles.demoTitle}>{t('typography.example')}</div>
+          <h2>{t('typography.h1Example')}</h2>
+          <p className="p3">{t('typography.p3Example')}</p>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>모바일 최소 너비</h2>
-        <p>모바일 디바이스의 최소 너비는 375px로 설정되어 있습니다.</p>
+        <h2>{t('minWidth.title')}</h2>
+        <p>{t('minWidth.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>device.scss</div>
@@ -172,8 +171,8 @@ PC: 16px → Mobile: 14px`}</code></pre>
       </section>
 
       <section className={styles.section}>
-        <h2>실전 반응형 예제</h2>
-        <p>실제 프로젝트에서 사용하는 반응형 레이아웃 예제:</p>
+        <h2>{t('practicalExample.title')}</h2>
+        <p>{t('practicalExample.description')}</p>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>component.module.scss</div>
@@ -239,22 +238,21 @@ PC: 16px → Mobile: 14px`}</code></pre>
         <div className={styles.note}>
           <i className="icon-info"></i>
           <div>
-            <strong>팁:</strong> 브라우저 개발자 도구의 반응형 모드를 사용하여 다양한 디바이스에서의 레이아웃을 테스트해보세요.
-            Chrome: Ctrl/Cmd + Shift + M
+            <strong>{t('tip.title')}</strong> {t('tip.description')}
           </div>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>현재 화면 크기 확인</h2>
+        <h2>{t('currentDevice.title')}</h2>
         <div className={styles.deviceIndicator}>
           <div className={styles.deviceInfo + ' hide-tb hide-mo'}>
             <div className={styles.deviceIcon}>
               <i className="icon-menu"></i>
             </div>
             <div>
-              <strong>현재: PC</strong>
-              <p>1280px 이상</p>
+              <strong>{t('currentDevice.pc')}</strong>
+              <p>{t('currentDevice.pcRange')}</p>
             </div>
           </div>
           <div className={styles.deviceInfo + ' hide-pc hide-mo'}>
@@ -262,8 +260,8 @@ PC: 16px → Mobile: 14px`}</code></pre>
               <i className="icon-menu"></i>
             </div>
             <div>
-              <strong>현재: Tablet</strong>
-              <p>768px ~ 1279px</p>
+              <strong>{t('currentDevice.tablet')}</strong>
+              <p>{t('currentDevice.tabletRange')}</p>
             </div>
           </div>
           <div className={styles.deviceInfo + ' hide-pc hide-tb'}>
@@ -271,8 +269,8 @@ PC: 16px → Mobile: 14px`}</code></pre>
               <i className="icon-menu"></i>
             </div>
             <div>
-              <strong>현재: Mobile</strong>
-              <p>767px 이하</p>
+              <strong>{t('currentDevice.mobile')}</strong>
+              <p>{t('currentDevice.mobileRange')}</p>
             </div>
           </div>
         </div>

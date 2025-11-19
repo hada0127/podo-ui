@@ -1,4 +1,103 @@
 {
   "title": "컬러",
-  "description": "색상 시스템과 테마"
+  "description": "색상 시스템과 테마",
+  "sections": {
+    "colorSystem": {
+      "title": "색상 시스템",
+      "description": "Podo UI는 8가지 시맨틱 컬러를 제공하며, 각 컬러는 7가지 변형(base, hover, pressed, focus, fill, reverse, outline)을 가집니다. CSS 변수 기반으로 구축되어 있어 라이트/다크 모드를 쉽게 전환할 수 있습니다."
+    },
+    "colorPalette": {
+      "title": "컬러 팔레트"
+    },
+    "colorVariants": {
+      "title": "컬러 변형",
+      "description": "각 컬러는 다양한 상태에 대응하는 7가지 변형을 제공합니다:"
+    },
+    "scssUsage": {
+      "title": "SCSS에서 사용하기",
+      "description": "SCSS 모듈에서 color() 함수를 사용하여 컬러를 적용할 수 있습니다:",
+      "codeHeader": "component.module.scss"
+    },
+    "cssClasses": {
+      "title": "CSS 클래스로 사용하기",
+      "description": "HTML 요소에 직접 컬러 클래스를 적용할 수 있습니다:",
+      "codeHeader": "HTML",
+      "demoTitle": "실제 예제:"
+    },
+    "darkMode": {
+      "title": "다크 모드",
+      "description": "Podo UI는 자동으로 다크 모드를 지원합니다. 오른쪽 상단의 테마 토글 버튼을 클릭하여 라이트/다크 모드를 전환해보세요.",
+      "codeHeader": "JavaScript",
+      "note": "팁:",
+      "noteDescription": "CSS 변수 기반으로 구축되어 있어 페이지 새로고침 없이 즉시 테마가 전환됩니다."
+    },
+    "colorSwatches": {
+      "title": "전체 컬러 스와치",
+      "description": "모든 컬러와 변형을 한눈에 확인하세요:"
+    }
+  },
+  "colors": {
+    "primary": {
+      "label": "Primary",
+      "description": "주요 액션 및 브랜드 색상"
+    },
+    "default": {
+      "label": "Default",
+      "description": "기본 UI 요소"
+    },
+    "default-deep": {
+      "label": "Default Deep",
+      "description": "강조된 기본 색상"
+    },
+    "info": {
+      "label": "Info",
+      "description": "정보성 메시지"
+    },
+    "link": {
+      "label": "Link",
+      "description": "링크 및 네비게이션"
+    },
+    "success": {
+      "label": "Success",
+      "description": "성공 상태 표시"
+    },
+    "warning": {
+      "label": "Warning",
+      "description": "경고 메시지"
+    },
+    "danger": {
+      "label": "Danger",
+      "description": "위험/오류 상태"
+    }
+  },
+  "variants": {
+    "base": {
+      "label": "Base",
+      "description": "기본 색상"
+    },
+    "hover": {
+      "label": "Hover",
+      "description": "호버 상태"
+    },
+    "pressed": {
+      "label": "Pressed",
+      "description": "눌림 상태"
+    },
+    "focus": {
+      "label": "Focus",
+      "description": "포커스 상태"
+    },
+    "fill": {
+      "label": "Fill",
+      "description": "배경 색상"
+    },
+    "reverse": {
+      "label": "Reverse",
+      "description": "반전 색상 (텍스트)"
+    },
+    "outline": {
+      "label": "Outline",
+      "description": "아웃라인 색상"
+    }
+  }
 }

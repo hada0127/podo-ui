@@ -163,5 +163,950 @@
       "title": "SCSS Module-based Design System",
       "description": "A design system that allows you to implement beautiful UI with just HTML and SCSS. It provides systematic design tokens such as colors, spacing, and typography, with a flexible structure that can be used with various frameworks."
     }
+  },
+  "input": {
+    "title": "Input",
+    "description": "A guide to using the Input component in Podo UI",
+    "demo": {
+      "title": "Live Examples:"
+    },
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "Use the HTML input tag to create text input fields.",
+      "placeholders": {
+        "text": "Enter text",
+        "email": "Enter email",
+        "password": "Enter password",
+        "number": "Enter number"
+      }
+    },
+    "types": {
+      "title": "Supported Input Types",
+      "description": "Podo UI supports the following 12 input types:",
+      "placeholders": {
+        "text": "Plain text",
+        "email": "Email",
+        "password": "Password",
+        "number": "Number",
+        "tel": "Phone number",
+        "url": "URL",
+        "search": "Search..."
+      }
+    },
+    "states": {
+      "title": "Input States",
+      "description": "Use .success and .danger classes to display validation states, and disabled and readonly attributes to create disabled and read-only states.",
+      "default": "Default state",
+      "success": "Success (valid input)",
+      "danger": "Danger (invalid input)",
+      "disabled": "Disabled",
+      "readonly": "Read-only",
+      "readonlyText": "Read-only text"
+    },
+    "variants": {
+      "title": "Input Variants",
+      "description": "Use .fill, .text, .underline classes for various style variations.",
+      "default": "Default style",
+      "fill": "Filled background",
+      "text": "Text only",
+      "underline": "Underline style"
+    },
+    "sizes": {
+      "title": "Input Sizes",
+      "description": "Use .md and .lg classes to create larger inputs.",
+      "default": "Default size",
+      "medium": "Medium size",
+      "large": "Large size"
+    },
+    "icons": {
+      "title": "Using with Icons",
+      "description": "Use .with-icon or .with-right-icon wrapper to place icons on the left or right of the input field.",
+      "leftIcon": "Left icon",
+      "rightIcon": "Right icon",
+      "icon": "icon",
+      "placeholders": {
+        "search": "Search...",
+        "username": "Username",
+        "email": "Email"
+      }
+    },
+    "scss": {
+      "title": "Using in SCSS",
+      "description": "You can apply styles by referencing the actual input.scss source in SCSS modules:"
+    }
+  },
+  "textarea": {
+    "title": "Textarea",
+    "description": "A guide to using the Textarea component in Podo UI",
+    "demo": {
+      "title": "Live Examples:"
+    },
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "Use the HTML textarea tag to input multiple lines of text.",
+      "placeholders": {
+        "content": "Enter content",
+        "disabled": "Disabled"
+      }
+    },
+    "resize": {
+      "title": "Textarea Resizing",
+      "description": "Use the .resize-none class to prevent resizing. By default, textarea can be resized by users.",
+      "resizable": "Default (resizable)",
+      "fixed": "Resize prevented (resize: none)",
+      "fixedLabel": "Fixed size (.resize-none)",
+      "placeholders": {
+        "resizable": "Resizable",
+        "fixed": "Fixed size"
+      }
+    },
+    "states": {
+      "title": "Textarea States",
+      "description": "Use .success and .danger classes to display validation states, and disabled and readonly attributes to create disabled and read-only states.",
+      "default": "Default state",
+      "success": "Success (valid input)",
+      "successLabel": "Success state (.success)",
+      "successText": "This is valid content.",
+      "danger": "Danger (invalid input)",
+      "dangerLabel": "Danger state (.danger)",
+      "dangerText": "This is invalid content.",
+      "disabled": "Disabled",
+      "disabledLabel": "Disabled (disabled)",
+      "readonly": "Read-only",
+      "readonlyLabel": "Read-only (readonly)",
+      "readonlyText": "This is read-only text."
+    },
+    "scss": {
+      "title": "Using in SCSS",
+      "description": "You can apply styles by referencing the actual textarea.scss source in SCSS modules:"
+    },
+    "examples": {
+      "title": "Practical Examples",
+      "description": "Examples of using textarea in various situations:",
+      "commentForm": "Comment form:",
+      "commentPlaceholder": "Enter your comment...",
+      "characterCount": "0 / 500 characters",
+      "feedbackForm": "Feedback form:",
+      "feedbackLabel": "Please leave your feedback *",
+      "feedbackPlaceholder": "Share your valuable feedback with us."
+    }
+  },
+  "select": {
+    "title": "Select",
+    "description": "A guide to using the Select component in Podo UI",
+    "demo": {
+      "title": "Live Examples:"
+    },
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "Use the HTML select tag to create dropdown selection menus. Podo UI automatically applies custom arrow icons and styles.",
+      "options": {
+        "placeholder": "Choose",
+        "option1": "Option 1",
+        "option2": "Option 2",
+        "option3": "Option 3"
+      },
+      "cities": {
+        "seoul": "Seoul",
+        "busan": "Busan",
+        "daegu": "Daegu",
+        "incheon": "Incheon"
+      },
+      "disabled": "Disabled"
+    },
+    "placeholder": {
+      "title": "Placeholder Style",
+      "description": "Using value=\"\", disabled, and selected attributes together on the first option makes it appear like a placeholder and automatically hides it after selection.",
+      "categoryPlaceholder": "Select a category",
+      "categories": {
+        "electronics": "Electronics",
+        "fashion": "Fashion",
+        "food": "Food"
+      }
+    },
+    "icons": {
+      "title": "Using with Icons",
+      "description": "Wrap with .with-icon class to add an icon on the left.",
+      "userPlaceholder": "Select user",
+      "roles": {
+        "admin": "Administrator",
+        "user": "Regular user",
+        "guest": "Guest"
+      },
+      "languagePlaceholder": "Select language",
+      "languages": {
+        "ko": "Korean",
+        "en": "English",
+        "ja": "Japanese"
+      }
+    },
+    "states": {
+      "title": "Select States",
+      "description": "You can use select in various states:",
+      "default": "Default",
+      "selectOption": "Select option",
+      "disabled": "Disabled",
+      "disabledSelect": "Disabled select",
+      "multiple": "Multiple selection",
+      "option4": "Option 4"
+    },
+    "scss": {
+      "title": "Using in SCSS",
+      "description": "You can customize select styles in SCSS modules:"
+    }
+  },
+  "checkboxRadio": {
+    "title": "Checkbox & Radio",
+    "description": "A guide to using Checkbox and Radio components in Podo UI",
+    "demo": {
+      "title": "Live Examples:"
+    },
+    "checkbox": {
+      "title": "Checkbox Basic Usage",
+      "description": "Using HTML checkbox input automatically applies Podo UI's custom styles. It includes SVG-based check icons.",
+      "option": "Checkbox option",
+      "checked": "Checked state",
+      "disabled": "Disabled",
+      "checkedDisabled": "Checked + Disabled"
+    },
+    "indeterminate": {
+      "title": "Indeterminate State",
+      "description": "You can set the indeterminate state with JavaScript. This is useful for representing partially selected states.",
+      "state": "Indeterminate state"
+    },
+    "radio": {
+      "title": "Radio Basic Usage",
+      "description": "Radio buttons allow selecting only one option among several. Radios with the same name attribute form a group.",
+      "option1": "Option 1",
+      "option2": "Option 2",
+      "option3": "Option 3",
+      "disabledOption": "Disabled option"
+    },
+    "checkboxGroup": {
+      "title": "Checkbox Group Example",
+      "description": "A practical example using multiple checkboxes:",
+      "interests": "Select interests:",
+      "options": {
+        "design": "Design",
+        "development": "Development",
+        "marketing": "Marketing",
+        "business": "Business"
+      }
+    },
+    "radioGroup": {
+      "title": "Radio Group Example",
+      "description": "A practical example using multiple radio buttons:",
+      "payment": "Select payment method:",
+      "options": {
+        "card": "Credit card",
+        "bank": "Bank transfer",
+        "mobile": "Mobile payment",
+        "kakao": "Kakao Pay"
+      }
+    },
+    "scss": {
+      "title": "Using in SCSS",
+      "description": "Styles for checkbox and radio are automatically applied, but additional customization is possible:"
+    },
+    "darkMode": {
+      "title": "Dark Mode",
+      "description": "Podo UI automatically supports dark mode for checkbox and radio buttons. Try the theme toggle button in the top right corner."
+    }
+  },
+  "toggle": {
+    "title": "Toggle",
+    "description": "Guide to using the Toggle switch component in Podo UI",
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "Add the .toggle class to input[type=\"checkbox\"] to transform it into a switch-style toggle.",
+      "examples": {
+        "option": "Toggle Option",
+        "on": "On State",
+        "disabled": "Disabled",
+        "onDisabled": "On + Disabled"
+      }
+    },
+    "practicalExample": {
+      "title": "Practical Examples",
+      "description": "Toggle switches are useful for settings screens or expressing on/off states:",
+      "notificationSettings": "Notification Settings:",
+      "emailNotification": {
+        "title": "Email Notifications",
+        "description": "Receive news via email"
+      },
+      "pushNotification": {
+        "title": "Push Notifications",
+        "description": "Receive app push notifications"
+      },
+      "smsNotification": {
+        "title": "SMS Notifications",
+        "description": "Receive important notifications via text"
+      },
+      "marketing": {
+        "title": "Marketing Communications",
+        "description": "Receive promotional and event information"
+      }
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "description": "When wrapped in a label, the toggle works when clicking the label as well. Keyboard focus displays an outline, ensuring accessibility.",
+      "keyboardDemo": "Press Tab to move focus with keyboard:",
+      "focusable": "Focusable Toggle"
+    },
+    "scss": {
+      "title": "Using in SCSS",
+      "description": "You can customize toggle styles in SCSS modules:"
+    },
+    "darkMode": {
+      "title": "Dark Mode",
+      "description": "Podo UI automatically supports dark mode for toggle switches. Check it out with the theme toggle button in the top right."
+    },
+    "demo": {
+      "title": "Live Examples:",
+      "codeHeader": "HTML"
+    }
+  },
+  "file": {
+    "title": "File Upload",
+    "description": "Guide to using the File Input component in Podo UI",
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "Using HTML input[type=\"file\"] automatically applies Podo UI's custom styles. An upload cloud icon is included."
+    },
+    "fileTypes": {
+      "title": "File Type Restrictions",
+      "description": "Use the accept attribute to restrict specific file types:"
+    },
+    "multiple": {
+      "title": "Multiple File Selection",
+      "description": "Use the multiple attribute to select multiple files at once:"
+    },
+    "scss": {
+      "title": "Using in SCSS"
+    },
+    "demo": {
+      "title": "Live Examples:",
+      "codeHeader": "HTML"
+    }
+  },
+  "editor": {
+    "title": "Editor",
+    "description": "Guide to using the Editor component in Podo UI.",
+    "overview": {
+      "title": "Overview",
+      "description": "Available for React environments and integrated with the Podo UI design system.",
+      "placeholder": "Enter content..."
+    },
+    "react": {
+      "title": "Using in React",
+      "description": "Provided as a React component with various editor features:"
+    },
+    "features": {
+      "title": "Key Features",
+      "textFormat": "Text formatting (bold, italic, underline, strikethrough)",
+      "font": "Font and size settings",
+      "paragraph": "Paragraph formats (headings 1-6, body, quote, formatted text)",
+      "color": "Font color and background color",
+      "align": "Alignment (left, center, right, justify)",
+      "list": "Lists (unordered list, ordered list)",
+      "table": "Table insertion and editing",
+      "hr": "Horizontal rule insertion",
+      "link": "Link and image insertion",
+      "youtube": "YouTube video embedding",
+      "code": "HTML code view/edit",
+      "format": "Clear formatting",
+      "undo": "Undo/redo"
+    },
+    "height": {
+      "title": "Height Options",
+      "auto": "Auto height (height=\"contents\"):",
+      "autoPlaceholder": "Height adjusts automatically based on content..."
+    },
+    "resizable": {
+      "title": "Resizable Editor",
+      "description": "Resizable (resizable={true}):",
+      "placeholder": "Drag the bottom right to resize..."
+    },
+    "props": {
+      "title": "Editor Props",
+      "value": "HTML content of the editor",
+      "onChange": "Callback function called when content changes",
+      "height": "Editor height (px units or 'contents')",
+      "minHeight": "Minimum height (px units)",
+      "maxHeight": "Maximum height (px units)",
+      "width": "Editor width",
+      "resizable": "Whether resizing is enabled",
+      "placeholder": "Placeholder to display in empty editor",
+      "validator": "Zod validation schema",
+      "toolbar": "List of toolbar items to display (shows all if omitted)"
+    },
+    "toolbar": {
+      "title": "Toolbar Customization",
+      "description": "Use the toolbar prop to selectively display desired toolbar items.",
+      "note": "If you don't provide the toolbar prop, all toolbar items will be displayed by default.",
+      "availableItems": "Available Toolbar Items",
+      "items": {
+        "undoRedo": "Undo, redo",
+        "paragraph": "Paragraph format (headings 1-6, body, quote, etc.)",
+        "textStyle": "Text formatting (bold, italic, underline, strikethrough)",
+        "color": "Font color, background color",
+        "align": "Alignment (left, center, right)",
+        "list": "Lists (unordered list, ordered list)",
+        "hr": "Insert horizontal rule",
+        "table": "Insert table",
+        "link": "Insert link",
+        "image": "Insert image",
+        "youtube": "Insert YouTube video",
+        "format": "Clear formatting",
+        "code": "View HTML code"
+      },
+      "basicEditor": "Basic Editor (text editing only):",
+      "basicPlaceholder": "You can only edit text...",
+      "advancedEditor": "Advanced Editor (including images, links, tables):",
+      "advancedPlaceholder": "You can use all features including images, links, tables..."
+    },
+    "editorView": {
+      "title": "EditorView (Preview Component)",
+      "description": "EditorView is a component that displays HTML content created with Editor in read-only mode. It renders content purely without editing features and supports dark mode.",
+      "preview": "Live Preview Example:",
+      "props": {
+        "title": "EditorView Props",
+        "value": "HTML content to display",
+        "className": "Additional CSS classes"
+      },
+      "features": {
+        "title": "Features",
+        "formatting": "Supports all formatting created with Editor (headings, lists, links, images, etc.)",
+        "darkMode": "Automatic dark mode support",
+        "code": "Code block and inline code styling",
+        "responsive": "Responsive images and YouTube embeds",
+        "readOnly": "Read-only display without editing features"
+      }
+    },
+    "demo": {
+      "title": "Live Examples:",
+      "preview": "Preview (EditorView):",
+      "codeHeader": "component.tsx"
+    }
+  },
+  "chip": {
+    "title": "Chip",
+    "description": "Guide to using the Chip component in Podo UI.",
+    "overview": {
+      "title": "Overview",
+      "description": "Chip is a component for displaying small pieces of information. Can be used as tags, labels, filters, etc. Works with CSS classes and is easy to use with just HTML structure.",
+      "basicExample": "Basic Example:"
+    },
+    "type": {
+      "title": "Type",
+      "description": "Chip supports three types: default (dark background), fill (light background), border (border only)",
+      "default": "Default (dark background - type class omitted):",
+      "fill": "Fill (light background):",
+      "border": "Border (border only):"
+    },
+    "size": {
+      "title": "Size",
+      "description": "Supports two sizes: sm, md (default)",
+      "comparison": "Size Comparison:",
+      "small": "Small",
+      "medium": "Medium (default)"
+    },
+    "icon": {
+      "title": "Icon",
+      "description": "Icons are optional and can be replaced with various icons.",
+      "withoutIcon": "Without icon:",
+      "defaultIcon": "Default ellipse icon:",
+      "customIcon": "Using different icons:"
+    },
+    "round": {
+      "title": "Round",
+      "description": "Adding the round class makes corners fully rounded (pill shape). Default is slightly angular.",
+      "default": "Default (round=no):",
+      "rounded": "Round (round=yes):"
+    },
+    "delete": {
+      "title": "Delete Button",
+      "description": "Adding a button element inside the chip automatically displays it as a delete button (×).",
+      "withButton": "With delete button:",
+      "ariaLabel": "Delete"
+    },
+    "combinations": {
+      "title": "All Combinations",
+      "defaultSmallDelete": "Default Type (dark background) - Small - Delete button:",
+      "defaultMediumRoundDelete": "Default Type (dark background) - Medium - Round - Delete button:",
+      "fillSmallRoundDelete": "Fill Type (light background) - Small - Round - Delete button:",
+      "fillMedium": "Fill Type (light background) - Medium:",
+      "borderSmall": "Border Type (border) - Small:",
+      "borderMediumRoundDelete": "Border Type (border) - Medium - Round - Delete button:"
+    },
+    "cssClasses": {
+      "title": "CSS Classes",
+      "chip": "Base Chip class (required) - when used alone: default theme + default type + md size",
+      "sm": "Small size (optional)",
+      "md": "Medium size (optional, can be omitted as it's default)",
+      "blue": "Blue theme (optional)",
+      "green": "Green theme (optional)",
+      "orange": "Orange theme (optional)",
+      "red": "Red theme (optional)",
+      "fill": "Light background type (optional)",
+      "border": "Border type (optional, transparent background)",
+      "round": "Fully rounded corners (optional, pill shape)",
+      "note": "Note: Default values for theme and type are already included in the .chip class, so no separate classes are needed."
+    },
+    "structure": {
+      "title": "HTML Structure"
+    },
+    "react": {
+      "title": "React Component",
+      "description": "In React environments, you can import and use the Chip component.",
+      "basicUsage": "Basic Usage:",
+      "withDelete": "Tag List with Delete Function:",
+      "variants": "Various Combinations:"
+    },
+    "props": {
+      "title": "Props",
+      "children": "Content to display inside Chip (required)",
+      "theme": "Color theme",
+      "type": "Style type (dark background / light background / border only)",
+      "size": "Size",
+      "round": "Whether to fully round corners",
+      "icon": "Left icon class (e.g., 'icon-ellipse')",
+      "onDelete": "Delete button click handler (shows delete button when provided)",
+      "className": "Additional CSS classes"
+    },
+    "htmlExample": {
+      "title": "HTML Usage Example"
+    },
+    "labels": {
+      "label": "Label",
+      "user": "User",
+      "success": "Success",
+      "warning": "Warning",
+      "error": "Error",
+      "small": "Small",
+      "fillType": "Fill Type",
+      "borderRound": "Border Round",
+      "withDelete": "With Delete"
+    },
+    "demo": {
+      "title": "Live Examples:",
+      "codeHeader": "HTML"
+    }
+  },
+  "field": {
+    "title": "Field",
+    "description": "Guide to using the Field component (label + input + helper) in Podo UI",
+    "overview": {
+      "title": "Overview",
+      "description": "The Field component is a React component that combines label, input element, and helper text. Makes form composition consistent and easy.",
+      "email": {
+        "label": "Email",
+        "helper": "Enter your email address",
+        "placeholder": "example@email.com"
+      },
+      "password": {
+        "label": "Password",
+        "helper": "Enter at least 8 characters",
+        "placeholder": "••••••••"
+      },
+      "category": {
+        "label": "Category",
+        "placeholder": "Please select",
+        "option": "Option"
+      }
+    },
+    "react": {
+      "title": "Using in React",
+      "description": "The Field component receives input elements as children and displays them with a label:",
+      "description2": {
+        "label": "Description",
+        "helper": "Up to 500 characters",
+        "placeholder": "Enter content"
+      }
+    },
+    "structure": {
+      "title": "Structure",
+      "description": "The Field component consists of the following structure:",
+      "label": "Label text for the input field",
+      "children": "Actual input element (input, select, textarea, etc.)",
+      "helper": "Helper text displayed below the input field (optional)"
+    },
+    "scss": {
+      "title": "SCSS Styles",
+      "description": "Default styles for the Field component:"
+    },
+    "demo": {
+      "title": "Live Examples:",
+      "codeHeader": "component.tsx"
+    }
+  },
+  "tab": {
+    "title": "Tab",
+    "description": "Guide to using the Tab navigation component in Podo UI"
+  },
+  "table": {
+    "title": "Table",
+    "description": "Guide to using the Table component and its various variations in Podo UI"
+  },
+  "pagination": {
+    "title": "Pagination",
+    "description": "Pagination component",
+    "overview": {
+      "title": "Overview",
+      "description": "The Pagination component is used to divide large amounts of data into multiple pages. It provides previous/next buttons and page number buttons, visually highlighting the current page."
+    },
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "Use by passing props.",
+      "demoTitle": "Live Example (Total 10 pages):",
+      "currentPage": "Current Page: {page}",
+      "codeHeader": "component.tsx"
+    },
+    "manyPages": {
+      "title": "Many Pages",
+      "description": "When there are many pages, they are displayed in groups of 5 by default. Only the pages in the group containing the current page are shown.",
+      "demoTitle": "Live Example (Total 20 pages):",
+      "currentPage": "Current Page: {page}"
+    },
+    "customVisiblePages": {
+      "title": "Change Visible Pages Count",
+      "description": "You can adjust the maximum number of pages to display at once using the prop.",
+      "demoTitle": "Live Example (Display 3 at a time):",
+      "currentPage": "Current Page: {page}",
+      "codeHeader": "component.tsx"
+    },
+    "props": {
+      "title": "Props",
+      "codeHeader": "PaginationProps",
+      "currentPage": "Current page (starts from 1)",
+      "totalPages": "Total number of pages",
+      "onPageChange": "Page change callback",
+      "maxVisiblePages": "Maximum number of visible pages (default: 5)"
+    },
+    "features": {
+      "title": "Key Features",
+      "prevNext": "Previous/Next page navigation buttons",
+      "directSelection": "Direct page number selection",
+      "visualHighlight": "Visual highlighting of current page",
+      "grouping": "Page grouping (5 pages or custom)",
+      "autoDisable": "Automatic button disabling on first/last page",
+      "accessibility": "Accessibility support"
+    },
+    "example": {
+      "title": "Real-world Example",
+      "description": "A complete example using with a data list:",
+      "codeHeader": "list-with-pagination.tsx",
+      "commentAllData": "All data",
+      "commentExtractCurrentPageData": "Extract only current page data"
+    }
+  },
+  "toast": {
+    "title": "Toast",
+    "description": "Toast notification component",
+    "examples": {
+      "borderFalseSuccessTopRight": "border=false - Success (Top Right)",
+      "borderTrueInfoTopCenter": "border=true - Info (Top Center)",
+      "longTrueWarningBottomRight": "long=true - Warning (Bottom Right)",
+      "longTrueBorderTrueDangerBottomCenter": "long=true, border=true - Danger (Bottom Center)",
+      "primaryCenterManualClose": "Primary - Center (Manual Close)",
+      "customWidthBottomLeft": "Custom Width - Bottom Left",
+      "success": "Success",
+      "successMessage": "File uploaded successfully!",
+      "notification": "Notification",
+      "newMessageNotification": "You have a new message",
+      "unsavedChanges": "You have unsaved changes",
+      "errorOccurred": "An error occurred",
+      "importantNotification": "Important Notice",
+      "manualCloseMessage": "This message requires manual close",
+      "wideToast": "Wide Toast",
+      "wideToastMessage": "This is a toast with width set to 500px"
+    },
+    "variants": {
+      "default": {
+        "label": "Default",
+        "description": "Default notification"
+      },
+      "primary": {
+        "label": "Primary",
+        "description": "Primary notification"
+      },
+      "info": {
+        "label": "Info",
+        "description": "Informational notification"
+      },
+      "success": {
+        "label": "Success",
+        "description": "Success notification"
+      },
+      "warning": {
+        "label": "Warning",
+        "description": "Warning notification"
+      },
+      "danger": {
+        "label": "Danger",
+        "description": "Danger notification"
+      }
+    },
+    "sections": {
+      "basicUsage": {
+        "title": "Basic Usage",
+        "description": "Toasts can be created using the .toast class. They can include an icon, header, body, and close button.",
+        "demo": "Live Example:",
+        "closeLabel": "Close"
+      },
+      "styleProperties": {
+        "title": "Style Properties",
+        "description": "Toasts provide various styles by combining border and long properties:",
+        "borderProperty": "Border Property",
+        "borderFalseDefault": "border=false (default): 4px thick accent border",
+        "borderTrue": "border=true (.border): 1px full outline only (no accent border)",
+        "longProperty": "Long Property",
+        "longFalseDefault": "long=false (default): Vertical layout, 4px accent border on top when border=false",
+        "longTrue": "long=true (.long): Horizontal layout, 4px accent border on left when border=false",
+        "borderFalseAccent": "border=false - Accent Border",
+        "borderFalseDescription": "The default style displays a 4px thick accent border on top.",
+        "borderTrueOutline": "border=true - Full Outline",
+        "borderTrueDescription": "Adding the .border class displays only a 1px full outline (no accent border).",
+        "commentBorderFalse": "border=false (4px accent border)",
+        "commentBorderTrue": "border=true (1px full outline only)",
+        "borderFalseAccentBorder": "border=false (4px accent border)",
+        "borderTrueOutlineBorder": "border=true (1px outline)"
+      },
+      "longStyle": {
+        "title": "Long Style",
+        "description": "Adding the .long class changes to horizontal layout, and the border position changes from top to left. Useful when displaying toasts in narrow spaces.",
+        "longTrueBorderFalse": "long=true, border=false",
+        "longTrueBorderFalseDescription": "Displays a 4px thick accent border on the left.",
+        "longTrueBorderTrue": "long=true, border=true",
+        "longTrueBorderTrueDescription": "Displays only a 1px full outline (no accent border).",
+        "commentLongTrueBorderFalse": "long=true, border=false (4px accent border on left)",
+        "commentLongTrueBorderTrue": "long=true, border=true (1px full outline only)",
+        "fileUploadSuccess": "File uploaded successfully"
+      },
+      "colorVariants": {
+        "title": "Color Variants",
+        "description": "Use 6 color variants to convey different messages:"
+      },
+      "combinationExamples": {
+        "title": "Combination Examples",
+        "description": "Adding the .long class changes to horizontal layout and displays in one line. Useful when displaying toasts in narrow spaces.",
+        "commentLongBorder": "Long + Border"
+      },
+      "simpleMessage": {
+        "title": "Simple Message",
+        "description": "You can also display only the body without a header:"
+      },
+      "reactComponentExample": {
+        "title": "React Component Example",
+        "description": "Click the buttons to see various Toast styles:"
+      },
+      "reactUsage": {
+        "title": "Using in React",
+        "description": "You can use the Toast component in React applications.",
+        "step1Title": "1. ToastProvider Setup",
+        "step1Description": "First, add the ToastProvider at the top level of your application:",
+        "step2Title": "2. Using useToast Hook",
+        "step2Description": "Use the useToast hook in your component to display toasts:",
+        "step3Title": "3. Toast Options",
+        "step4Title": "4. Usage Examples",
+        "messageRequired": "Required: Toast message",
+        "headerOptional": "Optional: Header text (not displayed when long)",
+        "borderOption": "true: 1px full outline, false: 4px accent border (default)",
+        "longOption": "true: Horizontal layout",
+        "durationOption": "Auto-close time (ms), 0 for no auto-close",
+        "widthOption": "Width (default: auto)",
+        "exampleComment1": "border=false (4px accent border)",
+        "exampleMessage1": "File uploaded",
+        "exampleComment2": "border=true (1px full outline)",
+        "exampleHeader2": "Notification",
+        "exampleMessage2": "You have a new message",
+        "exampleComment3": "Long style",
+        "exampleMessage3": "Saved",
+        "exampleComment4": "Custom width",
+        "exampleMessage4": "This is a wide toast",
+        "exampleComment5": "No auto-close",
+        "exampleHeader5": "Important Notice",
+        "exampleMessage5": "This message must be closed manually",
+        "saveButton": "Save",
+        "savedMessage": "Saved!"
+      },
+      "scssUsage": {
+        "title": "Using in SCSS",
+        "description": "You can customize toast styles in SCSS modules:"
+      }
+    }
+  },
+  "border": {
+    "title": "Border",
+    "description": "Guide to using Podo UI's Border utility classes",
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "You can apply various border styles by adding border-related classes to HTML elements.",
+      "demoTitle": "Live Examples:",
+      "examples": {
+        "all": "All Borders",
+        "top": "Top Border",
+        "right": "Right Border",
+        "bottom": "Bottom Border",
+        "left": "Left Border"
+      }
+    },
+    "scssUsage": {
+      "title": "Using in SCSS",
+      "description": "You can apply borders in SCSS modules:"
+    },
+    "colors": {
+      "title": "Border Colors",
+      "description": "You can use Podo UI's semantic colors for borders:",
+      "demoTitle": "Live Examples:"
+    },
+    "realWorld": {
+      "title": "Real-world Examples",
+      "description": "Card component examples using borders:",
+      "demoTitle": "Live Examples:",
+      "cards": {
+        "basic": {
+          "title": "Basic Card",
+          "description": "A card using the default border style."
+        },
+        "primary": {
+          "title": "Primary Card",
+          "description": "A card using a Primary colored border."
+        }
+      }
+    }
+  },
+  "radius": {
+    "title": "Border Radius",
+    "description": "Guide to using Podo UI's Border Radius utility classes",
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "Podo UI provides 8 border-radius values from 0 to full. You can use them via the r() function or CSS classes."
+    },
+    "allValues": {
+      "title": "All Radius Values",
+      "description": "All available border-radius values:",
+      "demoTitle": "Live Examples:"
+    },
+    "scssUsage": {
+      "title": "Using in SCSS",
+      "description": "You can apply border-radius using the r() function in SCSS modules:"
+    },
+    "realWorld": {
+      "title": "Real-world Examples",
+      "description": "Examples using various border-radius values:",
+      "buttonDemo": "Button Examples:",
+      "cardDemo": "Card Examples:",
+      "avatarDemo": "Avatar Examples:",
+      "button": "Button",
+      "card": {
+        "r3": {
+          "title": "r-3 Card",
+          "description": "6px radius corners"
+        },
+        "r5": {
+          "title": "r-5 Card",
+          "description": "12px radius corners"
+        }
+      }
+    }
+  },
+  "elevation": {
+    "title": "Background & Elevation",
+    "description": "Guide to using Podo UI's Background and Elevation utilities",
+    "background": {
+      "title": "Background Colors",
+      "description": "Podo UI provides various background colors. Each background automatically adjusts according to the theme.",
+      "demoTitle": "Background Color Examples:",
+      "bgModal": "Modal/Card background",
+      "bgBlock": "Block element background",
+      "bgElevation": "Elevation background",
+      "bgElevation1": "Elevation background level 1"
+    },
+    "elevation": {
+      "title": "Elevation",
+      "description": "You can express depth between layers with subtle differences in background colors. Higher elevation values give a more floating appearance.",
+      "demoTitle": "Elevation Examples:",
+      "level0": {
+        "title": "Level 0",
+        "description": "Base background"
+      },
+      "level1": {
+        "title": "Level 1",
+        "description": "Slightly elevated feel"
+      },
+      "level2": {
+        "title": "Level 2",
+        "description": "More elevated feel"
+      }
+    },
+    "shadow": {
+      "title": "Shadow Effects",
+      "description": "You can emphasize elevation by using box-shadow along with background colors:",
+      "demoTitle": "Shadow Examples (hover over them):"
+    },
+    "realWorld": {
+      "title": "Real-world Examples",
+      "description": "Card designs using background and elevation:",
+      "cards": {
+        "basic": {
+          "title": "Basic Card",
+          "description": "bg-modal background with default border"
+        },
+        "shadow": {
+          "title": "Shadow Card",
+          "description": "bg-modal background with shadow effect"
+        },
+        "elevated": {
+          "title": "Elevated Card",
+          "description": "bg-elevation background with strong shadow"
+        }
+      }
+    }
+  },
+  "display": {
+    "title": "Display & Visibility",
+    "description": "Guide to using Podo UI's Display and Visibility utility classes",
+    "hideClasses": {
+      "title": "Responsive Hide Classes",
+      "description": "Classes that hide elements on specific devices. Resize your browser window to see them in action.",
+      "demoTitle": "Live Examples (resize the window):",
+      "examples": {
+        "hidePC": "Hidden on PC",
+        "hideTB": "Hidden on Tablet",
+        "hideMO": "Hidden on Mobile"
+      }
+    },
+    "breakpoints": {
+      "title": "Breakpoints",
+      "description": "Podo UI's responsive breakpoints:",
+      "pc": "1280px and above",
+      "tablet": "768px ~ 1279px",
+      "mobile": "767px and below"
+    },
+    "mediaQuery": {
+      "title": "SCSS Media Queries",
+      "description": "You can apply responsive styles using media query mixins in SCSS:"
+    },
+    "currentSize": {
+      "title": "Current Screen Size",
+      "description": "The device type you're currently viewing:",
+      "pc": {
+        "label": "Current: PC",
+        "size": "1280px and above"
+      },
+      "tablet": {
+        "label": "Current: Tablet",
+        "size": "768px ~ 1279px"
+      },
+      "mobile": {
+        "label": "Current: Mobile",
+        "size": "767px and below"
+      }
+    },
+    "realWorld": {
+      "title": "Real-world Examples",
+      "description": "Responsive layout examples:"
+    }
   }
 }

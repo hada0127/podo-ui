@@ -1,4 +1,62 @@
 {
   "title": "그리드",
-  "description": "반응형 그리드 시스템"
+  "description": "반응형 그리드 시스템",
+  "gridSystem": {
+    "title": "그리드 시스템",
+    "description": "Podo UI는 반응형 그리드 시스템을 제공합니다. PC에서는 12칸, 태블릿에서는 6칸, 모바일에서는 4칸으로 자동 조정됩니다.",
+    "pc": {
+      "title": "PC (1280px~)",
+      "columns": "12칸 그리드"
+    },
+    "tablet": {
+      "title": "Tablet (768px~1279px)",
+      "columns": "6칸 그리드"
+    },
+    "mobile": {
+      "title": "Mobile (~767px)",
+      "columns": "4칸 그리드"
+    }
+  },
+  "basicGrid": {
+    "title": "기본 그리드",
+    "description": "grid 클래스를 사용하여 자동 반응형 그리드를 생성합니다:",
+    "example": "실제 예제:"
+  },
+  "gridSize": {
+    "title": "그리드 칸 크기",
+    "description": "w-1부터 w-12까지 사용 가능합니다:",
+    "allSizes": "모든 칸 크기:"
+  },
+  "fixedGrid": {
+    "title": "고정 칼럼 그리드",
+    "description": "grid-fix-N 클래스를 사용하여 고정된 칼럼 수의 그리드를 만들 수 있습니다 (2~6칸):",
+    "twoColumn": "2칸 고정 (grid-fix-2):",
+    "threeColumn": "3칸 고정 (grid-fix-3):",
+    "fourColumn": "4칸 고정 (grid-fix-4):",
+    "fiveColumn": "5칸 고정 (grid-fix-5):",
+    "sixColumn": "6칸 고정 (grid-fix-6):"
+  },
+  "fullWidth": {
+    "title": "전체 너비",
+    "description": "w-full 클래스는 현재 그리드의 전체 너비를 차지합니다:",
+    "example": "실제 예제:"
+  },
+  "responsive": {
+    "title": "반응형 동작",
+    "description": "그리드는 화면 크기에 따라 자동으로 조정됩니다. 브라우저 창 크기를 조절하여 확인해보세요:",
+    "breakpoints": "브레이크포인트:",
+    "pc": "PC: 1280px 이상 (12칸 그리드, 간격 24px)",
+    "tablet": "Tablet: 768px ~ 1279px (6칸 그리드, 간격 16px)",
+    "mobile": "Mobile: 767px 이하 (4칸 그리드, 간격 16px)"
+  },
+  "code": {
+    "columns": "4칸 (33.33%)",
+    "sixColumns": "6칸 (50%)",
+    "twelveColumns": "12칸 (100%)",
+    "fullWidth": "전체 너비 (PC: 12칸, Tablet: 6칸, Mobile: 4칸)",
+    "twoColumnFixed": "2칸 고정 그리드",
+    "threeColumnFixed": "3칸 고정 그리드",
+    "fourColumnFixed": "4칸 고정 그리드",
+    "fourColumns": "4칸"
+  }
 }

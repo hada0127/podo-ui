@@ -1,4 +1,55 @@
 {
   "title": "Tab",
-  "description": "Tab navigation component"
+  "description": "Tab navigation component",
+  "sections": {
+    "basicUsage": {
+      "title": "Basic Usage",
+      "description": "Using the structure automatically applies tab navigation styles. Add the class to active tabs.",
+      "codeHeader": "HTML",
+      "demoTitle": "Live Example:"
+    },
+    "fillStyle": {
+      "title": "Fill Style",
+      "description": "Adding the class makes each tab expand to equal width, filling the entire width.",
+      "codeHeader": "HTML",
+      "demoTitle": "Live Example:"
+    },
+    "manyTabs": {
+      "title": "Many Tabs",
+      "description": "When there are many tabs, horizontal scrolling is automatically enabled:",
+      "demoTitle": "Live Example:"
+    },
+    "practicalExample": {
+      "title": "Practical Example",
+      "description": "Example using tabs with content:"
+    },
+    "scssUsage": {
+      "title": "Using in SCSS",
+      "codeHeader": "component.module.scss",
+      "fillStyleComment": "Fill style",
+      "activeTabComment": "Active tab"
+    }
+  },
+  "tabs": {
+    "tab1": "Tab 1",
+    "tab2": "Tab 2",
+    "tab3": "Tab 3",
+    "home": "Home",
+    "profile": "Profile",
+    "settings": "Settings",
+    "all": "All",
+    "notice": "Notice",
+    "event": "Event",
+    "promotion": "Promotion",
+    "faq": "FAQ",
+    "customerService": "Customer Service",
+    "inquiry": "Inquiry",
+    "overview": "Overview",
+    "features": "Features",
+    "pricing": "Pricing"
+  },
+  "content": {
+    "overviewTitle": "Overview",
+    "overviewContent": "Podo UI is a modern design system."
+  }
 }

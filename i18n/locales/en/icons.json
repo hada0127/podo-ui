@@ -1,4 +1,41 @@
 {
   "title": "Icons",
-  "description": "Icon system"
+  "description": "Icon system",
+  "sections": {
+    "iconSystem": {
+      "title": "Icon System",
+      "description": "Podo UI provides icon fonts. All icons are vector-based, allowing free adjustment of size and color."
+    },
+    "htmlUsage": {
+      "title": "Using in HTML",
+      "description": "You can use icons by adding the icon-* class to an <i> tag:",
+      "codeHeader": "HTML",
+      "demoTitle": "Live Examples:"
+    },
+    "reactUsage": {
+      "title": "Using in React/TSX",
+      "codeHeader": "component.tsx"
+    },
+    "scssUsage": {
+      "title": "Using in SCSS",
+      "codeHeader": "component.module.scss"
+    },
+    "allIcons": {
+      "title": "All Icons",
+      "description": "Click an icon to copy its class name to clipboard.",
+      "count": ""
+    },
+    "categories": {
+      "title": "Icon Categories",
+      "generalUI": "General UI",
+      "arrows": "Arrows",
+      "fileDocument": "File & Document",
+      "socialMedia": "Social Media",
+      "status": "Status"
+    },
+    "note": {
+      "title": "Tip:",
+      "description": "Icons are font-based, so you can freely adjust size and color using font-size and color properties."
+    }
+  }
 }
