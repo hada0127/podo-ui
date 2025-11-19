@@ -1,0 +1,58 @@
+{
+  "title": "Checkbox & Radio",
+  "description": "Checkbox and radio button components for selection options.",
+  "demo": {
+    "title": "Live Example:"
+  },
+  "checkbox": {
+    "title": "Checkbox",
+    "description": "Checkbox is an input element that allows multiple options to be selected.",
+    "option": "Option",
+    "checked": "Checked",
+    "disabled": "Disabled",
+    "checkedDisabled": "Checked (Disabled)"
+  },
+  "indeterminate": {
+    "title": "Indeterminate State",
+    "description": "Checkbox can have an indeterminate state. This can be set using JavaScript.",
+    "state": "Indeterminate state"
+  },
+  "radio": {
+    "title": "Radio Button",
+    "description": "Radio button is an input element that allows only one option to be selected from multiple choices.",
+    "option1": "Option 1",
+    "option2": "Option 2",
+    "option3": "Option 3",
+    "disabledOption": "Disabled option"
+  },
+  "checkboxGroup": {
+    "title": "Checkbox Group",
+    "description": "Multiple checkboxes can be grouped together.",
+    "interests": "Areas of Interest",
+    "options": {
+      "design": "Design",
+      "development": "Development",
+      "marketing": "Marketing",
+      "business": "Business"
+    }
+  },
+  "radioGroup": {
+    "title": "Radio Group",
+    "description": "Multiple radio buttons can be grouped together.",
+    "payment": "Payment Method",
+    "options": {
+      "card": "Credit Card",
+      "bank": "Bank Transfer",
+      "mobile": "Mobile Payment",
+      "kakao": "KakaoPay"
+    }
+  },
+  "scss": {
+    "title": "SCSS Styling",
+    "description": "You can apply checkbox and radio styles using podo-ui mixins."
+  },
+  "darkMode": {
+    "title": "Dark Mode",
+    "description": "Appropriate styles are automatically applied in dark mode."
+  }
+}

@@ -1,4 +1,72 @@
 {
   "title": "Input",
-  "description": "Text input component"
+  "description": "A component for various types of text input.",
+  "demo": {
+    "title": "Live Example:",
+    "codeHeader": "HTML"
+  },
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "Input can accept various types of text input.",
+    "placeholders": {
+      "text": "Enter text",
+      "email": "Enter email",
+      "password": "Enter password",
+      "number": "Enter number"
+    }
+  },
+  "types": {
+    "title": "Input Types",
+    "description": "Input supports various types.",
+    "placeholders": {
+      "text": "Text input",
+      "email": "Email address",
+      "password": "Password",
+      "number": "Number",
+      "tel": "Phone number",
+      "url": "Website URL",
+      "search": "Search..."
+    }
+  },
+  "states": {
+    "title": "States",
+    "description": "Input supports default, success, danger, disabled, and read-only states.",
+    "default": "Default",
+    "success": "Success",
+    "danger": "Danger",
+    "disabled": "Disabled",
+    "readonly": "Read-only",
+    "readonlyText": "Read-only value"
+  },
+  "variants": {
+    "title": "Variants",
+    "description": "Input provides various style variants.",
+    "default": "Default (Border)",
+    "fill": "Fill (Background color)",
+    "text": "Text (No border)",
+    "underline": "Underline (Bottom border only)"
+  },
+  "sizes": {
+    "title": "Sizes",
+    "description": "Input supports various sizes.",
+    "default": "Default size",
+    "medium": "Medium size",
+    "large": "Large size"
+  },
+  "icons": {
+    "title": "Icons",
+    "description": "You can add icons to inputs.",
+    "leftIcon": "Left icon",
+    "rightIcon": "Right icon",
+    "icon": "Icon",
+    "placeholders": {
+      "search": "Search...",
+      "username": "Username",
+      "email": "Email"
+    }
+  },
+  "scss": {
+    "title": "SCSS Styling",
+    "description": "You can apply input styles using podo-ui mixins."
+  }
 }

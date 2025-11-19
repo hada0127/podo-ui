@@ -1,4 +1,53 @@
 {
   "title": "Toggle",
-  "description": "Toggle switch component"
+  "description": "A toggle switch component for on/off states.",
+  "demo": {
+    "title": "Live Example:",
+    "codeHeader": "HTML"
+  },
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "Toggle is a variant of checkbox that visually represents on/off states.",
+    "examples": {
+      "option": "Toggle option",
+      "on": "On state",
+      "disabled": "Disabled",
+      "onDisabled": "On (Disabled)"
+    }
+  },
+  "practicalExample": {
+    "title": "Practical Example",
+    "description": "An example of using toggles in a settings screen.",
+    "notificationSettings": "Notification Settings",
+    "emailNotification": {
+      "title": "Email Notifications",
+      "description": "Receive important updates via email"
+    },
+    "pushNotification": {
+      "title": "Push Notifications",
+      "description": "Receive notifications on mobile devices"
+    },
+    "smsNotification": {
+      "title": "SMS Notifications",
+      "description": "Receive notifications via text messages"
+    },
+    "marketing": {
+      "title": "Marketing Communications",
+      "description": "Receive promotional and event information"
+    }
+  },
+  "accessibility": {
+    "title": "Accessibility",
+    "description": "Toggles can be operated using keyboard focus and Space/Enter keys.",
+    "keyboardDemo": "Keyboard operation demo (Tab to navigate, Space to toggle)",
+    "focusable": "Focusable toggle"
+  },
+  "scss": {
+    "title": "SCSS Styling",
+    "description": "You can apply toggle styles using podo-ui mixins."
+  },
+  "darkMode": {
+    "title": "Dark Mode",
+    "description": "Appropriate styles are automatically applied in dark mode."
+  }
 }

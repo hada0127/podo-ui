@@ -1,4 +1,100 @@
 {
   "title": "에디터",
-  "description": "리치 텍스트 에디터"
+  "description": "강력한 기능을 제공하는 리치 텍스트 에디터 컴포넌트입니다.",
+  "demo": {
+    "title": "실제 예제:",
+    "preview": "미리보기:",
+    "codeHeader": "HTML"
+  },
+  "overview": {
+    "title": "개요",
+    "description": "에디터는 서식 있는 텍스트를 작성할 수 있는 WYSIWYG 에디터입니다.",
+    "placeholder": "여기에 내용을 작성하세요..."
+  },
+  "react": {
+    "title": "React 사용법",
+    "description": "React에서 Editor 컴포넌트를 사용하는 방법입니다."
+  },
+  "features": {
+    "title": "주요 기능",
+    "textFormat": "텍스트 서식 (굵게, 기울임, 밑줄, 취소선)",
+    "font": "글꼴 크기 및 스타일",
+    "paragraph": "단락 스타일 (제목, 본문)",
+    "color": "텍스트 및 배경 색상",
+    "align": "텍스트 정렬",
+    "list": "순서 있는/없는 목록",
+    "table": "표 삽입 및 편집",
+    "hr": "구분선",
+    "link": "링크 삽입",
+    "youtube": "유튜브 영상 삽입",
+    "code": "코드 블록",
+    "format": "서식 제거",
+    "undo": "실행 취소/다시 실행"
+  },
+  "height": {
+    "title": "높이 설정",
+    "auto": "자동 높이",
+    "autoPlaceholder": "콘텐츠에 따라 높이가 자동으로 조절됩니다..."
+  },
+  "resizable": {
+    "title": "크기 조절",
+    "description": "사용자가 에디터 크기를 조절할 수 있습니다",
+    "placeholder": "크기를 조절할 수 있는 에디터입니다..."
+  },
+  "props": {
+    "title": "Props",
+    "value": "에디터의 HTML 콘텐츠",
+    "onChange": "콘텐츠 변경 시 호출되는 함수",
+    "height": "에디터 높이 (px 또는 'contents')",
+    "minHeight": "최소 높이",
+    "maxHeight": "최대 높이",
+    "width": "에디터 너비",
+    "resizable": "사용자가 크기를 조절할 수 있는지 여부",
+    "placeholder": "에디터가 비어있을 때 표시되는 텍스트",
+    "validator": "입력 검증을 위한 Zod 스키마",
+    "toolbar": "표시할 툴바 항목 배열"
+  },
+  "toolbar": {
+    "title": "툴바 커스터마이징",
+    "description": "toolbar prop을 사용하여 에디터에 표시할 기능을 선택할 수 있습니다.",
+    "note": "참고: toolbar를 지정하지 않으면 모든 기능이 표시됩니다.",
+    "availableItems": "사용 가능한 툴바 항목",
+    "basicEditor": "기본 에디터 (제한된 기능)",
+    "basicPlaceholder": "텍스트 서식과 색상만 사용 가능합니다...",
+    "advancedEditor": "고급 에디터 (확장된 기능)",
+    "advancedPlaceholder": "다양한 기능을 사용할 수 있습니다...",
+    "items": {
+      "undoRedo": "실행 취소/다시 실행",
+      "paragraph": "단락 스타일 (제목, 본문)",
+      "textStyle": "텍스트 서식 (굵게, 기울임, 밑줄 등)",
+      "color": "텍스트 및 배경 색상",
+      "align": "텍스트 정렬",
+      "list": "목록 (순서 있는/없는)",
+      "hr": "구분선",
+      "table": "표 삽입 및 편집",
+      "link": "링크 삽입",
+      "image": "이미지 업로드",
+      "youtube": "유튜브 영상 삽입",
+      "format": "서식 제거",
+      "code": "코드 블록"
+    }
+  },
+  "editorView": {
+    "title": "EditorView 컴포넌트",
+    "description": "EditorView는 에디터로 작성된 HTML 콘텐츠를 읽기 전용으로 표시합니다.",
+    "preview": "미리보기",
+    "props": {
+      "title": "Props",
+      "value": "표시할 HTML 콘텐츠",
+      "className": "추가 CSS 클래스"
+    },
+    "features": {
+      "title": "주요 기능",
+      "formatting": "에디터의 모든 서식 지원",
+      "darkMode": "다크 모드 자동 적용",
+      "code": "코드 블록 구문 강조",
+      "responsive": "반응형 레이아웃",
+      "readOnly": "읽기 전용 (편집 불가)"
+    }
+  }
 }

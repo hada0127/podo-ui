@@ -1,4 +1,56 @@
 {
   "title": "Textarea",
-  "description": "Multi-line text input"
+  "description": "A component for multi-line text input.",
+  "demo": {
+    "title": "Live Example:"
+  },
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "Textarea is an input element that can accept multiple lines of text.",
+    "placeholders": {
+      "content": "Enter your content...",
+      "disabled": "Disabled"
+    }
+  },
+  "resize": {
+    "title": "Resizing",
+    "description": "By default, textarea is resizable. You can disable resizing using resize: none.",
+    "resizable": "Resizable",
+    "fixedLabel": "Fixed Size",
+    "fixed": "Fixed",
+    "placeholders": {
+      "resizable": "You can resize this",
+      "fixed": "This is fixed size"
+    }
+  },
+  "states": {
+    "title": "States",
+    "description": "Textarea supports default, success, danger, disabled, and read-only states.",
+    "default": "Default",
+    "success": "Success",
+    "successLabel": "Success State",
+    "successText": "This is valid input.",
+    "danger": "Danger",
+    "dangerLabel": "Danger State",
+    "dangerText": "This is invalid input.",
+    "disabled": "Disabled",
+    "disabledLabel": "Disabled State",
+    "readonly": "Read-only",
+    "readonlyLabel": "Read-only State",
+    "readonlyText": "This content cannot be modified."
+  },
+  "scss": {
+    "title": "SCSS Styling",
+    "description": "You can apply textarea styles using podo-ui mixins."
+  },
+  "examples": {
+    "title": "Usage Examples",
+    "description": "Check out real-world usage examples.",
+    "commentForm": "Comment Form",
+    "commentPlaceholder": "Write a comment...",
+    "characterCount": "0 / 500 characters",
+    "feedbackForm": "Feedback Form",
+    "feedbackLabel": "Leave your feedback",
+    "feedbackPlaceholder": "Write your feedback here..."
+  }
 }

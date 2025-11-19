@@ -1,4 +1,100 @@
 {
   "title": "Editor",
-  "description": "Rich text editor"
+  "description": "A powerful rich text editor component with advanced features.",
+  "demo": {
+    "title": "Live Example:",
+    "preview": "Preview:",
+    "codeHeader": "HTML"
+  },
+  "overview": {
+    "title": "Overview",
+    "description": "The Editor is a WYSIWYG editor for creating formatted text.",
+    "placeholder": "Start writing here..."
+  },
+  "react": {
+    "title": "React Usage",
+    "description": "How to use the Editor component in React."
+  },
+  "features": {
+    "title": "Key Features",
+    "textFormat": "Text formatting (bold, italic, underline, strikethrough)",
+    "font": "Font size and style",
+    "paragraph": "Paragraph styles (headings, body)",
+    "color": "Text and background colors",
+    "align": "Text alignment",
+    "list": "Ordered/unordered lists",
+    "table": "Table insertion and editing",
+    "hr": "Horizontal rule",
+    "link": "Link insertion",
+    "youtube": "YouTube video embedding",
+    "code": "Code blocks",
+    "format": "Clear formatting",
+    "undo": "Undo/redo"
+  },
+  "height": {
+    "title": "Height Settings",
+    "auto": "Auto height",
+    "autoPlaceholder": "Height adjusts automatically based on content..."
+  },
+  "resizable": {
+    "title": "Resizable",
+    "description": "Users can resize the editor",
+    "placeholder": "This is a resizable editor..."
+  },
+  "props": {
+    "title": "Props",
+    "value": "HTML content of the editor",
+    "onChange": "Function called when content changes",
+    "height": "Editor height (px or 'contents')",
+    "minHeight": "Minimum height",
+    "maxHeight": "Maximum height",
+    "width": "Editor width",
+    "resizable": "Whether users can resize the editor",
+    "placeholder": "Text displayed when editor is empty",
+    "validator": "Zod schema for input validation",
+    "toolbar": "Array of toolbar items to display"
+  },
+  "toolbar": {
+    "title": "Toolbar Customization",
+    "description": "Use the toolbar prop to select which features to display in the editor.",
+    "note": "Note: If toolbar is not specified, all features will be displayed.",
+    "availableItems": "Available Toolbar Items",
+    "basicEditor": "Basic Editor (Limited features)",
+    "basicPlaceholder": "Only text formatting and colors available...",
+    "advancedEditor": "Advanced Editor (Extended features)",
+    "advancedPlaceholder": "Various features are available...",
+    "items": {
+      "undoRedo": "Undo/redo",
+      "paragraph": "Paragraph styles (headings, body)",
+      "textStyle": "Text formatting (bold, italic, underline, etc.)",
+      "color": "Text and background colors",
+      "align": "Text alignment",
+      "list": "Lists (ordered/unordered)",
+      "hr": "Horizontal rule",
+      "table": "Table insertion and editing",
+      "link": "Link insertion",
+      "image": "Image upload",
+      "youtube": "YouTube video embedding",
+      "format": "Clear formatting",
+      "code": "Code blocks"
+    }
+  },
+  "editorView": {
+    "title": "EditorView Component",
+    "description": "EditorView displays HTML content created with the editor in read-only mode.",
+    "preview": "Preview",
+    "props": {
+      "title": "Props",
+      "value": "HTML content to display",
+      "className": "Additional CSS class"
+    },
+    "features": {
+      "title": "Key Features",
+      "formatting": "Supports all editor formatting",
+      "darkMode": "Automatic dark mode support",
+      "code": "Code block syntax highlighting",
+      "responsive": "Responsive layout",
+      "readOnly": "Read-only (not editable)"
+    }
+  }
 }

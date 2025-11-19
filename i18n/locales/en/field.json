@@ -1,4 +1,47 @@
 {
   "title": "Field",
-  "description": "Form field wrapper component"
+  "description": "A form field wrapper component that includes labels and helper text.",
+  "demo": {
+    "title": "Live Example:",
+    "codeHeader": "HTML"
+  },
+  "overview": {
+    "title": "Overview",
+    "description": "The Field component helps you easily add labels and helper text to input elements.",
+    "email": {
+      "label": "Email",
+      "helper": "Enter the email address you'll use to log in",
+      "placeholder": "example@email.com"
+    },
+    "password": {
+      "label": "Password",
+      "helper": "Enter a password with at least 8 characters",
+      "placeholder": "Enter password"
+    },
+    "category": {
+      "label": "Category",
+      "placeholder": "Select category",
+      "option": "Option"
+    }
+  },
+  "react": {
+    "title": "React Usage",
+    "description": "How to use the Field component in React.",
+    "description2": {
+      "label": "Description",
+      "helper": "Enter a detailed description",
+      "placeholder": "Enter content..."
+    }
+  },
+  "structure": {
+    "title": "Structure",
+    "description": "The Field component has the following structure:",
+    "label": "Label for the input field",
+    "children": "Input element (input, select, textarea, etc.)",
+    "helper": "Helper text for the input field (optional)"
+  },
+  "scss": {
+    "title": "SCSS Styling",
+    "description": "You can apply Field styles using podo-ui mixins."
+  }
 }

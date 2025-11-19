@@ -1,4 +1,71 @@
 {
   "title": "칩",
-  "description": "태그와 레이블을 위한 칩 컴포넌트"
+  "description": "태그, 레이블, 카테고리 등을 표시하는 칩 컴포넌트입니다.",
+  "overview": {
+    "title": "개요",
+    "description": "칩은 작고 컴팩트한 요소로 태그, 카테고리, 상태 등을 표현할 때 사용됩니다.",
+    "basicExample": "기본 예제"
+  },
+  "type": {
+    "title": "타입",
+    "description": "칩은 세 가지 타입을 제공합니다: default (진한 배경), fill (옅은 배경), border (테두리만).",
+    "default": "Default 타입 (진한 배경)",
+    "fill": "Fill 타입 (옅은 배경)",
+    "border": "Border 타입 (테두리)"
+  },
+  "size": {
+    "title": "크기",
+    "description": "칩은 sm (작은)과 md (기본) 크기를 지원합니다.",
+    "comparison": "크기 비교",
+    "small": "작은 크기",
+    "medium": "기본 크기"
+  },
+  "icon": {
+    "title": "아이콘",
+    "description": "칩에 아이콘을 추가하여 시각적 정보를 제공할 수 있습니다.",
+    "withoutIcon": "아이콘 없이",
+    "defaultIcon": "기본 아이콘 (ellipse)",
+    "customIcon": "커스텀 아이콘"
+  },
+  "round": {
+    "title": "둥근 모서리",
+    "description": "round 클래스를 추가하여 완전히 둥근 모서리를 만들 수 있습니다.",
+    "default": "기본 (약간 각진)",
+    "rounded": "Round (완전히 둥근)"
+  },
+  "delete": {
+    "title": "삭제 버튼",
+    "description": "칩에 삭제 버튼을 추가하여 제거 기능을 제공할 수 있습니다.",
+    "withButton": "삭제 버튼 포함",
+    "ariaLabel": "삭제"
+  },
+  "react": {
+    "title": "React 컴포넌트",
+    "description": "React에서 Chip 컴포넌트를 사용할 수 있습니다.",
+    "basicUsage": "기본 사용법",
+    "withDelete": "삭제 기능 포함",
+    "variants": "다양한 변형"
+  },
+  "labels": {
+    "label": "레이블",
+    "user": "사용자",
+    "success": "성공",
+    "warning": "경고",
+    "error": "에러",
+    "small": "작은 크기",
+    "fillType": "Fill 타입",
+    "borderRound": "Border + Round",
+    "withDelete": "삭제 가능"
+  },
+  "props": {
+    "title": "Props",
+    "children": "칩에 표시될 내용",
+    "theme": "칩의 색상 테마",
+    "type": "칩의 스타일 타입 (default, fill, border)",
+    "size": "칩의 크기",
+    "round": "완전히 둥근 모서리 적용 여부",
+    "icon": "칩에 표시할 아이콘 클래스명",
+    "onDelete": "삭제 버튼 클릭 시 호출되는 함수",
+    "className": "추가 CSS 클래스"
+  }
 }

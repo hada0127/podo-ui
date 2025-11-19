@@ -1,4 +1,56 @@
 {
   "title": "텍스트 영역",
-  "description": "여러 줄 텍스트 입력"
+  "description": "여러 줄 텍스트 입력을 위한 컴포넌트입니다.",
+  "demo": {
+    "title": "실제 예제:"
+  },
+  "basicUsage": {
+    "title": "기본 사용법",
+    "description": "textarea는 여러 줄의 텍스트를 입력받을 수 있는 입력 요소입니다.",
+    "placeholders": {
+      "content": "내용을 입력하세요...",
+      "disabled": "비활성화됨"
+    }
+  },
+  "resize": {
+    "title": "크기 조절",
+    "description": "기본적으로 textarea는 크기 조절이 가능합니다. resize: none을 사용하여 크기 조절을 비활성화할 수 있습니다.",
+    "resizable": "크기 조절 가능",
+    "fixedLabel": "크기 고정",
+    "fixed": "크기 고정",
+    "placeholders": {
+      "resizable": "크기를 조절할 수 있습니다",
+      "fixed": "크기가 고정되어 있습니다"
+    }
+  },
+  "states": {
+    "title": "상태",
+    "description": "textarea는 기본, 성공, 위험, 비활성화, 읽기 전용 상태를 지원합니다.",
+    "default": "기본",
+    "success": "성공",
+    "successLabel": "성공 상태",
+    "successText": "유효한 입력입니다.",
+    "danger": "위험",
+    "dangerLabel": "위험 상태",
+    "dangerText": "잘못된 입력입니다.",
+    "disabled": "비활성화",
+    "disabledLabel": "비활성화 상태",
+    "readonly": "읽기 전용",
+    "readonlyLabel": "읽기 전용 상태",
+    "readonlyText": "이 내용은 수정할 수 없습니다."
+  },
+  "scss": {
+    "title": "SCSS 스타일",
+    "description": "podo-ui의 믹스인을 사용하여 textarea 스타일을 적용할 수 있습니다."
+  },
+  "examples": {
+    "title": "활용 예제",
+    "description": "실제 사용 예제를 확인해보세요.",
+    "commentForm": "댓글 작성 폼",
+    "commentPlaceholder": "댓글을 입력하세요...",
+    "characterCount": "0 / 500자",
+    "feedbackForm": "피드백 폼",
+    "feedbackLabel": "의견을 남겨주세요",
+    "feedbackPlaceholder": "여기에 의견을 작성해주세요..."
+  }
 }

@@ -1,4 +1,47 @@
 {
   "title": "필드",
-  "description": "폼 필드 래퍼 컴포넌트"
+  "description": "레이블과 도움말 텍스트를 포함하는 폼 필드 래퍼 컴포넌트입니다.",
+  "demo": {
+    "title": "실제 예제:",
+    "codeHeader": "HTML"
+  },
+  "overview": {
+    "title": "개요",
+    "description": "Field 컴포넌트는 입력 요소에 레이블과 도움말을 쉽게 추가할 수 있도록 도와줍니다.",
+    "email": {
+      "label": "이메일",
+      "helper": "로그인에 사용할 이메일 주소를 입력하세요",
+      "placeholder": "example@email.com"
+    },
+    "password": {
+      "label": "비밀번호",
+      "helper": "8자 이상의 비밀번호를 입력하세요",
+      "placeholder": "비밀번호 입력"
+    },
+    "category": {
+      "label": "카테고리",
+      "placeholder": "카테고리 선택",
+      "option": "옵션"
+    }
+  },
+  "react": {
+    "title": "React 사용법",
+    "description": "React에서 Field 컴포넌트를 사용하는 방법입니다.",
+    "description2": {
+      "label": "설명",
+      "helper": "상세한 설명을 입력하세요",
+      "placeholder": "내용을 입력하세요..."
+    }
+  },
+  "structure": {
+    "title": "구조",
+    "description": "Field 컴포넌트는 다음과 같은 구조로 이루어져 있습니다:",
+    "label": "입력 필드의 레이블",
+    "children": "입력 요소 (input, select, textarea 등)",
+    "helper": "입력 필드에 대한 도움말 텍스트 (선택사항)"
+  },
+  "scss": {
+    "title": "SCSS 스타일",
+    "description": "podo-ui의 믹스인을 사용하여 Field 스타일을 적용할 수 있습니다."
+  }
 }

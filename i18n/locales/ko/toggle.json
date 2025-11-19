@@ -1,4 +1,53 @@
 {
   "title": "토글",
-  "description": "토글 스위치 컴포넌트"
+  "description": "켜기/끄기 스위치를 제공하는 토글 컴포넌트입니다.",
+  "demo": {
+    "title": "실제 예제:",
+    "codeHeader": "HTML"
+  },
+  "basicUsage": {
+    "title": "기본 사용법",
+    "description": "토글은 체크박스의 변형으로, 켜기/끄기 상태를 시각적으로 표현합니다.",
+    "examples": {
+      "option": "토글 옵션",
+      "on": "켜짐 상태",
+      "disabled": "비활성화",
+      "onDisabled": "켜짐 (비활성화)"
+    }
+  },
+  "practicalExample": {
+    "title": "실용적인 예제",
+    "description": "실제 설정 화면에서 토글을 활용한 예제입니다.",
+    "notificationSettings": "알림 설정",
+    "emailNotification": {
+      "title": "이메일 알림",
+      "description": "중요한 업데이트를 이메일로 받습니다"
+    },
+    "pushNotification": {
+      "title": "푸시 알림",
+      "description": "모바일 기기로 알림을 받습니다"
+    },
+    "smsNotification": {
+      "title": "SMS 알림",
+      "description": "문자 메시지로 알림을 받습니다"
+    },
+    "marketing": {
+      "title": "마케팅 수신 동의",
+      "description": "프로모션 및 이벤트 정보를 받습니다"
+    }
+  },
+  "accessibility": {
+    "title": "접근성",
+    "description": "토글은 키보드 포커스와 Space/Enter 키로 조작할 수 있습니다.",
+    "keyboardDemo": "키보드 조작 데모 (Tab으로 이동, Space로 토글)",
+    "focusable": "포커스 가능한 토글"
+  },
+  "scss": {
+    "title": "SCSS 스타일",
+    "description": "podo-ui의 믹스인을 사용하여 토글 스타일을 적용할 수 있습니다."
+  },
+  "darkMode": {
+    "title": "다크 모드",
+    "description": "다크 모드에서도 자동으로 적절한 스타일이 적용됩니다."
+  }
 }

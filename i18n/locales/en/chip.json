@@ -1,4 +1,71 @@
 {
   "title": "Chip",
-  "description": "Chip component for tags and labels"
+  "description": "A chip component for displaying tags, labels, and categories.",
+  "overview": {
+    "title": "Overview",
+    "description": "Chips are small, compact elements used to represent tags, categories, status, etc.",
+    "basicExample": "Basic Example"
+  },
+  "type": {
+    "title": "Types",
+    "description": "Chip provides three types: default (dark background), fill (light background), border (border only).",
+    "default": "Default Type (Dark background)",
+    "fill": "Fill Type (Light background)",
+    "border": "Border Type (Border only)"
+  },
+  "size": {
+    "title": "Sizes",
+    "description": "Chip supports sm (small) and md (default) sizes.",
+    "comparison": "Size Comparison",
+    "small": "Small size",
+    "medium": "Default size"
+  },
+  "icon": {
+    "title": "Icons",
+    "description": "You can add icons to chips to provide visual information.",
+    "withoutIcon": "Without icon",
+    "defaultIcon": "Default icon (ellipse)",
+    "customIcon": "Custom icons"
+  },
+  "round": {
+    "title": "Rounded Corners",
+    "description": "You can add the round class to create fully rounded corners.",
+    "default": "Default (Slightly angular)",
+    "rounded": "Round (Fully rounded)"
+  },
+  "delete": {
+    "title": "Delete Button",
+    "description": "You can add a delete button to chips to provide removal functionality.",
+    "withButton": "With delete button",
+    "ariaLabel": "Delete"
+  },
+  "react": {
+    "title": "React Component",
+    "description": "You can use the Chip component in React.",
+    "basicUsage": "Basic Usage",
+    "withDelete": "With delete functionality",
+    "variants": "Various Variants"
+  },
+  "labels": {
+    "label": "Label",
+    "user": "User",
+    "success": "Success",
+    "warning": "Warning",
+    "error": "Error",
+    "small": "Small size",
+    "fillType": "Fill type",
+    "borderRound": "Border + Round",
+    "withDelete": "Deletable"
+  },
+  "props": {
+    "title": "Props",
+    "children": "Content to display in the chip",
+    "theme": "Color theme of the chip",
+    "type": "Style type of the chip (default, fill, border)",
+    "size": "Size of the chip",
+    "round": "Whether to apply fully rounded corners",
+    "icon": "Icon class name to display in the chip",
+    "onDelete": "Function called when delete button is clicked",
+    "className": "Additional CSS class"
+  }
 }

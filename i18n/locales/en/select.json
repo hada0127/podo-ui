@@ -1,4 +1,64 @@
 {
   "title": "Select",
-  "description": "Dropdown select component"
+  "description": "A component for selecting options from a dropdown.",
+  "demo": {
+    "title": "Live Example:"
+  },
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "Select is a dropdown element that allows you to choose one option from multiple choices.",
+    "options": {
+      "placeholder": "Select an option",
+      "option1": "Option 1",
+      "option2": "Option 2",
+      "option3": "Option 3"
+    },
+    "cities": {
+      "seoul": "Seoul",
+      "busan": "Busan",
+      "daegu": "Daegu",
+      "incheon": "Incheon"
+    },
+    "disabled": "Disabled"
+  },
+  "placeholder": {
+    "title": "Placeholder",
+    "description": "You can use a placeholder to indicate the unselected state.",
+    "categoryPlaceholder": "Select a category",
+    "categories": {
+      "electronics": "Electronics",
+      "fashion": "Fashion",
+      "food": "Food"
+    }
+  },
+  "icons": {
+    "title": "Icons",
+    "description": "You can add icons to select elements.",
+    "userPlaceholder": "Select user role",
+    "languagePlaceholder": "Select language",
+    "roles": {
+      "admin": "Admin",
+      "user": "User",
+      "guest": "Guest"
+    },
+    "languages": {
+      "ko": "Korean",
+      "en": "English",
+      "ja": "Japanese"
+    }
+  },
+  "states": {
+    "title": "States",
+    "description": "Select supports default, disabled, and multiple selection states.",
+    "default": "Default",
+    "disabled": "Disabled",
+    "disabledSelect": "Cannot select",
+    "selectOption": "Select an option",
+    "multiple": "Multiple selection",
+    "option4": "Option 4"
+  },
+  "scss": {
+    "title": "SCSS Styling",
+    "description": "You can apply select styles using podo-ui mixins."
+  }
 }

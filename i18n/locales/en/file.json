@@ -1,4 +1,24 @@
 {
   "title": "File Upload",
-  "description": "File upload component"
+  "description": "A component for selecting and uploading files.",
+  "demo": {
+    "title": "Live Example:",
+    "codeHeader": "HTML"
+  },
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "You can select files using input type='file'."
+  },
+  "fileTypes": {
+    "title": "File Type Restrictions",
+    "description": "You can restrict to specific file types using the accept attribute."
+  },
+  "multiple": {
+    "title": "Multiple File Selection",
+    "description": "You can select multiple files at once using the multiple attribute."
+  },
+  "scss": {
+    "title": "SCSS Styling",
+    "description": "You can apply file input styles using podo-ui mixins."
+  }
 }
