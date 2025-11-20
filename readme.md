@@ -37,10 +37,11 @@ import 'podo-ui/vite-fonts.scss'; // When using Vite
 
 ```tsx
 // Import individual components using named imports
-import { Input, Textarea, Editor, EditorView, Field, Pagination } from 'podo-ui';
+import { Input, Textarea, Editor, EditorView, Avatar, Field, Pagination } from 'podo-ui';
 
 // Or import components directly (legacy method)
 import Input from 'podo-ui/react/atom/input';
+import Avatar from 'podo-ui/react/atom/avatar';
 import Field from 'podo-ui/react/molecule/field';
 ```
 
@@ -49,7 +50,7 @@ import Field from 'podo-ui/react/molecule/field';
 - CSS class-based design system
 - Responsive grid system (PC 12, Tablet 6, Mobile 4)
 - Color system with dark mode support
-- React components (Input, Textarea, Editor, Field)
+- React components (Avatar, Input, Textarea, Editor, Field)
 
 ## Documentation
 

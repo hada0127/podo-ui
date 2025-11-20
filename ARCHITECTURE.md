@@ -279,6 +279,8 @@ scss/
 ```
 react/
 ├── atom/                    # 원자 단위 컴포넌트
+│   ├── avatar.tsx          # 아바타 (프로필 이미지/아이콘/텍스트)
+│   ├── avatar.module.scss
 │   ├── input.tsx           # 검증 기능 입력
 │   ├── input.module.scss
 │   ├── textarea.tsx        # 텍스트영역
@@ -293,6 +295,33 @@ react/
 ```
 
 ### 주요 컴포넌트
+
+#### Avatar 컴포넌트
+
+**파일:** [react/atom/avatar.tsx](react/atom/avatar.tsx)
+
+**특징:**
+- 3가지 유형 지원: image (사진), icon (시스템 아이콘), text (이니셜)
+- 9가지 크기: 16, 20, 24, 28, 32, 36, 40, 48, 56
+- Activity Ring: 활동 상태 표시 (파란색 링)
+- 원형 디자인 (border-radius: 9999px)
+- icon/text 타입: 회색 배경(#ececef)
+
+**사용 예:**
+
+```tsx
+import { Avatar } from 'podo-ui'
+
+function UserProfile() {
+  return (
+    <>
+      <Avatar type="image" src="/profile.jpg" size={56} />
+      <Avatar type="icon" icon="icon-user" size={40} />
+      <Avatar type="text" text="보라" size={56} activityRing={true} />
+    </>
+  )
+}
+```
 
 #### Input 컴포넌트
 
@@ -447,10 +476,10 @@ function MyList() {
 
 ### 내보내기 전략
 
-#### 표준 내보내기 ([react.ts](react.ts))
+#### 표준 내보내기 ([index.ts](index.ts))
 
 ```typescript
-export { Input, Textarea, Editor, EditorView, Pagination, Field }
+export { Input, Textarea, Editor, EditorView, Avatar, Pagination, Field }
 ```
 
 #### Next.js 내보내기 ([next.ts](next.ts))
@@ -461,7 +490,7 @@ export { Input, Textarea, Editor, EditorView, Pagination, Field }
 // Editor는 동적 임포트 (SSR 비활성화)
 const Editor = dynamic(() => import('./react/atom/editor'), { ssr: false })
 
-export { Input, Textarea, Editor, EditorView, Pagination, Field }
+export { Input, Textarea, Editor, EditorView, Avatar, Pagination, Field }
 ```
 
 ---

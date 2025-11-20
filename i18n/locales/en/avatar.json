@@ -1,0 +1,44 @@
+{
+  "title": "Avatar",
+  "description": "Avatar component represents a user's identity visually through images, icons, or text.",
+  "overview": {
+    "title": "Overview",
+    "description": "Avatar is a UI component that visually represents a user's identity. It supports profile images, system icons, and initials, with an optional activity ring to indicate user status.",
+    "basicExample": "Basic Examples"
+  },
+  "types": {
+    "title": "Types",
+    "description": "Avatar supports three types: image, icon, and text.",
+    "image": "Image Type",
+    "icon": "Icon Type",
+    "text": "Text Type"
+  },
+  "sizes": {
+    "title": "Sizes",
+    "description": "Avatar comes in 9 different sizes from 16px to 56px.",
+    "allSizes": "All Available Sizes"
+  },
+  "activityRing": {
+    "title": "Activity Ring",
+    "description": "Activity ring indicates whether a user is currently active. When inactive, it displays in default state.",
+    "default": "Default State",
+    "active": "Active State"
+  },
+  "combinations": {
+    "title": "Combinations",
+    "description": "Various combinations of type, size, and activity ring.",
+    "examples": "Example Combinations"
+  },
+  "props": {
+    "title": "Props",
+    "type": "Avatar type (image, icon, or text)",
+    "src": "Image source URL (for type='image')",
+    "icon": "Icon class name (for type='icon')",
+    "text": "Text content, displays first 2 characters (for type='text')",
+    "size": "Avatar size in pixels",
+    "activityRing": "Show activity ring to indicate active status",
+    "alt": "Alternative text for image accessibility",
+    "onClick": "Click event handler",
+    "className": "Additional CSS classes"
+  }
+}

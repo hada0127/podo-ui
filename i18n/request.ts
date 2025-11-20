@@ -24,6 +24,7 @@ async function loadMessages(locale: Locale) {
   const responsive = (await import(`./locales/${locale}/responsive.json`)).default;
 
   // Components
+  const avatar = (await import(`./locales/${locale}/avatar.json`)).default;
   const button = (await import(`./locales/${locale}/button.json`)).default;
   const input = (await import(`./locales/${locale}/input.json`)).default;
   const textarea = (await import(`./locales/${locale}/textarea.json`)).default;
@@ -57,6 +58,7 @@ async function loadMessages(locale: Locale) {
     spacing,
     grid,
     responsive,
+    avatar,
     button,
     input,
     textarea,

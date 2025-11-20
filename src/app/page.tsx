@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import SectionHeader from '@/components/home/SectionHeader';
 import BrowserWindow from '@/components/home/BrowserWindow';
 import FeatureCard from '@/components/home/FeatureCard';
+import Avatar from '@/../../react/atom/avatar';
 import styles from './home.module.scss';
 
 export default function Home() {
@@ -270,6 +271,15 @@ export default function Home() {
         <div className={styles.componentsDemo}>
           <BrowserWindow title="Components Preview">
             <div className={styles.componentsGrid}>
+              <div className={styles.componentDemo}>
+                <div className={styles.componentLabel}>Avatar</div>
+                <div className={styles.componentExample}>
+                  <Avatar type="image" src="/cat.jpg" size={40} />
+                  <Avatar type="icon" icon="icon-user" size={40} />
+                  <Avatar type="text" text="AB" size={40} />
+                  <Avatar type="image" src="/cat.jpg" size={40} activityRing />
+                </div>
+              </div>
               <div className={styles.componentDemo}>
                 <div className={styles.componentLabel}>Button</div>
                 <div className={styles.componentExample}>

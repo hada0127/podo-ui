@@ -43,6 +43,7 @@ export default function Navigation() {
     {
       titleKey: 'components',
       items: [
+        { labelKey: 'avatar', path: '/components/avatar' },
         { labelKey: 'button', path: '/components/button' },
         { labelKey: 'input', path: '/components/input' },
         { labelKey: 'textarea', path: '/components/textarea' },

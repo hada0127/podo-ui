@@ -1,0 +1,44 @@
+{
+  "title": "아바타",
+  "description": "아바타 컴포넌트는 사용자의 정체성을 이미지, 아이콘 또는 텍스트로 시각적으로 나타냅니다.",
+  "overview": {
+    "title": "개요",
+    "description": "아바타는 사용자의 정체성을 시각적으로 나타내는 UI 컴포넌트입니다. 프로필 이미지, 시스템 아이콘, 이니셜을 지원하며, 활동 상태를 나타내는 액티비티 링을 추가할 수 있습니다.",
+    "basicExample": "기본 예제"
+  },
+  "types": {
+    "title": "유형",
+    "description": "아바타는 세 가지 유형을 지원합니다: 이미지, 아이콘, 텍스트",
+    "image": "이미지 유형",
+    "icon": "아이콘 유형",
+    "text": "텍스트 유형"
+  },
+  "sizes": {
+    "title": "크기",
+    "description": "아바타는 16px부터 56px까지 9가지 크기를 제공합니다.",
+    "allSizes": "모든 크기"
+  },
+  "activityRing": {
+    "title": "액티비티 링",
+    "description": "액티비티 링은 사용자가 현재 활동 중인지를 나타냅니다. 활동이 없을 경우 기본 상태로 표시됩니다.",
+    "default": "기본 상태",
+    "active": "활동 상태"
+  },
+  "combinations": {
+    "title": "조합",
+    "description": "타입, 크기, 액티비티 링의 다양한 조합입니다.",
+    "examples": "조합 예제"
+  },
+  "props": {
+    "title": "Props",
+    "type": "아바타 유형 (image, icon, text)",
+    "src": "이미지 소스 URL (type='image'일 때)",
+    "icon": "아이콘 클래스명 (type='icon'일 때)",
+    "text": "텍스트 내용, 첫 2글자만 표시 (type='text'일 때)",
+    "size": "아바타 크기(픽셀)",
+    "activityRing": "활동 상태를 나타내는 액티비티 링 표시",
+    "alt": "이미지 접근성을 위한 대체 텍스트",
+    "onClick": "클릭 이벤트 핸들러",
+    "className": "추가 CSS 클래스"
+  }
+}
