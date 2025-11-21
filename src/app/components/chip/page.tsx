@@ -404,7 +404,7 @@ export default function ChipPage() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>basic.tsx</div>
-          <pre><code>{`import Chip from '@/react/atom/chip';
+          <pre><code>{`import { Chip } from 'podo-ui';
 
 function App() {
   return (
@@ -443,7 +443,7 @@ function App() {
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>with-delete.tsx</div>
           <pre><code>{`import { useState } from 'react';
-import Chip from '@/react/atom/chip';
+import { Chip } from 'podo-ui';
 
 function TagList() {
   const [tags, setTags] = useState([
