@@ -1,0 +1,37 @@
+{
+  "title": "Tooltip",
+  "description": "A UI component that appears to provide additional information when users trigger specific elements.",
+  "overview": {
+    "title": "Overview",
+    "description": "Tooltips include brief explanations or guidance to help users understand. They are mainly used for concise information and intuitively show direction with arrows.",
+    "basicExample": "Basic Examples"
+  },
+  "variants": {
+    "title": "Variants",
+    "description": "Tooltip supports two visual variants: default and info",
+    "default": "Default Variant",
+    "info": "Info Variant"
+  },
+  "positions": {
+    "title": "Positions",
+    "description": "Tooltip arrows support 12 different positions.",
+    "top": "Top Positions",
+    "bottom": "Bottom Positions",
+    "left": "Left Positions",
+    "right": "Right Positions"
+  },
+  "customContent": {
+    "title": "Custom Content",
+    "description": "You can pass text or any JSX structure through the content prop. Customize with inline styles or custom markup as you wish.",
+    "example": "Custom Examples"
+  },
+  "props": {
+    "title": "Props",
+    "children": "Trigger element that shows tooltip on hover",
+    "content": "Tooltip content to display (text or JSX element, fully customizable)",
+    "variant": "Visual variant of tooltip (default or info)",
+    "position": "Direction that the arrow points to",
+    "offset": "Distance from trigger element in pixels",
+    "className": "Additional CSS classes"
+  }
+}

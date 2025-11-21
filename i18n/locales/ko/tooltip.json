@@ -1,0 +1,37 @@
+{
+  "title": "툴팁",
+  "description": "사용자가 특정 요소에 트리거 할 때 추가적인 정보를 제공하기 위해 나타나는 UI 구성요소입니다.",
+  "overview": {
+    "title": "개요",
+    "description": "툴팁은 사용자가 이해하기 쉽도록 간략한 설명이나 안내를 포함합니다. 주로 간결한 정보를 나타낼 때 사용하며, 화살표로 방향을 직관적으로 표시합니다.",
+    "basicExample": "기본 예제"
+  },
+  "variants": {
+    "title": "유형",
+    "description": "툴팁은 두 가지 시각적 유형을 지원합니다: default와 info",
+    "default": "Default 유형",
+    "info": "Info 유형"
+  },
+  "positions": {
+    "title": "방향",
+    "description": "툴팁의 화살표는 12가지 방향을 지원합니다.",
+    "top": "상단 방향",
+    "bottom": "하단 방향",
+    "left": "왼쪽 방향",
+    "right": "오른쪽 방향"
+  },
+  "customContent": {
+    "title": "커스텀 콘텐츠",
+    "description": "content prop을 통해 텍스트나 자유로운 JSX 구조를 전달할 수 있습니다. 인라인 스타일이나 커스텀 마크업으로 원하는 대로 구성하세요.",
+    "example": "커스텀 예제"
+  },
+  "props": {
+    "title": "Props",
+    "children": "툴팁의 트리거 요소 (호버 시 툴팁이 표시됨)",
+    "content": "툴팁에 표시할 내용 (텍스트 또는 JSX 요소, 자유롭게 구조화 가능)",
+    "variant": "툴팁의 시각적 유형 (default 또는 info)",
+    "position": "화살표가 가리키는 방향",
+    "offset": "트리거 요소로부터의 거리 (픽셀 단위)",
+    "className": "추가 CSS 클래스"
+  }
+}

@@ -50,6 +50,7 @@ async function loadMessages(locale: Locale) {
   const tab = (await import(`../../i18n/locales/${locale}/tab.json`)).default;
   const pagination = (await import(`../../i18n/locales/${locale}/pagination.json`)).default;
   const toast = (await import(`../../i18n/locales/${locale}/toast.json`)).default;
+  const tooltip = (await import(`../../i18n/locales/${locale}/tooltip.json`)).default;
 
   // Utilities
   const border = (await import(`../../i18n/locales/${locale}/border.json`)).default;
@@ -84,6 +85,7 @@ async function loadMessages(locale: Locale) {
     tab,
     pagination,
     toast,
+    tooltip,
     border,
     radius,
     elevation,
