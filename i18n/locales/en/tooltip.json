@@ -25,6 +25,11 @@
     "description": "You can pass text or any JSX structure through the content prop. Customize with inline styles or custom markup as you wish.",
     "example": "Custom Examples"
   },
+  "controlled": {
+    "title": "Controlled Visibility",
+    "description": "Use the isVisible prop to control tooltip visibility externally. When true, the tooltip is always visible without hover. When false, hover is disabled.",
+    "example": "Controlled Examples"
+  },
   "props": {
     "title": "Props",
     "children": "Trigger element that shows tooltip on hover",
@@ -32,6 +37,7 @@
     "variant": "Visual variant of tooltip (default or info)",
     "position": "Direction that the arrow points to",
     "offset": "Distance from trigger element in pixels",
+    "isVisible": "Control visibility externally (true: always visible, false: disabled, undefined: hover controlled)",
     "className": "Additional CSS classes"
   }
 }

@@ -25,6 +25,11 @@
     "description": "content prop을 통해 텍스트나 자유로운 JSX 구조를 전달할 수 있습니다. 인라인 스타일이나 커스텀 마크업으로 원하는 대로 구성하세요.",
     "example": "커스텀 예제"
   },
+  "controlled": {
+    "title": "제어 가능한 표시",
+    "description": "isVisible prop을 사용하여 외부에서 툴팁 표시 여부를 제어할 수 있습니다. true일 경우 호버 없이도 항상 표시되며, false일 경우 호버해도 표시되지 않습니다.",
+    "example": "제어 예제"
+  },
   "props": {
     "title": "Props",
     "children": "툴팁의 트리거 요소 (호버 시 툴팁이 표시됨)",
@@ -32,6 +37,7 @@
     "variant": "툴팁의 시각적 유형 (default 또는 info)",
     "position": "화살표가 가리키는 방향",
     "offset": "트리거 요소로부터의 거리 (픽셀 단위)",
+    "isVisible": "외부에서 표시 여부 제어 (true: 항상 표시, false: 비활성, undefined: 호버로 제어)",
     "className": "추가 CSS 클래스"
   }
 }

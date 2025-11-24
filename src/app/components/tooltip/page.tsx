@@ -241,6 +241,147 @@ export default function TooltipPage() {
       </section>
 
       <section className={styles.section}>
+        <h2>{t('controlled.title')}</h2>
+        <p>{t('controlled.description')}</p>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('controlled.example')}</div>
+          <div style={{ display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Tooltip content="항상 표시되는 툴팁" variant="default" position="top" isVisible={true}>
+              <button style={{ padding: '8px 16px', cursor: 'pointer' }}>Always Visible</button>
+            </Tooltip>
+            <Tooltip content="호버 불가능" variant="info" position="top" isVisible={false}>
+              <button style={{ padding: '8px 16px', cursor: 'pointer' }}>Disabled Hover</button>
+            </Tooltip>
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>controlled.tsx</div>
+          <pre><code>{`// Always visible (without hover)
+<Tooltip content="항상 표시" isVisible={true}>
+  <button>Always Visible</button>
+</Tooltip>
+
+// Disabled (hover doesn't work)
+<Tooltip content="호버 불가능" isVisible={false}>
+  <button>Disabled</button>
+</Tooltip>
+
+// Controlled with state
+const [show, setShow] = useState(false);
+
+<Tooltip content="상태로 제어" isVisible={show}>
+  <button onClick={() => setShow(!show)}>
+    Toggle
+  </button>
+</Tooltip>`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>테이블 내 사용</h2>
+        <p>테이블 셀 안에서도 툴팁을 사용할 수 있습니다.</p>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>테이블 예제</div>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>이름</th>
+                <th>상태</th>
+                <th>액션</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>홍길동</td>
+                <td>
+                  <Tooltip
+                    content={
+                      <>
+                        <p style={{ margin: 0, fontWeight: 600 }}>Google Ads</p>
+                        <span>데이터 기준</span>
+                      </>
+                    }
+                    position="top"
+                  >
+                    <i className="icon-info" style={{ fontSize: '16px', cursor: 'pointer' }}></i>
+                  </Tooltip>
+                  {' '}1,234 클릭
+                </td>
+                <td>
+                  <Tooltip content="활성 상태입니다" variant="info" position="top">
+                    <span style={{ color: 'green', cursor: 'pointer' }}>활성</span>
+                  </Tooltip>
+                </td>
+                <td>
+                  <Tooltip content="수정하기" position="top">
+                    <button style={{ padding: '4px 8px', cursor: 'pointer' }}>수정</button>
+                  </Tooltip>
+                </td>
+              </tr>
+              <tr>
+                <td>김철수</td>
+                <td>
+                  <Tooltip
+                    content={
+                      <>
+                        <p style={{ margin: 0, fontWeight: 600 }}>Facebook Ads</p>
+                        <span>데이터 기준</span>
+                      </>
+                    }
+                    position="top"
+                  >
+                    <i className="icon-info" style={{ fontSize: '16px', cursor: 'pointer' }}></i>
+                  </Tooltip>
+                  {' '}5,678 클릭
+                </td>
+                <td>
+                  <Tooltip content="비활성 상태입니다" variant="default" position="top">
+                    <span style={{ color: 'red', cursor: 'pointer' }}>비활성</span>
+                  </Tooltip>
+                </td>
+                <td>
+                  <Tooltip content="수정하기" position="top">
+                    <button style={{ padding: '4px 8px', cursor: 'pointer' }}>수정</button>
+                  </Tooltip>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>table.tsx</div>
+          <pre><code>{`<table>
+  <tbody>
+    <tr>
+      <td>
+        <Tooltip
+          content={
+            <>
+              <p>Google Ads</p>
+              <span>데이터 기준</span>
+            </>
+          }
+        >
+          <i className="icon-info" />
+        </Tooltip>
+        {' '}1,234 클릭
+      </td>
+      <td>
+        <Tooltip content="활성 상태" variant="info">
+          <span>활성</span>
+        </Tooltip>
+      </td>
+    </tr>
+  </tbody>
+</table>`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
         <h2>{t('props.title')}</h2>
         <table className={styles.table}>
           <thead>
@@ -281,6 +422,12 @@ export default function TooltipPage() {
               <td><code>number</code></td>
               <td><code>8</code></td>
               <td>{t('props.offset')}</td>
+            </tr>
+            <tr>
+              <td><code>isVisible</code></td>
+              <td><code>boolean</code></td>
+              <td><code>undefined</code></td>
+              <td>{t('props.isVisible')}</td>
             </tr>
             <tr>
               <td><code>className</code></td>

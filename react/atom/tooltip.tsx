@@ -28,6 +28,8 @@ export interface TooltipProps {
   position?: TooltipPosition;
   /** Distance from trigger element in pixels */
   offset?: number;
+  /** Control visibility externally (overrides hover state) */
+  isVisible?: boolean;
   /** Additional CSS class */
   className?: string;
 }
@@ -38,9 +40,10 @@ export default function Tooltip({
   variant = 'default',
   position = 'top',
   offset = 8,
+  isVisible: controlledIsVisible,
   className = '',
 }: TooltipProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [hoverIsVisible, setHoverIsVisible] = useState(false);
 
   const variantClass = variant === 'default' ? styles.variantDefault : styles.variantInfo;
 
@@ -53,14 +56,17 @@ export default function Tooltip({
     .filter(Boolean)
     .join(' ');
 
+  // Show tooltip if controlled visibility is true OR hover state is true
+  const shouldShowTooltip = controlledIsVisible === true || hoverIsVisible;
+
   return (
     <div
       className={styles.tooltipWrapper}
-      onMouseEnter={() => setIsVisible(true)}
-      onMouseLeave={() => setIsVisible(false)}
+      onMouseEnter={() => setHoverIsVisible(true)}
+      onMouseLeave={() => setHoverIsVisible(false)}
     >
       {children}
-      {isVisible && (
+      {shouldShowTooltip && (
         <div
           className={tooltipClassNames}
           style={{ '--tooltip-offset': `${offset}px` } as React.CSSProperties}
