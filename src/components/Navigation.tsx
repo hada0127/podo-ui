@@ -58,6 +58,7 @@ export default function Navigation() {
         { labelKey: 'tab', path: '/components/tab' },
         { labelKey: 'pagination', path: '/components/pagination' },
         { labelKey: 'toast', path: '/components/toast' },
+        { labelKey: 'tooltip', path: '/components/tooltip' },
       ],
     },
     {
