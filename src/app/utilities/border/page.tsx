@@ -95,16 +95,16 @@ export default function Border() {
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('colors.demoTitle')}</div>
           <div className={styles.borderGrid}>
-            <div className={styles.borderBox} style={{ border: '2px solid var(--primary)' }}>
+            <div className={styles.borderBox} style={{ border: '2px solid var(--color-primary)' }}>
               Primary
             </div>
-            <div className={styles.borderBox} style={{ border: '2px solid var(--success)' }}>
+            <div className={styles.borderBox} style={{ border: '2px solid var(--color-success)' }}>
               Success
             </div>
-            <div className={styles.borderBox} style={{ border: '2px solid var(--warning)' }}>
+            <div className={styles.borderBox} style={{ border: '2px solid var(--color-warning)' }}>
               Warning
             </div>
-            <div className={styles.borderBox} style={{ border: '2px solid var(--danger)' }}>
+            <div className={styles.borderBox} style={{ border: '2px solid var(--color-danger)' }}>
               Danger
             </div>
           </div>
@@ -143,7 +143,7 @@ export default function Border() {
               <h2>{t('realWorld.cards.basic.title')}</h2>
               <p>{t('realWorld.cards.basic.description')}</p>
             </div>
-            <div className={styles.card} style={{ borderColor: 'var(--primary)' }}>
+            <div className={styles.card} style={{ borderColor: 'var(--color-primary)' }}>
               <h2>{t('realWorld.cards.primary.title')}</h2>
               <p>{t('realWorld.cards.primary.description')}</p>
             </div>
