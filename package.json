@@ -1,6 +1,6 @@
 {
   "name": "podo-ui",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "type": "module",
   "author": "hada0127 <work@tarucy.net>",
   "license": "MIT",
@@ -69,16 +69,32 @@
     "preview": "npm run pages:build && wrangler pages dev",
     "deploy": "npm run pages:build && wrangler pages deploy"
   },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "sass": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    },
+    "react-dom": {
+      "optional": false
+    },
+    "sass": {
+      "optional": true
+    }
+  },
   "dependencies": {
+    "uuid": "^11.0.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
     "next": "14.1.0",
     "next-intl": "^4.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sass": "^1.83.0",
-    "uuid": "^11.0.3",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.8",
     "@eslint/js": "^9.8.0",
     "@playwright/test": "^1.56.1",
