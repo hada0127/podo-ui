@@ -87,7 +87,8 @@ const Editor = ({
   const [editYoutubeWidth, setEditYoutubeWidth] = useState('100%'); // 편집 중인 유튜브 크기
   const [editYoutubeAlign, setEditYoutubeAlign] = useState('center'); // 편집 중인 유튜브 정렬
   const [isCodeView, setIsCodeView] = useState(false); // 코드보기 모드
-  const [codeContent, setCodeContent] = useState(''); // 코드보기 내용
+  const [codeContent, setCodeContent] = useState(''); // 코드보기 내용 (포맷팅된 버전)
+  const [originalHtml, setOriginalHtml] = useState(''); // 원본 HTML (포맷팅 없음)
   const [savedEditorHeight, setSavedEditorHeight] = useState<number | null>(null); // 위지윅 에디터 높이 저장
 
   // Undo/Redo 히스토리 관리
@@ -691,8 +692,9 @@ const Editor = ({
       setSavedEditorHeight(null); // 저장된 높이 초기화
       // 다음 렌더링 사이클에서 에디터 내용 업데이트
       setTimeout(() => {
-        if (editorRef.current && codeContent !== undefined) {
-          editorRef.current.innerHTML = codeContent;
+        if (editorRef.current && originalHtml !== undefined) {
+          // 원본 HTML을 사용 (포맷팅되지 않은 버전)
+          editorRef.current.innerHTML = originalHtml;
           handleInput();
         }
       }, 0);
@@ -711,8 +713,11 @@ const Editor = ({
           setSavedEditorHeight(currentHeight);
         }
 
-        // 현재 HTML을 포맷팅
+        // 원본 HTML 저장 (포맷팅 없음)
         const html = editorRef.current.innerHTML;
+        setOriginalHtml(html);
+
+        // 표시용으로 포맷팅된 HTML 생성
         const formattedHtml = formatHtml(html);
         setCodeContent(formattedHtml);
         setIsCodeView(true);
@@ -720,45 +725,138 @@ const Editor = ({
     }
   };
 
-  // HTML 포맷팅 함수
+  // HTML 포맷팅 함수 (beautify)
   const formatHtml = (html: string): string => {
-    // 기본적인 HTML 포맷팅
-    const formatted = html
-      .replace(/></g, '>\n<')  // 태그 사이에 줄바꿈 추가
-      .replace(/(<div|<p|<h[1-6]|<ul|<ol|<li|<blockquote)/gi, '\n$1')  // 블록 요소 앞에 줄바꿈
-      .replace(/(<\/div>|<\/p>|<\/h[1-6]>|<\/ul>|<\/ol>|<\/li>|<\/blockquote>)/gi, '$1\n');  // 블록 요소 뒤에 줄바꿈
-
-    // 들여쓰기 추가
-    const lines = formatted.split('\n');
+    let formatted = '';
     let indentLevel = 0;
-    const indentedLines = lines.map(line => {
-      const trimmed = line.trim();
-      if (!trimmed) return '';
+    const indentSize = 2;
 
-      // 닫는 태그인 경우 들여쓰기 레벨 감소
-      if (trimmed.startsWith('</')) {
-        indentLevel = Math.max(0, indentLevel - 1);
-        const indented = '  '.repeat(indentLevel) + trimmed;
-        return indented;
+    // 블록 레벨 요소 정의
+    const blockElements = [
+      'div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'ul', 'ol', 'li', 'blockquote', 'pre', 'table',
+      'thead', 'tbody', 'tr', 'td', 'th', 'section',
+      'article', 'header', 'footer', 'nav', 'aside', 'main'
+    ];
+
+    // 인라인 요소 정의
+    const inlineElements = ['span', 'a', 'strong', 'b', 'em', 'i', 'u', 'code', 'small', 'sub', 'sup', 'mark'];
+
+    // HTML을 토큰으로 분리
+    const tokens: string[] = [];
+    let current = '';
+    let inTag = false;
+
+    for (let i = 0; i < html.length; i++) {
+      const char = html[i];
+
+      if (char === '<') {
+        if (current.trim()) {
+          tokens.push(current);
+        }
+        current = char;
+        inTag = true;
+      } else if (char === '>' && inTag) {
+        current += char;
+        tokens.push(current);
+        current = '';
+        inTag = false;
+      } else {
+        current += char;
       }
+    }
 
-      // 자체 닫는 태그가 아닌 여는 태그인 경우
-      const indented = '  '.repeat(indentLevel) + trimmed;
-      if (trimmed.startsWith('<') && !trimmed.startsWith('<!') &&
-          !trimmed.endsWith('/>') && trimmed.includes('>') &&
-          !trimmed.includes('</')) {
-        indentLevel++;
+    if (current.trim()) {
+      tokens.push(current);
+    }
+
+    // 토큰을 순회하며 포맷팅
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+      const trimmedToken = token.trim();
+
+      if (!trimmedToken) continue;
+
+      const prevToken = i > 0 ? tokens[i - 1]?.trim() : '';
+
+      // 태그인 경우
+      if (trimmedToken.startsWith('<')) {
+        // 닫는 태그
+        if (trimmedToken.startsWith('</')) {
+          const tagName = trimmedToken.match(/<\/(\w+)/)?.[1]?.toLowerCase();
+
+          if (tagName && blockElements.includes(tagName)) {
+            indentLevel = Math.max(0, indentLevel - 1);
+            formatted += '\n' + ' '.repeat(indentLevel * indentSize) + trimmedToken;
+          } else {
+            formatted += trimmedToken;
+          }
+        }
+        // 자체 닫는 태그 (self-closing)
+        else if (trimmedToken.endsWith('/>')) {
+          const tagName = trimmedToken.match(/<(\w+)/)?.[1]?.toLowerCase();
+
+          if (tagName && blockElements.includes(tagName)) {
+            formatted += '\n' + ' '.repeat(indentLevel * indentSize) + trimmedToken;
+          } else {
+            formatted += trimmedToken;
+          }
+        }
+        // 여는 태그
+        else {
+          const tagName = trimmedToken.match(/<(\w+)/)?.[1]?.toLowerCase();
+
+          // br 태그 특별 처리: 줄바꿈 후 다음 요소는 현재 레벨 유지
+          if (tagName === 'br') {
+            formatted += trimmedToken;
+          } else if (tagName && blockElements.includes(tagName)) {
+            formatted += '\n' + ' '.repeat(indentLevel * indentSize) + trimmedToken;
+
+            // 여는 태그와 닫는 태그가 같은 줄에 있지 않으면 들여쓰기 증가
+            const nextToken = tokens[i + 1];
+            const closingTag = `</${tagName}>`;
+            if (!nextToken || !nextToken.includes(closingTag)) {
+              indentLevel++;
+            }
+          } else {
+            // 인라인 요소
+            // br 태그 직후인 경우 줄바꿈과 들여쓰기 추가
+            if (prevToken === '<br>' || prevToken === '<br/>') {
+              formatted += '\n' + ' '.repeat(indentLevel * indentSize) + trimmedToken;
+            } else {
+              formatted += trimmedToken;
+            }
+          }
+        }
       }
+      // 텍스트 노드
+      else {
+        const nextToken = tokens[i + 1];
 
-      return indented;
-    });
+        // br 태그 직후인 경우, 이미 줄바꿈과 들여쓰기가 추가되어 있음
+        if (prevToken === '<br>' || prevToken === '<br/>') {
+          formatted += trimmedToken;
+        }
+        // 이전이나 다음 토큰이 인라인 요소면 공백 없이 추가
+        else if (prevToken && inlineElements.some(tag => prevToken.includes(`<${tag}`)) ||
+            nextToken && inlineElements.some(tag => nextToken.includes(`</${tag}`))) {
+          formatted += trimmedToken;
+        } else {
+          formatted += trimmedToken;
+        }
+      }
+    }
 
-    return indentedLines.filter(line => line !== '').join('\n');
+    // 앞뒤 공백 제거 및 연속된 빈 줄 정리
+    return formatted.trim().replace(/\n\s*\n\s*\n/g, '\n\n');
   };
 
   // 코드 에디터 내용 변경 처리
   const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCodeContent(e.target.value);
+    const newContent = e.target.value;
+    setCodeContent(newContent);
+    // 사용자가 코드를 수정하면 원본 HTML도 업데이트
+    setOriginalHtml(newContent);
   };
 
   const applyParagraphStyle = (value: string) => {
