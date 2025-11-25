@@ -27,7 +27,7 @@ button {
   &.default-fill {
     color: color('default-reverse');
     background-color: color('default-fill');
-    border: 1px solid color('default');
+    border: 1px solid color('border');
     @include button-status('default');
   }
   &.default-border,
@@ -188,10 +188,15 @@ button {
 }
 button:not(:disabled).default-deep {
   &-border,
-  &-text,
   &-fill {
     color: color('text-body');
     border: 1px solid color('border');
+    &:hover {
+      color: color('text-body');
+    }
+  }
+  &-text {
+    color: color('text-body');
     &:hover {
       color: color('text-body');
     }

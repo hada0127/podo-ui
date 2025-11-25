@@ -9,6 +9,16 @@ button {
     gap: s(2);
     border-radius: r(3);
     padding: s(3) s(5);
+    &.xxs {
+      @include p5;
+      & {
+        border-radius: r(2);
+        padding: s(2);
+        > i::before {
+          font-size: 16px;
+        }
+      }
+    }
     &.xs {
       @include p4;
       & {

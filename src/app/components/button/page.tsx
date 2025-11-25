@@ -9,6 +9,7 @@ export default function Button() {
   const variants = [
     { name: 'primary', key: 'primary' },
     { name: 'default', key: 'default' },
+    { name: 'default-deep', key: 'defaultDeep' },
     { name: 'info', key: 'info' },
     { name: 'link', key: 'link' },
     { name: 'success', key: 'success' },
@@ -113,7 +114,10 @@ export default function Button() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<!-- Small -->
+          <pre><code>{`<button class="primary xxs">
+  xxs Button
+</button>
+
 <button class="primary xs">
   xs Button
 </button>
@@ -129,13 +133,16 @@ export default function Button() {
 <button class="primary lg">
   lg Button
 </button>
-
 `}</code></pre>
         </div>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.sizeDemo}>
+            <button className="primary xxs">
+              xxs Button
+            </button>
+
             <button className="primary xs">
               xs Button
             </button>

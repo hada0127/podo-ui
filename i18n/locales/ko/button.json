@@ -22,6 +22,10 @@
       "label": "Default",
       "description": "기본 버튼"
     },
+    "defaultDeep": {
+      "label": "Default Deep",
+      "description": "진한 기본 버튼"
+    },
     "info": {
       "label": "Info",
       "description": "정보성 액션"

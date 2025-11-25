@@ -22,6 +22,10 @@
       "label": "Default",
       "description": "Default button"
     },
+    "defaultDeep": {
+      "label": "Default Deep",
+      "description": "Deep default button"
+    },
     "info": {
       "label": "Info",
       "description": "Informational action"
