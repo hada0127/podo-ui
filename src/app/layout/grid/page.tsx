@@ -214,6 +214,67 @@ export default function Grid() {
           </div>
         </div>
       </section>
+
+      <section className={styles.section}>
+        <h2>{t('objectWidth.title')}</h2>
+        <p>{t('objectWidth.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<!-- grid 외부에서 사용 -->
+<div>
+  <div class="w-3">25% width</div>
+  <div class="w-6">50% width</div>
+  <div class="w-9">75% width</div>
+  <div class="w-12">100% width</div>
+  <div class="w-full">100% width</div>
+</div>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('objectWidth.example')}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="w-3"><div className={styles.gridItem}>w-3 (25%)</div></div>
+            <div className="w-6"><div className={styles.gridItem}>w-6 (50%)</div></div>
+            <div className="w-9"><div className={styles.gridItem}>w-9 (75%)</div></div>
+            <div className="w-12"><div className={styles.gridItem}>w-12 (100%)</div></div>
+            <div className="w-full"><div className={styles.gridItem}>w-full (100%)</div></div>
+          </div>
+        </div>
+
+        <div className={styles.note}>
+          <i className="icon-info"></i>
+          <span>{t('objectWidth.note')}</span>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('pixelWidth.title')}</h2>
+        <p>{t('pixelWidth.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<div class="w-100px">100px width</div>
+<div class="w-200px">200px width</div>
+<div class="w-300px">300px width</div>
+<div class="w-500px">500px width</div>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('pixelWidth.example')}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="w-100px"><div className={styles.gridItem}>w-100px</div></div>
+            <div className="w-200px"><div className={styles.gridItem}>w-200px</div></div>
+            <div className="w-300px"><div className={styles.gridItem}>w-300px</div></div>
+            <div className="w-500px"><div className={styles.gridItem}>w-500px</div></div>
+          </div>
+        </div>
+
+        <div className={styles.note}>
+          <i className="icon-info"></i>
+          <span>{t('pixelWidth.note')}</span>
+        </div>
+      </section>
     </>
   );
 }

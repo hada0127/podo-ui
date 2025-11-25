@@ -49,6 +49,18 @@
     "tablet": "Tablet: 768px ~ 1279px (6-column grid, 16px gap)",
     "mobile": "Mobile: 767px and below (4-column grid, 16px gap)"
   },
+  "objectWidth": {
+    "title": "Element Width",
+    "description": "You can use w-1 ~ w-12 and w-full classes on non-grid elements to set width. In this case, width is calculated as a percentage based on 12 columns:",
+    "example": "Live Example:",
+    "note": "For non-grid elements, w-1 is 8.33%, w-6 is 50%, and w-12 is 100% width."
+  },
+  "pixelWidth": {
+    "title": "Pixel Width",
+    "description": "Use w-0px through w-5000px to set exact pixel-based widths:",
+    "example": "Live Example:",
+    "note": "Pixel widths can be used on any element and maintain a fixed width regardless of responsiveness."
+  },
   "code": {
     "columns": "4 columns (33.33%)",
     "sixColumns": "6 columns (50%)",

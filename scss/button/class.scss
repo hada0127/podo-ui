@@ -8,6 +8,7 @@
     color: color($type + '-pressed');
   }
 }
+
 button {
   color: color('default-reverse');
   background-color: color('default');
@@ -24,49 +25,32 @@ button {
     outline: 4px solid color('default-outline');
   }
 
-  &.default-fill {
+  // default fill (works with just "fill" class or "default fill")
+  &.fill:not(.primary):not(.default-deep):not(.info):not(.link):not(.success):not(.warning):not(.danger) {
     color: color('default-reverse');
     background-color: color('default-fill');
     border: 1px solid color('border');
     @include button-status('default');
-  }
-  &.default-border,
-  &.default-text {
-    color: color('default');
-    @include button-status('default');
-  }
-  &.default-fill,
-  &.default-border {
-    outline: none;
+
     &:hover {
-      border: 1px solid color('default-hover');
+      color: color('default-reverse');
+      border: 1px solid color('border-hover');
     }
     &:active {
-      border: 1px solid color('default-pressed');
+      color: color('default-reverse');
+      border: 1px solid color('border-pressed');
     }
     &:focus {
-      border: 1px solid color('default-focus');
+      border: 1px solid color('border-focus');
     }
   }
-  &.default-border {
+
+  // default border (works with just "border" class or "default border")
+  &.border:not(.primary):not(.default-deep):not(.info):not(.link):not(.success):not(.warning):not(.danger) {
     color: color('default-reverse');
     background-color: transparent;
-
     border: 1px solid color('border');
-    &:hover {
-      color: color('default-reverse');
-      border: 1px solid color('border-hover');
-    }
-    &:active {
-      color: color('default-reverse');
-      border: 1px solid color('border-pressed');
-    }
-    &:focus {
-      border: 1px solid color('border-focus');
-    }
-  }
-  &.default-fill {
-    color: color('default-reverse');
+    @include button-status('default');
 
     &:hover {
       color: color('default-reverse');
@@ -80,11 +64,13 @@ button {
       border: 1px solid color('border-focus');
     }
   }
-  &.default-text {
+
+  // default text (works with just "text" class or "default text")
+  &.text:not(.primary):not(.default-deep):not(.info):not(.link):not(.success):not(.warning):not(.danger) {
     color: color('text-action');
     background-color: transparent;
-
     border: none;
+
     &:hover {
       color: color('text-action-hover');
     }
@@ -96,34 +82,37 @@ button {
     }
   }
 
+  // disabled states
   &:disabled {
     color: color('text-action-disabled');
     background-color: color('bg-disabled');
     border: 1px solid color('bg-disabled');
-
     cursor: not-allowed;
   }
-  &[class$='-border']:disabled {
+
+  &.border:disabled {
     color: color('text-action-disabled');
+    background-color: transparent;
     border: 1px solid color('border-disabled');
-
     cursor: not-allowed;
   }
-  &[class$='-fill']:disabled {
+
+  &.fill:disabled {
     color: color('text-action-disabled');
     background-color: color('bg-disabled');
     border: 1px solid color('border-disabled');
-
     cursor: not-allowed;
   }
 
-  &[class$='-text']:disabled {
+  &.text:disabled {
     color: color('text-action-disabled');
+    background-color: transparent;
     border: none;
     outline: none;
     cursor: not-allowed;
   }
 
+  // text alignment
   &.text-left {
     justify-content: flex-start;
   }
@@ -132,70 +121,103 @@ button {
     justify-content: flex-end;
   }
 }
+
+// color variants
 @each $type in (primary, default-deep, info, link, success, warning, danger) {
   button:not(:disabled).#{$type} {
     color: color($type + '-reverse');
     background-color: color($type);
     border: 1px solid color($type);
     outline: none;
+
     &:hover {
       background-color: color($type + '-hover');
     }
     &:active {
       background-color: color($type + '-pressed');
     }
-
     &:focus-visible:not(:disabled) {
       outline: 4px solid color($type + '-outline');
     }
 
-    &-text {
-      border: none;
-      &:focus-visible:not(:disabled) {
-        outline: 4px solid color($type + '-outline');
-      }
-    }
-    &-fill {
+    // fill style
+    &.fill {
       color: color($type);
       background-color: color($type + '-fill');
       border: 1px solid color($type);
       @include button-status($type);
-      &:focus-visible:not(:disabled) {
-        outline: 4px solid color($type + '-outline');
-      }
-    }
-    &-border {
-      &:focus-visible:not(:disabled) {
-        outline: 4px solid color($type + '-outline');
-      }
-    }
-    &-border,
-    &-text {
-      color: color($type);
-      background-color: transparent;
-      @include button-status($type);
-    }
-    &-fill,
-    &-border {
+
       &:hover {
         border: 1px solid color($type + '-hover');
       }
       &:active {
         border: 1px solid color($type + '-pressed');
       }
+      &:focus-visible:not(:disabled) {
+        outline: 4px solid color($type + '-outline');
+      }
+    }
+
+    // border style
+    &.border {
+      color: color($type);
+      background-color: transparent;
+      border: 1px solid color($type);
+      @include button-status($type);
+
+      &:hover {
+        border: 1px solid color($type + '-hover');
+      }
+      &:active {
+        border: 1px solid color($type + '-pressed');
+      }
+      &:focus-visible:not(:disabled) {
+        outline: 4px solid color($type + '-outline');
+      }
+    }
+
+    // text style
+    &.text {
+      color: color($type);
+      background-color: transparent;
+      border: none;
+      @include button-status($type);
+
+      &:focus-visible:not(:disabled) {
+        outline: 4px solid color($type + '-outline');
+      }
     }
   }
 }
+
+// default-deep overrides
 button:not(:disabled).default-deep {
-  &-border,
-  &-fill {
+  // fill style - uses border color
+  &.fill {
     color: color('text-body');
     border: 1px solid color('border');
     &:hover {
       color: color('text-body');
+      border: 1px solid color('border-hover');
+    }
+    &:active {
+      border: 1px solid color('border-pressed');
     }
   }
-  &-text {
+  // border style - uses default-deep color for border
+  &.border {
+    color: color('text-body');
+    border: 1px solid color('default-deep');
+    &:hover {
+      color: color('text-body');
+      border: 1px solid color('default-deep-hover');
+    }
+    &:active {
+      border: 1px solid color('default-deep-pressed');
+    }
+  }
+  // text style - no border
+  &.text {
     color: color('text-body');
     &:hover {
       color: color('text-body');

@@ -8,7 +8,7 @@ export default function Button() {
 
   const variants = [
     { name: 'primary', key: 'primary' },
-    { name: 'default', key: 'default' },
+    { name: '', key: 'default' },
     { name: 'default-deep', key: 'defaultDeep' },
     { name: 'info', key: 'info' },
     { name: 'link', key: 'link' },
@@ -17,11 +17,22 @@ export default function Button() {
     { name: 'danger', key: 'danger' },
   ];
 
+  // Helper to generate class string (removes leading/trailing spaces)
+  const getClassName = (variant: string, style: string) => {
+    return `${variant}${style}`.trim();
+  };
+
+  // Helper to generate code example class attribute
+  const getCodeClass = (variant: string, style: string) => {
+    const cls = getClassName(variant, style);
+    return cls ? ` class="${cls}"` : '';
+  };
+
   const buttonStyles = [
     { suffix: '', key: 'solid' },
-    { suffix: '-fill', key: 'fill' },
-    { suffix: '-border', key: 'border' },
-    { suffix: '-text', key: 'text' },
+    { suffix: ' fill', key: 'fill' },
+    { suffix: ' border', key: 'border' },
+    { suffix: ' text', key: 'text' },
   ];
 
   return (
@@ -65,7 +76,7 @@ export default function Button() {
                 <h3>{t(`variants.${variant.key}.label`)}</h3>
                 <p>{t(`variants.${variant.key}.description`)}</p>
               </div>
-              <button className={variant.name}>{t(`variants.${variant.key}.label`)}</button>
+              <button className={variant.name || undefined}>{t(`variants.${variant.key}.label`)}</button>
             </div>
           ))}
         </div>
@@ -73,7 +84,8 @@ export default function Button() {
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
           <pre><code>{`<button class="primary">Primary</button>
-<button class="default">Default</button>
+<button>Default</button>
+<button class="default-deep">Default Deep</button>
 <button class="info">Info</button>
 <button class="link">Link</button>
 <button class="success">Success</button>
@@ -93,16 +105,16 @@ export default function Button() {
 
             <div className={styles.buttonGroup}>
               {variants.map((variant) => (
-                <button key={variant.name} className={`${variant.name}${style.suffix}`}>
+                <button key={variant.key} className={getClassName(variant.name, style.suffix) || undefined}>
                   {t(`variants.${variant.key}.label`)}
                 </button>
               ))}
             </div>
 
             <div className={styles.codeBlock}>
-              <pre><code>{`<button class="primary${style.suffix}">${t(`styles.${style.key}.label`)}</button>
-<button class="success${style.suffix}">${t(`styles.${style.key}.label`)}</button>
-<button class="danger${style.suffix}">${t(`styles.${style.key}.label`)}</button>`}</code></pre>
+              <pre><code>{variants.map((variant) =>
+                `<button${getCodeClass(variant.name, style.suffix)}>${t(`variants.${variant.key}.label`)}</button>`
+              ).join('\n')}</code></pre>
             </div>
           </div>
         ))}
@@ -233,6 +245,12 @@ export default function Button() {
   ${t('icons.examples.delete')}
 </button>
 
+<!-- Text style -->
+<button class="primary text">
+  <i class="icon-plus"></i>
+  ${t('icons.examples.create')}
+</button>
+
 <!-- Icon only -->
 <button class="primary">
   <i class="icon-search"></i>
@@ -257,6 +275,14 @@ export default function Button() {
             <button className="info">
               <i className="icon-download"></i>
               {t('icons.examples.download')}
+            </button>
+            <button className="primary text">
+              <i className="icon-plus"></i>
+              {t('icons.examples.create')}
+            </button>
+            <button className="danger text">
+              <i className="icon-trash"></i>
+              {t('icons.examples.delete')}
             </button>
             <button className="primary">
               <i className="icon-search"></i>
@@ -404,16 +430,16 @@ export default function Button() {
 
         <div className={styles.showcase}>
           {variants.map((variant) => (
-            <div key={variant.name} className={styles.showcaseRow}>
+            <div key={variant.key} className={styles.showcaseRow}>
               <div className={styles.showcaseLabel}>
                 <strong>{t(`variants.${variant.key}.label`)}</strong>
                 <span>{t(`variants.${variant.key}.description`)}</span>
               </div>
               <div className={styles.showcaseButtons}>
-                <button className={variant.name}>Solid</button>
-                <button className={`${variant.name}-fill`}>Fill</button>
-                <button className={`${variant.name}-border`}>Border</button>
-                <button className={`${variant.name}-text`}>Text</button>
+                <button className={variant.name || undefined}>Solid</button>
+                <button className={getClassName(variant.name, ' fill') || undefined}>Fill</button>
+                <button className={getClassName(variant.name, ' border') || undefined}>Border</button>
+                <button className={getClassName(variant.name, ' text') || undefined}>Text</button>
               </div>
             </div>
           ))}
