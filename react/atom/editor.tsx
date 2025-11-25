@@ -464,12 +464,11 @@ const Editor = ({
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = html;
 
-      // 지원하는 태그와 스타일 정의
+      // 지원하는 태그 정의
       const allowedTags = ['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'S', 'STRIKE', 'DEL',
                           'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE',
                           'UL', 'OL', 'LI', 'A', 'IMG', 'SPAN', 'DIV', 'HR',
                           'TABLE', 'THEAD', 'TBODY', 'TFOOT', 'TR', 'TH', 'TD'];
-      const allowedStyles = ['color', 'background-color', 'text-align'];
 
       // 모든 요소를 순회하면서 정리
       const cleanElement = (element: Element): Node | null => {
@@ -528,27 +527,7 @@ const Editor = ({
           newElement.style.fontWeight = 'bold';
         }
 
-        // 스타일 복원 (허용된 것만)
-        if (element instanceof HTMLElement && element.style) {
-          // 테이블 셀의 경우 배경색과 정렬만 허용
-          if (tagName === 'TD' || tagName === 'TH') {
-            const cellAllowedStyles = ['background-color', 'text-align'];
-            cellAllowedStyles.forEach(styleName => {
-              const value = element.style.getPropertyValue(styleName);
-              if (value) {
-                (newElement as HTMLElement).style.setProperty(styleName, value);
-              }
-            });
-          } else {
-            // 일반 요소는 허용된 스타일만
-            allowedStyles.forEach(styleName => {
-              const value = element.style.getPropertyValue(styleName);
-              if (value) {
-                (newElement as HTMLElement).style.setProperty(styleName, value);
-              }
-            });
-          }
-        }
+        // 붙여넣기된 요소의 style 속성은 모두 제거 (위 테이블 기본 스타일만 유지)
 
         // 자식 요소 처리
         Array.from(element.childNodes).forEach(child => {
