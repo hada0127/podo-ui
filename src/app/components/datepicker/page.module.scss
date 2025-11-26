@@ -1,0 +1,142 @@
+@use '../../../../mixin' as *;
+@use '../../common-page' as *;
+
+.section {
+  @include section-responsive;
+}
+
+.codeBlock {
+  max-width: 100%;
+  background: color(default-deep-base);
+  border-radius: r(4);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @include p4-semibold;
+    color: rgba(255, 255, 255, 0.7);
+    word-break: break-word;
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+
+    code {
+      @include p3;
+      color: #f8f8f2;
+      white-space: pre;
+      display: block;
+      max-width: 100%;
+
+      @media (max-width: 768px) {
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+    }
+  }
+}
+
+.demo {
+  margin-top: s(5);
+  padding: s(5);
+  background: color(bg-reverse-wb);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+}
+
+.demoTitle {
+  @include p3-semibold;
+  margin-bottom: s(4);
+  color: color(default-deep-base);
+}
+
+.pickerGroup {
+  display: flex;
+  flex-direction: column;
+  gap: s(5);
+}
+
+.pickerRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: s(4);
+  align-items: flex-start;
+}
+
+.pickerItem {
+  display: flex;
+  flex-direction: column;
+  gap: s(2);
+
+  label {
+    @include p4;
+    color: color(text-sub);
+  }
+}
+
+.typeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: s(5);
+}
+
+.typeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: s(3);
+  padding: s(4);
+  background: color(bg-elevation-1);
+  border: 1px solid color(border);
+  border-radius: r(3);
+
+  h4 {
+    @include p3-semibold;
+    margin: 0;
+  }
+
+  p {
+    @include p4;
+    color: color(text-sub);
+    margin: 0;
+  }
+}
+
+.selectedValue {
+  @include p4;
+  color: color(text-sub);
+  margin-top: s(2);
+  padding: s(2) s(3);
+  background: color(bg-elevation);
+  border-radius: r(2);
+}
+
+.propsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: s(4);
+
+  th, td {
+    @include p4;
+    padding: s(3) s(4);
+    text-align: left;
+    border-bottom: 1px solid color(border);
+  }
+
+  th {
+    @include p4-semibold;
+    background: color(bg-elevation);
+  }
+
+  code {
+    @include p5;
+    padding: s(1) s(2);
+    background: color(default);
+    border-radius: r(2);
+  }
+}

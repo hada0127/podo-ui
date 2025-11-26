@@ -1,0 +1,99 @@
+{
+  "title": "DatePicker",
+  "description": "Guide to using the DatePicker component in Podo UI",
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "DatePicker is a component for selecting date, time, or date+time. It supports instant (single) and period (range) modes.",
+    "demoTitle": "Live Examples:",
+    "instant": "Instant",
+    "period": "Period",
+    "selected": "Selected"
+  },
+  "types": {
+    "title": "Types",
+    "description": "Three types are supported: date (date only), time (time only), datetime (date + time)",
+    "demoTitle": "Type Examples:",
+    "date": "Select date only",
+    "time": "Select time only",
+    "datetime": "Select date and time together"
+  },
+  "period": {
+    "title": "Period Selection",
+    "description": "Set mode=\"period\" to select a start and end date. Reset/Apply buttons are shown at the bottom.",
+    "demoTitle": "Period Selection Examples:",
+    "dateRange": "Date Range",
+    "timeRange": "Time Range",
+    "datetimeRange": "DateTime Range"
+  },
+  "states": {
+    "title": "States",
+    "description": "Various states are supported:",
+    "demoTitle": "State Examples:",
+    "default": "Default",
+    "disabled": "Disabled",
+    "withValue": "With Initial Value"
+  },
+  "props": {
+    "title": "Props",
+    "description": "DatePicker component props:",
+    "mode": "Selection mode (instant: single, period: range)",
+    "type": "Value type (date, time, datetime)",
+    "value": "Selected value object",
+    "onChange": "Value change callback function",
+    "placeholder": "Placeholder text",
+    "disabled": "Disabled state",
+    "showActions": "Show bottom buttons (default true for period mode)",
+    "align": "Dropdown alignment (left or right)",
+    "disable": "Unselectable date conditions (specific dates, ranges, or functions)",
+    "enable": "Selectable date conditions (only specified dates are enabled)",
+    "minDate": "Minimum selectable date (Date or DateTimeLimit)",
+    "maxDate": "Maximum selectable date (Date or DateTimeLimit)",
+    "minuteStep": "Minute selection interval (1, 5, 10, 15, 20, 30)"
+  },
+  "valueInterface": {
+    "title": "Value Interface",
+    "description": "DatePickerValue manages date and time as separate fields. This allows independent binding and control of date and time values.",
+    "field": "Field",
+    "type": "Type",
+    "usedIn": "Used In",
+    "fieldDescription": "Description",
+    "date": "Start date (year, month, day). Stored as a Date object.",
+    "time": "Start time (hour, minute). Object containing hour (0-23) and minute (0-59).",
+    "endDate": "End date. Specifies the end date of the range in period mode.",
+    "endTime": "End time. Specifies the end time of the range in period mode.",
+    "exampleTitle": "Usage Examples"
+  },
+  "disabling": {
+    "title": "Disabling Dates",
+    "description": "Use disable and enable props to restrict selectable dates. You can specify conditions using specific dates, date ranges, or functions.",
+    "demoTitle": "Disabling Examples:",
+    "specificDates": "Disable Specific Dates",
+    "specificDatesDesc": "Make specific dates unselectable",
+    "dateRange": "Disable Date Range",
+    "dateRangeDesc": "Make a range of dates unselectable",
+    "function": "Disable with Function",
+    "functionDesc": "Dynamically disable dates with a condition function",
+    "enableOnly": "Enable Only Specific Dates",
+    "enableOnlyDesc": "Use enable to make only specified dates selectable"
+  },
+  "minMax": {
+    "title": "Min/Max Date",
+    "description": "Use minDate and maxDate props to specify selectable date range. You can specify time as well using Date object or DateTimeLimit format.",
+    "demoTitle": "Min/Max Date Examples:",
+    "dateOnly": "Date Only Limit",
+    "dateOnlyDesc": "Selectable from today to 30 days later",
+    "withTime": "Date + Time Limit",
+    "withTimeDesc": "Precise limit including start/end time"
+  },
+  "minuteStep": {
+    "title": "Minute Step",
+    "description": "Use minuteStep prop to specify minute selection interval. Supports 1, 5, 10, 15, 30 minute intervals. Default is 1 minute.",
+    "demoTitle": "Minute Step Examples:",
+    "step1": "1 minute (default)",
+    "step5": "5 minutes",
+    "step10": "10 minutes",
+    "step15": "15 minutes",
+    "step20": "20 minutes",
+    "step30": "30 minutes"
+  }
+}

@@ -14,6 +14,7 @@
   "components": "Components",
   "avatar": "Avatar",
   "button": "Button",
+  "datepicker": "DatePicker",
   "input": "Input",
   "textarea": "Textarea",
   "select": "Select",

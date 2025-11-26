@@ -26,6 +26,7 @@ async function loadMessages(locale: Locale) {
   // Components
   const avatar = (await import(`./locales/${locale}/avatar.json`)).default;
   const button = (await import(`./locales/${locale}/button.json`)).default;
+  const datepicker = (await import(`./locales/${locale}/datepicker.json`)).default;
   const input = (await import(`./locales/${locale}/input.json`)).default;
   const textarea = (await import(`./locales/${locale}/textarea.json`)).default;
   const select = (await import(`./locales/${locale}/select.json`)).default;
@@ -61,6 +62,7 @@ async function loadMessages(locale: Locale) {
     responsive,
     avatar,
     button,
+    datepicker,
     input,
     textarea,
     select,

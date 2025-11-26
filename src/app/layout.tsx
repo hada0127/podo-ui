@@ -37,10 +37,11 @@ async function loadMessages(locale: Locale) {
   // Components
   const avatar = (await import(`../../i18n/locales/${locale}/avatar.json`)).default;
   const button = (await import(`../../i18n/locales/${locale}/button.json`)).default;
+  const datepicker = (await import(`../../i18n/locales/${locale}/datepicker.json`)).default;
   const input = (await import(`../../i18n/locales/${locale}/input.json`)).default;
   const textarea = (await import(`../../i18n/locales/${locale}/textarea.json`)).default;
   const select = (await import(`../../i18n/locales/${locale}/select.json`)).default;
-  const checkboxRadio = (await import(`../../i18n/locales/${locale}/checkboxRadio.json`)).default;
+  const checkboxRadio = (await import(`../../i18n/locales/${locale}/checkbox-radio.json`)).default;
   const toggle = (await import(`../../i18n/locales/${locale}/toggle.json`)).default;
   const file = (await import(`../../i18n/locales/${locale}/file.json`)).default;
   const editor = (await import(`../../i18n/locales/${locale}/editor.json`)).default;
@@ -72,6 +73,7 @@ async function loadMessages(locale: Locale) {
     responsive,
     avatar,
     button,
+    datepicker,
     input,
     textarea,
     select,

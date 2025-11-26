@@ -1,0 +1,635 @@
+@use '../../mixin.scss' as *;
+
+// DatePicker Input
+.datepicker {
+  position: relative;
+  display: inline-block;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  gap: s(2);
+  padding: s(3) s(4);
+  background: color('bg-block');
+  border: 1px solid color('border');
+  border-radius: r(3);
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: color('border-hover');
+  }
+
+  &:focus-within,
+  &.active {
+    border-color: color('primary');
+  }
+
+  &.disabled {
+    background: color('bg-disabled');
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// Input Content (피그마 디자인에 맞춘 구조)
+.inputContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: s(2);
+}
+
+// 개별 클릭 가능한 입력 파트 (날짜용)
+.inputPart {
+  @include p4;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 0 s(2);
+  background: none;
+  border: none;
+  border-radius: r(4);
+  cursor: pointer;
+  transition: background 0.2s;
+  color: color('text-body');
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+
+  &:hover {
+    background: color('default');
+  }
+
+  &.active {
+    background: color('default-fill');
+  }
+
+  &.placeholder {
+    color: color('text-action-disabled');
+  }
+}
+
+.timeSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.timeSelect {
+  @include p4;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+  border: none;
+  padding: 0 s(2);
+  flex: 1;
+  text-align: center;
+  text-align-last: center;
+  color: color('text-body');
+  cursor: pointer;
+  border-radius: r(4);
+  transition: background 0.2s;
+  font-variant-numeric: tabular-nums;
+
+  &:hover {
+    background: color('default');
+  }
+
+  &:focus {
+    outline: none;
+    background: color('default-fill');
+  }
+
+  &.placeholder {
+    color: color('text-action-disabled');
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.timeSeparator {
+  @include p4;
+  color: color('text-body');
+}
+
+.separator {
+  @include p4;
+  color: color('text-body');
+  padding: 0 s(1);
+}
+
+.inputIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 1;
+  color: color('text-sub');
+  flex-shrink: 0;
+}
+
+// Dropdown
+.dropdown {
+  position: absolute;
+  top: calc(100% + s(2));
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: s(5);
+  background: color('bg-modal');
+  border-radius: s(3);
+  box-shadow: 0 6px 18px -3px rgba(50, 50, 50, 0.06);
+
+  &.right {
+    left: auto;
+    right: 0;
+  }
+}
+
+// Calendar
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 280px;
+}
+
+.calendarNav {
+  display: flex;
+  align-items: center;
+  gap: s(4);
+  height: 40px;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: color('default');
+  border: none;
+  border-radius: r(3);
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: color('default-hover');
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 20px;
+    color: color('text-action');
+  }
+}
+
+.navButtonPlaceholder {
+  width: 40px;
+  height: 40px;
+}
+
+.navTitle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: s(1);
+}
+
+.navTitleButton {
+  @include display7;
+  display: flex;
+  align-items: center;
+  gap: s(2);
+  padding: 0 s(2);
+  background: none;
+  border: none;
+  border-radius: r(4);
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: color('default');
+  }
+
+  i {
+    font-size: 18px;
+    color: color('text-action');
+  }
+}
+
+.navSelectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: s(2);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid color('text-action');
+    pointer-events: none;
+  }
+}
+
+.navSelect {
+  @include display7;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+  border: none;
+  padding: s(2) s(6) s(2) s(2);
+  border-radius: r(4);
+  cursor: pointer;
+  transition: background 0.2s;
+  color: color('text-body');
+
+  &:hover {
+    background: color('default');
+  }
+
+  &:focus {
+    outline: none;
+    background: color('default-fill');
+  }
+}
+
+.calendarGrid {
+  display: flex;
+  flex-direction: column;
+  gap: s(2);
+  padding-top: s(3);
+  border-top: 1px solid color('border');
+}
+
+.calendarRow {
+  display: flex;
+  width: 100%;
+}
+
+.calendarCell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  @include p3;
+  background: none;
+  border: none;
+  border-radius: r(3);
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &.header {
+    color: color('text-sub');
+    cursor: default;
+  }
+
+  &.other {
+    color: color('text-action-disabled');
+  }
+
+  &.today {
+    font-weight: 600;
+    color: color('primary');
+  }
+
+  &.selected {
+    background: color('primary');
+    color: color('primary-reverse');
+    font-weight: 600;
+  }
+
+  &.inRange {
+    background: color('primary-fill');
+    border-radius: 0;
+  }
+
+  &.rangeStart {
+    background: color('primary');
+    color: color('primary-reverse');
+    font-weight: 600;
+    border-radius: r(3);
+  }
+
+  &.rangeEnd {
+    background: color('primary');
+    color: color('primary-reverse');
+    font-weight: 600;
+    border-radius: r(3);
+  }
+
+  &.disabled {
+    color: color('text-action-disabled');
+    background: color('default');
+    border: none;
+    border-radius: 0;
+    outline: none;
+    cursor: not-allowed;
+
+    &:hover {
+      background: color('default');
+    }
+  }
+
+  &:not(.header):not(.selected):not(.disabled):not(.rangeStart):not(.rangeEnd):not(.inRange):hover {
+    background: color('default');
+  }
+}
+
+// Year/Month Selector
+.yearMonthGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: s(2);
+  padding-top: s(3);
+  border-top: 1px solid color('border');
+}
+
+.yearMonthCell {
+  @include p3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  background: none;
+  border: none;
+  border-radius: r(3);
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: color('default');
+  }
+
+  &.selected {
+    background: color('primary');
+    color: color('primary-reverse');
+    font-weight: 600;
+  }
+
+  &.current {
+    font-weight: 600;
+    color: color('primary');
+  }
+}
+
+// Time Selector
+.timeSelector {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  background: color('bg-block');
+  border-radius: r(2);
+}
+
+.timeDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: s(1);
+  padding: s(2);
+}
+
+.timeDisplayItem {
+  @include display7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: s(2) s(3);
+  background: color('default');
+  border: none;
+  border-radius: r(2);
+  cursor: pointer;
+  transition: background 0.2s;
+  min-width: 48px;
+
+  &:hover {
+    background: color('default-hover');
+  }
+
+  &.active {
+    background: color('primary');
+    color: color('primary-reverse');
+  }
+}
+
+.timeDisplaySeparator {
+  @include display7;
+  color: color('text-body');
+}
+
+.timeColumn {
+  display: flex;
+  flex-direction: column;
+  gap: s(1);
+  padding: s(3);
+  max-height: 200px;
+  overflow-y: auto;
+  border-top: 1px solid color('border');
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: color('border');
+    border-radius: r(full);
+  }
+}
+
+.timeItem {
+  @include p4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: s(2) s(3);
+  background: none;
+  border: none;
+  border-radius: r(2);
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+
+  &:hover {
+    background: color('default');
+  }
+
+  &.selected {
+    background: color('primary');
+    color: color('primary-reverse');
+    font-weight: 600;
+  }
+}
+
+// Bottom Actions
+.bottomActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: s(3);
+  padding-top: s(3);
+  border-top: 1px solid color('border');
+}
+
+.periodText {
+  @include p3;
+  color: color('primary');
+  flex: 1;
+}
+
+.actionButtons {
+  display: flex;
+  gap: s(3);
+  flex-shrink: 0;
+}
+
+.actionButton {
+  @include p3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: s(2);
+  padding: s(3) s(4);
+  border-radius: r(3);
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+
+  i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  &.reset {
+    background: color('default-fill');
+    border: 1px solid color('border');
+    color: color('default-reverse');
+
+    &:hover {
+      background: color('default-hover');
+    }
+  }
+
+  &.apply {
+    background: color('primary');
+    border: none;
+    color: color('primary-reverse');
+
+    &:hover {
+      background: color('primary-hover');
+    }
+  }
+}
+
+// Combined Layout (datetime)
+.combinedDropdown {
+  display: flex;
+  gap: s(5);
+}
+
+.calendarWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeWrapper {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid color('border');
+  padding-left: s(5);
+}
+
+.timeLabel {
+  @include p4;
+  color: color('text-sub');
+  margin-bottom: s(2);
+  text-align: center;
+}
+
+// Period Calendar Layout (두 개 캘린더가 하나의 드롭다운에서 가로로)
+.periodCalendarWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: s(4);
+}
+
+.periodCalendarNav {
+  display: flex;
+  align-items: center;
+  gap: s(4);
+  height: 40px;
+}
+
+.periodCalendarNavSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: s(4);
+}
+
+.periodCalendarBody {
+  display: flex;
+  gap: s(4);
+  padding-top: s(3);
+  border-top: 1px solid color('border');
+}
+
+.periodCalendarColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: s(2);
+}
+
+// Period Calendars (두 개 달력 나란히)
+.periodCalendars {
+  display: flex;
+  gap: s(4);
+}
+
+.periodCalendarLeft {
+  flex: 1;
+}
+
+.periodCalendarRight {
+  flex: 1;
+}
+
+.periodCalendar {
+  flex: 1;
+
+  &:not(:last-child) {
+    border-right: 1px solid color('border');
+    padding-right: s(4);
+  }
+}

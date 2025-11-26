@@ -58,7 +58,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 5432",
     "build": "next build",
     "build:lib": "node ./cli/build-lib.js",
     "prepublishOnly": "npm run build:lib",

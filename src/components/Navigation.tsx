@@ -45,6 +45,7 @@ export default function Navigation() {
       items: [
         { labelKey: 'avatar', path: '/components/avatar' },
         { labelKey: 'button', path: '/components/button' },
+        { labelKey: 'datepicker', path: '/components/datepicker' },
         { labelKey: 'input', path: '/components/input' },
         { labelKey: 'textarea', path: '/components/textarea' },
         { labelKey: 'select', path: '/components/select' },

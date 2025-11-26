@@ -1,0 +1,99 @@
+{
+  "title": "DatePicker",
+  "description": "Podo UI의 DatePicker 컴포넌트와 사용법을 안내합니다",
+  "basicUsage": {
+    "title": "기본 사용법",
+    "description": "DatePicker는 날짜, 시간, 또는 날짜+시간을 선택할 수 있는 컴포넌트입니다. 단일 선택(instant)과 기간 선택(period) 모드를 지원합니다.",
+    "demoTitle": "실제 예제:",
+    "instant": "단일 선택",
+    "period": "기간 선택",
+    "selected": "선택됨"
+  },
+  "types": {
+    "title": "타입",
+    "description": "세 가지 타입을 지원합니다: date(날짜만), time(시간만), datetime(날짜+시간)",
+    "demoTitle": "타입별 예제:",
+    "date": "날짜만 선택합니다",
+    "time": "시간만 선택합니다",
+    "datetime": "날짜와 시간을 함께 선택합니다"
+  },
+  "period": {
+    "title": "기간 선택",
+    "description": "mode=\"period\"로 설정하면 시작일과 종료일을 선택할 수 있습니다. 하단에 초기화/적용 버튼이 표시됩니다.",
+    "demoTitle": "기간 선택 예제:",
+    "dateRange": "날짜 기간",
+    "timeRange": "시간 기간",
+    "datetimeRange": "날짜+시간 기간"
+  },
+  "states": {
+    "title": "상태",
+    "description": "다양한 상태를 지원합니다:",
+    "demoTitle": "상태 예제:",
+    "default": "기본",
+    "disabled": "비활성화",
+    "withValue": "초기값 설정"
+  },
+  "props": {
+    "title": "Props",
+    "description": "DatePicker 컴포넌트의 Props:",
+    "mode": "선택 모드 (instant: 단일, period: 기간)",
+    "type": "값 타입 (date: 날짜, time: 시간, datetime: 날짜+시간)",
+    "value": "선택된 값 객체",
+    "onChange": "값 변경 콜백 함수",
+    "placeholder": "플레이스홀더 텍스트",
+    "disabled": "비활성화 여부",
+    "showActions": "하단 버튼 표시 여부 (period 모드에서 기본 true)",
+    "align": "드롭다운 정렬 (left 또는 right)",
+    "disable": "선택 불가능한 날짜 조건 (특정 날짜, 범위, 함수)",
+    "enable": "선택 가능한 날짜 조건 (지정된 날짜만 활성화)",
+    "minDate": "선택 가능한 최소 날짜 (Date 또는 DateTimeLimit)",
+    "maxDate": "선택 가능한 최대 날짜 (Date 또는 DateTimeLimit)",
+    "minuteStep": "분 단위 선택 간격 (1, 5, 10, 15, 20, 30)"
+  },
+  "valueInterface": {
+    "title": "Value 인터페이스",
+    "description": "DatePickerValue는 날짜와 시간을 별도의 필드로 관리합니다. 이를 통해 날짜와 시간을 독립적으로 바인딩하고 제어할 수 있습니다.",
+    "field": "필드",
+    "type": "타입",
+    "usedIn": "사용 조건",
+    "fieldDescription": "설명",
+    "date": "시작 날짜 (년, 월, 일). Date 객체로 저장됩니다.",
+    "time": "시작 시간 (시, 분). hour(0-23)과 minute(0-59)을 포함하는 객체입니다.",
+    "endDate": "종료 날짜. period 모드에서 기간의 끝 날짜를 지정합니다.",
+    "endTime": "종료 시간. period 모드에서 기간의 끝 시간을 지정합니다.",
+    "exampleTitle": "사용 예제"
+  },
+  "disabling": {
+    "title": "날짜 비활성화",
+    "description": "disable과 enable props를 사용하여 선택 가능한 날짜를 제한할 수 있습니다. 특정 날짜, 날짜 범위, 또는 함수를 통해 조건을 지정할 수 있습니다.",
+    "demoTitle": "비활성화 예제:",
+    "specificDates": "특정 날짜 비활성화",
+    "specificDatesDesc": "특정 날짜들을 선택할 수 없게 합니다",
+    "dateRange": "날짜 범위 비활성화",
+    "dateRangeDesc": "특정 기간의 날짜들을 선택할 수 없게 합니다",
+    "function": "함수로 비활성화",
+    "functionDesc": "조건 함수로 날짜를 동적으로 비활성화합니다",
+    "enableOnly": "특정 날짜만 활성화",
+    "enableOnlyDesc": "enable을 사용하여 지정된 날짜만 선택 가능하게 합니다"
+  },
+  "minMax": {
+    "title": "최소/최대 날짜",
+    "description": "minDate와 maxDate props를 사용하여 선택 가능한 날짜 범위를 지정할 수 있습니다. Date 객체 또는 DateTimeLimit 형태로 시간까지 지정할 수 있습니다.",
+    "demoTitle": "최소/최대 날짜 예제:",
+    "dateOnly": "날짜만 제한",
+    "dateOnlyDesc": "오늘부터 30일 이내 선택 가능",
+    "withTime": "날짜+시간 제한",
+    "withTimeDesc": "시작/종료 시간까지 정밀하게 제한"
+  },
+  "minuteStep": {
+    "title": "분 단위 선택",
+    "description": "minuteStep props를 사용하여 분 선택 간격을 지정할 수 있습니다. 1, 5, 10, 15, 30분 단위를 지원하며 기본값은 1분입니다.",
+    "demoTitle": "분 단위 예제:",
+    "step1": "1분 단위 (기본)",
+    "step5": "5분 단위",
+    "step10": "10분 단위",
+    "step15": "15분 단위",
+    "step20": "20분 단위",
+    "step30": "30분 단위"
+  }
+}

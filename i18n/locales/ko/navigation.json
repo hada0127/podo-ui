@@ -14,6 +14,7 @@
   "components": "컴포넌트",
   "avatar": "아바타",
   "button": "버튼",
+  "datepicker": "날짜 선택",
   "input": "입력",
   "textarea": "텍스트 영역",
   "select": "선택",
