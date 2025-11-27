@@ -861,6 +861,137 @@ type MinMaxDate = Date | DateTimeLimit;`}</code></pre>
 type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
         </div>
       </section>
+
+      {/* CDN Usage */}
+      <section className={styles.section}>
+        <h2>{t('cdn.title')}</h2>
+        <p>{t('cdn.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>{t('cdn.basicUsage')}</div>
+          <pre><code>{`<!-- CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-datepicker.min.css">
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-datepicker.min.js"></script>
+
+<!-- HTML -->
+<div id="my-datepicker"></div>
+
+<!-- Initialize -->
+<script>
+  const picker = new PodoDatePicker('#my-datepicker', {
+    mode: 'instant',
+    type: 'date',
+    onChange: function(value) {
+      console.log('Selected:', value);
+    }
+  });
+</script>`}</code></pre>
+        </div>
+
+        <p className={styles.note}>{t('cdn.jsDelivrNote')}</p>
+
+        <h3>{t('cdn.optionsTitle')}</h3>
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>JavaScript</div>
+          <pre><code>{`const picker = new PodoDatePicker('#my-datepicker', {
+  // 선택 모드: 'instant' (단일) 또는 'period' (기간)
+  mode: 'instant',
+
+  // 값 타입: 'date', 'time', 'datetime'
+  type: 'date',
+
+  // 초기값
+  value: {
+    date: new Date(),
+    time: { hour: 9, minute: 0 }
+  },
+
+  // 값 변경 콜백
+  onChange: function(value) {
+    console.log(value);
+  },
+
+  // 비활성화
+  disabled: false,
+
+  // 드롭다운 정렬: 'left' 또는 'right'
+  align: 'left',
+
+  // 하단 버튼 표시 (period 모드에서 기본 true)
+  showActions: true,
+
+  // 분 단위: 1, 5, 10, 15, 20, 30
+  minuteStep: 15,
+
+  // 최소/최대 날짜
+  minDate: new Date(),
+  maxDate: new Date(2025, 11, 31),
+
+  // 또는 시간 포함
+  minDate: {
+    date: new Date(),
+    time: { hour: 9, minute: 0 }
+  },
+
+  // 날짜 비활성화 조건
+  disable: [
+    new Date(2024, 0, 1),  // 특정 날짜
+    { from: new Date(2024, 0, 10), to: new Date(2024, 0, 20) },  // 범위
+    function(date) { return date.getDay() === 0; }  // 일요일
+  ],
+
+  // 특정 날짜만 활성화
+  enable: [
+    { from: new Date(2024, 0, 1), to: new Date(2024, 0, 15) }
+  ]
+});`}</code></pre>
+        </div>
+
+        <h3>{t('cdn.methodsTitle')}</h3>
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>JavaScript</div>
+          <pre><code>{`// ${t('cdn.getValue')}
+const value = picker.getValue();
+// { date: Date, time: { hour: 9, minute: 0 }, endDate: Date, endTime: {...} }
+
+// ${t('cdn.setValue')}
+picker.setValue({
+  date: new Date(2024, 5, 15),
+  time: { hour: 14, minute: 30 }
+});
+
+// ${t('cdn.clear')}
+picker.clear();
+
+// ${t('cdn.enable')}
+picker.enable();
+
+// ${t('cdn.disable')}
+picker.disable();
+
+// ${t('cdn.destroy')}
+picker.destroy();`}</code></pre>
+        </div>
+
+        <h3>{t('cdn.localizationTitle')}</h3>
+        <p>{t('cdn.localizationDesc')}</p>
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>JavaScript</div>
+          <pre><code>{`const picker = new PodoDatePicker('#my-datepicker', {
+  type: 'date',
+  texts: {
+    weekDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    yearSuffix: '',  // 년 -> 빈 문자열
+    reset: 'Reset',
+    apply: 'Apply'
+  }
+});`}</code></pre>
+        </div>
+      </section>
     </>
   );
 }

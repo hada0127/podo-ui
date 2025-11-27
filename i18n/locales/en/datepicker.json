@@ -95,5 +95,21 @@
     "step15": "15 minutes",
     "step20": "20 minutes",
     "step30": "30 minutes"
+  },
+  "cdn": {
+    "title": "CDN Usage (Vanilla JS)",
+    "description": "Use DatePicker with pure JavaScript without React. Load the script and styles via jsDelivr CDN.",
+    "basicUsage": "Basic Usage",
+    "jsDelivrNote": "Automatically fetches the latest version from jsDelivr CDN.",
+    "optionsTitle": "Options",
+    "methodsTitle": "Methods",
+    "getValue": "Returns the current value",
+    "setValue": "Sets the value",
+    "clear": "Clears the value",
+    "enable": "Enables the DatePicker",
+    "disable": "Disables the DatePicker",
+    "destroy": "Destroys the DatePicker instance",
+    "localizationTitle": "Localization",
+    "localizationDesc": "Customize texts using the texts option."
   }
 }

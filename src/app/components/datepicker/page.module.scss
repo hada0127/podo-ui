@@ -140,3 +140,13 @@
     border-radius: r(2);
   }
 }
+
+.note {
+  @include p4;
+  color: color(text-sub);
+  padding: s(3) s(4);
+  background: color(bg-elevation);
+  border-left: 3px solid color(primary);
+  border-radius: r(2);
+  margin: s(4) 0;
+}
