@@ -103,6 +103,48 @@ import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}</code></pr
       </section>
 
       <section className={styles.section}>
+        <h2>{t('cdn.title')}</h2>
+        <p>{t('cdn.description')}</p>
+
+        <h3>{t('cdn.cssTitle')}</h3>
+        <p>{t('cdn.cssDescription')}</p>
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<!-- Podo UI Global CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-ui.min.css">`}</code></pre>
+        </div>
+
+        <h3>{t('cdn.datepickerTitle')}</h3>
+        <p>{t('cdn.datepickerDescription')}</p>
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<!-- DatePicker CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-datepicker.min.css">
+
+<!-- DatePicker JS -->
+<script src="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-datepicker.min.js"></script>
+
+<div id="my-datepicker"></div>
+
+<script>
+  const picker = new PodoDatePicker('#my-datepicker', {
+    type: 'date',
+    onChange: function(value) {
+      console.log(value);
+    }
+  });
+</script>`}</code></pre>
+        </div>
+
+        <div className={styles.note}>
+          <i className="icon-info"></i>
+          <div>
+            <strong>{t('cdn.note.title')}</strong> {t('cdn.note.content')}
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.section}>
         <h2>{t('nextSteps.title')}</h2>
         <p>{t('nextSteps.description')}</p>
 

@@ -47,6 +47,18 @@
     "description": "Podo UI provides some React components. You can import and use them as follows:",
     "codeHeader": "General React Projects"
   },
+  "cdn": {
+    "title": "CDN Usage",
+    "description": "Use Podo UI directly in HTML without build tools. Load the stylesheet via jsDelivr CDN:",
+    "cssTitle": "CSS Stylesheet",
+    "cssDescription": "Includes global CSS styles (reset, colors, layout, typography, buttons, forms, etc.):",
+    "datepickerTitle": "DatePicker (Vanilla JS)",
+    "datepickerDescription": "Use the DatePicker component with pure JavaScript without React:",
+    "note": {
+      "title": "Note:",
+      "content": "You can specify a specific version instead of @latest (e.g., @0.8.0)"
+    }
+  },
   "nextSteps": {
     "title": "Next Steps",
     "description": "Installation complete! Now refer to the following documentation to use Podo UI:",
