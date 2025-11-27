@@ -16,6 +16,8 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist",
+    "cdn",
+    "vanilla",
     "scss",
     "global.scss",
     "global.d.ts",
@@ -55,13 +57,24 @@
       "types": "./global.d.ts",
       "default": "./scss/*"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./cdn/podo-ui.css": "./cdn/podo-ui.css",
+    "./cdn/podo-ui.min.css": "./cdn/podo-ui.min.css",
+    "./cdn/podo-datepicker.js": "./cdn/podo-datepicker.js",
+    "./cdn/podo-datepicker.min.js": "./cdn/podo-datepicker.min.js",
+    "./cdn/podo-datepicker.css": "./cdn/podo-datepicker.css",
+    "./cdn/podo-datepicker.min.css": "./cdn/podo-datepicker.min.css",
+    "./vanilla/datepicker": "./vanilla/datepicker.js",
+    "./vanilla/datepicker.css": "./vanilla/datepicker.css"
   },
   "scripts": {
     "dev": "next dev -p 5432",
     "build": "next build",
     "build:lib": "node ./cli/build-lib.js",
-    "prepublishOnly": "npm run build:lib",
+    "build:cdn": "node ./cli/build-cdn.js",
+    "build:cdn-js": "node ./cli/build-cdn-js.js",
+    "build:all": "npm run build:lib && npm run build:cdn && npm run build:cdn-js",
+    "prepublishOnly": "npm run build:all",
     "start": "next start",
     "lint": "next lint",
     "icon": "node ./cli/icon-scss.js",
