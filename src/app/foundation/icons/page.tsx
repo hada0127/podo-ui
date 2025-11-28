@@ -21,7 +21,9 @@ export default function Icons() {
     'setting-stroke', 'setting', 'email', 'more-horizontal', 'more', 'help', 'check-circle-stroke',
     'check-circle-fill', 'map', 'refresh', 'drag', 'clip', 'file', 'card', 'car', 'handle',
     'counselor', 'chart-bar', 'coin', 'receipt', 'briefcase', 'arrow-dropdown-left',
-    'arrow-dropdown-right', 'lock', 'unlock', 'save',
+    'arrow-dropdown-right', 'lock', 'unlock', 'save', 'database', 'undo', 'redo', 'unlink-alt',
+    'youtube-stroke', 'horizontalLine', 'gap', 'clipboard', 'inputForm', 'copy', 'text', 'logout',
+    'detailView', 'company', 'landing', 'code', 'footer',
   ];
 
   return (
@@ -159,7 +161,7 @@ export default function Icons() {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.generalUI')}</h2>
           <div className={styles.iconList}>
-            {['search', 'close', 'check', 'plus', 'minus', 'menu', 'more', 'more-horizontal'].map(icon => (
+            {['search', 'close', 'check', 'plus', 'minus', 'menu', 'more', 'more-horizontal', 'undo', 'redo', 'copy', 'clipboard', 'text', 'logout'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
@@ -183,7 +185,7 @@ export default function Icons() {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.fileDocument')}</h2>
           <div className={styles.iconList}>
-            {['file', 'paper', 'folder', 'upload', 'download', 'import', 'export', 'save'].map(icon => (
+            {['file', 'paper', 'folder', 'upload', 'download', 'import', 'export', 'save', 'database', 'code'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
@@ -195,7 +197,7 @@ export default function Icons() {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.socialMedia')}</h2>
           <div className={styles.iconList}>
-            {['facebook', 'naver', 'insta', 'tiktok', 'youtube', 'kakao', 'x', 'apple', 'google'].map(icon => (
+            {['facebook', 'naver', 'insta', 'tiktok', 'youtube', 'youtube-stroke', 'kakao', 'x', 'apple', 'google'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
@@ -208,6 +210,18 @@ export default function Icons() {
           <h2>{t('sections.categories.status')}</h2>
           <div className={styles.iconList}>
             {['info', 'warning', 'danger', 'danger-fill', 'check-circle-stroke', 'check-circle-fill'].map(icon => (
+              <div key={icon} className={styles.iconItem}>
+                <i className={`icon-${icon}`}></i>
+                <span>icon-{icon}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.categorySection}>
+          <h2>{t('sections.categories.etc')}</h2>
+          <div className={styles.iconList}>
+            {['unlink-alt', 'horizontalLine', 'gap', 'inputForm', 'detailView', 'company', 'landing', 'footer'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
