@@ -64,6 +64,7 @@
     "./cdn/podo-datepicker.min.js": "./cdn/podo-datepicker.min.js",
     "./cdn/podo-datepicker.css": "./cdn/podo-datepicker.css",
     "./cdn/podo-datepicker.min.css": "./cdn/podo-datepicker.min.css",
+    "./cdn/font/*": "./cdn/font/*",
     "./vanilla/datepicker": "./vanilla/datepicker.js",
     "./vanilla/datepicker.css": "./vanilla/datepicker.css"
   },
