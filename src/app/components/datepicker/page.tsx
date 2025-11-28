@@ -1,12 +1,112 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import DatePicker, { DatePickerValue, TimeValue } from '../../../../react/molecule/datepicker';
 import styles from './page.module.scss';
 
+// Vanilla JS DatePicker 타입
+interface VanillaDatePickerValue {
+  date?: Date;
+  time?: { hour: number; minute: number };
+  endDate?: Date;
+  endTime?: { hour: number; minute: number };
+}
+
+interface VanillaDatePickerClass {
+  new (container: HTMLElement, options: Record<string, unknown>): unknown;
+}
+
+declare global {
+  interface Window {
+    PodoDatePicker: VanillaDatePickerClass;
+  }
+}
+
 export default function DatePickerPage() {
   const t = useTranslations('datepicker');
+
+  // Vanilla JS DatePicker refs
+  const vanillaInstantRef = useRef<HTMLDivElement>(null);
+  const vanillaPeriodRef = useRef<HTMLDivElement>(null);
+  const vanillaDatetimeRef = useRef<HTMLDivElement>(null);
+  const [vanillaLoaded, setVanillaLoaded] = useState(false);
+  const [vanillaInstantValue, setVanillaInstantValue] = useState<string>('-');
+  const [vanillaPeriodValue, setVanillaPeriodValue] = useState<string>('-');
+  const [vanillaDatetimeValue, setVanillaDatetimeValue] = useState<string>('-');
+
+  // Vanilla JS DatePicker 로드 및 초기화
+  useEffect(() => {
+    // CSS 로드
+    if (!document.getElementById('podo-datepicker-css')) {
+      const link = document.createElement('link');
+      link.id = 'podo-datepicker-css';
+      link.rel = 'stylesheet';
+      link.href = '/vanilla/datepicker.css';
+      document.head.appendChild(link);
+    }
+
+    // JS 로드
+    if (!document.getElementById('podo-datepicker-js')) {
+      const script = document.createElement('script');
+      script.id = 'podo-datepicker-js';
+      script.src = '/vanilla/datepicker.js';
+      script.onload = () => {
+        setVanillaLoaded(true);
+      };
+      document.body.appendChild(script);
+    } else if (window.PodoDatePicker) {
+      setVanillaLoaded(true);
+    }
+  }, []);
+
+  // Vanilla DatePicker 인스턴스 초기화
+  useEffect(() => {
+    if (!vanillaLoaded || !window.PodoDatePicker) return;
+
+    const formatValue = (value: VanillaDatePickerValue): string => {
+      if (!value.date) return '-';
+      const formatDate = (d: Date) => d.toLocaleDateString('ko-KR');
+      const formatTime = (time?: { hour: number; minute: number }) =>
+        time ? `${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}` : '';
+
+      let result = formatDate(value.date);
+      if (value.time) result += ` ${formatTime(value.time)}`;
+      if (value.endDate) {
+        result += ` ~ ${formatDate(value.endDate)}`;
+        if (value.endTime) result += ` ${formatTime(value.endTime)}`;
+      }
+      return result;
+    };
+
+    // Instant Date
+    if (vanillaInstantRef.current && !vanillaInstantRef.current.hasChildNodes()) {
+      new window.PodoDatePicker(vanillaInstantRef.current, {
+        mode: 'instant',
+        type: 'date',
+        onChange: (value: VanillaDatePickerValue) => setVanillaInstantValue(formatValue(value)),
+      });
+    }
+
+    // Period Date
+    if (vanillaPeriodRef.current && !vanillaPeriodRef.current.hasChildNodes()) {
+      new window.PodoDatePicker(vanillaPeriodRef.current, {
+        mode: 'period',
+        type: 'date',
+        onChange: (value: VanillaDatePickerValue) => setVanillaPeriodValue(formatValue(value)),
+      });
+    }
+
+    // DateTime
+    if (vanillaDatetimeRef.current && !vanillaDatetimeRef.current.hasChildNodes()) {
+      new window.PodoDatePicker(vanillaDatetimeRef.current, {
+        mode: 'instant',
+        type: 'datetime',
+        minuteStep: 15,
+        onChange: (value: VanillaDatePickerValue) => setVanillaDatetimeValue(formatValue(value)),
+      });
+    }
+  }, [vanillaLoaded]);
 
   // State for demos
   const [instantDate, setInstantDate] = useState<DatePickerValue>({});
@@ -866,6 +966,40 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
       <section className={styles.section}>
         <h2>{t('cdn.title')}</h2>
         <p>{t('cdn.description')}</p>
+
+        {/* Live Demo */}
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('cdn.liveDemo')}</div>
+          <p>{t('cdn.liveDemoDesc')}</p>
+          <div className={styles.typeGrid}>
+            {/* Instant Date */}
+            <div className={styles.typeCard}>
+              <h4>{t('cdn.instantDate')}</h4>
+              <div ref={vanillaInstantRef}></div>
+              <div className={styles.selectedValue}>
+                {vanillaInstantValue}
+              </div>
+            </div>
+
+            {/* Period Date */}
+            <div className={styles.typeCard}>
+              <h4>{t('cdn.periodDate')}</h4>
+              <div ref={vanillaPeriodRef}></div>
+              <div className={styles.selectedValue}>
+                {vanillaPeriodValue}
+              </div>
+            </div>
+
+            {/* DateTime */}
+            <div className={styles.typeCard}>
+              <h4>{t('cdn.datetime')}</h4>
+              <div ref={vanillaDatetimeRef}></div>
+              <div className={styles.selectedValue}>
+                {vanillaDatetimeValue}
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('cdn.basicUsage')}</div>

@@ -99,6 +99,11 @@
   "cdn": {
     "title": "CDN 사용 (Vanilla JS)",
     "description": "React 없이 순수 JavaScript로 DatePicker를 사용할 수 있습니다. jsDelivr CDN을 통해 스크립트와 스타일을 로드하세요.",
+    "liveDemo": "라이브 데모",
+    "liveDemoDesc": "아래는 Vanilla JS로 구현된 DatePicker 실제 동작 예제입니다:",
+    "instantDate": "단일 날짜",
+    "periodDate": "기간 선택",
+    "datetime": "날짜+시간",
     "basicUsage": "기본 사용법",
     "jsDelivrNote": "jsDelivr CDN에서 최신 버전을 자동으로 가져옵니다.",
     "optionsTitle": "옵션",
