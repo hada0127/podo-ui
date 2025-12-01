@@ -1,5 +1,5 @@
 /*!
- * Podo UI CSS v0.8.0
+ * Podo UI CSS v0.8.2
  * https://podoui.com
  * MIT License
  */
@@ -17204,6 +17204,57 @@ body h3:not(button) {
 }
 :root .icon-save::before {
   content: "\e979";
+}
+:root .icon-database::before {
+  content: "\e980";
+}
+:root .icon-undo::before {
+  content: "\e981";
+}
+:root .icon-redo::before {
+  content: "\e982";
+}
+:root .icon-unlink-alt::before {
+  content: "\e983";
+}
+:root .icon-youtube-stroke::before {
+  content: "\e984";
+}
+:root .icon-horizontalLine::before {
+  content: "\e985";
+}
+:root .icon-gap::before {
+  content: "\e986";
+}
+:root .icon-clipboard::before {
+  content: "\e987";
+}
+:root .icon-inputForm::before {
+  content: "\e988";
+}
+:root .icon-copy::before {
+  content: "\e989";
+}
+:root .icon-text::before {
+  content: "\e990";
+}
+:root .icon-logout::before {
+  content: "\e991";
+}
+:root .icon-detailView::before {
+  content: "\e992";
+}
+:root .icon-company::before {
+  content: "\e993";
+}
+:root .icon-landing::before {
+  content: "\e994";
+}
+:root .icon-code::before {
+  content: "\e995";
+}
+:root .icon-footer::before {
+  content: "\e996";
 }
 
 /*

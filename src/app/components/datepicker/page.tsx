@@ -138,6 +138,17 @@ export default function DatePickerPage() {
   const [minuteStep20, setMinuteStep20] = useState<DatePickerValue>({});
   const [minuteStep30, setMinuteStep30] = useState<DatePickerValue>({});
 
+  // Format demo states
+  const [formatDash, setFormatDash] = useState<DatePickerValue>({});
+  const [formatDot, setFormatDot] = useState<DatePickerValue>({});
+  const [formatKorean, setFormatKorean] = useState<DatePickerValue>({});
+  const [formatDatetime, setFormatDatetime] = useState<DatePickerValue>({});
+
+  // Initial Calendar demo states
+  const [initialPrevNow, setInitialPrevNow] = useState<DatePickerValue>({});
+  const [initialNowNext, setInitialNowNext] = useState<DatePickerValue>({});
+  const [initialCustom, setInitialCustom] = useState<DatePickerValue>({});
+
   const formatDateDisplay = (value: DatePickerValue): string => {
     if (!value.date) return '-';
     const format = (d: Date) => d.toLocaleDateString('ko-KR');
@@ -511,6 +522,18 @@ export default function DatePickerPage() {
               <td><code>1 | 5 | 10 | 15 | 20 | 30</code></td>
               <td><code>1</code></td>
               <td>{t('props.minuteStep')}</td>
+            </tr>
+            <tr>
+              <td><code>format</code></td>
+              <td><code>string</code></td>
+              <td><code>-</code></td>
+              <td>{t('props.format')}</td>
+            </tr>
+            <tr>
+              <td><code>initialCalendar</code></td>
+              <td><code>{`{ start?: CalendarInitial, end?: CalendarInitial }`}</code></td>
+              <td><code>-</code></td>
+              <td>{t('props.initialCalendar')}</td>
             </tr>
           </tbody>
         </table>
@@ -962,6 +985,218 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
         </div>
       </section>
 
+      {/* Format */}
+      <section className={styles.section}>
+        <h2>{t('format.title')}</h2>
+        <p>{t('format.description')}</p>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('format.demoTitle')}</div>
+          <div className={styles.typeGrid}>
+            {/* Dash format */}
+            <div className={styles.typeCard}>
+              <h4>format=&quot;y-m-d&quot;</h4>
+              <p>{t('format.dash')}</p>
+              <DatePicker
+                type="date"
+                format="y-m-d"
+                value={formatDash}
+                onChange={setFormatDash}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(formatDash)}
+              </div>
+            </div>
+
+            {/* Dot format */}
+            <div className={styles.typeCard}>
+              <h4>format=&quot;y.m.d&quot;</h4>
+              <p>{t('format.dot')}</p>
+              <DatePicker
+                type="date"
+                format="y.m.d"
+                value={formatDot}
+                onChange={setFormatDot}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(formatDot)}
+              </div>
+            </div>
+
+            {/* Korean format */}
+            <div className={styles.typeCard}>
+              <h4>format=&quot;y년 m월 d일&quot;</h4>
+              <p>{t('format.korean')}</p>
+              <DatePicker
+                type="date"
+                format="y년 m월 d일"
+                value={formatKorean}
+                onChange={setFormatKorean}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(formatKorean)}
+              </div>
+            </div>
+
+            {/* DateTime format */}
+            <div className={styles.typeCard}>
+              <h4>format=&quot;y.m.d h:i&quot;</h4>
+              <p>{t('format.datetime')}</p>
+              <DatePicker
+                type="datetime"
+                format="y.m.d h:i"
+                value={formatDatetime}
+                onChange={setFormatDatetime}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateTimeDisplay(formatDatetime)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>TSX</div>
+          <pre><code>{`// 대시 구분
+<DatePicker type="date" format="y-m-d" />
+
+// 점 구분
+<DatePicker type="date" format="y.m.d" />
+
+// 한국어 포맷
+<DatePicker type="date" format="y년 m월 d일" />
+
+// 날짜+시간 포맷
+<DatePicker type="datetime" format="y.m.d h:i" />
+
+// 한국어 날짜+시간 포맷
+<DatePicker type="datetime" format="y년 m월 d일 h시 i분" />`}</code></pre>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>TypeScript</div>
+          <pre><code>{`// 포맷 키
+// y: 년 (4자리, 예: 2024)
+// m: 월 (2자리, 예: 01)
+// d: 일 (2자리, 예: 15)
+// h: 시 (2자리, 예: 14)
+// i: 분 (2자리, 예: 30)`}</code></pre>
+        </div>
+      </section>
+
+      {/* Initial Calendar */}
+      <section className={styles.section}>
+        <h2>{t('initialCalendar.title')}</h2>
+        <p>{t('initialCalendar.description')}</p>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('initialCalendar.demoTitle')}</div>
+          <div className={styles.typeGrid}>
+            {/* prevMonth / now */}
+            <div className={styles.typeCard}>
+              <h4>prevMonth / now</h4>
+              <p>{t('initialCalendar.prevAndNow')}</p>
+              <DatePicker
+                mode="period"
+                type="date"
+                value={initialPrevNow}
+                onChange={setInitialPrevNow}
+                initialCalendar={{
+                  start: 'prevMonth',
+                  end: 'now',
+                }}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(initialPrevNow)}
+              </div>
+            </div>
+
+            {/* now / nextMonth */}
+            <div className={styles.typeCard}>
+              <h4>now / nextMonth</h4>
+              <p>{t('initialCalendar.nowAndNext')}</p>
+              <DatePicker
+                mode="period"
+                type="date"
+                value={initialNowNext}
+                onChange={setInitialNowNext}
+                initialCalendar={{
+                  start: 'now',
+                  end: 'nextMonth',
+                }}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(initialNowNext)}
+              </div>
+            </div>
+
+            {/* Custom Date */}
+            <div className={styles.typeCard}>
+              <h4>Date</h4>
+              <p>{t('initialCalendar.customDate')}</p>
+              <DatePicker
+                mode="period"
+                type="date"
+                value={initialCustom}
+                onChange={setInitialCustom}
+                initialCalendar={{
+                  start: new Date(2024, 0, 1),
+                  end: new Date(2024, 1, 1),
+                }}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(initialCustom)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>TSX</div>
+          <pre><code>{`// 이전 달 / 현재 달
+<DatePicker
+  mode="period"
+  type="date"
+  initialCalendar={{
+    start: 'prevMonth',
+    end: 'now',
+  }}
+/>
+
+// 현재 달 / 다음 달
+<DatePicker
+  mode="period"
+  type="date"
+  initialCalendar={{
+    start: 'now',
+    end: 'nextMonth',
+  }}
+/>
+
+// 특정 날짜 지정
+<DatePicker
+  mode="period"
+  type="date"
+  initialCalendar={{
+    start: new Date(2024, 0, 1),  // 2024년 1월
+    end: new Date(2024, 1, 1),    // 2024년 2월
+  }}
+/>`}</code></pre>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>TypeScript</div>
+          <pre><code>{`// 초기 달력 표시 월 타입
+type CalendarInitial = 'now' | 'prevMonth' | 'nextMonth' | Date;
+
+// 초기 달력 설정 인터페이스
+interface InitialCalendar {
+  start?: CalendarInitial;  // 왼쪽 달력 (시작 달력)
+  end?: CalendarInitial;    // 오른쪽 달력 (종료 달력)
+}`}</code></pre>
+        </div>
+      </section>
+
       {/* CDN Usage */}
       <section className={styles.section}>
         <h2>{t('cdn.title')}</h2>
@@ -1079,7 +1314,20 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
   // 특정 날짜만 활성화
   enable: [
     { from: new Date(2024, 0, 1), to: new Date(2024, 0, 15) }
-  ]
+  ],
+
+  // 날짜/시간 표시 포맷 (y: 년, m: 월, d: 일, h: 시, i: 분)
+  format: 'y-m-d',  // 예: 2024-01-15
+  // format: 'y.m.d',  // 예: 2024.01.15
+  // format: 'y년 m월 d일',  // 예: 2024년 01월 15일
+  // format: 'y-m-d h:i',  // 예: 2024-01-15 14:30
+
+  // 기간 선택 시 초기 달력 월 설정 (period 모드에서만 사용)
+  initialCalendar: {
+    start: 'prevMonth',  // 왼쪽 달력: 이전 달
+    end: 'now'           // 오른쪽 달력: 현재 달
+  }
+  // start/end 값: 'now', 'prevMonth', 'nextMonth', 또는 Date 객체
 });`}</code></pre>
         </div>
 

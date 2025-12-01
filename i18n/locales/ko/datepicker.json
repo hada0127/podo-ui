@@ -48,7 +48,26 @@
     "enable": "선택 가능한 날짜 조건 (지정된 날짜만 활성화)",
     "minDate": "선택 가능한 최소 날짜 (Date 또는 DateTimeLimit)",
     "maxDate": "선택 가능한 최대 날짜 (Date 또는 DateTimeLimit)",
-    "minuteStep": "분 단위 선택 간격 (1, 5, 10, 15, 20, 30)"
+    "minuteStep": "분 단위 선택 간격 (1, 5, 10, 15, 20, 30)",
+    "format": "날짜/시간 표시 포맷 (y: 년, m: 월, d: 일, h: 시, i: 분)",
+    "initialCalendar": "기간 선택 모드에서 초기 달력 표시 월 설정"
+  },
+  "format": {
+    "title": "날짜 포맷",
+    "description": "format props를 사용하여 날짜/시간 표시 형식을 지정할 수 있습니다. y(년), m(월), d(일), h(시), i(분)을 조합하여 원하는 포맷을 만들 수 있습니다.",
+    "demoTitle": "포맷 예제:",
+    "dash": "대시 구분",
+    "dot": "점 구분",
+    "korean": "한국어 포맷",
+    "datetime": "날짜+시간 포맷"
+  },
+  "initialCalendar": {
+    "title": "초기 달력 월 설정",
+    "description": "기간 선택 모드에서 initialCalendar props를 사용하여 왼쪽/오른쪽 달력의 초기 표시 월을 설정할 수 있습니다. 'now'(현재 달), 'prevMonth'(이전 달), 'nextMonth'(다음 달) 또는 Date 객체를 사용할 수 있습니다.",
+    "demoTitle": "초기 달력 예제:",
+    "prevAndNow": "이전 달 / 현재 달",
+    "nowAndNext": "현재 달 / 다음 달",
+    "customDate": "특정 날짜 지정"
   },
   "valueInterface": {
     "title": "Value 인터페이스",

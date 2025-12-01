@@ -1,5 +1,5 @@
 /*!
- * Podo UI DatePicker v0.8.0
+ * Podo UI DatePicker v0.8.2
  * https://podoui.com
  * MIT License
  */
@@ -36,6 +36,66 @@
   // ============================================
   // Helper Functions
   // ============================================
+
+  /**
+   * CalendarInitial 값을 Date로 변환
+   * @param {string|Date|undefined} initial - 'now', 'prevMonth', 'nextMonth', or Date
+   * @param {Date} fallback - 기본값
+   * @returns {Date}
+   */
+  function resolveCalendarInitial(initial, fallback) {
+    if (!initial) return fallback;
+    if (initial instanceof Date) return initial;
+
+    const now = new Date();
+    switch (initial) {
+      case 'now':
+        return new Date(now.getFullYear(), now.getMonth(), 1);
+      case 'prevMonth':
+        return new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      case 'nextMonth':
+        return new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      default:
+        return fallback;
+    }
+  }
+
+  /**
+   * 커스텀 포맷으로 날짜/시간 포맷팅
+   * y: 년(4자리), m: 월(2자리), d: 일(2자리), h: 시(2자리), i: 분(2자리)
+   * @param {Date|undefined} date
+   * @param {Object|undefined} time - { hour, minute }
+   * @param {string} pattern
+   * @returns {string}
+   */
+  function formatWithPattern(date, time, pattern) {
+    if (!date && !time) return '';
+
+    let result = pattern;
+
+    if (date) {
+      result = result.replace(/y/g, String(date.getFullYear()));
+      result = result.replace(/m/g, String(date.getMonth() + 1).padStart(2, '0'));
+      result = result.replace(/d/g, String(date.getDate()).padStart(2, '0'));
+    }
+
+    if (time) {
+      result = result.replace(/h/g, String(time.hour).padStart(2, '0'));
+      result = result.replace(/i/g, String(time.minute).padStart(2, '0'));
+    }
+
+    return result;
+  }
+
+  /**
+   * 날짜만 표시하는 포맷 추출 (시간 부분 제거)
+   * @param {string|undefined} format
+   * @returns {string|undefined}
+   */
+  function getDateOnlyFormat(format) {
+    if (!format) return undefined;
+    return format.replace(/\s*h[:\s]*i[분]?/g, '').replace(/\s*h시\s*i분/g, '').trim();
+  }
 
   function formatDate(date) {
     const year = date.getFullYear();
@@ -171,6 +231,8 @@
      * @param {Date|Object} [options.maxDate] - Maximum selectable date
      * @param {number} [options.minuteStep=1] - Minute step (1, 5, 10, 15, 20, 30)
      * @param {Object} [options.texts] - Custom texts for localization
+     * @param {string} [options.format] - Date/time format (y: year, m: month, d: day, h: hour, i: minute)
+     * @param {Object} [options.initialCalendar] - Initial calendar display month { start, end }
      */
     constructor(container, options = {}) {
       this.container =
@@ -196,20 +258,37 @@
       this.maxDate = options.maxDate;
       this.minuteStep = options.minuteStep || 1;
       this.texts = { ...DEFAULT_TEXTS, ...options.texts };
+      this.format = options.format;
+      this.initialCalendar = options.initialCalendar || {};
 
       // State
       this.isOpen = false;
       this.selectingPart = null;
-      this.viewDate = this.value.date ? new Date(this.value.date) : new Date();
-      this.endViewDate = new Date(
-        this.value.endDate
-          ? this.value.endDate.getFullYear()
-          : this.viewDate.getFullYear(),
-        this.value.endDate
-          ? this.value.endDate.getMonth() + 1
-          : this.viewDate.getMonth() + 1,
-        1
-      );
+
+      // 초기 달력 표시 월 계산
+      if (this.value.date) {
+        this.viewDate = new Date(this.value.date);
+      } else if (this.initialCalendar.start) {
+        this.viewDate = resolveCalendarInitial(this.initialCalendar.start, new Date());
+      } else {
+        this.viewDate = new Date();
+      }
+
+      if (this.value.endDate) {
+        this.endViewDate = new Date(
+          this.value.endDate.getFullYear(),
+          this.value.endDate.getMonth() + 1,
+          1
+        );
+      } else if (this.initialCalendar.end) {
+        this.endViewDate = resolveCalendarInitial(this.initialCalendar.end, new Date());
+      } else {
+        this.endViewDate = new Date(
+          this.viewDate.getFullYear(),
+          this.viewDate.getMonth() + 1,
+          1
+        );
+      }
 
       // Build UI
       this.render();
@@ -315,11 +394,22 @@
     createDateButton(date, part) {
       const btn = createElement('button', `${PREFIX}__part`);
       btn.type = 'button';
+
+      const dateFormat = getDateOnlyFormat(this.format);
+
       if (!date) {
         btn.classList.add(`${PREFIX}__part--placeholder`);
-        btn.textContent = 'YYYY - MM - DD';
+        // format이 있으면 placeholder도 포맷에 맞게 표시
+        const placeholderText = dateFormat
+          ? dateFormat.replace(/y/g, 'YYYY').replace(/m/g, 'MM').replace(/d/g, 'DD')
+          : 'YYYY - MM - DD';
+        btn.textContent = placeholderText;
       } else {
-        btn.textContent = formatDate(date);
+        // format prop이 있으면 사용 (날짜만)
+        const displayText = dateFormat
+          ? formatWithPattern(date, null, dateFormat)
+          : formatDate(date);
+        btn.textContent = displayText;
       }
       btn.dataset.part = part;
       return btn;
@@ -729,6 +819,17 @@
     formatPeriodText() {
       if (!this.tempValue.date) return '';
 
+      // format prop이 있으면 사용
+      if (this.format) {
+        const startText = formatWithPattern(this.tempValue.date, this.tempValue.time, this.format);
+        if (this.tempValue.endDate) {
+          const endText = formatWithPattern(this.tempValue.endDate, this.tempValue.endTime, this.format);
+          return `${startText} ~ ${endText}`;
+        }
+        return startText;
+      }
+
+      // 기본 포맷 (한국어)
       const formatKoreanDateTime = (date, time) => {
         const year = date.getFullYear();
         const month = date.getMonth() + 1;

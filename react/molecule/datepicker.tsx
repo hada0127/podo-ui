@@ -42,6 +42,16 @@ export interface DateTimeLimit {
 /** 분 단위 선택 옵션 */
 export type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;
 
+/** 초기 달력 표시 월 설정 */
+export type CalendarInitial = 'now' | 'prevMonth' | 'nextMonth' | Date;
+
+export interface InitialCalendar {
+  /** 시작 달력 초기 월 (period 모드의 왼쪽 달력) */
+  start?: CalendarInitial;
+  /** 종료 달력 초기 월 (period 모드의 오른쪽 달력) */
+  end?: CalendarInitial;
+}
+
 export interface DatePickerProps {
   /** 선택 모드: instant(단일) | period(기간) */
   mode?: DatePickerMode;
@@ -71,9 +81,67 @@ export interface DatePickerProps {
   maxDate?: Date | DateTimeLimit;
   /** 분 단위 선택 간격 (1, 5, 10, 15, 30) 기본값: 1 */
   minuteStep?: MinuteStep;
+  /**
+   * 날짜/시간 표시 포맷
+   * y: 년, m: 월, d: 일, h: 시, i: 분
+   * 예시: "y-m-d", "y.m.d h:i", "y년 m월 d일 h시 i분"
+   */
+  format?: string;
+  /**
+   * 기간 선택 모드에서 초기 달력 표시 월 설정
+   * start: 왼쪽 달력, end: 오른쪽 달력
+   * 값: 'now' | 'prevMonth' | 'nextMonth' | Date
+   */
+  initialCalendar?: InitialCalendar;
 }
 
 // Helper functions
+
+/** CalendarInitial 값을 Date로 변환 */
+const resolveCalendarInitial = (initial: CalendarInitial | undefined, fallback: Date): Date => {
+  if (!initial) return fallback;
+  if (initial instanceof Date) return initial;
+
+  const now = new Date();
+  switch (initial) {
+    case 'now':
+      return new Date(now.getFullYear(), now.getMonth(), 1);
+    case 'prevMonth':
+      return new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    case 'nextMonth':
+      return new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    default:
+      return fallback;
+  }
+};
+
+/**
+ * 커스텀 포맷으로 날짜/시간 포맷팅
+ * y: 년(4자리), m: 월(2자리), d: 일(2자리), h: 시(2자리), i: 분(2자리)
+ */
+const formatWithPattern = (
+  date: Date | undefined,
+  time: TimeValue | undefined,
+  pattern: string
+): string => {
+  if (!date && !time) return '';
+
+  let result = pattern;
+
+  if (date) {
+    result = result.replace(/y/g, String(date.getFullYear()));
+    result = result.replace(/m/g, String(date.getMonth() + 1).padStart(2, '0'));
+    result = result.replace(/d/g, String(date.getDate()).padStart(2, '0'));
+  }
+
+  if (time) {
+    result = result.replace(/h/g, String(time.hour).padStart(2, '0'));
+    result = result.replace(/i/g, String(time.minute).padStart(2, '0'));
+  }
+
+  return result;
+};
+
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -607,12 +675,30 @@ const DatePicker: React.FC<DatePickerProps> = ({
   minDate,
   maxDate,
   minuteStep = 1,
+  format,
+  initialCalendar,
 }) => {
   const [selectingPart, setSelectingPart] = useState<SelectingPart>(null);
   const [tempValue, setTempValue] = useState<DatePickerValue>(value || {});
-  const [viewDate, setViewDate] = useState(value?.date || new Date());
+
+  // 초기 달력 표시 월 계산
+  const [viewDate, setViewDate] = useState(() => {
+    if (value?.date) return value.date;
+    if (initialCalendar?.start) {
+      return resolveCalendarInitial(initialCalendar.start, new Date());
+    }
+    return new Date();
+  });
+
   const [endViewDate, setEndViewDate] = useState(() => {
-    const d = value?.endDate || new Date();
+    if (value?.endDate) {
+      return new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, 1);
+    }
+    if (initialCalendar?.end) {
+      return resolveCalendarInitial(initialCalendar.end, new Date());
+    }
+    // 기본값: 현재 달의 다음 달
+    const d = new Date();
     return new Date(d.getFullYear(), d.getMonth() + 1, 1);
   });
 
@@ -642,6 +728,18 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   const formatPeriodText = () => {
     if (!tempValue.date) return '';
+
+    // format prop이 있으면 사용
+    if (format) {
+      const startText = formatWithPattern(tempValue.date, tempValue.time, format);
+      if (tempValue.endDate) {
+        const endText = formatWithPattern(tempValue.endDate, tempValue.endTime, format);
+        return `${startText} ~ ${endText}`;
+      }
+      return startText;
+    }
+
+    // 기본 포맷 (한국어)
     const formatKoreanDateTime = (date: Date, time?: TimeValue) => {
       const year = date.getFullYear();
       const month = date.getMonth() + 1;
@@ -784,29 +882,46 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const hasStartValue = !!displayValue?.date;
   const hasEndValue = !!displayValue?.endDate;
 
+  // 날짜만 표시하는 포맷 (시간 제외)
+  const getDateOnlyFormat = (): string | undefined => {
+    if (!format) return undefined;
+    // 시간 관련 부분 제거 (h, i 및 그 주변 문자들)
+    return format.replace(/\s*h[:\s]*i[분]?/g, '').replace(/\s*h시\s*i분/g, '').trim();
+  };
+
   // Helper to render date button
   const renderDateButton = (date: Date | undefined, isActive: boolean, onClick: () => void, isPlaceholder: boolean) => {
+    const dateFormat = getDateOnlyFormat();
+
     if (isPlaceholder || !date) {
+      // format이 있으면 placeholder도 포맷에 맞게 표시
+      const placeholderText = dateFormat
+        ? dateFormat.replace(/y/g, 'YYYY').replace(/m/g, 'MM').replace(/d/g, 'DD')
+        : 'YYYY - MM - DD';
+
       return (
         <button
           type="button"
           className={`${styles.inputPart} ${isActive ? styles.active : ''} ${styles.placeholder}`}
           onClick={onClick}
         >
-          YYYY - MM - DD
+          {placeholderText}
         </button>
       );
     }
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+
+    // format prop이 있으면 사용 (날짜만)
+    const displayText = dateFormat
+      ? formatWithPattern(date, undefined, dateFormat)
+      : `${date.getFullYear()} - ${String(date.getMonth() + 1).padStart(2, '0')} - ${String(date.getDate()).padStart(2, '0')}`;
+
     return (
       <button
         type="button"
         className={`${styles.inputPart} ${isActive ? styles.active : ''}`}
         onClick={onClick}
       >
-        {year} - {month} - {day}
+        {displayText}
       </button>
     );
   };
