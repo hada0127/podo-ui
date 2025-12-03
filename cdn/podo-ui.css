@@ -1,5 +1,5 @@
 /*!
- * Podo UI CSS v0.8.2
+ * Podo UI CSS v0.8.4
  * https://podoui.com
  * MIT License
  */
@@ -17282,6 +17282,15 @@ body h3:not(button) {
 }
 :root .icon-margin-bottom::before {
   content: "\e99f";
+}
+:root .icon-login::before {
+  content: "\e97a";
+}
+:root .icon-margin-horizontal::before {
+  content: "\e97b";
+}
+:root .icon-margin-vertical::before {
+  content: "\e97c";
 }
 
 /*
