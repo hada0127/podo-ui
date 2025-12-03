@@ -23,7 +23,9 @@ export default function Icons() {
     'counselor', 'chart-bar', 'coin', 'receipt', 'briefcase', 'arrow-dropdown-left',
     'arrow-dropdown-right', 'lock', 'unlock', 'save', 'database', 'undo', 'redo', 'unlink-alt',
     'youtube-stroke', 'horizontalLine', 'gap', 'clipboard', 'inputForm', 'copy', 'text', 'logout',
-    'detailView', 'company', 'landing', 'code', 'footer',
+    'detailView', 'company', 'landing', 'code', 'footer', 'click',
+    'align-left', 'align-center', 'align-right', 'input',
+    'margin-right', 'margin-top', 'margin-left', 'margin-bottom',
   ];
 
   return (
@@ -221,7 +223,7 @@ export default function Icons() {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.etc')}</h2>
           <div className={styles.iconList}>
-            {['unlink-alt', 'horizontalLine', 'gap', 'inputForm', 'detailView', 'company', 'landing', 'footer'].map(icon => (
+            {['unlink-alt', 'horizontalLine', 'gap', 'inputForm', 'detailView', 'company', 'landing', 'footer', 'click', 'align-left', 'align-center', 'align-right', 'input', 'margin-right', 'margin-top', 'margin-left', 'margin-bottom'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>

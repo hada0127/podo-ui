@@ -17256,6 +17256,33 @@ body h3:not(button) {
 :root .icon-footer::before {
   content: "\e996";
 }
+:root .icon-click::before {
+  content: "\e997";
+}
+:root .icon-align-left::before {
+  content: "\e998";
+}
+:root .icon-align-center::before {
+  content: "\e999";
+}
+:root .icon-align-right::before {
+  content: "\e99a";
+}
+:root .icon-input::before {
+  content: "\e99b";
+}
+:root .icon-margin-right::before {
+  content: "\e99c";
+}
+:root .icon-margin-top::before {
+  content: "\e99d";
+}
+:root .icon-margin-left::before {
+  content: "\e99e";
+}
+:root .icon-margin-bottom::before {
+  content: "\e99f";
+}
 
 /*
   Button
