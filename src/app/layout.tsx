@@ -11,8 +11,37 @@ import styles from './layout.module.scss';
 export const runtime = 'edge';
 
 export const metadata = {
-  title: 'Podo UI - Modern SCSS Module Design System',
-  description: 'A modern UI component library for React and SCSS',
+  metadataBase: new URL('https://podo-ui.com'),
+  title: {
+    default: 'Podo UI - 가볍고 유연한 React UI 컴포넌트 라이브러리',
+    template: '%s | Podo UI',
+  },
+  description: 'Podo UI는 React와 Vanilla JS를 위한 경량 UI 컴포넌트 라이브러리입니다. 버튼, 입력, 모달, 테이블 등 다양한 컴포넌트를 제공합니다.',
+  keywords: ['React', 'UI', '컴포넌트', '라이브러리', 'Podo UI', '포도 UI', 'SCSS', 'Design System'],
+  authors: [{ name: 'Podo UI Team' }],
+  creator: 'Podo UI Team',
+  openGraph: {
+    type: 'website',
+    locale: 'ko_KR',
+    url: 'https://podo-ui.com',
+    siteName: 'Podo UI',
+    title: 'Podo UI - 가볍고 유연한 React UI 컴포넌트 라이브러리',
+    description: 'Podo UI는 React와 Vanilla JS를 위한 경량 UI 컴포넌트 라이브러리입니다.',
+    images: [{ url: '/logo.svg', width: 512, height: 512, alt: 'Podo UI Logo' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Podo UI - 가볍고 유연한 React UI 컴포넌트 라이브러리',
+    description: 'Podo UI는 React와 Vanilla JS를 위한 경량 UI 컴포넌트 라이브러리입니다.',
+    images: ['/logo.svg'],
+  },
+  icons: {
+    icon: '/logo.svg',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 async function loadMessages(locale: Locale) {
