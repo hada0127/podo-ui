@@ -1,0 +1,40 @@
+{
+  "name": "Toggle",
+  "category": "atom",
+  "description": "Toggle switch input (SCSS only)",
+  "scssOnly": true,
+  "import": {
+    "scss": "@use 'podo-ui/scss/form/toggle'"
+  },
+  "htmlUsage": {
+    "basic": "<input type=\"checkbox\" class=\"toggle\" />",
+    "withLabel": "<label>\n  <input type=\"checkbox\" class=\"toggle\" />\n  <span>Enable notifications</span>\n</label>"
+  },
+  "states": [
+    "off (gray background)",
+    "on (info/blue background)",
+    "disabled",
+    "checked:disabled"
+  ],
+  "features": [
+    "33x20px switch size",
+    "Smooth slide animation",
+    "Focus outline",
+    "Dark mode support"
+  ],
+  "examples": [
+    {
+      "title": "Basic toggle",
+      "code": "<input type=\"checkbox\" class=\"toggle\" />"
+    },
+    {
+      "title": "With label",
+      "code": "<label>\n  <input type=\"checkbox\" class=\"toggle\" />\n  <span>Dark mode</span>\n</label>"
+    },
+    {
+      "title": "Disabled",
+      "code": "<input type=\"checkbox\" class=\"toggle\" disabled />"
+    }
+  ],
+  "related": ["checkbox-radio", "field"]
+}

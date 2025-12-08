@@ -1,0 +1,40 @@
+{
+  "name": "Tab",
+  "category": "molecule",
+  "description": "Tab navigation component (SCSS only)",
+  "scssOnly": true,
+  "import": {
+    "scss": "@use 'podo-ui/scss/molecule/tab'"
+  },
+  "cssClasses": [
+    { "class": "tabs", "description": "Base tab container (ul element)" },
+    { "class": "fill", "description": "Equal width tabs" },
+    { "class": "on", "description": "Active tab (on li element)" }
+  ],
+  "htmlUsage": {
+    "basic": "<ul class=\"tabs\">\n  <li class=\"on\"><a href=\"#\">Tab 1</a></li>\n  <li><a href=\"#\">Tab 2</a></li>\n  <li><a href=\"#\">Tab 3</a></li>\n</ul>",
+    "fillWidth": "<ul class=\"tabs fill\">\n  <li class=\"on\"><a href=\"#\">Tab 1</a></li>\n  <li><a href=\"#\">Tab 2</a></li>\n</ul>"
+  },
+  "features": [
+    "Bottom border indicator",
+    "Active state with primary color",
+    "Fill mode for equal-width tabs",
+    "Focus outline support",
+    "Semibold text for active tab"
+  ],
+  "examples": [
+    {
+      "title": "Basic tabs",
+      "code": "<ul class=\"tabs\">\n  <li class=\"on\"><a href=\"#overview\">Overview</a></li>\n  <li><a href=\"#details\">Details</a></li>\n  <li><a href=\"#settings\">Settings</a></li>\n</ul>"
+    },
+    {
+      "title": "Fill width tabs",
+      "code": "<ul class=\"tabs fill\">\n  <li class=\"on\"><a href=\"#\">Left</a></li>\n  <li><a href=\"#\">Right</a></li>\n</ul>"
+    },
+    {
+      "title": "React state",
+      "code": "<ul class=\"tabs\">\n  {tabs.map(tab => (\n    <li key={tab.id} className={activeTab === tab.id ? 'on' : ''}>\n      <a onClick={() => setActiveTab(tab.id)}>{tab.label}</a>\n    </li>\n  ))}\n</ul>"
+    }
+  ],
+  "related": []
+}

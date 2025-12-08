@@ -1,0 +1,51 @@
+{
+  "name": "Chip",
+  "category": "atom",
+  "description": "Tag/chip component for labels and categories",
+  "import": {
+    "react": "import { Chip } from 'podo-ui'",
+    "scss": "@use 'podo-ui/scss/atom/chip'"
+  },
+  "props": [
+    { "name": "children", "type": "React.ReactNode", "required": true },
+    { "name": "theme", "type": "'default' | 'blue' | 'green' | 'orange' | 'yellow' | 'red'", "default": "'default'" },
+    { "name": "type", "type": "'default' | 'fill' | 'border'", "default": "'default'" },
+    { "name": "size", "type": "'sm' | 'md'", "default": "'md'" },
+    { "name": "round", "type": "boolean", "default": "false", "description": "Pill-shaped corners" },
+    { "name": "icon", "type": "string", "required": false, "description": "Icon class name" },
+    { "name": "onDelete", "type": "() => void", "required": false, "description": "Show delete button" },
+    { "name": "className", "type": "string", "required": false }
+  ],
+  "cssClasses": [
+    { "class": "chip", "description": "Base chip style" },
+    { "class": "blue | green | orange | yellow | red", "description": "Color themes" },
+    { "class": "fill", "description": "Solid background" },
+    { "class": "border", "description": "Border only" },
+    { "class": "sm", "description": "Small size" },
+    { "class": "round", "description": "Pill shape" }
+  ],
+  "htmlUsage": {
+    "basic": "<div class=\"chip\">Label</div>",
+    "colored": "<div class=\"chip blue fill\">Blue</div>",
+    "withIcon": "<div class=\"chip\"><i class=\"icon-star\"></i>Featured</div>"
+  },
+  "examples": [
+    {
+      "title": "Basic",
+      "code": "<Chip>Label</Chip>"
+    },
+    {
+      "title": "Colored with fill",
+      "code": "<Chip theme=\"blue\" type=\"fill\">Status</Chip>"
+    },
+    {
+      "title": "With delete",
+      "code": "<Chip onDelete={() => handleDelete(id)}>Removable</Chip>"
+    },
+    {
+      "title": "Round with icon",
+      "code": "<Chip icon=\"icon-star\" round>Featured</Chip>"
+    }
+  ],
+  "related": ["avatar"]
+}

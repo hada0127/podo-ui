@@ -1,0 +1,60 @@
+{
+  "name": "Button System",
+  "description": "Button styling with themes, variants, and states",
+  "import": {
+    "scss": "@use 'podo-ui/scss/button/class'",
+    "layout": "@use 'podo-ui/scss/button/layout'"
+  },
+  "themes": [
+    { "class": "(default)", "color": "#f4f4f5", "description": "Neutral gray" },
+    { "class": "primary", "color": "#7c3aed", "description": "Brand purple" },
+    { "class": "default-deep", "color": "#52525b", "description": "Dark neutral" },
+    { "class": "info", "color": "#1890ff", "description": "Informational blue" },
+    { "class": "link", "color": "#0ea5e9", "description": "Link blue" },
+    { "class": "success", "color": "#0d9488", "description": "Success teal" },
+    { "class": "warning", "color": "#f19b0b", "description": "Warning orange" },
+    { "class": "danger", "color": "#f04646", "description": "Danger red" }
+  ],
+  "variants": [
+    { "class": "(default)", "description": "Solid background, white text" },
+    { "class": "fill", "description": "Light background, colored text and border" },
+    { "class": "border", "description": "Transparent background, colored border and text" },
+    { "class": "text", "description": "No background/border, colored text only" }
+  ],
+  "states": [
+    { "state": "hover", "description": "Slightly different shade" },
+    { "state": "active/pressed", "description": "Darker shade" },
+    { "state": "focus-visible", "description": "4px outline ring (theme-outline color)" },
+    { "state": "disabled", "description": "Grayed out, not-allowed cursor" }
+  ],
+  "alignment": [
+    { "class": "(default)", "description": "Center content (justify-content: center)" },
+    { "class": "text-left", "description": "Left-align content" },
+    { "class": "text-right", "description": "Right-align content" }
+  ],
+  "combinations": {
+    "solidPrimary": "<button class=\"primary\">Submit</button>",
+    "outlineSuccess": "<button class=\"success border\">Approve</button>",
+    "fillInfo": "<button class=\"info fill\">Details</button>",
+    "textDanger": "<button class=\"danger text\">Delete</button>",
+    "disabledPrimary": "<button class=\"primary\" disabled>Disabled</button>"
+  },
+  "examples": [
+    {
+      "title": "Action buttons",
+      "code": "<button class=\"primary\">Save</button>\n<button class=\"border\">Cancel</button>"
+    },
+    {
+      "title": "Icon button",
+      "code": "<button class=\"primary\"><i class=\"icon-plus\"></i> Add Item</button>"
+    },
+    {
+      "title": "Danger action",
+      "code": "<button class=\"danger\">Delete</button>\n<button class=\"danger text\">Remove</button>"
+    },
+    {
+      "title": "Full variant set",
+      "code": "<button class=\"info\">Solid</button>\n<button class=\"info fill\">Fill</button>\n<button class=\"info border\">Border</button>\n<button class=\"info text\">Text</button>"
+    }
+  ]
+}

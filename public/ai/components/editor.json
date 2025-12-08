@@ -1,0 +1,54 @@
+{
+  "name": "Editor",
+  "category": "atom",
+  "description": "WYSIWYG rich text editor with image/YouTube embedding",
+  "import": {
+    "react": "import { Editor } from 'podo-ui/next'"
+  },
+  "props": [
+    { "name": "value", "type": "string", "default": "''", "description": "HTML content" },
+    { "name": "onChange", "type": "(content: string) => void", "required": true },
+    { "name": "width", "type": "string", "default": "'100%'" },
+    { "name": "height", "type": "string | 'contents'", "default": "'400px'" },
+    { "name": "minHeight", "type": "string", "required": false },
+    { "name": "maxHeight", "type": "string", "required": false },
+    { "name": "resizable", "type": "boolean", "default": "false" },
+    { "name": "placeholder", "type": "string", "default": "'내용을 입력하세요...'" },
+    { "name": "validator", "type": "z.ZodType", "required": false },
+    { "name": "toolbar", "type": "ToolbarItem[]", "required": false, "description": "Custom toolbar items (default: all)" }
+  ],
+  "toolbarItems": [
+    "undo-redo", "paragraph", "text-style", "color", "align",
+    "list", "table", "link", "image", "youtube", "hr", "format", "code"
+  ],
+  "features": [
+    "Bold, italic, underline, strikethrough",
+    "Paragraph styles (h1-h3, p)",
+    "Text/background color",
+    "Text alignment",
+    "Ordered/unordered lists",
+    "Tables",
+    "Links with target options",
+    "Image upload (file or URL) with resize",
+    "YouTube embed with resize",
+    "Horizontal rule",
+    "Format clear",
+    "Code view (HTML source)",
+    "Undo/Redo history"
+  ],
+  "examples": [
+    {
+      "title": "Basic",
+      "code": "<Editor value={content} onChange={setContent} />"
+    },
+    {
+      "title": "Custom height with resize",
+      "code": "<Editor value={content} onChange={setContent} height=\"300px\" resizable={true} />"
+    },
+    {
+      "title": "Limited toolbar",
+      "code": "<Editor value={content} onChange={setContent} toolbar={['text-style', 'link', 'image']} />"
+    }
+  ],
+  "related": ["editor-view", "textarea"]
+}

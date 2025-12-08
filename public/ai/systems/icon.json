@@ -1,0 +1,58 @@
+{
+  "name": "Icon System",
+  "description": "SVG to WOFF icon font system",
+  "import": {
+    "scss": "@use 'podo-ui/scss/icon/function' as *"
+  },
+  "usage": {
+    "html": "<i class=\"icon-{name}\"></i>",
+    "scss": {
+      "mixin": "@include icon(star);",
+      "function": "content: icon('star');"
+    }
+  },
+  "addingIcons": {
+    "steps": [
+      "1. Add SVG file to scss/icon/svg/",
+      "2. Run: npm run icon",
+      "3. Generated: scss/icon/font/icon.woff"
+    ],
+    "naming": "Filename becomes icon class (star.svg → icon-star)"
+  },
+  "commonIcons": [
+    "icon-user", "icon-search", "icon-check", "icon-close", "icon-plus", "icon-minus",
+    "icon-arrow-left", "icon-arrow-right", "icon-arrow-up", "icon-arrow-down",
+    "icon-expand-left", "icon-expand-right", "icon-expand-up", "icon-expand-down",
+    "icon-star", "icon-star-fill", "icon-heart", "icon-heart-fill",
+    "icon-edit", "icon-delete", "icon-save", "icon-copy",
+    "icon-mail", "icon-calendar", "icon-time", "icon-globe",
+    "icon-info", "icon-warning", "icon-danger",
+    "icon-eye", "icon-eye-off",
+    "icon-upload-cloud", "icon-download",
+    "icon-menu", "icon-more-horizontal", "icon-more-vertical",
+    "icon-refresh", "icon-settings"
+  ],
+  "styling": {
+    "size": "font-size: 24px;",
+    "color": "color: var(--color-primary);",
+    "example": "<i class=\"icon-star\" style=\"font-size: 32px; color: gold;\"></i>"
+  },
+  "examples": [
+    {
+      "title": "Basic icon",
+      "code": "<i class=\"icon-star\"></i>"
+    },
+    {
+      "title": "In button",
+      "code": "<button class=\"primary\"><i class=\"icon-plus\"></i> Add</button>"
+    },
+    {
+      "title": "With input",
+      "code": "<div class=\"with-icon\">\n  <i class=\"icon-search\"></i>\n  <input type=\"text\" placeholder=\"Search\" />\n</div>"
+    },
+    {
+      "title": "SCSS usage",
+      "code": ".custom::before {\n  @include icon(check);\n  color: var(--color-success);\n}"
+    }
+  ]
+}

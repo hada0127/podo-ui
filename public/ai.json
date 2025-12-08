@@ -1,0 +1,38 @@
+{
+  "name": "podo-ui",
+  "version": "1.0.0",
+  "description": "Design system: SCSS 97% + React 3%",
+  "philosophy": "Maximum flexibility with minimal JS dependency",
+  "install": "npm install podo-ui",
+  "repository": "https://github.com/podo-ui/podo-ui",
+  "modules": {
+    "overview": "/ai/overview.json",
+    "components": {
+      "avatar": "/ai/components/avatar.json",
+      "input": "/ai/components/input.json",
+      "textarea": "/ai/components/textarea.json",
+      "editor": "/ai/components/editor.json",
+      "chip": "/ai/components/chip.json",
+      "tooltip": "/ai/components/tooltip.json",
+      "datepicker": "/ai/components/datepicker.json",
+      "field": "/ai/components/field.json",
+      "pagination": "/ai/components/pagination.json",
+      "toast": "/ai/components/toast.json",
+      "select": "/ai/components/select.json",
+      "checkbox-radio": "/ai/components/checkbox-radio.json",
+      "toggle": "/ai/components/toggle.json",
+      "table": "/ai/components/table.json",
+      "tab": "/ai/components/tab.json",
+      "file": "/ai/components/file.json",
+      "button": "/ai/components/button.json"
+    },
+    "systems": {
+      "color": "/ai/systems/color.json",
+      "typography": "/ai/systems/typography.json",
+      "spacing": "/ai/systems/spacing.json",
+      "grid": "/ai/systems/grid.json",
+      "icon": "/ai/systems/icon.json",
+      "button": "/ai/systems/button.json"
+    }
+  }
+}

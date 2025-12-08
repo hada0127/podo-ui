@@ -14,6 +14,8 @@ import installationEn from '../../i18n/locales/en/installation.json'
 import installationKo from '../../i18n/locales/ko/installation.json'
 import usageEn from '../../i18n/locales/en/usage.json'
 import usageKo from '../../i18n/locales/ko/usage.json'
+import aiReferenceEn from '../../i18n/locales/en/ai-reference.json'
+import aiReferenceKo from '../../i18n/locales/ko/ai-reference.json'
 
 // Foundation
 import colorsEn from '../../i18n/locales/en/colors.json'
@@ -92,6 +94,7 @@ i18n.use(initReactI18next).init({
       home: homeEn,
       installation: installationEn,
       usage: usageEn,
+      aiReference: aiReferenceEn,
       colors: colorsEn,
       typography: typographyEn,
       icons: iconsEn,
@@ -126,6 +129,7 @@ i18n.use(initReactI18next).init({
       home: homeKo,
       installation: installationKo,
       usage: usageKo,
+      aiReference: aiReferenceKo,
       colors: colorsKo,
       typography: typographyKo,
       icons: iconsKo,

@@ -18,6 +18,7 @@ export default function Navigation() {
         { labelKey: 'introduction', path: '/' },
         { labelKey: 'installation', path: '/getting-started/installation' },
         { labelKey: 'usage', path: '/getting-started/usage' },
+        { labelKey: 'aiReference', path: '/getting-started/ai-reference' },
       ],
     },
     {

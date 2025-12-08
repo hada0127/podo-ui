@@ -1,0 +1,35 @@
+{
+  "name": "Field",
+  "category": "molecule",
+  "description": "Form field wrapper with label, required indicator, and helper text",
+  "import": {
+    "react": "import { Field } from 'podo-ui'"
+  },
+  "props": [
+    { "name": "label", "type": "string", "required": false, "description": "Field label" },
+    { "name": "labelClass", "type": "string", "required": false },
+    { "name": "required", "type": "boolean", "required": false, "description": "Show required asterisk" },
+    { "name": "helper", "type": "string", "required": false, "description": "Helper text below input" },
+    { "name": "helperClass", "type": "string", "required": false },
+    { "name": "children", "type": "React.ReactNode", "required": false, "description": "Form control (Input, Select, etc.)" },
+    { "name": "validator", "type": "z.ZodType", "required": false, "description": "Zod validation schema" },
+    { "name": "value", "type": "string", "required": false, "description": "Value for validation" },
+    { "name": "setClassName", "type": "React.Dispatch<React.SetStateAction<string>>", "required": false, "description": "Callback to set input class" },
+    { "name": "className", "type": "string", "required": false }
+  ],
+  "examples": [
+    {
+      "title": "Basic with label",
+      "code": "<Field label=\"Email\" required>\n  <Input value={email} onChange={setEmail} />\n</Field>"
+    },
+    {
+      "title": "With helper text",
+      "code": "<Field label=\"Password\" helper=\"At least 8 characters\">\n  <Input type=\"password\" value={password} onChange={setPassword} />\n</Field>"
+    },
+    {
+      "title": "With validation",
+      "code": "<Field label=\"Username\" validator={z.string().min(3)} value={username}>\n  <Input value={username} onChange={setUsername} />\n</Field>"
+    }
+  ],
+  "related": ["input", "textarea", "select"]
+}

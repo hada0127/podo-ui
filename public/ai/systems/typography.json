@@ -1,0 +1,85 @@
+{
+  "name": "Typography System",
+  "description": "Pretendard font family with display and paragraph styles",
+  "import": {
+    "scss": "@use 'podo-ui/scss/typo/mixin' as *",
+    "fonts": "@use 'podo-ui/vite-fonts.scss'"
+  },
+  "fontFamily": {
+    "name": "Pretendard",
+    "weights": {
+      "100": "thin",
+      "200": "extralight",
+      "300": "light",
+      "400": "regular",
+      "500": "medium",
+      "600": "semibold",
+      "700": "bold",
+      "800": "extrabold",
+      "900": "black"
+    }
+  },
+  "fontSizes": {
+    "12": "12px",
+    "14": "14px",
+    "16": "16px",
+    "18": "18px",
+    "20": "20px",
+    "24": "24px",
+    "28": "28px",
+    "32": "32px",
+    "36": "36px",
+    "42": "42px",
+    "48": "48px",
+    "54": "54px",
+    "60": "60px"
+  },
+  "mixins": {
+    "heading": [
+      { "name": "h1", "size": "54px", "weight": "semibold", "mobile": "24px" },
+      { "name": "h2", "size": "42px", "weight": "semibold", "mobile": "18px" },
+      { "name": "h3", "size": "36px", "weight": "semibold", "mobile": "16px" }
+    ],
+    "display": [
+      { "name": "display1", "size": "60px", "weight": "semibold", "mobile": "36px" },
+      { "name": "display2", "size": "54px", "weight": "semibold", "mobile": "32px" },
+      { "name": "display3", "size": "48px", "weight": "semibold", "mobile": "28px" },
+      { "name": "display4", "size": "42px", "weight": "semibold", "mobile": "24px" },
+      { "name": "display5", "size": "36px", "weight": "semibold", "mobile": "20px" },
+      { "name": "display6", "size": "24px", "weight": "semibold", "mobile": "18px" },
+      { "name": "display7", "size": "20px", "weight": "semibold", "mobile": "16px" }
+    ],
+    "paragraph": [
+      { "name": "p1", "size": "24px", "weight": "regular", "mobile": "20px" },
+      { "name": "p2", "size": "20px", "weight": "regular", "mobile": "16px" },
+      { "name": "p3", "size": "16px", "weight": "regular", "mobile": "14px" },
+      { "name": "p3-semibold", "size": "16px", "weight": "semibold", "mobile": "14px" },
+      { "name": "p4", "size": "14px", "weight": "regular", "mobile": "12px" },
+      { "name": "p4-semibold", "size": "14px", "weight": "semibold", "mobile": "12px" },
+      { "name": "p5", "size": "12px", "weight": "regular", "mobile": "12px" },
+      { "name": "p5-semibold", "size": "12px", "weight": "semibold", "mobile": "12px" }
+    ]
+  },
+  "colorIntegration": {
+    "heading": "--color-text-header",
+    "body": "--color-text-body"
+  },
+  "usage": {
+    "scss": "@include display1;\n@include p3;\n@include p3-semibold;",
+    "example": ".title {\n  @include display4;\n}\n.body {\n  @include p3;\n}"
+  },
+  "examples": [
+    {
+      "title": "Page title",
+      "code": ".page-title {\n  @include display4;\n}"
+    },
+    {
+      "title": "Body text",
+      "code": ".content {\n  @include p3;\n}"
+    },
+    {
+      "title": "Caption",
+      "code": ".caption {\n  @include p5;\n  color: var(--color-text-sub);\n}"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "Toast",
+  "category": "molecule",
+  "description": "Toast notification system with multiple themes and positions",
+  "import": {
+    "react": "import { ToastProvider, useToast } from 'podo-ui'",
+    "scss": "@use 'podo-ui/scss/molecule/toast'"
+  },
+  "setup": "Wrap app with <ToastProvider position=\"top-right\">",
+  "props": {
+    "ToastProvider": [
+      { "name": "position", "type": "ToastPosition", "default": "'top-right'" },
+      { "name": "children", "type": "React.ReactNode", "required": true }
+    ],
+    "Toast": [
+      { "name": "id", "type": "string", "required": true },
+      { "name": "message", "type": "string", "required": true },
+      { "name": "header", "type": "string", "required": false },
+      { "name": "theme", "type": "'default' | 'primary' | 'info' | 'success' | 'warning' | 'danger'", "default": "'default'" },
+      { "name": "border", "type": "boolean", "default": "false" },
+      { "name": "long", "type": "boolean", "default": "false", "description": "Compact single-line style" },
+      { "name": "duration", "type": "number", "default": "3000", "description": "Auto-close delay in ms (0 = no auto-close)" },
+      { "name": "width", "type": "string | number", "required": false },
+      { "name": "onClose", "type": "(id: string) => void", "required": true }
+    ]
+  },
+  "positions": [
+    "top-left", "top-center", "top-right",
+    "center-left", "center", "center-right",
+    "bottom-left", "bottom-center", "bottom-right"
+  ],
+  "cssClasses": [
+    { "class": "toast", "description": "Base toast style" },
+    { "class": "primary | info | success | warning | danger", "description": "Theme colors" },
+    { "class": "border", "description": "With border style" },
+    { "class": "long", "description": "Compact single-line" }
+  ],
+  "htmlUsage": "<div class=\"toast success\"><i class=\"icon-check\"></i><div class=\"toast-content\"><div class=\"toast-body\">Success!</div></div></div>",
+  "examples": [
+    {
+      "title": "Using hook",
+      "code": "const { addToast } = useToast();\naddToast({ message: 'Saved!', theme: 'success' });"
+    },
+    {
+      "title": "With header",
+      "code": "addToast({ header: 'Error', message: 'Something went wrong', theme: 'danger' });"
+    },
+    {
+      "title": "Custom duration",
+      "code": "addToast({ message: 'Processing...', duration: 5000 });"
+    }
+  ],
+  "related": []
+}

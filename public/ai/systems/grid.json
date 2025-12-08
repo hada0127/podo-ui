@@ -1,0 +1,50 @@
+{
+  "name": "Grid System",
+  "description": "Responsive 12-column grid with automatic breakpoints",
+  "import": {
+    "scss": "@use 'podo-ui/scss/layout/grid'"
+  },
+  "breakpoints": {
+    "pc": { "columns": 12, "minWidth": "1025px", "gap": "24px (s(6))", "padding": "24px" },
+    "tablet": { "columns": 6, "range": "769px - 1024px", "gap": "16px (s(5))", "padding": "16px" },
+    "mobile": { "columns": 4, "maxWidth": "768px", "gap": "16px (s(5))", "padding": "16px" }
+  },
+  "cssClasses": {
+    "container": [
+      { "class": "grid", "description": "Grid container with responsive columns" },
+      { "class": "grid-fix-{n}", "description": "Fixed n columns (2-6)" }
+    ],
+    "width": [
+      { "class": "w-{n}", "description": "Span n columns (1-12)" },
+      { "class": "w-full", "description": "Span all columns" },
+      { "class": "w-{n}_{d}", "description": "Fraction (e.g., w-1_2 = 50%)" }
+    ],
+    "pixel": [
+      { "class": "w-{n}px", "description": "Fixed pixel width (0-5000)" }
+    ]
+  },
+  "usage": {
+    "basicGrid": "<div class=\"grid\">\n  <div class=\"w-4\">4 columns</div>\n  <div class=\"w-8\">8 columns</div>\n</div>",
+    "fixedColumns": "<div class=\"grid-fix-3\">\n  <div>1/3</div>\n  <div>1/3</div>\n  <div>1/3</div>\n</div>",
+    "fractions": "<div class=\"grid\">\n  <div class=\"w-1_2\">Half</div>\n  <div class=\"w-1_4\">Quarter</div>\n  <div class=\"w-1_4\">Quarter</div>\n</div>",
+    "fullWidth": "<div class=\"grid\">\n  <div class=\"w-full\">Full width</div>\n</div>"
+  },
+  "responsiveBehavior": {
+    "description": "Grid automatically adjusts columns at breakpoints",
+    "example": "A w-6 element takes 6/12 (50%) on PC, 6/6 (100%) on tablet, 4/4 (100%) on mobile"
+  },
+  "examples": [
+    {
+      "title": "Two-column layout",
+      "code": "<div class=\"grid\">\n  <div class=\"w-8\">Main content</div>\n  <div class=\"w-4\">Sidebar</div>\n</div>"
+    },
+    {
+      "title": "Card grid",
+      "code": "<div class=\"grid-fix-3\">\n  <div class=\"card\">Card 1</div>\n  <div class=\"card\">Card 2</div>\n  <div class=\"card\">Card 3</div>\n</div>"
+    },
+    {
+      "title": "Mixed widths",
+      "code": "<div class=\"grid\">\n  <div class=\"w-12\">Full row</div>\n  <div class=\"w-6\">Half</div>\n  <div class=\"w-6\">Half</div>\n  <div class=\"w-4\">Third</div>\n  <div class=\"w-4\">Third</div>\n  <div class=\"w-4\">Third</div>\n</div>"
+    }
+  ]
+}

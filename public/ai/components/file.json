@@ -1,0 +1,40 @@
+{
+  "name": "File Input",
+  "category": "atom",
+  "description": "Styled file upload input (SCSS only)",
+  "scssOnly": true,
+  "import": {
+    "scss": "@use 'podo-ui/scss/form/file'"
+  },
+  "htmlUsage": {
+    "basic": "<input type=\"file\" />",
+    "multiple": "<input type=\"file\" multiple />",
+    "accept": "<input type=\"file\" accept=\"image/*\" />"
+  },
+  "features": [
+    "Custom styled file selector button",
+    "Upload cloud icon",
+    "404px default width",
+    "Focus outline",
+    "Disabled state styling"
+  ],
+  "examples": [
+    {
+      "title": "Basic file input",
+      "code": "<input type=\"file\" />"
+    },
+    {
+      "title": "Image only",
+      "code": "<input type=\"file\" accept=\"image/*\" />"
+    },
+    {
+      "title": "Multiple files",
+      "code": "<input type=\"file\" multiple />"
+    },
+    {
+      "title": "Disabled",
+      "code": "<input type=\"file\" disabled />"
+    }
+  ],
+  "related": ["input", "field"]
+}

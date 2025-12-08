@@ -1,0 +1,43 @@
+{
+  "name": "Table",
+  "category": "molecule",
+  "description": "Styled HTML table (SCSS only)",
+  "scssOnly": true,
+  "import": {
+    "scss": "@use 'podo-ui/scss/molecule/table'"
+  },
+  "cssClasses": [
+    { "class": "(default)", "description": "Base table with border" },
+    { "class": "list", "description": "Hover effect on rows (clickable)" },
+    { "class": "border", "description": "Cell borders" },
+    { "class": "fill", "description": "Filled background" }
+  ],
+  "htmlUsage": {
+    "basic": "<table>\n  <thead>\n    <tr><th>Name</th><th>Email</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>John</td><td>john@example.com</td></tr>\n  </tbody>\n</table>",
+    "listStyle": "<table class=\"list\">\n  <tbody>\n    <tr><td>Clickable row</td></tr>\n  </tbody>\n</table>",
+    "withBorder": "<table class=\"border\">\n  <thead><tr><th>Col 1</th><th>Col 2</th></tr></thead>\n  <tbody><tr><td>Data</td><td>Data</td></tr></tbody>\n</table>"
+  },
+  "features": [
+    "Full width by default",
+    "Border collapse with rounded corners",
+    "List mode for clickable rows",
+    "Border mode for cell separators",
+    "Fill mode for background color",
+    "Proper padding on cells"
+  ],
+  "examples": [
+    {
+      "title": "Basic table",
+      "code": "<table>\n  <thead><tr><th>ID</th><th>Name</th></tr></thead>\n  <tbody>\n    <tr><td>1</td><td>Alice</td></tr>\n    <tr><td>2</td><td>Bob</td></tr>\n  </tbody>\n</table>"
+    },
+    {
+      "title": "Clickable list",
+      "code": "<table class=\"list\">\n  <tbody>\n    <tr onClick={() => navigate('/user/1')}><td>Click me</td></tr>\n  </tbody>\n</table>"
+    },
+    {
+      "title": "With borders and fill",
+      "code": "<table class=\"border fill\">...</table>"
+    }
+  ],
+  "related": ["pagination"]
+}

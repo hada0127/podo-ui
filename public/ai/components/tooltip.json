@@ -1,0 +1,42 @@
+{
+  "name": "Tooltip",
+  "category": "atom",
+  "description": "Tooltip component with position and variant options",
+  "import": {
+    "react": "import { Tooltip } from 'podo-ui'"
+  },
+  "props": [
+    { "name": "children", "type": "React.ReactNode", "required": true, "description": "Trigger element" },
+    { "name": "content", "type": "React.ReactNode", "required": true, "description": "Tooltip content (can be JSX)" },
+    { "name": "variant", "type": "'default' | 'info'", "default": "'default'" },
+    { "name": "position", "type": "TooltipPosition", "default": "'top'", "description": "Arrow position" },
+    { "name": "offset", "type": "number", "default": "8", "description": "Distance from trigger in pixels" },
+    { "name": "isVisible", "type": "boolean", "required": false, "description": "Control visibility externally" },
+    { "name": "className", "type": "string", "required": false }
+  ],
+  "positionOptions": [
+    "top", "topLeft", "topRight",
+    "bottom", "bottomLeft", "bottomRight",
+    "left", "leftTop", "leftBottom",
+    "right", "rightTop", "rightBottom"
+  ],
+  "examples": [
+    {
+      "title": "Basic",
+      "code": "<Tooltip content=\"Helpful tip\"><button>Hover me</button></Tooltip>"
+    },
+    {
+      "title": "Custom position",
+      "code": "<Tooltip content=\"Info\" position=\"bottomRight\"><i class=\"icon-info\" /></Tooltip>"
+    },
+    {
+      "title": "Controlled visibility",
+      "code": "<Tooltip content=\"Always visible\" isVisible={true}><span>Target</span></Tooltip>"
+    },
+    {
+      "title": "Rich content",
+      "code": "<Tooltip content={<><strong>Title</strong><p>Description</p></>}><button>Details</button></Tooltip>"
+    }
+  ],
+  "related": ["chip"]
+}

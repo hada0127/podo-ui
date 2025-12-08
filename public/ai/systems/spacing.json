@@ -1,0 +1,69 @@
+{
+  "name": "Spacing System",
+  "description": "Consistent spacing scale from 0-13 with SCSS function and utility classes",
+  "import": {
+    "scss": "@use 'podo-ui/scss/layout/spacing' as *"
+  },
+  "scale": {
+    "0": "0px",
+    "1": "2px",
+    "2": "4px",
+    "3": "8px",
+    "4": "12px",
+    "5": "16px",
+    "6": "24px",
+    "7": "32px",
+    "8": "40px",
+    "9": "48px",
+    "10": "64px",
+    "11": "80px",
+    "12": "96px",
+    "13": "160px"
+  },
+  "usage": {
+    "scss": {
+      "function": "padding: s(5); // 16px\nmargin: s(6); // 24px\ngap: s(4); // 12px"
+    },
+    "classes": {
+      "padding": {
+        "all": "p-{n}",
+        "top": "p-t-{n}",
+        "right": "p-r-{n}",
+        "bottom": "p-b-{n}",
+        "left": "p-l-{n}"
+      },
+      "margin": {
+        "all": "m-{n}",
+        "top": "m-t-{n}",
+        "right": "m-r-{n}",
+        "bottom": "m-b-{n}",
+        "left": "m-l-{n}"
+      }
+    }
+  },
+  "examples": [
+    {
+      "title": "SCSS function",
+      "code": ".card {\n  padding: s(5); // 16px\n  margin-bottom: s(6); // 24px\n}"
+    },
+    {
+      "title": "Utility classes",
+      "code": "<div class=\"p-5 m-b-6\">Padded with margin</div>"
+    },
+    {
+      "title": "Mixed directions",
+      "code": "<div class=\"p-t-3 p-b-5 m-l-4\">Custom spacing</div>"
+    },
+    {
+      "title": "Gap in flexbox",
+      "code": ".flex-container {\n  display: flex;\n  gap: s(4); // 12px\n}"
+    }
+  ],
+  "commonPatterns": {
+    "cardPadding": "s(5) // 16px",
+    "sectionGap": "s(6) // 24px",
+    "buttonPadding": "s(3) s(4) // 8px 12px",
+    "inputPadding": "s(3) s(4) // 8px 12px",
+    "pageMargin": "s(6) // 24px"
+  }
+}

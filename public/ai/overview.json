@@ -1,0 +1,69 @@
+{
+  "name": "podo-ui",
+  "tagline": "SCSS-first design system with React components",
+  "philosophy": {
+    "core": "SCSS 97% + React 3%",
+    "principle": "Maximum flexibility with minimal JS dependency",
+    "approach": "Style everything with SCSS, use React only when JS is essential"
+  },
+  "techStack": {
+    "styling": "SCSS (Sass)",
+    "components": "React 18+ with TypeScript",
+    "validation": "Zod",
+    "build": "Vite",
+    "docs": "Vike (SSG)",
+    "i18n": "i18next"
+  },
+  "installation": {
+    "npm": "npm install podo-ui",
+    "yarn": "yarn add podo-ui",
+    "pnpm": "pnpm add podo-ui"
+  },
+  "imports": {
+    "react": {
+      "all": "import { Input, Avatar, DatePicker } from 'podo-ui'",
+      "individual": "import Input from 'podo-ui/react/atom/input'",
+      "form": "import Form from 'podo-ui' // Form.Input, Form.Textarea"
+    },
+    "scss": {
+      "global": "@use 'podo-ui/global.scss'",
+      "mixin": "@use 'podo-ui/mixin' as *",
+      "fonts": "@use 'podo-ui/vite-fonts.scss'"
+    },
+    "cdn": {
+      "css": "https://cdn.example.com/podo-ui.min.css",
+      "js": "https://cdn.example.com/podo-datepicker.js"
+    }
+  },
+  "structure": {
+    "react": {
+      "atom": ["avatar", "input", "textarea", "editor", "editor-view", "chip", "tooltip"],
+      "molecule": ["datepicker", "field", "pagination", "toast", "toast-provider"]
+    },
+    "scss": {
+      "color": "Theme colors (light/dark/warm)",
+      "typo": "Typography system (Pretendard)",
+      "layout": "Grid, spacing, radius, device breakpoints",
+      "form": "Input, select, checkbox, radio, toggle, file",
+      "button": "Button styles and variants",
+      "icon": "Icon font system (SVG to WOFF)",
+      "atom": "Chip styles",
+      "molecule": "Tab, table, toast, pagination styles"
+    }
+  },
+  "themes": {
+    "colorMode": {
+      "light": "<html data-color-mode=\"light\">",
+      "dark": "<html data-color-mode=\"dark\">",
+      "auto": "<html data-color-mode=\"\">"
+    },
+    "colorTone": {
+      "warm": "<html data-color-tone=\"warm\">"
+    }
+  },
+  "breakpoints": {
+    "pc": "1025px and above",
+    "tablet": "769px - 1024px",
+    "mobile": "768px and below"
+  }
+}

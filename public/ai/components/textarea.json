@@ -1,0 +1,31 @@
+{
+  "name": "Textarea",
+  "category": "atom",
+  "description": "Multi-line text input with Zod validation support",
+  "import": {
+    "react": "import { Textarea } from 'podo-ui'",
+    "scss": "@use 'podo-ui/scss/form/textarea'"
+  },
+  "props": [
+    { "name": "value", "type": "string", "required": true },
+    { "name": "validator", "type": "z.ZodType", "required": false, "description": "Zod schema for validation" },
+    { "name": "className", "type": "string", "required": false },
+    { "name": "...rest", "type": "React.ComponentProps<'textarea'>", "description": "All native textarea props" }
+  ],
+  "cssClasses": [
+    { "class": "(default)", "description": "Base textarea style" },
+    { "class": "success", "description": "Success state (green border)" },
+    { "class": "danger", "description": "Error state (red border)" }
+  ],
+  "examples": [
+    {
+      "title": "Basic",
+      "code": "<Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder=\"Enter description\" />"
+    },
+    {
+      "title": "With validation",
+      "code": "<Textarea value={bio} validator={z.string().min(10, 'At least 10 characters')} />"
+    }
+  ],
+  "related": ["input", "field", "editor"]
+}

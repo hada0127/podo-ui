@@ -1,0 +1,34 @@
+{
+  "name": "Avatar",
+  "category": "atom",
+  "description": "Profile image, icon, or text display component",
+  "import": {
+    "react": "import { Avatar } from 'podo-ui'"
+  },
+  "props": [
+    { "name": "type", "type": "'image' | 'icon' | 'text'", "default": "'icon'", "description": "Avatar content type" },
+    { "name": "src", "type": "string", "required": false, "description": "Image URL (for type='image')" },
+    { "name": "icon", "type": "string", "default": "'icon-user'", "description": "Icon class name (for type='icon')" },
+    { "name": "text", "type": "string", "required": false, "description": "Text content, shows first 2 chars (for type='text')" },
+    { "name": "size", "type": "16 | 20 | 24 | 28 | 32 | 36 | 40 | 48 | 56", "default": "56", "description": "Avatar size in pixels" },
+    { "name": "activityRing", "type": "boolean", "default": "false", "description": "Show activity ring around avatar" },
+    { "name": "className", "type": "string", "required": false },
+    { "name": "alt", "type": "string", "default": "'Avatar'", "description": "Alt text for image" },
+    { "name": "onClick", "type": "() => void", "required": false, "description": "Click handler" }
+  ],
+  "examples": [
+    {
+      "title": "Image avatar",
+      "code": "<Avatar type=\"image\" src=\"/profile.jpg\" size={56} />"
+    },
+    {
+      "title": "Icon avatar",
+      "code": "<Avatar type=\"icon\" icon=\"icon-user\" size={40} />"
+    },
+    {
+      "title": "Text avatar with activity ring",
+      "code": "<Avatar type=\"text\" text=\"John Doe\" size={56} activityRing={true} />"
+    }
+  ],
+  "related": ["chip"]
+}

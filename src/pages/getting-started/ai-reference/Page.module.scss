@@ -1,0 +1,303 @@
+@use '../../../../mixin' as *;
+@use '../../common-page' as *;
+
+.section {
+  @include section-responsive;
+}
+
+.codeBlock {
+  max-width: 100%;
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: color(bg-elevation-1);
+    border-bottom: 1px solid color(default-outline);
+    @include p4;
+    font-weight: 600;
+    color: color(default-deep-base);
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+    background: color(bg-elevation);
+
+    code {
+      @include p4;
+      color: color(default-deep-base);
+      white-space: pre;
+      background: none;
+      padding: 0;
+      display: block;
+
+      @media (max-width: 768px) {
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+    }
+  }
+}
+
+.fieldList {
+  display: flex;
+  flex-direction: column;
+  gap: s(2);
+  margin: s(5) 0;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: s(3);
+  padding: s(3) s(4);
+  background: color(bg-elevation);
+  border-radius: r(2);
+
+  code {
+    @include p4;
+    font-weight: 600;
+    color: color(primary-base);
+    background: color(primary-fill);
+    padding: s(1) s(2);
+    border-radius: r(1);
+    min-width: 100px;
+  }
+
+  span {
+    @include p4;
+    color: color(text-body);
+  }
+}
+
+.componentList {
+  @include p3;
+  color: color(text-sub);
+  margin-top: s(5);
+  padding: s(4);
+  background: color(bg-elevation);
+  border-radius: r(2);
+
+  strong {
+    color: color(text-header);
+  }
+}
+
+.systemGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: s(4);
+  margin-top: s(5);
+}
+
+.systemCard {
+  padding: s(5);
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: color(primary-base);
+  }
+
+  h4 {
+    @include p3-semibold;
+    color: color(primary-base);
+    margin: 0 0 s(2) 0;
+    font-family: monospace;
+  }
+
+  p {
+    @include p4;
+    color: color(text-sub);
+    margin: 0;
+  }
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: s(5);
+  margin-top: s(5);
+}
+
+.step {
+  display: flex;
+  gap: s(4);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.stepNumber {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, color(primary-base) 0%, color(info-base) 100%);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  flex-shrink: 0;
+  @include p2;
+}
+
+.stepContent {
+  flex: 1;
+
+  h4 {
+    @include p2;
+    font-weight: 600;
+    margin: 0 0 s(2) 0;
+    color: color(text-header);
+  }
+
+  p {
+    @include p3;
+    color: color(text-sub);
+    margin: 0 0 s(3) 0;
+  }
+
+  .codeBlock {
+    margin-bottom: 0;
+  }
+}
+
+.exampleBox {
+  padding: s(5);
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+
+  h4 {
+    @include p3-semibold;
+    color: color(text-header);
+    margin: 0 0 s(3) 0;
+
+    &:not(:first-child) {
+      margin-top: s(5);
+    }
+  }
+
+  ol {
+    @include p3;
+    color: color(text-body);
+    margin: 0 0 s(4) 0;
+    padding-left: s(5);
+
+    li {
+      margin-bottom: s(2);
+    }
+  }
+}
+
+.promptBox {
+  @include p3;
+  padding: s(4);
+  background: color(primary-fill);
+  border: 1px solid color(primary-outline);
+  border-radius: r(2);
+  color: color(primary-base);
+  font-style: italic;
+}
+
+.benefitGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: s(4);
+  margin-top: s(5);
+}
+
+.benefitCard {
+  padding: s(5);
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  text-align: center;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: color(primary-base);
+    transform: translateY(-2px);
+  }
+
+  i {
+    font-size: 32px;
+    color: color(primary-base);
+    margin-bottom: s(3);
+    display: block;
+  }
+
+  h4 {
+    @include p3-semibold;
+    color: color(text-header);
+    margin: 0 0 s(2) 0;
+  }
+
+  p {
+    @include p4;
+    color: color(text-sub);
+    margin: 0;
+  }
+}
+
+.urlList {
+  display: flex;
+  flex-direction: column;
+  gap: s(3);
+  margin-top: s(5);
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: s(3);
+    padding: s(4);
+    background: color(bg-modal);
+    border: 1px solid color(default-outline);
+    border-radius: r(2);
+    text-decoration: none;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: color(primary-base);
+      background: color(bg-elevation);
+
+      i {
+        color: color(primary-base);
+      }
+    }
+
+    code {
+      @include p4;
+      font-weight: 500;
+      color: color(link-base);
+      background: color(info-fill);
+      padding: s(1) s(2);
+      border-radius: r(1);
+      min-width: 220px;
+
+      @media (max-width: 768px) {
+        min-width: auto;
+      }
+    }
+
+    span {
+      @include p4;
+      color: color(text-sub);
+      flex: 1;
+    }
+
+    i {
+      font-size: 16px;
+      color: color(text-sub);
+    }
+  }
+}

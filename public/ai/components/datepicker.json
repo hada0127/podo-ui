@@ -1,0 +1,56 @@
+{
+  "name": "DatePicker",
+  "category": "molecule",
+  "description": "Date/time picker with single and period selection modes",
+  "import": {
+    "react": "import { DatePicker } from 'podo-ui'",
+    "vanilla": "import 'podo-ui/vanilla/datepicker'"
+  },
+  "props": [
+    { "name": "mode", "type": "'instant' | 'period'", "default": "'instant'", "description": "Single date or date range" },
+    { "name": "type", "type": "'date' | 'time' | 'datetime'", "default": "'date'" },
+    { "name": "value", "type": "DatePickerValue", "required": false },
+    { "name": "onChange", "type": "(value: DatePickerValue) => void", "required": false },
+    { "name": "placeholder", "type": "string", "required": false },
+    { "name": "disabled", "type": "boolean", "default": "false" },
+    { "name": "showActions", "type": "boolean", "description": "Show reset/apply buttons (default true for period)" },
+    { "name": "align", "type": "'left' | 'right'", "default": "'left'", "description": "Dropdown alignment" },
+    { "name": "disable", "type": "DateCondition[]", "required": false, "description": "Dates to disable" },
+    { "name": "enable", "type": "DateCondition[]", "required": false, "description": "Only enable specific dates" },
+    { "name": "minDate", "type": "Date | DateTimeLimit", "required": false },
+    { "name": "maxDate", "type": "Date | DateTimeLimit", "required": false },
+    { "name": "minuteStep", "type": "1 | 5 | 10 | 15 | 20 | 30", "default": "1" },
+    { "name": "format", "type": "string", "required": false, "description": "Custom format: y-m-d h:i" },
+    { "name": "initialCalendar", "type": "{ start?: CalendarInitial, end?: CalendarInitial }", "required": false }
+  ],
+  "types": {
+    "DatePickerValue": "{ date?: Date, time?: TimeValue, endDate?: Date, endTime?: TimeValue }",
+    "TimeValue": "{ hour: number, minute: number }",
+    "DateCondition": "Date | { from: Date, to: Date } | ((date: Date) => boolean)",
+    "DateTimeLimit": "{ date: Date, time?: TimeValue }",
+    "CalendarInitial": "'now' | 'prevMonth' | 'nextMonth' | Date"
+  },
+  "examples": [
+    {
+      "title": "Single date",
+      "code": "<DatePicker mode=\"instant\" type=\"date\" value={date} onChange={setDate} />"
+    },
+    {
+      "title": "Date range",
+      "code": "<DatePicker mode=\"period\" type=\"date\" value={range} onChange={setRange} />"
+    },
+    {
+      "title": "DateTime with min/max",
+      "code": "<DatePicker type=\"datetime\" minDate={new Date()} maxDate={new Date(2025, 11, 31)} />"
+    },
+    {
+      "title": "Disable weekends",
+      "code": "<DatePicker disable={[(date) => date.getDay() === 0 || date.getDay() === 6]} />"
+    },
+    {
+      "title": "Custom format",
+      "code": "<DatePicker format=\"y년 m월 d일 h시 i분\" />"
+    }
+  ],
+  "related": ["field", "input"]
+}

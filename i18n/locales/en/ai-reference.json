@@ -1,0 +1,91 @@
+{
+  "title": "AI Reference",
+  "description": "podo-ui provides structured JSON references that allow AI tools to easily understand and utilize the design system.",
+  "overview": {
+    "title": "Overview",
+    "description": "The AI reference system consists of modular JSON files, allowing AI to selectively read only the information it needs. The main index file provides the overall structure, while detailed information is available in individual files."
+  },
+  "structure": {
+    "title": "File Structure",
+    "mainIndex": "Main Index (Entry Point)",
+    "projectOverview": "Project Overview",
+    "components": "Components (17)",
+    "systems": "Systems (6)"
+  },
+  "mainIndex": {
+    "title": "Main Index (ai.json)",
+    "description": "ai.json is the entry point for all references. It contains basic project information and paths to all modules.",
+    "fields": {
+      "name": "Package name",
+      "version": "Version",
+      "description": "Brief description",
+      "philosophy": "Design philosophy",
+      "install": "Install command",
+      "modules": "All module paths"
+    }
+  },
+  "componentFiles": {
+    "title": "Component Files",
+    "description": "Each component file includes the following information:",
+    "fields": {
+      "name": "Component name",
+      "category": "Category (atom/molecule)",
+      "description": "Purpose description",
+      "import": "React/SCSS import paths",
+      "props": "Props list (type, default, description)",
+      "cssClasses": "CSS class list",
+      "examples": "Code examples",
+      "related": "Related components"
+    },
+    "list": "Avatar, Input, Textarea, Editor, Chip, Tooltip, Datepicker, Field, Pagination, Toast, Select, Checkbox/Radio, Toggle, Table, Tab, File, Button"
+  },
+  "systemFiles": {
+    "title": "System Files",
+    "description": "Documents the foundational elements of the design system:",
+    "items": {
+      "color": "Color System - Semantic colors, themes, CSS variables",
+      "typography": "Typography - Fonts, sizes, SCSS mixins",
+      "spacing": "Spacing - Scale (0-13), s() function",
+      "grid": "Grid - 12 columns, breakpoints",
+      "icon": "Icons - Usage, classes",
+      "button": "Button - Themes, variants, states"
+    }
+  },
+  "usage": {
+    "title": "How to Use",
+    "step1": {
+      "title": "1. Check Main Index",
+      "description": "First, read ai.json to understand the overall structure."
+    },
+    "step2": {
+      "title": "2. Select Required Modules",
+      "description": "Selectively read only the component or system files needed for your task."
+    },
+    "step3": {
+      "title": "3. Write Code",
+      "description": "Write code referencing the import paths, props, and examples from the JSON."
+    }
+  },
+  "example": {
+    "title": "Example: Using Input Component",
+    "prompt": "AI Prompt Example:",
+    "promptText": "Create an email input field using podo-ui's Input component.",
+    "aiProcess": "AI Processing Steps:",
+    "process1": "Check input path in ai.json",
+    "process2": "Read /ai/components/input.json",
+    "process3": "Write code referencing props and examples"
+  },
+  "benefits": {
+    "title": "Benefits",
+    "items": {
+      "selective": "Selective Loading - Read only needed information to save context",
+      "structured": "Structured Data - JSON format for easy parsing",
+      "comprehensive": "Comprehensive Info - Includes props, examples, related components",
+      "upToDate": "Up-to-date - Synced with documentation site"
+    }
+  },
+  "accessUrls": {
+    "title": "Access URLs",
+    "description": "You can directly access JSON files at these URLs:"
+  }
+}

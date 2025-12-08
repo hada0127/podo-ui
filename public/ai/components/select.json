@@ -1,0 +1,31 @@
+{
+  "name": "Select",
+  "category": "atom",
+  "description": "Styled native select dropdown (SCSS only)",
+  "scssOnly": true,
+  "import": {
+    "scss": "@use 'podo-ui/scss/form/select'"
+  },
+  "htmlUsage": {
+    "basic": "<select>\n  <option value=\"\" disabled selected>Select option</option>\n  <option value=\"1\">Option 1</option>\n  <option value=\"2\">Option 2</option>\n</select>",
+    "withIcon": "<div class=\"with-icon\">\n  <i class=\"icon-globe\"></i>\n  <select>...</select>\n</div>"
+  },
+  "features": [
+    "Custom dropdown arrow",
+    "Placeholder styling (first disabled option)",
+    "Focus outline",
+    "Disabled state",
+    "Icon support with .with-icon wrapper"
+  ],
+  "examples": [
+    {
+      "title": "Basic select",
+      "code": "<select>\n  <option value=\"\" disabled selected>Choose...</option>\n  <option value=\"kr\">Korea</option>\n  <option value=\"us\">USA</option>\n</select>"
+    },
+    {
+      "title": "With icon",
+      "code": "<div class=\"with-icon\">\n  <i class=\"icon-globe\"></i>\n  <select>...</select>\n</div>"
+    }
+  ],
+  "related": ["input", "field"]
+}

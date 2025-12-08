@@ -1,0 +1,52 @@
+{
+  "name": "Input",
+  "category": "atom",
+  "description": "Form input field with Zod validation support",
+  "import": {
+    "react": "import { Input } from 'podo-ui'",
+    "scss": "@use 'podo-ui/scss/form/input'"
+  },
+  "props": [
+    { "name": "value", "type": "string | number", "required": false },
+    { "name": "validator", "type": "z.ZodType", "required": false, "description": "Zod schema for validation" },
+    { "name": "withIcon", "type": "string", "required": false, "description": "Left icon class (e.g., 'icon-search')" },
+    { "name": "withRightIcon", "type": "string", "required": false, "description": "Right icon class" },
+    { "name": "unit", "type": "string", "required": false, "description": "Unit suffix (e.g., 'km', '%')" },
+    { "name": "className", "type": "string", "required": false },
+    { "name": "...rest", "type": "React.ComponentProps<'input'>", "description": "All native input props" }
+  ],
+  "cssClasses": [
+    { "class": "(default)", "description": "Base input style with border" },
+    { "class": "fill", "description": "Filled background style" },
+    { "class": "text", "description": "No border style" },
+    { "class": "underline", "description": "Bottom border only" },
+    { "class": "md", "description": "Medium size (larger padding)" },
+    { "class": "lg", "description": "Large size" },
+    { "class": "success", "description": "Success state (green border)" },
+    { "class": "danger", "description": "Error state (red border)" }
+  ],
+  "htmlUsage": {
+    "basic": "<input type=\"text\" placeholder=\"Enter text\" />",
+    "withIcon": "<div class=\"with-icon\"><i class=\"icon-search\"></i><input type=\"text\" /></div>",
+    "withRightIcon": "<div class=\"with-right-icon\"><input type=\"text\" /><i class=\"icon-eye\"></i></div>"
+  },
+  "examples": [
+    {
+      "title": "Basic",
+      "code": "<Input value={text} onChange={(e) => setText(e.target.value)} placeholder=\"Enter text\" />"
+    },
+    {
+      "title": "With Zod validation",
+      "code": "<Input value={email} validator={z.string().email('Invalid email')} placeholder=\"Email\" />"
+    },
+    {
+      "title": "With icon",
+      "code": "<Input withIcon=\"icon-search\" placeholder=\"Search...\" />"
+    },
+    {
+      "title": "With unit",
+      "code": "<Input type=\"number\" unit=\"km\" />"
+    }
+  ],
+  "related": ["textarea", "field", "select"]
+}

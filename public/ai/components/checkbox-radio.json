@@ -1,0 +1,53 @@
+{
+  "name": "Checkbox & Radio",
+  "category": "atom",
+  "description": "Styled checkbox and radio inputs (SCSS only)",
+  "scssOnly": true,
+  "import": {
+    "scss": "@use 'podo-ui/scss/form/checkbox-radio'"
+  },
+  "htmlUsage": {
+    "checkbox": "<input type=\"checkbox\" id=\"agree\" />\n<label for=\"agree\">I agree</label>",
+    "checkboxInLabel": "<label><input type=\"checkbox\" /><span>Remember me</span></label>",
+    "radio": "<input type=\"radio\" name=\"color\" id=\"red\" value=\"red\" />\n<label for=\"red\">Red</label>",
+    "radioGroup": "<label><input type=\"radio\" name=\"size\" value=\"s\" /><span>Small</span></label>\n<label><input type=\"radio\" name=\"size\" value=\"m\" /><span>Medium</span></label>"
+  },
+  "states": {
+    "checkbox": [
+      "unchecked (default)",
+      "checked (blue background with checkmark)",
+      "indeterminate (horizontal line)",
+      "disabled",
+      "checked:disabled"
+    ],
+    "radio": [
+      "unchecked (empty circle)",
+      "checked (filled center)",
+      "disabled",
+      "checked:disabled"
+    ]
+  },
+  "features": [
+    "Custom SVG icons for all states",
+    "24x24px size",
+    "Focus outline (primary color)",
+    "Dark mode support",
+    "Indeterminate state for checkbox",
+    "Label click support"
+  ],
+  "examples": [
+    {
+      "title": "Checkbox",
+      "code": "<label>\n  <input type=\"checkbox\" />\n  <span>Accept terms</span>\n</label>"
+    },
+    {
+      "title": "Radio group",
+      "code": "<label><input type=\"radio\" name=\"plan\" value=\"free\" /><span>Free</span></label>\n<label><input type=\"radio\" name=\"plan\" value=\"pro\" /><span>Pro</span></label>"
+    },
+    {
+      "title": "Indeterminate",
+      "code": "<input type=\"checkbox\" id=\"all\" />\n<script>document.getElementById('all').indeterminate = true;</script>"
+    }
+  ],
+  "related": ["toggle", "field"]
+}

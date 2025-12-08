@@ -1,0 +1,26 @@
+{
+  "name": "Pagination",
+  "category": "molecule",
+  "description": "Page navigation component",
+  "import": {
+    "react": "import { Pagination } from 'podo-ui'",
+    "scss": "@use 'podo-ui/scss/molecule/pagination'"
+  },
+  "props": [
+    { "name": "currentPage", "type": "number", "required": true },
+    { "name": "totalPages", "type": "number", "required": true },
+    { "name": "onPageChange", "type": "(page: number) => void", "required": true },
+    { "name": "maxVisiblePages", "type": "number", "default": "5", "description": "Max page buttons to show" }
+  ],
+  "examples": [
+    {
+      "title": "Basic",
+      "code": "<Pagination currentPage={page} totalPages={10} onPageChange={setPage} />"
+    },
+    {
+      "title": "Custom visible pages",
+      "code": "<Pagination currentPage={page} totalPages={100} onPageChange={setPage} maxVisiblePages={7} />"
+    }
+  ],
+  "related": ["table"]
+}

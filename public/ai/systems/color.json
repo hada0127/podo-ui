@@ -1,0 +1,75 @@
+{
+  "name": "Color System",
+  "description": "Semantic color palette with light/dark/warm theme support",
+  "import": {
+    "scss": "@use 'podo-ui/scss/color/function' as *"
+  },
+  "themes": {
+    "light": { "attribute": "data-color-mode=\"light\"", "description": "Force light mode" },
+    "dark": { "attribute": "data-color-mode=\"dark\"", "description": "Force dark mode" },
+    "auto": { "attribute": "data-color-mode=\"\"", "description": "Follow system preference" },
+    "warm": { "attribute": "data-color-tone=\"warm\"", "description": "Warm tone overlay" }
+  },
+  "semanticColors": {
+    "primary": { "hex": "#7c3aed", "description": "Brand/main action color (purple)" },
+    "default": { "hex": "#f4f4f5", "description": "Neutral gray" },
+    "default-deep": { "hex": "#52525b", "description": "Dark neutral" },
+    "info": { "hex": "#1890ff", "description": "Informational blue" },
+    "link": { "hex": "#0ea5e9", "description": "Link blue" },
+    "success": { "hex": "#0d9488", "description": "Success teal" },
+    "warning": { "hex": "#f19b0b", "description": "Warning orange" },
+    "danger": { "hex": "#f04646", "description": "Error/danger red" }
+  },
+  "variants": [
+    { "suffix": "(base)", "description": "Default color" },
+    { "suffix": "-hover", "description": "Hover state" },
+    { "suffix": "-pressed", "description": "Active/pressed state" },
+    { "suffix": "-focus", "description": "Focus state" },
+    { "suffix": "-fill", "description": "Light background fill" },
+    { "suffix": "-reverse", "description": "Contrasting text color" },
+    { "suffix": "-outline", "description": "Focus ring color (30% opacity)" }
+  ],
+  "systemColors": {
+    "background": [
+      { "var": "--color-bg-modal", "description": "Modal background" },
+      { "var": "--color-bg-block", "description": "Card/block background" },
+      { "var": "--color-bg-elevation", "description": "Page background" },
+      { "var": "--color-bg-disabled", "description": "Disabled state" },
+      { "var": "--color-bg-toggle", "description": "Toggle off state" }
+    ],
+    "text": [
+      { "var": "--color-text-header", "description": "Heading text" },
+      { "var": "--color-text-body", "description": "Body text" },
+      { "var": "--color-text-sub", "description": "Secondary/muted text" },
+      { "var": "--color-text-action", "description": "Interactive text" },
+      { "var": "--color-text-action-disabled", "description": "Disabled text" }
+    ],
+    "border": [
+      { "var": "--color-border", "description": "Default border" },
+      { "var": "--color-border-hover", "description": "Hover border" },
+      { "var": "--color-border-disabled", "description": "Disabled border" }
+    ]
+  },
+  "usage": {
+    "scss": {
+      "function": "color: color('primary'); background: color('success-fill');",
+      "variable": "color: var(--color-primary);"
+    },
+    "css": "color: var(--color-primary);",
+    "class": "<div class=\"c-primary\">Primary text</div>\n<div class=\"bg-danger-fill\">Danger background</div>"
+  },
+  "examples": [
+    {
+      "title": "Set theme",
+      "code": "<html data-color-mode=\"dark\">"
+    },
+    {
+      "title": "SCSS usage",
+      "code": ".card {\n  background: color('bg-block');\n  border: 1px solid color('border');\n  color: color('text-body');\n}"
+    },
+    {
+      "title": "Button colors",
+      "code": "<button class=\"primary\">Primary</button>\n<button class=\"success border\">Success</button>\n<button class=\"danger text\">Danger</button>"
+    }
+  ]
+}

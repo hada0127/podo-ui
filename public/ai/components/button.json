@@ -1,0 +1,68 @@
+{
+  "name": "Button",
+  "category": "atom",
+  "description": "Styled button with themes and variants (SCSS only)",
+  "scssOnly": true,
+  "import": {
+    "scss": "@use 'podo-ui/scss/button/class'"
+  },
+  "cssClasses": {
+    "themes": [
+      { "class": "(default)", "description": "Gray button" },
+      { "class": "primary", "description": "Primary purple" },
+      { "class": "default-deep", "description": "Dark gray" },
+      { "class": "info", "description": "Blue" },
+      { "class": "link", "description": "Light blue" },
+      { "class": "success", "description": "Teal/green" },
+      { "class": "warning", "description": "Orange" },
+      { "class": "danger", "description": "Red" }
+    ],
+    "variants": [
+      { "class": "(default)", "description": "Solid background" },
+      { "class": "fill", "description": "Light background with border" },
+      { "class": "border", "description": "Transparent with border" },
+      { "class": "text", "description": "Text only, no background/border" }
+    ],
+    "alignment": [
+      { "class": "text-left", "description": "Left-align content" },
+      { "class": "text-right", "description": "Right-align content" }
+    ]
+  },
+  "states": [
+    "hover (lighter/darker)",
+    "active/pressed",
+    "focus-visible (outline ring)",
+    "disabled (grayed out)"
+  ],
+  "htmlUsage": {
+    "basic": "<button>Default</button>",
+    "primary": "<button class=\"primary\">Primary</button>",
+    "outline": "<button class=\"primary border\">Outline</button>",
+    "textOnly": "<button class=\"danger text\">Delete</button>",
+    "withIcon": "<button class=\"primary\"><i class=\"icon-plus\"></i> Add</button>",
+    "disabled": "<button class=\"primary\" disabled>Disabled</button>"
+  },
+  "examples": [
+    {
+      "title": "Primary solid",
+      "code": "<button class=\"primary\">Submit</button>"
+    },
+    {
+      "title": "Success outline",
+      "code": "<button class=\"success border\">Approve</button>"
+    },
+    {
+      "title": "Danger text",
+      "code": "<button class=\"danger text\">Delete</button>"
+    },
+    {
+      "title": "With icon",
+      "code": "<button class=\"primary\"><i class=\"icon-save\"></i> Save</button>"
+    },
+    {
+      "title": "Fill style",
+      "code": "<button class=\"info fill\">Info</button>"
+    }
+  ],
+  "related": []
+}
