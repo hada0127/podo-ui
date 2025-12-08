@@ -42,7 +42,7 @@ export default function AiReference() {
         <h2>{t('mainIndex.title')}</h2>
         <p>{t('mainIndex.description')}</p>
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>ai.json</div>
+          <div className={styles.codeHeader}>{BASE_URL}/ai.json</div>
           <pre><code>{`{
   "name": "podo-ui",
   "version": "1.0.0",
@@ -50,15 +50,15 @@ export default function AiReference() {
   "philosophy": "Maximum flexibility with minimal JS dependency",
   "install": "npm install podo-ui",
   "modules": {
-    "overview": "/ai/overview.json",
+    "overview": "${BASE_URL}/ai/overview.json",
     "components": {
-      "avatar": "/ai/components/avatar.json",
-      "input": "/ai/components/input.json",
+      "avatar": "${BASE_URL}/ai/components/avatar.json",
+      "input": "${BASE_URL}/ai/components/input.json",
       ...
     },
     "systems": {
-      "color": "/ai/systems/color.json",
-      "typography": "/ai/systems/typography.json",
+      "color": "${BASE_URL}/ai/systems/color.json",
+      "typography": "${BASE_URL}/ai/systems/typography.json",
       ...
     }
   }
@@ -98,7 +98,7 @@ export default function AiReference() {
         <p>{t('componentFiles.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>/ai/components/input.json</div>
+          <div className={styles.codeHeader}>{BASE_URL}/ai/components/input.json</div>
           <pre><code>{`{
   "name": "Input",
   "category": "atom",
