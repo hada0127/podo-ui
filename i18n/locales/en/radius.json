@@ -31,5 +31,11 @@
         "description": "A card with 12px border radius."
       }
     }
+  },
+  "code": {
+    "noRadius": "No radius",
+    "radius4px": "Radius 4px",
+    "radius8px": "Radius 8px",
+    "fullyRound": "Fully round"
   }
 }

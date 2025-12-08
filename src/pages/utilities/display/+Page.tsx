@@ -18,17 +18,17 @@ export default function Display() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 모든 디바이스에서 숨김 -->
-<div class="hide">항상 숨김</div>
+          <pre><code>{`<!-- \${t('code.hideAll')} -->
+<div class="hide">\${t('code.alwaysHidden')}</div>
 
-<!-- PC에서만 숨김 (1280px 이상) -->
-<div class="hide-pc">PC에서만 숨김</div>
+<!-- \${t('code.hidePCOnly')} -->
+<div class="hide-pc">\${t('code.hidePCOnlyText')}</div>
 
-<!-- Tablet에서만 숨김 (768px ~ 1279px) -->
-<div class="hide-tb">Tablet에서만 숨김</div>
+<!-- \${t('code.hideTBOnly')} -->
+<div class="hide-tb">\${t('code.hideTBOnlyText')}</div>
 
-<!-- Mobile에서만 숨김 (767px 이하) -->
-<div class="hide-mo">Mobile에서만 숨김</div>`}</code></pre>
+<!-- \${t('code.hideMOOnly')} -->
+<div class="hide-mo">\${t('code.hideMOOnlyText')}</div>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
@@ -68,18 +68,18 @@ export default function Display() {
 .container {
   padding: s(8);
 
-  // PC (1280px 이상)
+  // \${t('code.pcMedia')}
   @include pc {
     max-width: 1200px;
     margin: 0 auto;
   }
 
-  // Tablet (768px ~ 1279px)
+  // \${t('code.tbMedia')}
   @include tb {
     padding: s(6);
   }
 
-  // Mobile (767px 이하)
+  // \${t('code.moMedia')}
   @include mo {
     padding: s(4);
   }
@@ -89,7 +89,7 @@ export default function Display() {
   display: block;
 
   @include mo {
-    display: none; // 모바일에서 숨김
+    display: none; // \${t('code.hideMobile')}
   }
 }
 
@@ -97,7 +97,7 @@ export default function Display() {
   display: none;
 
   @include mo {
-    display: block; // 모바일에서만 표시
+    display: block; // \${t('code.showMobile')}
   }
 }`}</code></pre>
         </div>
@@ -146,22 +146,22 @@ export default function Display() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 데스크톱 네비게이션 -->
+          <pre><code>{`<!-- \${t('code.desktopNav')} -->
 <nav class="hide-mo">
-  <a href="/">홈</a>
-  <a href="/about">소개</a>
-  <a href="/contact">연락처</a>
+  <a href="/">\${t('code.home')}</a>
+  <a href="/about">\${t('code.about')}</a>
+  <a href="/contact">\${t('code.contact')}</a>
 </nav>
 
-<!-- 모바일 햄버거 메뉴 -->
+<!-- \${t('code.mobileHamburger')} -->
 <button class="hide-pc hide-tb">
   <i class="icon-menu"></i>
 </button>
 
-<!-- 반응형 그리드 -->
+<!-- \${t('code.responsiveGrid')} -->
 <section class="grid">
-  <div class="w-4 hide-mo">사이드바 (모바일에서 숨김)</div>
-  <div class="w-8">메인 컨텐츠</div>
+  <div class="w-4 hide-mo">\${t('code.sidebarHideMobile')}</div>
+  <div class="w-8">\${t('code.mainContent')}</div>
 </section>`}</code></pre>
         </div>
       </section>

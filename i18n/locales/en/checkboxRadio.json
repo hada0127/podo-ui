@@ -54,5 +54,8 @@
   "darkMode": {
     "title": "Dark Mode",
     "description": "Appropriate styles are automatically applied in dark mode."
+  },
+  "code": {
+    "customStyle": "Custom style"
   }
 }

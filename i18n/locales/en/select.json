@@ -60,5 +60,9 @@
   "scss": {
     "title": "SCSS Styling",
     "description": "You can apply select styles using podo-ui mixins."
+  },
+  "code": {
+    "customArrow": "Custom arrow (auto-included)",
+    "withIcon": "With icon"
   }
 }

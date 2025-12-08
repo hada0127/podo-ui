@@ -60,5 +60,9 @@
   "scss": {
     "title": "SCSS 스타일",
     "description": "podo-ui의 믹스인을 사용하여 select 스타일을 적용할 수 있습니다."
+  },
+  "code": {
+    "customArrow": "커스텀 화살표 (자동 포함됨)",
+    "withIcon": "아이콘과 함께 사용"
   }
 }

@@ -52,5 +52,16 @@
     "feedbackForm": "Feedback Form",
     "feedbackLabel": "Leave your feedback",
     "feedbackPlaceholder": "Write your feedback here..."
+  },
+  "code": {
+    "successState": "Success state",
+    "dangerState": "Danger state",
+    "disabledState": "Disabled state",
+    "readonlyState": "Read-only state",
+    "defaultTextareaStyle": "Default textarea style",
+    "resizeNone": "Prevent resizing",
+    "successDangerState": "Success/Danger state",
+    "disabledStateStyle": "Disabled state",
+    "readonlyStateStyle": "Read-only state"
   }
 }

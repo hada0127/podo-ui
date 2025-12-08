@@ -82,29 +82,29 @@ export default function Colors() {
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .button {
-  // 기본 색상
+  // \${t('code.defaultColor')}
   background: color(primary);
   color: color(primary-reverse);
   border: 1px solid color(primary);
 
-  // 호버 상태
+  // \${t('code.hoverState')}
   &:hover {
     background: color(primary-hover);
     border-color: color(primary-hover);
   }
 
-  // 눌림 상태
+  // \${t('code.pressedState')}
   &:active {
     background: color(primary-pressed);
   }
 
-  // 포커스 상태
+  // \${t('code.focusState')}
   &:focus {
     outline: 2px solid color(primary-outline);
   }
 }
 
-// Fill 스타일 버튼
+// \${t('code.fillStyleButton')}
 .buttonFill {
   background: color(primary-fill);
   color: color(primary);
@@ -119,17 +119,17 @@ export default function Colors() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
-          <pre><code>{`<!-- 텍스트 색상 -->
-<div class="primary">Primary 색상 텍스트</div>
-<div class="danger">Danger 색상 텍스트</div>
+          <pre><code>{`<!-- \${t('code.textColor')} -->
+<div class="primary">Primary Text</div>
+<div class="danger">Danger Text</div>
 
-<!-- 배경 색상 -->
-<div class="bg-primary">Primary 배경</div>
-<div class="bg-success-fill">Success Fill 배경</div>
+<!-- \${t('code.bgColor')} -->
+<div class="bg-primary">Primary Background</div>
+<div class="bg-success-fill">Success Fill Background</div>
 
-<!-- 테두리 색상 -->
-<div class="border-primary">Primary 테두리</div>
-<div class="border-warning">Warning 테두리</div>`}</code></pre>
+<!-- \${t('code.borderColor')} -->
+<div class="border-primary">Primary Border</div>
+<div class="border-warning">Warning Border</div>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
@@ -152,13 +152,13 @@ export default function Colors() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('sections.darkMode.codeHeader')}</div>
-          <pre><code>{`// Light 모드
+          <pre><code>{`// \${t('code.lightMode')}
 document.documentElement.setAttribute('data-color-mode', 'light');
 
-// Dark 모드
+// \${t('code.darkMode')}
 document.documentElement.setAttribute('data-color-mode', 'dark');
 
-// 자동 (브라우저 설정 따름)
+// \${t('code.autoMode')}
 document.documentElement.setAttribute('data-color-mode', '');`}</code></pre>
         </div>
 

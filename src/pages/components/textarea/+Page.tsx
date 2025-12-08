@@ -116,7 +116,7 @@ export default function Textarea() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// Success 상태 (border: 1px solid color('success'))
+          <pre><code>{`// ${t('code.successState')} (border: 1px solid color('success'))
 textarea.success {
   border: 1px solid color('success');
 
@@ -125,7 +125,7 @@ textarea.success {
   }
 }
 
-// Danger 상태 (border: 1px solid color('danger'))
+// ${t('code.dangerState')} (border: 1px solid color('danger'))
 textarea.danger {
   border: 1px solid color('danger');
 
@@ -134,13 +134,13 @@ textarea.danger {
   }
 }
 
-// Disabled 상태
+// ${t('code.disabledState')}
 textarea:disabled {
   background: color('bg-disabled');
   cursor: not-allowed;
 }
 
-// Read-only 상태 (border: none, resize: none)
+// ${t('code.readonlyState')} (border: none, resize: none)
 textarea:read-only {
   border: none;
   resize: none;
@@ -156,7 +156,7 @@ textarea:read-only {
           <div className={styles.codeHeader}>component.module.scss</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
-// 기본 textarea 스타일
+// ${t('code.defaultTextareaStyle')}
 textarea {
   @include p3;
   padding: s(3) s(4);
@@ -174,12 +174,12 @@ textarea {
   }
 }
 
-// 크기 조절 방지
+// ${t('code.resizeNone')}
 textarea.resize-none {
   resize: none;
 }
 
-// Success/Danger 상태
+// ${t('code.successDangerState')}
 textarea.success {
   border: 1px solid color('success');
 
@@ -196,13 +196,13 @@ textarea.danger {
   }
 }
 
-// 비활성화 상태
+// ${t('code.disabledStateStyle')}
 textarea:disabled {
   background: color('bg-disabled');
   cursor: not-allowed;
 }
 
-// 읽기 전용 상태
+// ${t('code.readonlyStateStyle')}
 textarea:read-only {
   border: none;
   resize: none;

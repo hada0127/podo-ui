@@ -143,7 +143,7 @@ export default function Input() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// Success 상태 (border: 1px solid color('success'))
+          <pre><code>{`// ${t('code.successState')} (border: 1px solid color('success'))
 input.success {
   border-color: color('success');
 
@@ -152,7 +152,7 @@ input.success {
   }
 }
 
-// Danger 상태 (border: 1px solid color('danger'))
+// ${t('code.dangerState')} (border: 1px solid color('danger'))
 input.danger {
   border-color: color('danger');
 
@@ -161,13 +161,13 @@ input.danger {
   }
 }
 
-// Disabled 상태
+// ${t('code.disabledState')}
 input:disabled {
   background: color('bg-disabled');
   cursor: not-allowed;
 }
 
-// Read-only 상태
+// ${t('code.readonlyState')}
 input:read-only {
   border: none;
   cursor: default;
@@ -206,17 +206,17 @@ input:read-only {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// Fill 변형 (background-color: color('default-fill'))
+          <pre><code>{`// ${t('code.fillVariant')} (background-color: color('default-fill'))
 input.fill {
   background-color: color('default-fill');
 }
 
-// Text 변형 (border: none)
+// ${t('code.textVariant')} (border: none)
 input.text {
   border: none;
 }
 
-// Underline 변형 (border-bottom만 표시, border-radius: 0)
+// ${t('code.underlineVariant')} (border-bottom only, border-radius: 0)
 input.underline {
   border: none;
   border-bottom: 1px solid color('border-disabled');
@@ -256,19 +256,19 @@ input.underline {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// 기본 크기
+          <pre><code>{`// ${t('code.defaultSize')}
 input {
   padding: s(3) s(4);
   border-radius: r(3);
 }
 
-// 중간 크기
+// ${t('code.mediumSize')}
 input.md {
   padding: s(4) s(4);
   border-radius: r(5);
 }
 
-// 큰 크기
+// ${t('code.largeSize')}
 input.lg {
   padding: s(5) s(4);
   border-radius: r(6);
@@ -315,7 +315,7 @@ input.lg {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// 왼쪽 아이콘
+          <pre><code>{`// ${t('code.leftIcon')}
 .with-icon {
   position: relative;
 
@@ -327,11 +327,11 @@ input.lg {
   }
 
   > input {
-    padding-left: s(8);  // 아이콘 공간 확보
+    padding-left: s(8);  // ${t('code.iconSpace')}
   }
 }
 
-// 오른쪽 아이콘
+// ${t('code.rightIcon')}
 .with-right-icon {
   position: relative;
 
@@ -343,7 +343,7 @@ input.lg {
   }
 
   > input {
-    padding-right: s(7);  // 아이콘 공간 확보
+    padding-right: s(7);  // ${t('code.iconSpace')}
   }
 }`}</code></pre>
         </div>
@@ -357,7 +357,7 @@ input.lg {
           <div className={styles.codeHeader}>component.module.scss</div>
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
-// 기본 input 스타일
+// ${t('code.defaultInputStyle')}
 input[type='text'],
 input[type='email'],
 input[type='password'] {
@@ -377,7 +377,7 @@ input[type='password'] {
   }
 }
 
-// Success/Danger 상태
+// ${t('code.successDangerState')}
 input.success {
   border: 1px solid color('success');
 
@@ -394,7 +394,7 @@ input.danger {
   }
 }
 
-// 크기 변형
+// ${t('code.sizeVariant')}
 input.md {
   padding: s(4) s(4);
   border-radius: r(5);

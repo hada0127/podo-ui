@@ -31,5 +31,11 @@
         "description": "12px 모서리 반경을 사용한 카드입니다."
       }
     }
+  },
+  "code": {
+    "noRadius": "반경 없음",
+    "radius4px": "반경 4px",
+    "radius8px": "반경 8px",
+    "fullyRound": "완전히 둥글게"
   }
 }

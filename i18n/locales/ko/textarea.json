@@ -52,5 +52,16 @@
     "feedbackForm": "피드백 폼",
     "feedbackLabel": "의견을 남겨주세요",
     "feedbackPlaceholder": "여기에 의견을 작성해주세요..."
+  },
+  "code": {
+    "successState": "Success 상태",
+    "dangerState": "Danger 상태",
+    "disabledState": "Disabled 상태",
+    "readonlyState": "Read-only 상태",
+    "defaultTextareaStyle": "기본 textarea 스타일",
+    "resizeNone": "크기 조절 방지",
+    "successDangerState": "Success/Danger 상태",
+    "disabledStateStyle": "비활성화 상태",
+    "readonlyStateStyle": "읽기 전용 상태"
   }
 }

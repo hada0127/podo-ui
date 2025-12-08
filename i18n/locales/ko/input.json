@@ -68,5 +68,23 @@
   "scss": {
     "title": "SCSS 스타일",
     "description": "podo-ui의 믹스인을 사용하여 input 스타일을 적용할 수 있습니다."
+  },
+  "code": {
+    "successState": "Success 상태",
+    "dangerState": "Danger 상태",
+    "disabledState": "Disabled 상태",
+    "readonlyState": "Read-only 상태",
+    "fillVariant": "Fill 변형",
+    "textVariant": "Text 변형",
+    "underlineVariant": "Underline 변형",
+    "defaultSize": "기본 크기",
+    "mediumSize": "중간 크기",
+    "largeSize": "큰 크기",
+    "leftIcon": "왼쪽 아이콘",
+    "rightIcon": "오른쪽 아이콘",
+    "iconSpace": "아이콘 공간 확보",
+    "defaultInputStyle": "기본 input 스타일",
+    "successDangerState": "Success/Danger 상태",
+    "sizeVariant": "크기 변형"
   }
 }

@@ -99,5 +99,18 @@
       "label": "Outline",
       "description": "Outline color"
     }
+  },
+  "code": {
+    "defaultColor": "Default color",
+    "hoverState": "Hover state",
+    "pressedState": "Pressed state",
+    "focusState": "Focus state",
+    "fillStyleButton": "Fill style button",
+    "textColor": "Text color",
+    "bgColor": "Background color",
+    "borderColor": "Border color",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "autoMode": "Auto (follows browser settings)"
   }
 }

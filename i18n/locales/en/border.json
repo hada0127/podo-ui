@@ -36,5 +36,15 @@
         "description": "A card with primary color border."
       }
     }
+  },
+  "code": {
+    "defaultBorder": "Default border",
+    "directionalBorder": "Directional borders",
+    "topBorder": "Top border",
+    "rightBorder": "Right border",
+    "bottomBorder": "Bottom border",
+    "leftBorder": "Left border",
+    "noBorder": "No border",
+    "conditionalBorder": "Conditional border"
   }
 }

@@ -41,5 +41,28 @@
   "realWorld": {
     "title": "실제 사용 예제",
     "description": "반응형 디자인을 위한 실제 활용 예제:"
+  },
+  "code": {
+    "hideAll": "모든 디바이스에서 숨김",
+    "alwaysHidden": "항상 숨김",
+    "hidePCOnly": "PC에서만 숨김 (1280px 이상)",
+    "hidePCOnlyText": "PC에서만 숨김",
+    "hideTBOnly": "Tablet에서만 숨김 (768px ~ 1279px)",
+    "hideTBOnlyText": "Tablet에서만 숨김",
+    "hideMOOnly": "Mobile에서만 숨김 (767px 이하)",
+    "hideMOOnlyText": "Mobile에서만 숨김",
+    "pcMedia": "PC (1280px 이상)",
+    "tbMedia": "Tablet (768px ~ 1279px)",
+    "moMedia": "Mobile (767px 이하)",
+    "hideMobile": "모바일에서 숨김",
+    "showMobile": "모바일에서만 표시",
+    "desktopNav": "데스크톱 네비게이션",
+    "home": "홈",
+    "about": "소개",
+    "contact": "연락처",
+    "mobileHamburger": "모바일 햄버거 메뉴",
+    "responsiveGrid": "반응형 그리드",
+    "sidebarHideMobile": "사이드바 (모바일에서 숨김)",
+    "mainContent": "메인 컨텐츠"
   }
 }

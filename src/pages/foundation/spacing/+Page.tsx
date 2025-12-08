@@ -77,19 +77,19 @@ export default function Spacing() {
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .container {
-  // 마진
+  // \${t('code.margin')}
   margin: s(4);           // 12px
   margin-top: s(5);       // 16px
   margin-bottom: s(6);    // 24px
 
-  // 패딩
+  // \${t('code.padding')}
   padding: s(3) s(5);     // 8px 16px
   padding-left: s(4);     // 12px
 
-  // 간격
+  // \${t('code.gap')}
   gap: s(3);              // 8px
 
-  // 여러 속성에 사용
+  // \${t('code.multipleProps')}
   border-width: s(1);     // 2px
   min-height: s(10);      // 64px
 }`}</code></pre>
@@ -102,14 +102,14 @@ export default function Spacing() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
-          <pre><code>{`<!-- 마진 -->
+          <pre><code>{`<!-- \${t('code.margin')} -->
 <div class="m-4">Margin 12px</div>
 <div class="m-t-5">Margin Top 16px</div>
 <div class="m-b-6">Margin Bottom 24px</div>
 <div class="m-l-4">Margin Left 12px</div>
 <div class="m-r-4">Margin Right 12px</div>
 
-<!-- 패딩 -->
+<!-- \${t('code.padding')} -->
 <div class="p-4">Padding 12px</div>
 <div class="p-t-5">Padding Top 16px</div>
 <div class="p-b-6">Padding Bottom 24px</div>
@@ -192,7 +192,7 @@ export default function Spacing() {
           <pre><code>{`<div class="r-0">No Radius</div>
 <div class="r-2">Radius 4px</div>
 <div class="r-4">Radius 8px</div>
-<div class="r-full">Radius Full (원형)</div>`}</code></pre>
+<div class="r-full">Radius Full (\${t('code.circular')})</div>`}</code></pre>
         </div>
 
         <div className={styles.demo}>

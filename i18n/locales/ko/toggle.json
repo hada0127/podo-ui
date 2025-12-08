@@ -49,5 +49,8 @@
   "darkMode": {
     "title": "다크 모드",
     "description": "다크 모드에서도 자동으로 적절한 스타일이 적용됩니다."
+  },
+  "code": {
+    "customToggleStyle": "커스텀 토글 스타일"
   }
 }

@@ -99,5 +99,18 @@
       "label": "Outline",
       "description": "아웃라인 색상"
     }
+  },
+  "code": {
+    "defaultColor": "기본 색상",
+    "hoverState": "호버 상태",
+    "pressedState": "눌림 상태",
+    "focusState": "포커스 상태",
+    "fillStyleButton": "Fill 스타일 버튼",
+    "textColor": "텍스트 색상",
+    "bgColor": "배경 색상",
+    "borderColor": "테두리 색상",
+    "lightMode": "Light 모드",
+    "darkMode": "Dark 모드",
+    "autoMode": "자동 (브라우저 설정 따름)"
   }
 }

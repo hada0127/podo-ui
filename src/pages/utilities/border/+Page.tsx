@@ -18,17 +18,17 @@ export default function Border() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- 기본 테두리 -->
-<div class="border">테두리</div>
+          <pre><code>{`<!-- \${t('code.defaultBorder')} -->
+<div class="border">Border</div>
 
-<!-- 방향별 테두리 -->
-<div class="border-top">상단 테두리</div>
-<div class="border-right">우측 테두리</div>
-<div class="border-bottom">하단 테두리</div>
-<div class="border-left">좌측 테두리</div>
+<!-- \${t('code.directionalBorder')} -->
+<div class="border-top">\${t('code.topBorder')}</div>
+<div class="border-right">\${t('code.rightBorder')}</div>
+<div class="border-bottom">\${t('code.bottomBorder')}</div>
+<div class="border-left">\${t('code.leftBorder')}</div>
 
-<!-- 테두리 없음 -->
-<div class="border-none">테두리 없음</div>`}</code></pre>
+<!-- \${t('code.noBorder')} -->
+<div class="border-none">\${t('code.noBorder')}</div>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
@@ -77,7 +77,7 @@ export default function Border() {
   border-radius: r(4);
 }
 
-// 조건부 테두리
+// \${t('code.conditionalBorder')}
 .item {
   &:not(:last-child) {
     border-bottom: 1px solid color(border);

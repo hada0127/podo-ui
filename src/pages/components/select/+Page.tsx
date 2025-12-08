@@ -177,7 +177,7 @@ export default function Select() {
   appearance: none;
   cursor: pointer;
 
-  // 커스텀 화살표 (자동 포함됨)
+  // ${t('code.customArrow')}
   background-image: url('data:image/svg+xml,...');
   background-repeat: no-repeat;
   background-position: right 11px center;
@@ -193,7 +193,7 @@ export default function Select() {
   }
 }
 
-// 아이콘과 함께 사용
+// ${t('code.withIcon')}
 .withIcon {
   position: relative;
   display: inline-block;

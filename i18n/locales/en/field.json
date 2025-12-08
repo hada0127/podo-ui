@@ -43,5 +43,9 @@
   "scss": {
     "title": "SCSS Styling",
     "description": "You can apply Field styles using podo-ui mixins."
+  },
+  "code": {
+    "childElement": "Child elements (input, select, etc.)",
+    "helperText": "Helper text"
   }
 }

@@ -48,5 +48,12 @@
       "title": "Tip:",
       "description": "Using a consistent spacing system creates visually stable layouts. Always use design system values instead of arbitrary pixel values."
     }
+  },
+  "code": {
+    "margin": "Margin",
+    "padding": "Padding",
+    "gap": "Gap",
+    "multipleProps": "Use with multiple properties",
+    "circular": "Circular"
   }
 }

@@ -197,7 +197,7 @@ export default function DatePickerPage() {
           <div className={styles.codeHeader}>TSX</div>
           <pre><code>{`import { DatePicker } from 'podo-ui';
 
-// 단일 날짜 선택
+// ${t('code.singleDateSelect')}
 <DatePicker
   mode="instant"
   type="date"
@@ -205,7 +205,7 @@ export default function DatePickerPage() {
   onChange={setValue}
 />
 
-// 기간 선택
+// ${t('code.periodSelect')}
 <DatePicker
   mode="period"
   type="date"
@@ -302,13 +302,13 @@ export default function DatePickerPage() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// 날짜만 선택
+          <pre><code>{`// ${t('code.dateOnlySelect')}
 <DatePicker type="date" />
 
-// 시간만 선택
+// ${t('code.timeOnlySelect')}
 <DatePicker type="time" />
 
-// 날짜 + 시간
+// ${t('code.dateTimeSelect')}
 <DatePicker type="datetime" />`}</code></pre>
         </div>
       </section>
@@ -367,13 +367,13 @@ export default function DatePickerPage() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// 기간 날짜 선택
+          <pre><code>{`// ${t('code.periodDateSelect')}
 <DatePicker mode="period" type="date" />
 
-// 기간 시간 선택
+// ${t('code.periodTimeSelect')}
 <DatePicker mode="period" type="time" />
 
-// 기간 날짜+시간 선택
+// ${t('code.periodDateTimeSelect')}
 <DatePicker mode="period" type="datetime" />`}</code></pre>
         </div>
       </section>
@@ -417,13 +417,13 @@ export default function DatePickerPage() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// 기본 상태
+          <pre><code>{`// ${t('code.defaultState')}
 <DatePicker type="date" />
 
-// 비활성화
+// ${t('code.disabledState')}
 <DatePicker type="date" disabled />
 
-// 초기값 설정
+// ${t('code.initialValue')}
 <DatePicker type="date" value={{ date: new Date() }} />`}</code></pre>
         </div>
       </section>
@@ -544,18 +544,18 @@ export default function DatePickerPage() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// 시간 값 인터페이스
+          <pre><code>{`// ${t('code.timeValueInterface')}
 interface TimeValue {
   hour: number;   // 0-23
   minute: number; // 0-59
 }
 
-// DatePicker 값 인터페이스
+// ${t('code.datepickerValueInterface')}
 interface DatePickerValue {
-  date?: Date;        // 시작 날짜 (년, 월, 일)
-  time?: TimeValue;   // 시작 시간 (시, 분)
-  endDate?: Date;     // 종료 날짜 - period 모드
-  endTime?: TimeValue; // 종료 시간 - period 모드
+  date?: Date;        // ${t('code.startDate')}
+  time?: TimeValue;   // ${t('code.startTime')}
+  endDate?: Date;     // ${t('code.endDatePeriod')}
+  endTime?: TimeValue; // ${t('code.endTimePeriod')}
 }`}</code></pre>
         </div>
 
@@ -598,29 +598,29 @@ interface DatePickerValue {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('valueInterface.exampleTitle')}</div>
-          <pre><code>{`// 날짜만 선택 (type="date")
+          <pre><code>{`// ${t('code.dateOnlySelect')} (type="date")
 const dateValue: DatePickerValue = {
-  date: new Date(2024, 0, 15), // 2024년 1월 15일
+  date: new Date(2024, 0, 15), // 2024-01-15
 };
 
-// 시간만 선택 (type="time")
+// ${t('code.timeOnlySelect')} (type="time")
 const timeValue: DatePickerValue = {
   time: { hour: 14, minute: 30 }, // 14:30
 };
 
-// 날짜+시간 선택 (type="datetime")
+// ${t('code.dateTimeSelect')} (type="datetime")
 const datetimeValue: DatePickerValue = {
   date: new Date(2024, 0, 15),
   time: { hour: 14, minute: 30 },
 };
 
-// 기간 선택 (mode="period", type="date")
+// ${t('code.periodSelect')} (mode="period", type="date")
 const periodValue: DatePickerValue = {
-  date: new Date(2024, 0, 15),    // 시작일
-  endDate: new Date(2024, 0, 20), // 종료일
+  date: new Date(2024, 0, 15),    // start
+  endDate: new Date(2024, 0, 20), // end
 };
 
-// 기간+시간 선택 (mode="period", type="datetime")
+// ${t('code.periodDateTimeSelect')} (mode="period", type="datetime")
 const periodDatetimeValue: DatePickerValue = {
   date: new Date(2024, 0, 15),
   time: { hour: 9, minute: 0 },
@@ -718,16 +718,16 @@ const periodDatetimeValue: DatePickerValue = {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// 특정 날짜 비활성화
+          <pre><code>{`// ${t('code.specificDateDisable')}
 <DatePicker
   type="date"
   disable={[
-    new Date(2024, 0, 10), // 2024년 1월 10일
-    new Date(2024, 0, 15), // 2024년 1월 15일
+    new Date(2024, 0, 10), // 2024-01-10
+    new Date(2024, 0, 15), // 2024-01-15
   ]}
 />
 
-// 날짜 범위 비활성화
+// ${t('code.dateRangeDisable')}
 <DatePicker
   type="date"
   disable={[
@@ -735,7 +735,7 @@ const periodDatetimeValue: DatePickerValue = {
   ]}
 />
 
-// 함수로 비활성화 (주말 비활성화)
+// ${t('code.functionDisable')}
 <DatePicker
   type="date"
   disable={[
@@ -743,7 +743,7 @@ const periodDatetimeValue: DatePickerValue = {
   ]}
 />
 
-// 특정 날짜만 활성화
+// ${t('code.specificDateEnable')}
 <DatePicker
   type="date"
   enable={[
@@ -754,17 +754,17 @@ const periodDatetimeValue: DatePickerValue = {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// 날짜 범위 인터페이스
+          <pre><code>{`// ${t('code.dateRangeInterface')}
 interface DateRange {
   from: Date;
   to: Date;
 }
 
-// 날짜 조건 타입
+// ${t('code.dateConditionType')}
 type DateCondition =
-  | Date                        // 특정 날짜
-  | DateRange                   // 날짜 범위
-  | ((date: Date) => boolean);  // 조건 함수`}</code></pre>
+  | Date                        // ${t('code.specificDate')}
+  | DateRange                   // ${t('code.dateRange')}
+  | ((date: Date) => boolean);  // ${t('code.conditionFunction')}`}</code></pre>
         </div>
       </section>
 
@@ -818,36 +818,36 @@ type DateCondition =
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// 날짜만 제한 (Date 객체)
+          <pre><code>{`// ${t('code.dateOnlyLimit')}
 <DatePicker
   type="date"
-  minDate={new Date()}                    // 오늘부터
-  maxDate={new Date(2024, 11, 31)}        // 2024년 12월 31일까지
+  minDate={new Date()}                    // ${t('code.todayFrom')}
+  maxDate={new Date(2024, 11, 31)}        // ${t('code.until')} 2024-12-31
 />
 
-// 날짜+시간 제한 (DateTimeLimit 객체)
+// ${t('code.dateTimeLimitComment')}
 <DatePicker
   type="datetime"
   minDate={{
     date: new Date(),
-    time: { hour: 9, minute: 0 },        // 오늘 09:00부터
+    time: { hour: 9, minute: 0 },        // ${t('code.todayFrom')} 09:00
   }}
   maxDate={{
     date: new Date(2024, 11, 31),
-    time: { hour: 18, minute: 0 },       // 2024-12-31 18:00까지
+    time: { hour: 18, minute: 0 },       // ${t('code.until')} 2024-12-31 18:00
   }}
 />`}</code></pre>
         </div>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// 날짜+시간 제한 인터페이스
+          <pre><code>{`// ${t('code.dateTimeLimitInterface')}
 interface DateTimeLimit {
   date: Date;
   time?: TimeValue; // { hour: number, minute: number }
 }
 
-// minDate/maxDate 타입
+// ${t('code.minMaxDateType')}
 type MinMaxDate = Date | DateTimeLimit;`}</code></pre>
         </div>
       </section>
@@ -954,31 +954,31 @@ type MinMaxDate = Date | DateTimeLimit;`}</code></pre>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// 1분 단위 (기본값)
+          <pre><code>{`// ${t('code.minuteStepDefault')}
 <DatePicker type="time" minuteStep={1} />
 
-// 5분 단위
+// ${t('code.minuteStep5')}
 <DatePicker type="time" minuteStep={5} />
 
-// 10분 단위
+// ${t('code.minuteStep10')}
 <DatePicker type="time" minuteStep={10} />
 
-// 15분 단위
+// ${t('code.minuteStep15')}
 <DatePicker type="time" minuteStep={15} />
 
-// 20분 단위
+// ${t('code.minuteStep20')}
 <DatePicker type="time" minuteStep={20} />
 
-// 30분 단위
+// ${t('code.minuteStep30')}
 <DatePicker type="time" minuteStep={30} />
 
-// datetime과 함께 사용
+// ${t('code.withDatetime')}
 <DatePicker type="datetime" minuteStep={15} />`}</code></pre>
         </div>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// 분 단위 선택 타입
+          <pre><code>{`// ${t('code.minuteStepType')}
 type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
         </div>
       </section>
@@ -1055,30 +1055,30 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// 대시 구분
+          <pre><code>{`// ${t('code.dashSeparator')}
 <DatePicker type="date" format="y-m-d" />
 
-// 점 구분
+// ${t('code.dotSeparator')}
 <DatePicker type="date" format="y.m.d" />
 
-// 한국어 포맷
+// ${t('code.koreanFormat')}
 <DatePicker type="date" format="y년 m월 d일" />
 
-// 날짜+시간 포맷
+// ${t('code.datetimeFormat')}
 <DatePicker type="datetime" format="y.m.d h:i" />
 
-// 한국어 날짜+시간 포맷
+// ${t('code.koreanDatetimeFormat')}
 <DatePicker type="datetime" format="y년 m월 d일 h시 i분" />`}</code></pre>
         </div>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// 포맷 키
-// y: 년 (4자리, 예: 2024)
-// m: 월 (2자리, 예: 01)
-// d: 일 (2자리, 예: 15)
-// h: 시 (2자리, 예: 14)
-// i: 분 (2자리, 예: 30)`}</code></pre>
+          <pre><code>{`// ${t('code.formatKey')}
+// y: ${t('code.formatYear')}
+// m: ${t('code.formatMonth')}
+// d: ${t('code.formatDay')}
+// h: ${t('code.formatHour')}
+// i: ${t('code.formatMinute')}`}</code></pre>
         </div>
       </section>
 
@@ -1151,7 +1151,7 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// 이전 달 / 현재 달
+          <pre><code>{`// ${t('code.prevCurrentMonth')}
 <DatePicker
   mode="period"
   type="date"
@@ -1161,7 +1161,7 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
   }}
 />
 
-// 현재 달 / 다음 달
+// ${t('code.currentNextMonth')}
 <DatePicker
   mode="period"
   type="date"
@@ -1171,26 +1171,26 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
   }}
 />
 
-// 특정 날짜 지정
+// ${t('code.specificDateSet')}
 <DatePicker
   mode="period"
   type="date"
   initialCalendar={{
-    start: new Date(2024, 0, 1),  // 2024년 1월
-    end: new Date(2024, 1, 1),    // 2024년 2월
+    start: new Date(2024, 0, 1),  // 2024-01
+    end: new Date(2024, 1, 1),    // 2024-02
   }}
 />`}</code></pre>
         </div>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// 초기 달력 표시 월 타입
+          <pre><code>{`// ${t('code.initialCalendarType')}
 type CalendarInitial = 'now' | 'prevMonth' | 'nextMonth' | Date;
 
-// 초기 달력 설정 인터페이스
+// ${t('code.initialCalendarInterface')}
 interface InitialCalendar {
-  start?: CalendarInitial;  // 왼쪽 달력 (시작 달력)
-  end?: CalendarInitial;    // 오른쪽 달력 (종료 달력)
+  start?: CalendarInitial;  // ${t('code.leftCalendar')}
+  end?: CalendarInitial;    // ${t('code.rightCalendar')}
 }`}</code></pre>
         </div>
       </section>
@@ -1263,69 +1263,69 @@ interface InitialCalendar {
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>JavaScript</div>
           <pre><code>{`const picker = new PodoDatePicker('#my-datepicker', {
-  // 선택 모드: 'instant' (단일) 또는 'period' (기간)
+  // ${t('code.selectionMode')}
   mode: 'instant',
 
-  // 값 타입: 'date', 'time', 'datetime'
+  // ${t('code.valueType')}
   type: 'date',
 
-  // 초기값
+  // ${t('code.initialValueComment')}
   value: {
     date: new Date(),
     time: { hour: 9, minute: 0 }
   },
 
-  // 값 변경 콜백
+  // ${t('code.onChangeCallback')}
   onChange: function(value) {
     console.log(value);
   },
 
-  // 비활성화
+  // ${t('code.disabledComment')}
   disabled: false,
 
-  // 드롭다운 정렬: 'left' 또는 'right'
+  // ${t('code.dropdownAlign')}
   align: 'left',
 
-  // 하단 버튼 표시 (period 모드에서 기본 true)
+  // ${t('code.showActionsComment')}
   showActions: true,
 
-  // 분 단위: 1, 5, 10, 15, 20, 30
+  // ${t('code.minuteStepComment')}
   minuteStep: 15,
 
-  // 최소/최대 날짜
+  // ${t('code.minMaxDateComment')}
   minDate: new Date(),
   maxDate: new Date(2025, 11, 31),
 
-  // 또는 시간 포함
+  // ${t('code.orWithTime')}
   minDate: {
     date: new Date(),
     time: { hour: 9, minute: 0 }
   },
 
-  // 날짜 비활성화 조건
+  // ${t('code.disableConditions')}
   disable: [
-    new Date(2024, 0, 1),  // 특정 날짜
-    { from: new Date(2024, 0, 10), to: new Date(2024, 0, 20) },  // 범위
-    function(date) { return date.getDay() === 0; }  // 일요일
+    new Date(2024, 0, 1),  // ${t('code.specificDateCondition')}
+    { from: new Date(2024, 0, 10), to: new Date(2024, 0, 20) },  // ${t('code.rangeCondition')}
+    function(date) { return date.getDay() === 0; }  // ${t('code.sundayCondition')}
   ],
 
-  // 특정 날짜만 활성화
+  // ${t('code.enableSpecificOnly')}
   enable: [
     { from: new Date(2024, 0, 1), to: new Date(2024, 0, 15) }
   ],
 
-  // 날짜/시간 표시 포맷 (y: 년, m: 월, d: 일, h: 시, i: 분)
-  format: 'y-m-d',  // 예: 2024-01-15
-  // format: 'y.m.d',  // 예: 2024.01.15
-  // format: 'y년 m월 d일',  // 예: 2024년 01월 15일
-  // format: 'y-m-d h:i',  // 예: 2024-01-15 14:30
+  // ${t('code.formatComment')}
+  format: 'y-m-d',  // ${t('code.formatExample')} 2024-01-15
+  // format: 'y.m.d',  // ${t('code.formatExample')} 2024.01.15
+  // format: 'y년 m월 d일',  // ${t('code.formatExample')} 2024년 01월 15일
+  // format: 'y-m-d h:i',  // ${t('code.formatExample')} 2024-01-15 14:30
 
-  // 기간 선택 시 초기 달력 월 설정 (period 모드에서만 사용)
+  // ${t('code.initialCalendarComment')}
   initialCalendar: {
-    start: 'prevMonth',  // 왼쪽 달력: 이전 달
-    end: 'now'           // 오른쪽 달력: 현재 달
+    start: 'prevMonth',  // ${t('code.leftCalendarComment')}
+    end: 'now'           // ${t('code.rightCalendarComment')}
   }
-  // start/end 값: 'now', 'prevMonth', 'nextMonth', 또는 Date 객체
+  // ${t('code.startEndValues')}
 });`}</code></pre>
         </div>
 

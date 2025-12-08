@@ -98,7 +98,7 @@ export default function MyForm() {
   flex-direction: column;
   gap: s(3);
 
-  // 자식 요소 (input, select 등)
+  // \${t('code.childElement')}
   > div.child {
     width: 100%;
 
@@ -108,7 +108,7 @@ export default function MyForm() {
     }
   }
 
-  // 도움말 텍스트
+  // \${t('code.helperText')}
   > div.helper {
     @include p4;
     color: color(text-sub);

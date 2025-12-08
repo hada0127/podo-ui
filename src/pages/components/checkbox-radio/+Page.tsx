@@ -238,7 +238,7 @@ checkbox.indeterminate = true;`}</code></pre>
   }
 }
 
-// 커스텀 스타일
+// ${t('code.customStyle')}
 .customCheckbox {
   input[type='checkbox']:focus-visible {
     outline: 4px solid color(primary-outline);

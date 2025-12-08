@@ -36,5 +36,15 @@
         "description": "Primary 색상의 테두리를 사용한 카드입니다."
       }
     }
+  },
+  "code": {
+    "defaultBorder": "기본 테두리",
+    "directionalBorder": "방향별 테두리",
+    "topBorder": "상단 테두리",
+    "rightBorder": "우측 테두리",
+    "bottomBorder": "하단 테두리",
+    "leftBorder": "좌측 테두리",
+    "noBorder": "테두리 없음",
+    "conditionalBorder": "조건부 테두리"
   }
 }

@@ -68,5 +68,23 @@
   "scss": {
     "title": "SCSS Styling",
     "description": "You can apply input styles using podo-ui mixins."
+  },
+  "code": {
+    "successState": "Success state",
+    "dangerState": "Danger state",
+    "disabledState": "Disabled state",
+    "readonlyState": "Read-only state",
+    "fillVariant": "Fill variant",
+    "textVariant": "Text variant",
+    "underlineVariant": "Underline variant",
+    "defaultSize": "Default size",
+    "mediumSize": "Medium size",
+    "largeSize": "Large size",
+    "leftIcon": "Left icon",
+    "rightIcon": "Right icon",
+    "iconSpace": "Space for icon",
+    "defaultInputStyle": "Default input style",
+    "successDangerState": "Success/Danger state",
+    "sizeVariant": "Size variant"
   }
 }

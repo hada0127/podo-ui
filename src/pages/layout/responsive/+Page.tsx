@@ -56,19 +56,19 @@ export default function Responsive() {
   padding: s(8);
   font-size: 18px;
 
-  // Tablet (768px ~ 1279px)
+  // \${t('code.tbMedia')}
   @include tb {
     padding: s(6);
     font-size: 16px;
   }
 
-  // Mobile (767px 이하)
+  // \${t('code.moMedia')}
   @include mo {
     padding: s(4);
     font-size: 14px;
   }
 
-  // PC (1280px 이상)
+  // \${t('code.pcMedia')}
   @include pc {
     max-width: 1200px;
     margin: 0 auto;
@@ -137,7 +137,7 @@ export default function Responsive() {
         <p>{t('typography.description')}</p>
 
         <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>예시</div>
+          <div className={styles.codeHeader}>{t('code.example')}</div>
           <pre><code>{`// display1
 PC: 60px → Mobile: 36px
 
@@ -164,7 +164,7 @@ PC: 16px → Mobile: 14px`}</code></pre>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>device.scss</div>
-          <pre><code>{`$min-mo: 375px;  // 최소 모바일 너비`}</code></pre>
+          <pre><code>{`$min-mo: 375px;  // \${t('code.minMobileWidth')}`}</code></pre>
         </div>
       </section>
 

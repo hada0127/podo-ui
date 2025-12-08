@@ -41,5 +41,28 @@
   "realWorld": {
     "title": "Real World Examples",
     "description": "Practical examples for responsive design:"
+  },
+  "code": {
+    "hideAll": "Hide on all devices",
+    "alwaysHidden": "Always hidden",
+    "hidePCOnly": "Hide on PC only (1280px+)",
+    "hidePCOnlyText": "Hidden on PC only",
+    "hideTBOnly": "Hide on Tablet only (768px ~ 1279px)",
+    "hideTBOnlyText": "Hidden on Tablet only",
+    "hideMOOnly": "Hide on Mobile only (767px-)",
+    "hideMOOnlyText": "Hidden on Mobile only",
+    "pcMedia": "PC (1280px+)",
+    "tbMedia": "Tablet (768px ~ 1279px)",
+    "moMedia": "Mobile (767px-)",
+    "hideMobile": "Hide on mobile",
+    "showMobile": "Show on mobile only",
+    "desktopNav": "Desktop navigation",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "mobileHamburger": "Mobile hamburger menu",
+    "responsiveGrid": "Responsive grid",
+    "sidebarHideMobile": "Sidebar (hidden on mobile)",
+    "mainContent": "Main content"
   }
 }

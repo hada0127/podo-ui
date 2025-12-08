@@ -68,6 +68,11 @@
   },
   "code": {
     "autoAdjust": "PC: 12칸, Tablet: 6칸, Mobile: 4칸으로 자동 조정",
-    "w3": "w-3 (25%)"
+    "w3": "w-3 (25%)",
+    "tbMedia": "Tablet (768px ~ 1279px)",
+    "moMedia": "Mobile (767px 이하)",
+    "pcMedia": "PC (1280px 이상)",
+    "minMobileWidth": "최소 모바일 너비",
+    "example": "예시"
   }
 }

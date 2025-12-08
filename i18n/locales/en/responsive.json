@@ -68,6 +68,11 @@
   },
   "code": {
     "autoAdjust": "Auto-adjusts to PC: 12 columns, Tablet: 6 columns, Mobile: 4 columns",
-    "w3": "w-3 (25%)"
+    "w3": "w-3 (25%)",
+    "tbMedia": "Tablet (768px ~ 1279px)",
+    "moMedia": "Mobile (767px-)",
+    "pcMedia": "PC (1280px+)",
+    "minMobileWidth": "Minimum mobile width",
+    "example": "Example"
   }
 }
