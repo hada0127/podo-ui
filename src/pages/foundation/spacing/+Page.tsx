@@ -77,19 +77,19 @@ export default function Spacing() {
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .container {
-  // \${t('code.margin')}
+  // ` + t('code.margin') + `
   margin: s(4);           // 12px
   margin-top: s(5);       // 16px
   margin-bottom: s(6);    // 24px
 
-  // \${t('code.padding')}
+  // ` + t('code.padding') + `
   padding: s(3) s(5);     // 8px 16px
   padding-left: s(4);     // 12px
 
-  // \${t('code.gap')}
+  // ` + t('code.gap') + `
   gap: s(3);              // 8px
 
-  // \${t('code.multipleProps')}
+  // ` + t('code.multipleProps') + `
   border-width: s(1);     // 2px
   min-height: s(10);      // 64px
 }`}</code></pre>
@@ -102,14 +102,14 @@ export default function Spacing() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
-          <pre><code>{`<!-- \${t('code.margin')} -->
+          <pre><code>{`<!-- ` + t('code.margin') + ` -->
 <div class="m-4">Margin 12px</div>
 <div class="m-t-5">Margin Top 16px</div>
 <div class="m-b-6">Margin Bottom 24px</div>
 <div class="m-l-4">Margin Left 12px</div>
 <div class="m-r-4">Margin Right 12px</div>
 
-<!-- \${t('code.padding')} -->
+<!-- ` + t('code.padding') + ` -->
 <div class="p-4">Padding 12px</div>
 <div class="p-t-5">Padding Top 16px</div>
 <div class="p-b-6">Padding Bottom 24px</div>

@@ -144,7 +144,7 @@ export default function Toggle() {
   }
 }
 
-// \${t('code.customToggleStyle')}
+// ` + t('code.customToggleStyle') + `
 .toggle {
   appearance: none;
   position: relative;

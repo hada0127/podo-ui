@@ -18,17 +18,17 @@ export default function Display() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- \${t('code.hideAll')} -->
-<div class="hide">\${t('code.alwaysHidden')}</div>
+          <pre><code>{`<!-- ` + t('code.hideAll') + ` -->
+<div class="hide">` + t('code.alwaysHidden') + `</div>
 
-<!-- \${t('code.hidePCOnly')} -->
-<div class="hide-pc">\${t('code.hidePCOnlyText')}</div>
+<!-- ` + t('code.hidePCOnly') + ` -->
+<div class="hide-pc">` + t('code.hidePCOnlyText') + `</div>
 
-<!-- \${t('code.hideTBOnly')} -->
-<div class="hide-tb">\${t('code.hideTBOnlyText')}</div>
+<!-- ` + t('code.hideTBOnly') + ` -->
+<div class="hide-tb">` + t('code.hideTBOnlyText') + `</div>
 
-<!-- \${t('code.hideMOOnly')} -->
-<div class="hide-mo">\${t('code.hideMOOnlyText')}</div>`}</code></pre>
+<!-- ` + t('code.hideMOOnly') + ` -->
+<div class="hide-mo">` + t('code.hideMOOnlyText') + `</div>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
@@ -68,18 +68,18 @@ export default function Display() {
 .container {
   padding: s(8);
 
-  // \${t('code.pcMedia')}
+  // ` + t('code.pcMedia') + `
   @include pc {
     max-width: 1200px;
     margin: 0 auto;
   }
 
-  // \${t('code.tbMedia')}
+  // ` + t('code.tbMedia') + `
   @include tb {
     padding: s(6);
   }
 
-  // \${t('code.moMedia')}
+  // ` + t('code.moMedia') + `
   @include mo {
     padding: s(4);
   }
@@ -89,7 +89,7 @@ export default function Display() {
   display: block;
 
   @include mo {
-    display: none; // \${t('code.hideMobile')}
+    display: none; // ` + t('code.hideMobile') + `
   }
 }
 
@@ -97,7 +97,7 @@ export default function Display() {
   display: none;
 
   @include mo {
-    display: block; // \${t('code.showMobile')}
+    display: block; // ` + t('code.showMobile') + `
   }
 }`}</code></pre>
         </div>
@@ -146,22 +146,22 @@ export default function Display() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- \${t('code.desktopNav')} -->
+          <pre><code>{`<!-- ` + t('code.desktopNav') + ` -->
 <nav class="hide-mo">
-  <a href="/">\${t('code.home')}</a>
-  <a href="/about">\${t('code.about')}</a>
-  <a href="/contact">\${t('code.contact')}</a>
+  <a href="/">` + t('code.home') + `</a>
+  <a href="/about">` + t('code.about') + `</a>
+  <a href="/contact">` + t('code.contact') + `</a>
 </nav>
 
-<!-- \${t('code.mobileHamburger')} -->
+<!-- ` + t('code.mobileHamburger') + ` -->
 <button class="hide-pc hide-tb">
   <i class="icon-menu"></i>
 </button>
 
-<!-- \${t('code.responsiveGrid')} -->
+<!-- ` + t('code.responsiveGrid') + ` -->
 <section class="grid">
-  <div class="w-4 hide-mo">\${t('code.sidebarHideMobile')}</div>
-  <div class="w-8">\${t('code.mainContent')}</div>
+  <div class="w-4 hide-mo">` + t('code.sidebarHideMobile') + `</div>
+  <div class="w-8">` + t('code.mainContent') + `</div>
 </section>`}</code></pre>
         </div>
       </section>

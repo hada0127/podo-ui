@@ -98,7 +98,7 @@ export default function MyForm() {
   flex-direction: column;
   gap: s(3);
 
-  // \${t('code.childElement')}
+  // ` + t('code.childElement') + `
   > div.child {
     width: 100%;
 
@@ -108,7 +108,7 @@ export default function MyForm() {
     }
   }
 
-  // \${t('code.helperText')}
+  // ` + t('code.helperText') + `
   > div.helper {
     @include p4;
     color: color(text-sub);

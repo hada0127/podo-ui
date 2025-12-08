@@ -18,10 +18,10 @@ export default function Radius() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<div class="r-0">\${t('code.noRadius')}</div>
-<div class="r-2">\${t('code.radius4px')}</div>
-<div class="r-4">\${t('code.radius8px')}</div>
-<div class="r-full">\${t('code.fullyRound')}</div>`}</code></pre>
+          <pre><code>{`<div class="r-0">` + t('code.noRadius') + `</div>
+<div class="r-2">` + t('code.radius4px') + `</div>
+<div class="r-4">` + t('code.radius8px') + `</div>
+<div class="r-full">` + t('code.fullyRound') + `</div>`}</code></pre>
         </div>
       </section>
 
@@ -89,7 +89,7 @@ export default function Radius() {
 }
 
 .avatar {
-  border-radius: r(full);  // \${t('code.fullyRound')}
+  border-radius: r(full);  // ` + t('code.fullyRound') + `
   width: 40px;
   height: 40px;
 }

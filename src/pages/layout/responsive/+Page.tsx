@@ -56,19 +56,19 @@ export default function Responsive() {
   padding: s(8);
   font-size: 18px;
 
-  // \${t('code.tbMedia')}
+  // ` + t('code.tbMedia') + `
   @include tb {
     padding: s(6);
     font-size: 16px;
   }
 
-  // \${t('code.moMedia')}
+  // ` + t('code.moMedia') + `
   @include mo {
     padding: s(4);
     font-size: 14px;
   }
 
-  // \${t('code.pcMedia')}
+  // ` + t('code.pcMedia') + `
   @include pc {
     max-width: 1200px;
     margin: 0 auto;
@@ -164,7 +164,7 @@ PC: 16px → Mobile: 14px`}</code></pre>
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>device.scss</div>
-          <pre><code>{`$min-mo: 375px;  // \${t('code.minMobileWidth')}`}</code></pre>
+          <pre><code>{`$min-mo: 375px;  // ` + t('code.minMobileWidth')}</code></pre>
         </div>
       </section>
 

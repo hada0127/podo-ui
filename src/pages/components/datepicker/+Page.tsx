@@ -1263,69 +1263,69 @@ interface InitialCalendar {
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>JavaScript</div>
           <pre><code>{`const picker = new PodoDatePicker('#my-datepicker', {
-  // ${t('code.selectionMode')}
+  // ` + t('code.selectionMode') + `
   mode: 'instant',
 
-  // ${t('code.valueType')}
+  // ` + t('code.valueType') + `
   type: 'date',
 
-  // ${t('code.initialValueComment')}
+  // ` + t('code.initialValueComment') + `
   value: {
     date: new Date(),
     time: { hour: 9, minute: 0 }
   },
 
-  // ${t('code.onChangeCallback')}
+  // ` + t('code.onChangeCallback') + `
   onChange: function(value) {
     console.log(value);
   },
 
-  // ${t('code.disabledComment')}
+  // ` + t('code.disabledComment') + `
   disabled: false,
 
-  // ${t('code.dropdownAlign')}
+  // ` + t('code.dropdownAlign') + `
   align: 'left',
 
-  // ${t('code.showActionsComment')}
+  // ` + t('code.showActionsComment') + `
   showActions: true,
 
-  // ${t('code.minuteStepComment')}
+  // ` + t('code.minuteStepComment') + `
   minuteStep: 15,
 
-  // ${t('code.minMaxDateComment')}
+  // ` + t('code.minMaxDateComment') + `
   minDate: new Date(),
   maxDate: new Date(2025, 11, 31),
 
-  // ${t('code.orWithTime')}
+  // ` + t('code.orWithTime') + `
   minDate: {
     date: new Date(),
     time: { hour: 9, minute: 0 }
   },
 
-  // ${t('code.disableConditions')}
+  // ` + t('code.disableConditions') + `
   disable: [
-    new Date(2024, 0, 1),  // ${t('code.specificDateCondition')}
-    { from: new Date(2024, 0, 10), to: new Date(2024, 0, 20) },  // ${t('code.rangeCondition')}
-    function(date) { return date.getDay() === 0; }  // ${t('code.sundayCondition')}
+    new Date(2024, 0, 1),  // ` + t('code.specificDateCondition') + `
+    { from: new Date(2024, 0, 10), to: new Date(2024, 0, 20) },  // ` + t('code.rangeCondition') + `
+    function(date) { return date.getDay() === 0; }  // ` + t('code.sundayCondition') + `
   ],
 
-  // ${t('code.enableSpecificOnly')}
+  // ` + t('code.enableSpecificOnly') + `
   enable: [
     { from: new Date(2024, 0, 1), to: new Date(2024, 0, 15) }
   ],
 
-  // ${t('code.formatComment')}
-  format: 'y-m-d',  // ${t('code.formatExample')} 2024-01-15
-  // format: 'y.m.d',  // ${t('code.formatExample')} 2024.01.15
-  // format: 'y년 m월 d일',  // ${t('code.formatExample')} 2024년 01월 15일
-  // format: 'y-m-d h:i',  // ${t('code.formatExample')} 2024-01-15 14:30
+  // ` + t('code.formatComment') + `
+  format: 'y-m-d',  // ` + t('code.formatExample') + ` 2024-01-15
+  // format: 'y.m.d',  // ` + t('code.formatExample') + ` 2024.01.15
+  // format: 'y년 m월 d일',  // ` + t('code.formatExample') + ` 2024년 01월 15일
+  // format: 'y-m-d h:i',  // ` + t('code.formatExample') + ` 2024-01-15 14:30
 
-  // ${t('code.initialCalendarComment')}
+  // ` + t('code.initialCalendarComment') + `
   initialCalendar: {
-    start: 'prevMonth',  // ${t('code.leftCalendarComment')}
-    end: 'now'           // ${t('code.rightCalendarComment')}
+    start: 'prevMonth',  // ` + t('code.leftCalendarComment') + `
+    end: 'now'           // ` + t('code.rightCalendarComment') + `
   }
-  // ${t('code.startEndValues')}
+  // ` + t('code.startEndValues') + `
 });`}</code></pre>
         </div>
 

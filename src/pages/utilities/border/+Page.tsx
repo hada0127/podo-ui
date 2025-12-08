@@ -18,17 +18,17 @@ export default function Border() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- \${t('code.defaultBorder')} -->
+          <pre><code>{`<!-- ` + t('code.defaultBorder') + ` -->
 <div class="border">Border</div>
 
-<!-- \${t('code.directionalBorder')} -->
-<div class="border-top">\${t('code.topBorder')}</div>
-<div class="border-right">\${t('code.rightBorder')}</div>
-<div class="border-bottom">\${t('code.bottomBorder')}</div>
-<div class="border-left">\${t('code.leftBorder')}</div>
+<!-- ` + t('code.directionalBorder') + ` -->
+<div class="border-top">` + t('code.topBorder') + `</div>
+<div class="border-right">` + t('code.rightBorder') + `</div>
+<div class="border-bottom">` + t('code.bottomBorder') + `</div>
+<div class="border-left">` + t('code.leftBorder') + `</div>
 
-<!-- \${t('code.noBorder')} -->
-<div class="border-none">\${t('code.noBorder')}</div>`}</code></pre>
+<!-- ` + t('code.noBorder') + ` -->
+<div class="border-none">` + t('code.noBorder') + `</div>`}</code></pre>
         </div>
 
         <div className={styles.demo}>
@@ -77,7 +77,7 @@ export default function Border() {
   border-radius: r(4);
 }
 
-// \${t('code.conditionalBorder')}
+// ` + t('code.conditionalBorder') + `
 .item {
   &:not(:last-child) {
     border-bottom: 1px solid color(border);

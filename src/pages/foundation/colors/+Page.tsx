@@ -82,29 +82,29 @@ export default function Colors() {
           <pre><code>{`@use 'podo-ui/mixin' as *;
 
 .button {
-  // \${t('code.defaultColor')}
+  // ` + t('code.defaultColor') + `
   background: color(primary);
   color: color(primary-reverse);
   border: 1px solid color(primary);
 
-  // \${t('code.hoverState')}
+  // ` + t('code.hoverState') + `
   &:hover {
     background: color(primary-hover);
     border-color: color(primary-hover);
   }
 
-  // \${t('code.pressedState')}
+  // ` + t('code.pressedState') + `
   &:active {
     background: color(primary-pressed);
   }
 
-  // \${t('code.focusState')}
+  // ` + t('code.focusState') + `
   &:focus {
     outline: 2px solid color(primary-outline);
   }
 }
 
-// \${t('code.fillStyleButton')}
+// ` + t('code.fillStyleButton') + `
 .buttonFill {
   background: color(primary-fill);
   color: color(primary);
@@ -119,15 +119,15 @@ export default function Colors() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
-          <pre><code>{`<!-- \${t('code.textColor')} -->
+          <pre><code>{`<!-- ` + t('code.textColor') + ` -->
 <div class="primary">Primary Text</div>
 <div class="danger">Danger Text</div>
 
-<!-- \${t('code.bgColor')} -->
+<!-- ` + t('code.bgColor') + ` -->
 <div class="bg-primary">Primary Background</div>
 <div class="bg-success-fill">Success Fill Background</div>
 
-<!-- \${t('code.borderColor')} -->
+<!-- ` + t('code.borderColor') + ` -->
 <div class="border-primary">Primary Border</div>
 <div class="border-warning">Warning Border</div>`}</code></pre>
         </div>
@@ -152,13 +152,13 @@ export default function Colors() {
 
         <div className={styles.codeBlock}>
           <div className={styles.codeHeader}>{t('sections.darkMode.codeHeader')}</div>
-          <pre><code>{`// \${t('code.lightMode')}
+          <pre><code>{`// ` + t('code.lightMode') + `
 document.documentElement.setAttribute('data-color-mode', 'light');
 
-// \${t('code.darkMode')}
+// ` + t('code.darkMode') + `
 document.documentElement.setAttribute('data-color-mode', 'dark');
 
-// \${t('code.autoMode')}
+// ` + t('code.autoMode') + `
 document.documentElement.setAttribute('data-color-mode', '');`}</code></pre>
         </div>
 
