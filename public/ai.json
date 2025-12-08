@@ -1,6 +1,6 @@
 {
   "name": "podo-ui",
-  "version": "1.0.0",
+  "version": "0.8.4",
   "description": "Design system: SCSS 97% + React 3%",
   "philosophy": "Maximum flexibility with minimal JS dependency",
   "install": "npm install podo-ui",
