@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import styles from './Page.module.scss';
 
+const BASE_URL = 'https://podoui.com';
+
 export default function AiReference() {
   const { t } = useTranslation('aiReference');
 
@@ -205,7 +207,7 @@ export default function AiReference() {
               <h4>{t('usage.step1.title')}</h4>
               <p>{t('usage.step1.description')}</p>
               <div className={styles.codeBlock}>
-                <pre><code>fetch('/ai.json').then(r =&gt; r.json())</code></pre>
+                <pre><code>fetch('{BASE_URL}/ai.json').then(r =&gt; r.json())</code></pre>
               </div>
             </div>
           </div>
@@ -216,7 +218,7 @@ export default function AiReference() {
               <h4>{t('usage.step2.title')}</h4>
               <p>{t('usage.step2.description')}</p>
               <div className={styles.codeBlock}>
-                <pre><code>fetch('/ai/components/input.json').then(r =&gt; r.json())</code></pre>
+                <pre><code>fetch('{BASE_URL}/ai/components/input.json').then(r =&gt; r.json())</code></pre>
               </div>
             </div>
           </div>
@@ -295,23 +297,23 @@ import { z } from 'zod';
         <p>{t('accessUrls.description')}</p>
 
         <div className={styles.urlList}>
-          <a href="/ai.json" target="_blank" rel="noopener noreferrer">
-            <code>/ai.json</code>
+          <a href={`${BASE_URL}/ai.json`} target="_blank" rel="noopener noreferrer">
+            <code>{BASE_URL}/ai.json</code>
             <span>Main Index</span>
             <i className="icon-external-link"></i>
           </a>
-          <a href="/ai/overview.json" target="_blank" rel="noopener noreferrer">
-            <code>/ai/overview.json</code>
+          <a href={`${BASE_URL}/ai/overview.json`} target="_blank" rel="noopener noreferrer">
+            <code>{BASE_URL}/ai/overview.json</code>
             <span>Project Overview</span>
             <i className="icon-external-link"></i>
           </a>
-          <a href="/ai/components/input.json" target="_blank" rel="noopener noreferrer">
-            <code>/ai/components/input.json</code>
+          <a href={`${BASE_URL}/ai/components/input.json`} target="_blank" rel="noopener noreferrer">
+            <code>{BASE_URL}/ai/components/input.json</code>
             <span>Input Component</span>
             <i className="icon-external-link"></i>
           </a>
-          <a href="/ai/systems/color.json" target="_blank" rel="noopener noreferrer">
-            <code>/ai/systems/color.json</code>
+          <a href={`${BASE_URL}/ai/systems/color.json`} target="_blank" rel="noopener noreferrer">
+            <code>{BASE_URL}/ai/systems/color.json</code>
             <span>Color System</span>
             <i className="icon-external-link"></i>
           </a>
