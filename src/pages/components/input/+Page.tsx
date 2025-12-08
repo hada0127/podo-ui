@@ -1,0 +1,411 @@
+import { useTranslation } from 'react-i18next';
+import styles from './Page.module.scss';
+
+export default function Input() {
+  const { t } = useTranslation('input');
+  return (
+    <>
+      <section className={styles.section}>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('basicUsage.title')}</h2>
+        <p>{t('basicUsage.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<input type="text" placeholder="${t('basicUsage.placeholders.text')}" />
+<input type="email" placeholder="${t('basicUsage.placeholders.email')}" />
+<input type="password" placeholder="${t('basicUsage.placeholders.password')}" />
+<input type="number" placeholder="${t('basicUsage.placeholders.number')}" />`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.inputGroup}>
+            <input type="text" placeholder={t('basicUsage.placeholders.text')} />
+            <input type="email" placeholder={t('basicUsage.placeholders.email')} />
+            <input type="password" placeholder={t('basicUsage.placeholders.password')} />
+            <input type="number" placeholder={t('basicUsage.placeholders.number')} />
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('types.title')}</h2>
+        <p>{t('types.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<input type="text" placeholder="${t('types.placeholders.text')}" />
+<input type="email" placeholder="${t('types.placeholders.email')}" />
+<input type="password" placeholder="${t('types.placeholders.password')}" />
+<input type="number" placeholder="${t('types.placeholders.number')}" />
+<input type="tel" placeholder="${t('types.placeholders.tel')}" />
+<input type="url" placeholder="${t('types.placeholders.url')}" />
+<input type="search" placeholder="${t('types.placeholders.search')}" />
+<input type="date" />
+<input type="time" />
+<input type="month" />
+<input type="week" />
+<input type="datetime-local" />`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.typeGrid}>
+            <div className={styles.typeCard}>
+              <label>text</label>
+              <input type="text" placeholder={t('types.placeholders.text')} />
+            </div>
+            <div className={styles.typeCard}>
+              <label>email</label>
+              <input type="email" placeholder="example@email.com" />
+            </div>
+            <div className={styles.typeCard}>
+              <label>password</label>
+              <input type="password" placeholder="••••••••" />
+            </div>
+            <div className={styles.typeCard}>
+              <label>number</label>
+              <input type="number" placeholder="123" />
+            </div>
+            <div className={styles.typeCard}>
+              <label>tel</label>
+              <input type="tel" placeholder="010-1234-5678" />
+            </div>
+            <div className={styles.typeCard}>
+              <label>url</label>
+              <input type="url" placeholder="https://example.com" />
+            </div>
+            <div className={styles.typeCard}>
+              <label>search</label>
+              <input type="search" placeholder={t('types.placeholders.search')} />
+            </div>
+            <div className={styles.typeCard}>
+              <label>date</label>
+              <input type="date" />
+            </div>
+            <div className={styles.typeCard}>
+              <label>time</label>
+              <input type="time" />
+            </div>
+            <div className={styles.typeCard}>
+              <label>month</label>
+              <input type="month" />
+            </div>
+            <div className={styles.typeCard}>
+              <label>week</label>
+              <input type="week" />
+            </div>
+            <div className={styles.typeCard}>
+              <label>datetime-local</label>
+              <input type="datetime-local" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('states.title')}</h2>
+        <p>{t('states.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<!-- ${t('states.default')} -->
+<input type="text" placeholder="${t('states.default')}" />
+
+<!-- ${t('states.success')} -->
+<input type="text" class="success" value="valid@email.com" />
+
+<!-- ${t('states.danger')} -->
+<input type="text" class="danger" value="invalid-email" />
+
+<!-- ${t('states.disabled')} -->
+<input type="text" placeholder="${t('states.disabled')}" disabled />
+
+<!-- ${t('states.readonly')} -->
+<input type="text" value="${t('states.readonlyText')}" readonly />`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.inputGroup}>
+            <input type="text" placeholder={t('states.default')} />
+            <input type="text" className="success" value="valid@email.com" />
+            <input type="text" className="danger" value="invalid-email" />
+            <input type="text" placeholder={t('states.disabled')} disabled />
+            <input type="text" value={t('states.readonlyText')} readOnly />
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>SCSS</div>
+          <pre><code>{`// Success 상태 (border: 1px solid color('success'))
+input.success {
+  border-color: color('success');
+
+  &:focus-visible:not(:disabled) {
+    outline: 4px solid color('success-outline');
+  }
+}
+
+// Danger 상태 (border: 1px solid color('danger'))
+input.danger {
+  border-color: color('danger');
+
+  &:focus-visible:not(:disabled) {
+    outline: 4px solid color('danger-outline');
+  }
+}
+
+// Disabled 상태
+input:disabled {
+  background: color('bg-disabled');
+  cursor: not-allowed;
+}
+
+// Read-only 상태
+input:read-only {
+  border: none;
+  cursor: default;
+}`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('variants.title')}</h2>
+        <p>{t('variants.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<!-- ${t('variants.default')} -->
+<input type="text" placeholder="${t('variants.default')}" />
+
+<!-- ${t('variants.fill')} -->
+<input type="text" class="fill" placeholder="${t('variants.fill')}" />
+
+<!-- ${t('variants.text')} -->
+<input type="text" class="text" placeholder="${t('variants.text')}" />
+
+<!-- ${t('variants.underline')} -->
+<input type="text" class="underline" placeholder="${t('variants.underline')}" />`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.inputGroup}>
+            <input type="text" placeholder={t('variants.default')} />
+            <input type="text" className="fill" placeholder={t('variants.fill')} />
+            <input type="text" className="text" placeholder={t('variants.text')} />
+            <input type="text" className="underline" placeholder={t('variants.underline')} />
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>SCSS</div>
+          <pre><code>{`// Fill 변형 (background-color: color('default-fill'))
+input.fill {
+  background-color: color('default-fill');
+}
+
+// Text 변형 (border: none)
+input.text {
+  border: none;
+}
+
+// Underline 변형 (border-bottom만 표시, border-radius: 0)
+input.underline {
+  border: none;
+  border-bottom: 1px solid color('border-disabled');
+  border-radius: 0;
+
+  &:focus-visible:not(:disabled) {
+    border-bottom-color: color('primary-base');
+  }
+}`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('sizes.title')}</h2>
+        <p>{t('sizes.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<!-- ${t('sizes.default')} (padding: s(3) s(4), border-radius: r(3)) -->
+<input type="text" placeholder="${t('sizes.default')}" />
+
+<!-- ${t('sizes.medium')} (padding: s(4) s(4), border-radius: r(5)) -->
+<input type="text" class="md" placeholder="${t('sizes.medium')}" />
+
+<!-- ${t('sizes.large')} (padding: s(5) s(4), border-radius: r(6)) -->
+<input type="text" class="lg" placeholder="${t('sizes.large')}" />`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.inputGroup}>
+            <input type="text" placeholder={t('sizes.default')} />
+            <input type="text" className="md" placeholder={t('sizes.medium')} />
+            <input type="text" className="lg" placeholder={t('sizes.large')} />
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>SCSS</div>
+          <pre><code>{`// 기본 크기
+input {
+  padding: s(3) s(4);
+  border-radius: r(3);
+}
+
+// 중간 크기
+input.md {
+  padding: s(4) s(4);
+  border-radius: r(5);
+}
+
+// 큰 크기
+input.lg {
+  padding: s(5) s(4);
+  border-radius: r(6);
+}`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('icons.title')}</h2>
+        <p>{t('icons.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>HTML</div>
+          <pre><code>{`<!-- ${t('icons.leftIcon')} (input padding-left: s(8), ${t('icons.icon')} left: s(3)) -->
+<div class="with-icon">
+  <i class="icon-search"></i>
+  <input type="text" placeholder="${t('icons.placeholders.search')}" />
+</div>
+
+<!-- ${t('icons.rightIcon')} (input padding-right: s(7), ${t('icons.icon')} right: s(3)) -->
+<div class="with-right-icon">
+  <input type="email" placeholder="${t('icons.placeholders.email')}" />
+  <i class="icon-mail"></i>
+</div>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.inputGroup}>
+            <div className="with-icon">
+              <i className="icon-search"></i>
+              <input type="text" placeholder={t('icons.placeholders.search')} />
+            </div>
+            <div className="with-icon">
+              <i className="icon-user"></i>
+              <input type="text" placeholder={t('icons.placeholders.username')} />
+            </div>
+            <div className="with-right-icon">
+              <input type="email" placeholder={t('icons.placeholders.email')} />
+              <i className="icon-mail"></i>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>SCSS</div>
+          <pre><code>{`// 왼쪽 아이콘
+.with-icon {
+  position: relative;
+
+  > i {
+    position: absolute;
+    left: s(3);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  > input {
+    padding-left: s(8);  // 아이콘 공간 확보
+  }
+}
+
+// 오른쪽 아이콘
+.with-right-icon {
+  position: relative;
+
+  > i {
+    position: absolute;
+    right: s(3);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  > input {
+    padding-right: s(7);  // 아이콘 공간 확보
+  }
+}`}</code></pre>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('scss.title')}</h2>
+        <p>{t('scss.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>component.module.scss</div>
+          <pre><code>{`@use 'podo-ui/mixin' as *;
+
+// 기본 input 스타일
+input[type='text'],
+input[type='email'],
+input[type='password'] {
+  @include p3;
+  padding: s(3) s(4);
+  background-color: color('bg-block');
+  border-radius: r(3);
+  border: 1px solid color('border-disabled');
+
+  &:focus-visible:not(:disabled) {
+    border-color: color('primary-base');
+    outline: 4px solid color('primary-outline');
+  }
+
+  &::placeholder {
+    color: color('placeholder');
+  }
+}
+
+// Success/Danger 상태
+input.success {
+  border: 1px solid color('success');
+
+  &:focus-visible:not(:disabled) {
+    outline: 4px solid color('success-outline');
+  }
+}
+
+input.danger {
+  border: 1px solid color('danger');
+
+  &:focus-visible:not(:disabled) {
+    outline: 4px solid color('danger-outline');
+  }
+}
+
+// 크기 변형
+input.md {
+  padding: s(4) s(4);
+  border-radius: r(5);
+}
+
+input.lg {
+  padding: s(5) s(4);
+  border-radius: r(6);
+}`}</code></pre>
+        </div>
+      </section>
+    </>
+  );
+}

@@ -1,5 +1,3 @@
-'use client';
-
 import styles from './MobileMenuButton.module.scss';
 
 interface MobileMenuButtonProps {

@@ -1,19 +1,15 @@
-'use client';
-
 import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import Image from 'next/image';
+import { usePageContext } from 'vike-react/usePageContext';
+import { useTranslation } from 'react-i18next';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
 import MobileMenuButton from './MobileMenuButton';
 import styles from './Navigation.module.scss';
 
 export default function Navigation() {
-  const pathname = usePathname();
+  const { urlPathname: pathname } = usePageContext();
   const [isOpen, setIsOpen] = useState(false);
-  const t = useTranslations('navigation');
+  const { t } = useTranslation('navigation');
 
   const menuItems = [
     {
@@ -80,10 +76,10 @@ export default function Navigation() {
   return (
     <>
       <div className={styles.mobileHeader}>
-        <Link href="/" className={styles.logo}>
-          <Image src="/logo.svg" alt="Podo UI" width={32} height={32} />
+        <a href="/" className={styles.logo}>
+          <img src="/logo.svg" alt="Podo UI" width={32} height={32} />
           <h1>Podo UI</h1>
-        </Link>
+        </a>
         <MobileMenuButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
       </div>
 
@@ -91,10 +87,10 @@ export default function Navigation() {
 
       <nav className={`${styles.nav} ${isOpen ? styles.open : ''}`}>
         <div className={styles.header}>
-          <Link href="/" className={styles.logo}>
-            <Image src="/logo.svg" alt="Podo UI" width={32} height={32} />
+          <a href="/" className={styles.logo}>
+            <img src="/logo.svg" alt="Podo UI" width={32} height={32} />
             <h1>Podo UI</h1>
-          </Link>
+          </a>
           <div className={styles.controls}>
             <LanguageSwitcher />
             <ThemeToggle />
@@ -108,13 +104,13 @@ export default function Navigation() {
               <ul className={styles.list}>
                 {section.items.map((item) => (
                   <li key={item.path}>
-                    <Link
+                    <a
                       href={item.path}
                       className={pathname === item.path ? styles.active : ''}
                       onClick={handleLinkClick}
                     >
                       {t(item.labelKey)}
-                    </Link>
+                    </a>
                   </li>
                 ))}
               </ul>
