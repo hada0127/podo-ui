@@ -270,22 +270,18 @@ import { z } from 'zod';
 
         <div className={styles.benefitGrid}>
           <div className={styles.benefitCard}>
-            <i className="icon-zap"></i>
             <h4>{t('benefits.items.selective').split(' - ')[0]}</h4>
             <p>{t('benefits.items.selective').split(' - ')[1]}</p>
           </div>
           <div className={styles.benefitCard}>
-            <i className="icon-code"></i>
             <h4>{t('benefits.items.structured').split(' - ')[0]}</h4>
             <p>{t('benefits.items.structured').split(' - ')[1]}</p>
           </div>
           <div className={styles.benefitCard}>
-            <i className="icon-book-open"></i>
             <h4>{t('benefits.items.comprehensive').split(' - ')[0]}</h4>
             <p>{t('benefits.items.comprehensive').split(' - ')[1]}</p>
           </div>
           <div className={styles.benefitCard}>
-            <i className="icon-refresh-cw"></i>
             <h4>{t('benefits.items.upToDate').split(' - ')[0]}</h4>
             <p>{t('benefits.items.upToDate').split(' - ')[1]}</p>
           </div>
