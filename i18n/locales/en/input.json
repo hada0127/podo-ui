@@ -86,5 +86,21 @@
     "defaultInputStyle": "Default input style",
     "successDangerState": "Success/Danger state",
     "sizeVariant": "Size variant"
+  },
+  "react": {
+    "title": "React Component",
+    "description": "Using the Input component in React provides easy access to Zod validation, icons, and unit display features.",
+    "validation": {
+      "title": "Zod Validation",
+      "description": "Pass a Zod schema to the validator prop to automatically validate and display status."
+    },
+    "icons": {
+      "title": "Icons",
+      "description": "Add icons using withIcon and withRightIcon props."
+    },
+    "unit": {
+      "title": "Unit Display",
+      "description": "Display units on the right side of the input field using the unit prop."
+    }
   }
 }

@@ -1,13 +1,82 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Checkbox, Radio } from 'podo-ui';
 import styles from './Page.module.scss';
 
 export default function CheckboxRadio() {
   const { t } = useTranslation('checkboxRadio');
+  const [checked, setChecked] = useState(false);
+  const [selectedRadio, setSelectedRadio] = useState('option1');
+
   return (
     <>
       <section className={styles.section}>
         <h1>{t('title')}</h1>
         <p>{t('description')}</p>
+      </section>
+
+      <section className={styles.section}>
+        <h2>React Component</h2>
+        <p>podo-ui React 컴포넌트를 사용한 예제입니다.</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>React (Checkbox)</div>
+          <pre><code>{`import { Checkbox } from 'podo-ui';
+
+// Basic
+<Checkbox label="동의합니다" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
+
+// Indeterminate (전체 선택)
+<Checkbox label="전체 선택" indeterminate={true} />
+
+// Disabled
+<Checkbox label="비활성화" disabled />`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>Checkbox Demo</div>
+          <div className={styles.checkboxGroup}>
+            <Checkbox
+              label="동의합니다"
+              checked={checked}
+              onChange={(e) => setChecked(e.target.checked)}
+            />
+            <Checkbox label="기본 체크박스" />
+            <Checkbox label="비활성화" disabled />
+            <Checkbox label="체크된 비활성화" checked disabled />
+          </div>
+        </div>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>React (Radio.Group)</div>
+          <pre><code>{`import { Radio } from 'podo-ui';
+
+<Radio.Group
+  name="payment"
+  value={selectedRadio}
+  onChange={(value) => setSelectedRadio(value)}
+  options={[
+    { value: 'card', label: '신용카드' },
+    { value: 'bank', label: '계좌이체' },
+    { value: 'mobile', label: '휴대폰 결제' },
+  ]}
+/>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>Radio.Group Demo</div>
+          <Radio.Group
+            name="paymentDemo"
+            value={selectedRadio}
+            onChange={(value) => setSelectedRadio(value)}
+            options={[
+              { value: 'option1', label: '옵션 1' },
+              { value: 'option2', label: '옵션 2' },
+              { value: 'option3', label: '옵션 3' },
+              { value: 'option4', label: '비활성화', disabled: true },
+            ]}
+          />
+        </div>
       </section>
 
       <section className={styles.section}>

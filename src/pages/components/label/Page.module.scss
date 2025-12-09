@@ -1,0 +1,101 @@
+@use '../../../../mixin' as *;
+@use '../../common-page' as *;
+
+.section {
+  @include section-responsive;
+}
+
+.codeBlock {
+  max-width: 100%;
+  background: color(default-deep-base);
+  border-radius: r(4);
+  overflow: hidden;
+  margin-bottom: s(4);
+
+  .codeHeader {
+    padding: s(3) s(5);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @include p4-semibold;
+    color: rgba(255, 255, 255, 0.7);
+
+    word-break: break-word;
+  }
+
+  pre {
+    margin: 0;
+    padding: s(5);
+    overflow-x: auto;
+
+    code {
+      @include p3;
+      color: #f8f8f2;
+      white-space: pre;
+
+      display: block;
+      max-width: 100%;
+
+      @media (max-width: 768px) {
+        white-space: pre-wrap;
+        word-break: break-all;
+
+      }
+    }
+  }
+}
+
+.demo {
+  margin-top: s(5);
+  padding: s(5);
+  background: color(bg-reverse-wb);
+  border: 1px solid color(default-outline);
+  border-radius: r(4);
+}
+
+.demoTitle {
+  @include p3-semibold;
+  margin-bottom: s(4);
+  color: color(default-deep-base);
+}
+
+.labelGroup {
+  display: flex;
+  flex-direction: column;
+  gap: s(4);
+
+  label {
+    color: color(default-deep-base);
+  }
+}
+
+.labelRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: s(5);
+
+  label {
+    color: color(default-deep-base);
+  }
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: s(5);
+
+  :global {
+    input {
+      width: 100%;
+    }
+  }
+}
+
+.fieldItem {
+  display: flex;
+  flex-direction: column;
+  gap: s(2);
+
+  label {
+    color: color(default-deep-base);
+  }
+}

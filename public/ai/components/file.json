@@ -1,11 +1,18 @@
 {
-  "name": "File Input",
+  "name": "File",
   "category": "atom",
-  "description": "Styled file upload input (SCSS only)",
-  "scssOnly": true,
+  "description": "Styled file upload input with React component",
+  "scssOnly": false,
   "import": {
+    "react": "import { File } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/form/file'"
   },
+  "props": [
+    { "name": "accept", "type": "string", "required": false, "description": "Accepted file types (e.g., 'image/*', '.pdf')" },
+    { "name": "multiple", "type": "boolean", "required": false, "description": "Allow multiple file selection" },
+    { "name": "disabled", "type": "boolean", "required": false, "description": "Disabled state" },
+    { "name": "onChange", "type": "(e: ChangeEvent) => void", "required": false, "description": "Change callback" }
+  ],
   "htmlUsage": {
     "basic": "<input type=\"file\" />",
     "multiple": "<input type=\"file\" multiple />",
@@ -20,19 +27,31 @@
   ],
   "examples": [
     {
-      "title": "Basic file input",
+      "title": "React Basic",
+      "code": "<File onChange={(e) => console.log(e.target.files)} />"
+    },
+    {
+      "title": "React Image only",
+      "code": "<File accept=\"image/*\" onChange={handleChange} />"
+    },
+    {
+      "title": "React Multiple files",
+      "code": "<File multiple onChange={(e) => setFiles(Array.from(e.target.files))} />"
+    },
+    {
+      "title": "HTML Basic file input",
       "code": "<input type=\"file\" />"
     },
     {
-      "title": "Image only",
+      "title": "HTML Image only",
       "code": "<input type=\"file\" accept=\"image/*\" />"
     },
     {
-      "title": "Multiple files",
+      "title": "HTML Multiple files",
       "code": "<input type=\"file\" multiple />"
     },
     {
-      "title": "Disabled",
+      "title": "HTML Disabled",
       "code": "<input type=\"file\" disabled />"
     }
   ],

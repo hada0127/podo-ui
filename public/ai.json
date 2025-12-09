@@ -9,6 +9,7 @@
     "overview": "/ai/overview.json",
     "components": {
       "avatar": "/ai/components/avatar.json",
+      "label": "/ai/components/label.json",
       "input": "/ai/components/input.json",
       "textarea": "/ai/components/textarea.json",
       "editor": "/ai/components/editor.json",

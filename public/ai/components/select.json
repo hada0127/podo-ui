@@ -1,11 +1,20 @@
 {
   "name": "Select",
   "category": "atom",
-  "description": "Styled native select dropdown (SCSS only)",
-  "scssOnly": true,
+  "description": "Styled native select dropdown with React component",
+  "scssOnly": false,
   "import": {
+    "react": "import { Select } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/form/select'"
   },
+  "props": [
+    { "name": "value", "type": "string", "required": false, "description": "Current value" },
+    { "name": "options", "type": "Array<{value, label, disabled?}>", "required": true, "description": "Option list" },
+    { "name": "placeholder", "type": "string", "required": false, "description": "Placeholder text" },
+    { "name": "disabled", "type": "boolean", "required": false, "description": "Disabled state" },
+    { "name": "withIcon", "type": "string", "required": false, "description": "Left icon class name" },
+    { "name": "onChange", "type": "(e: ChangeEvent) => void", "required": false, "description": "Change callback" }
+  ],
   "htmlUsage": {
     "basic": "<select>\n  <option value=\"\" disabled selected>Select option</option>\n  <option value=\"1\">Option 1</option>\n  <option value=\"2\">Option 2</option>\n</select>",
     "withIcon": "<div class=\"with-icon\">\n  <i class=\"icon-globe\"></i>\n  <select>...</select>\n</div>"
@@ -19,11 +28,19 @@
   ],
   "examples": [
     {
-      "title": "Basic select",
+      "title": "React Select",
+      "code": "<Select value={country} onChange={(e) => setCountry(e.target.value)} placeholder=\"Choose country\" options={[{value: 'kr', label: 'Korea'}, {value: 'us', label: 'USA'}]} />"
+    },
+    {
+      "title": "React Select with icon",
+      "code": "<Select withIcon=\"icon-globe\" options={countries} />"
+    },
+    {
+      "title": "HTML Basic select",
       "code": "<select>\n  <option value=\"\" disabled selected>Choose...</option>\n  <option value=\"kr\">Korea</option>\n  <option value=\"us\">USA</option>\n</select>"
     },
     {
-      "title": "With icon",
+      "title": "HTML With icon",
       "code": "<div class=\"with-icon\">\n  <i class=\"icon-globe\"></i>\n  <select>...</select>\n</div>"
     }
   ],

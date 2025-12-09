@@ -63,5 +63,14 @@
     "successDangerState": "Success/Danger 상태",
     "disabledStateStyle": "비활성화 상태",
     "readonlyStateStyle": "읽기 전용 상태"
+  },
+  "react": {
+    "title": "React 컴포넌트",
+    "description": "React에서 Textarea 컴포넌트를 사용하면 Zod 검증 기능을 쉽게 활용할 수 있습니다.",
+    "validation": {
+      "title": "Zod 검증",
+      "description": "validator prop에 Zod 스키마를 전달하면 자동으로 검증하고 상태를 표시합니다."
+    },
+    "minLength": "최소 10자 이상 입력하세요"
   }
 }

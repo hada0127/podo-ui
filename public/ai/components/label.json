@@ -1,0 +1,68 @@
+{
+  "name": "Label",
+  "category": "atom",
+  "description": "Form label with size, style, and required indicator",
+  "scssOnly": false,
+  "import": {
+    "react": "import { Label } from 'podo-ui'",
+    "scss": "@use 'podo-ui/scss/form/label'"
+  },
+  "props": [
+    { "name": "children", "type": "ReactNode", "required": false, "description": "Label content" },
+    { "name": "size", "type": "'lg' | 'md' | 'sm'", "required": false, "default": "md", "description": "Label size" },
+    { "name": "semibold", "type": "boolean", "required": false, "description": "Semibold font weight" },
+    { "name": "required", "type": "boolean", "required": false, "description": "Show required asterisk" },
+    { "name": "disabled", "type": "boolean", "required": false, "description": "Disabled styling" },
+    { "name": "htmlFor", "type": "string", "required": false, "description": "Associated input id" }
+  ],
+  "cssClasses": {
+    "sizes": [
+      { "class": "lg", "description": "Large size" },
+      { "class": "(default)", "description": "Medium size (default)" },
+      { "class": "sm", "description": "Small size" }
+    ],
+    "modifiers": [
+      { "class": "semibold", "description": "Semibold font weight" },
+      { "class": "disabled", "description": "Disabled state" }
+    ]
+  },
+  "htmlUsage": {
+    "basic": "<label>Username</label>",
+    "required": "<label>Email <span class=\"required\">*</span></label>",
+    "withInput": "<label for=\"email\">Email</label>\n<input id=\"email\" type=\"email\" />"
+  },
+  "features": [
+    "Three sizes (lg, md, sm)",
+    "Optional semibold weight",
+    "Required indicator with asterisk",
+    "Disabled state styling",
+    "htmlFor attribute support"
+  ],
+  "examples": [
+    {
+      "title": "React Basic",
+      "code": "<Label>Username</Label>"
+    },
+    {
+      "title": "React Required",
+      "code": "<Label required>Email</Label>"
+    },
+    {
+      "title": "React with htmlFor",
+      "code": "<Label htmlFor=\"email\" required>Email</Label>\n<Input id=\"email\" type=\"email\" />"
+    },
+    {
+      "title": "React Sizes",
+      "code": "<Label size=\"lg\">Large</Label>\n<Label size=\"md\">Medium</Label>\n<Label size=\"sm\">Small</Label>"
+    },
+    {
+      "title": "HTML Basic",
+      "code": "<label>Username</label>"
+    },
+    {
+      "title": "HTML Required",
+      "code": "<label>Email <span class=\"required\">*</span></label>"
+    }
+  ],
+  "related": ["field", "input"]
+}

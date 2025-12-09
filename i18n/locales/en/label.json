@@ -1,0 +1,50 @@
+{
+  "title": "Label",
+  "description": "A label component that describes form input fields.",
+  "demo": {
+    "title": "Live Example:",
+    "codeHeader": "HTML"
+  },
+  "basicUsage": {
+    "title": "Basic Usage",
+    "description": "Labels provide descriptions for form elements.",
+    "examples": {
+      "username": "Username",
+      "email": "Email",
+      "password": "Password"
+    }
+  },
+  "sizes": {
+    "title": "Sizes",
+    "description": "Labels support three sizes: sm, md (default), and lg.",
+    "small": "Small label",
+    "medium": "Medium label (default)",
+    "large": "Large label"
+  },
+  "styles": {
+    "title": "Style Variants",
+    "description": "You can apply semibold and disabled styles.",
+    "semibold": "Bold label",
+    "disabled": "Disabled label",
+    "normal": "Normal label"
+  },
+  "required": {
+    "title": "Required Indicator",
+    "description": "Use the required attribute to indicate a mandatory field.",
+    "email": "Email",
+    "phone": "Phone"
+  },
+  "withInput": {
+    "title": "With Input Field",
+    "description": "Connect to an input field using htmlFor so clicking the label focuses the input.",
+    "email": "Email Address",
+    "username": "Username"
+  },
+  "scss": {
+    "title": "SCSS Styling",
+    "description": "You can apply label styles using podo-ui mixins."
+  },
+  "code": {
+    "labelStyle": "Label style"
+  }
+}

@@ -18,6 +18,7 @@ const Input: React.FC<InputWrapperProps> = ({
   withIcon,
   withRightIcon,
   unit,
+  type = 'text',
   ...rest
 }) => {
   const [message, setMessage] = useState('');
@@ -50,6 +51,7 @@ const Input: React.FC<InputWrapperProps> = ({
       >
         {withIcon && <i className={withIcon} />}
         <input
+          type={type}
           {...rest}
           value={value ?? ''}
           className={`${statusClass} ${className || ''}`}

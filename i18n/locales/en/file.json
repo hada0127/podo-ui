@@ -20,5 +20,15 @@
   "scss": {
     "title": "SCSS Styling",
     "description": "You can apply file input styles using podo-ui mixins."
+  },
+  "react": {
+    "title": "React Component",
+    "description": "Using the FileInput component in React makes file selection handling easy.",
+    "callback": {
+      "title": "File Select Callback",
+      "description": "Use the onFileSelect prop to receive the selected files array directly."
+    },
+    "selectedFiles": "Selected Files",
+    "noFiles": "No files selected"
   }
 }

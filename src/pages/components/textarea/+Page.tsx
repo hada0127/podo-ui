@@ -1,13 +1,53 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Textarea as TextareaComponent } from 'podo-ui';
+import { z } from 'zod';
 import styles from './Page.module.scss';
 
 export default function Textarea() {
   const { t } = useTranslation('textarea');
+  const [content, setContent] = useState('');
+
   return (
     <>
       <section className={styles.section}>
         <h1>{t('title')}</h1>
         <p>{t('description')}</p>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('react.title')}</h2>
+        <p>{t('react.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>React</div>
+          <pre><code>{`import { Textarea } from 'podo-ui'
+import { z } from 'zod'
+
+const [content, setContent] = useState('');
+
+// Zod 검증
+<Textarea
+  value={content}
+  onChange={(e) => setContent(e.target.value)}
+  validator={z.string().min(10, '${t('react.minLength')}')}
+  placeholder="내용을 입력하세요..."
+  rows={4}
+/>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('react.validation.title')}</div>
+          <div className={styles.textareaGroup}>
+            <TextareaComponent
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              validator={z.string().min(10, t('react.minLength'))}
+              placeholder="내용을 입력하세요..."
+              rows={4}
+            />
+          </div>
+        </div>
       </section>
 
       <section className={styles.section}>

@@ -1,10 +1,27 @@
 {
   "name": "Table",
   "category": "molecule",
-  "description": "Styled HTML table (SCSS only)",
-  "scssOnly": true,
+  "description": "Styled HTML table with React component",
+  "scssOnly": false,
   "import": {
+    "react": "import { Table } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/molecule/table'"
+  },
+  "props": [
+    { "name": "columns", "type": "TableColumn<T>[]", "required": true, "description": "Column definitions with key, title, render" },
+    { "name": "dataSource", "type": "T[]", "required": true, "description": "Data array" },
+    { "name": "rowKey", "type": "keyof T | ((record: T) => string)", "required": true, "description": "Unique key for each row" },
+    { "name": "list", "type": "boolean", "required": false, "description": "Enable row hover effect" },
+    { "name": "border", "type": "boolean", "required": false, "description": "Show cell borders" },
+    { "name": "fill", "type": "boolean", "required": false, "description": "Filled background" },
+    { "name": "onRowClick", "type": "(record: T) => void", "required": false, "description": "Row click callback" }
+  ],
+  "types": {
+    "TableColumn<T>": {
+      "key": "keyof T | string",
+      "title": "string",
+      "render": "(value: any, record: T) => ReactNode (optional)"
+    }
   },
   "cssClasses": [
     { "class": "(default)", "description": "Base table with border" },
@@ -27,15 +44,27 @@
   ],
   "examples": [
     {
-      "title": "Basic table",
+      "title": "React Basic",
+      "code": "<Table columns={[{ key: 'id', title: 'ID' }, { key: 'name', title: 'Name' }]} dataSource={users} rowKey=\"id\" />"
+    },
+    {
+      "title": "React with custom render",
+      "code": "<Table columns={[{ key: 'name', title: 'Name' }, { key: 'status', title: 'Status', render: (val) => <span className={val}>{val}</span> }]} dataSource={data} rowKey=\"id\" />"
+    },
+    {
+      "title": "React clickable list",
+      "code": "<Table columns={columns} dataSource={users} rowKey=\"id\" list onRowClick={(user) => navigate(`/user/${user.id}`)} />"
+    },
+    {
+      "title": "HTML Basic table",
       "code": "<table>\n  <thead><tr><th>ID</th><th>Name</th></tr></thead>\n  <tbody>\n    <tr><td>1</td><td>Alice</td></tr>\n    <tr><td>2</td><td>Bob</td></tr>\n  </tbody>\n</table>"
     },
     {
-      "title": "Clickable list",
+      "title": "HTML Clickable list",
       "code": "<table class=\"list\">\n  <tbody>\n    <tr onClick={() => navigate('/user/1')}><td>Click me</td></tr>\n  </tbody>\n</table>"
     },
     {
-      "title": "With borders and fill",
+      "title": "HTML With borders and fill",
       "code": "<table class=\"border fill\">...</table>"
     }
   ],

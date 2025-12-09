@@ -63,5 +63,14 @@
     "successDangerState": "Success/Danger state",
     "disabledStateStyle": "Disabled state",
     "readonlyStateStyle": "Read-only state"
+  },
+  "react": {
+    "title": "React Component",
+    "description": "Using the Textarea component in React provides easy access to Zod validation features.",
+    "validation": {
+      "title": "Zod Validation",
+      "description": "Pass a Zod schema to the validator prop to automatically validate and display status."
+    },
+    "minLength": "Please enter at least 10 characters"
   }
 }

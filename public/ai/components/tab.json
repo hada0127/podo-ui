@@ -1,10 +1,28 @@
 {
   "name": "Tab",
   "category": "molecule",
-  "description": "Tab navigation component (SCSS only)",
-  "scssOnly": true,
+  "description": "Tab navigation component with React support",
+  "scssOnly": false,
   "import": {
+    "react": "import { Tab } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/molecule/tab'"
+  },
+  "props": [
+    { "name": "items", "type": "TabItem[]", "required": true, "description": "Tab items array with key and label" },
+    { "name": "activeKey", "type": "string", "required": false, "description": "Active tab key (controlled)" },
+    { "name": "defaultActiveKey", "type": "string", "required": false, "description": "Default active tab key (uncontrolled)" },
+    { "name": "fill", "type": "boolean", "required": false, "description": "Equal width tabs" },
+    { "name": "onChange", "type": "(key: string) => void", "required": false, "description": "Tab change callback" }
+  ],
+  "subComponents": {
+    "Tab.Panel": {
+      "description": "Tab panel for content display",
+      "props": [
+        { "name": "tabKey", "type": "string", "required": true, "description": "Key matching tab item" },
+        { "name": "activeKey", "type": "string", "required": false, "description": "Currently active key" },
+        { "name": "children", "type": "ReactNode", "required": false, "description": "Panel content" }
+      ]
+    }
   },
   "cssClasses": [
     { "class": "tabs", "description": "Base tab container (ul element)" },
@@ -24,16 +42,24 @@
   ],
   "examples": [
     {
-      "title": "Basic tabs",
+      "title": "React Basic",
+      "code": "<Tab items={[{ key: 'overview', label: 'Overview' }, { key: 'details', label: 'Details' }]} defaultActiveKey=\"overview\" onChange={(key) => console.log(key)} />"
+    },
+    {
+      "title": "React with Panels",
+      "code": "<Tab items={items} activeKey={activeKey} onChange={setActiveKey}>\n  <Tab.Panel tabKey=\"tab1\" activeKey={activeKey}>Content 1</Tab.Panel>\n  <Tab.Panel tabKey=\"tab2\" activeKey={activeKey}>Content 2</Tab.Panel>\n</Tab>"
+    },
+    {
+      "title": "React Fill width",
+      "code": "<Tab items={items} fill defaultActiveKey=\"left\" />"
+    },
+    {
+      "title": "HTML Basic tabs",
       "code": "<ul class=\"tabs\">\n  <li class=\"on\"><a href=\"#overview\">Overview</a></li>\n  <li><a href=\"#details\">Details</a></li>\n  <li><a href=\"#settings\">Settings</a></li>\n</ul>"
     },
     {
-      "title": "Fill width tabs",
+      "title": "HTML Fill width tabs",
       "code": "<ul class=\"tabs fill\">\n  <li class=\"on\"><a href=\"#\">Left</a></li>\n  <li><a href=\"#\">Right</a></li>\n</ul>"
-    },
-    {
-      "title": "React state",
-      "code": "<ul class=\"tabs\">\n  {tabs.map(tab => (\n    <li key={tab.id} className={activeTab === tab.id ? 'on' : ''}>\n      <a onClick={() => setActiveTab(tab.id)}>{tab.label}</a>\n    </li>\n  ))}\n</ul>"
     }
   ],
   "related": []

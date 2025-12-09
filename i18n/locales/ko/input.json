@@ -86,5 +86,21 @@
     "defaultInputStyle": "기본 input 스타일",
     "successDangerState": "Success/Danger 상태",
     "sizeVariant": "크기 변형"
+  },
+  "react": {
+    "title": "React 컴포넌트",
+    "description": "React에서 Input 컴포넌트를 사용하면 Zod 검증, 아이콘, 단위 표시 기능을 쉽게 활용할 수 있습니다.",
+    "validation": {
+      "title": "Zod 검증",
+      "description": "validator prop에 Zod 스키마를 전달하면 자동으로 검증하고 상태를 표시합니다."
+    },
+    "icons": {
+      "title": "아이콘",
+      "description": "withIcon과 withRightIcon prop으로 아이콘을 추가할 수 있습니다."
+    },
+    "unit": {
+      "title": "단위 표시",
+      "description": "unit prop으로 입력 필드 오른쪽에 단위를 표시할 수 있습니다."
+    }
   }
 }

@@ -20,5 +20,15 @@
   "scss": {
     "title": "SCSS 스타일",
     "description": "podo-ui의 믹스인을 사용하여 파일 입력 스타일을 적용할 수 있습니다."
+  },
+  "react": {
+    "title": "React 컴포넌트",
+    "description": "React에서 FileInput 컴포넌트를 사용하면 파일 선택 처리를 쉽게 할 수 있습니다.",
+    "callback": {
+      "title": "파일 선택 콜백",
+      "description": "onFileSelect prop을 사용하면 선택된 파일 배열을 직접 받을 수 있습니다."
+    },
+    "selectedFiles": "선택된 파일",
+    "noFiles": "선택된 파일 없음"
   }
 }

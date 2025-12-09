@@ -1,13 +1,98 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Input as InputComponent } from 'podo-ui';
+import { z } from 'zod';
 import styles from './Page.module.scss';
 
 export default function Input() {
   const { t } = useTranslation('input');
+  const [email, setEmail] = useState('');
+  const [search, setSearch] = useState('');
+  const [distance, setDistance] = useState('');
+
   return (
     <>
       <section className={styles.section}>
         <h1>{t('title')}</h1>
         <p>{t('description')}</p>
+      </section>
+
+      <section className={styles.section}>
+        <h2>{t('react.title')}</h2>
+        <p>{t('react.description')}</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>React</div>
+          <pre><code>{`import { Input } from 'podo-ui'
+import { z } from 'zod'
+
+// Zod 검증
+<Input
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  validator={z.string().email('올바른 이메일을 입력하세요')}
+  placeholder="이메일"
+/>
+
+// 아이콘
+<Input
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  withIcon="icon-search"
+  placeholder="검색..."
+/>
+
+// 단위 표시
+<Input
+  type="number"
+  value={distance}
+  onChange={(e) => setDistance(e.target.value)}
+  unit="km"
+  placeholder="거리"
+/>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('react.validation.title')}</div>
+          <div className={styles.inputGroup}>
+            <InputComponent
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              validator={z.string().email('올바른 이메일을 입력하세요')}
+              placeholder="이메일을 입력하세요"
+            />
+          </div>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('react.icons.title')}</div>
+          <div className={styles.inputGroup}>
+            <InputComponent
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              withIcon="icon-search"
+              placeholder="검색..."
+            />
+            <InputComponent
+              value=""
+              withRightIcon="icon-mail"
+              placeholder="이메일"
+            />
+          </div>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('react.unit.title')}</div>
+          <div className={styles.inputGroup}>
+            <InputComponent
+              type="number"
+              value={distance}
+              onChange={(e) => setDistance(e.target.value)}
+              unit="km"
+              placeholder="거리"
+            />
+          </div>
+        </div>
       </section>
 
       <section className={styles.section}>

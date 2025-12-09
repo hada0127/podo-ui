@@ -1,11 +1,22 @@
 {
   "name": "Button",
   "category": "atom",
-  "description": "Styled button with themes and variants (SCSS only)",
-  "scssOnly": true,
+  "description": "Styled button with themes and variants",
+  "scssOnly": false,
   "import": {
+    "react": "import { Button } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/button/class'"
   },
+  "props": [
+    { "name": "theme", "type": "'default' | 'primary' | 'default-deep' | 'info' | 'link' | 'success' | 'warning' | 'danger'", "required": false, "default": "default", "description": "Theme color" },
+    { "name": "variant", "type": "'solid' | 'fill' | 'border' | 'text'", "required": false, "default": "solid", "description": "Style variant" },
+    { "name": "size", "type": "'xxs' | 'xs' | 'sm' | 'md' | 'lg'", "required": false, "default": "sm", "description": "Size" },
+    { "name": "icon", "type": "string", "required": false, "description": "Left icon class name" },
+    { "name": "rightIcon", "type": "string", "required": false, "description": "Right icon class name" },
+    { "name": "loading", "type": "boolean", "required": false, "description": "Loading state" },
+    { "name": "disabled", "type": "boolean", "required": false, "description": "Disabled state" },
+    { "name": "textAlign", "type": "'left' | 'center' | 'right'", "required": false, "description": "Text alignment" }
+  ],
   "cssClasses": {
     "themes": [
       { "class": "(default)", "description": "Gray button" },
@@ -23,6 +34,13 @@
       { "class": "border", "description": "Transparent with border" },
       { "class": "text", "description": "Text only, no background/border" }
     ],
+    "sizes": [
+      { "class": "xxs", "description": "Extra extra small" },
+      { "class": "xs", "description": "Extra small" },
+      { "class": "(default)", "description": "Small (default)" },
+      { "class": "md", "description": "Medium" },
+      { "class": "lg", "description": "Large" }
+    ],
     "alignment": [
       { "class": "text-left", "description": "Left-align content" },
       { "class": "text-right", "description": "Right-align content" }
@@ -32,36 +50,37 @@
     "hover (lighter/darker)",
     "active/pressed",
     "focus-visible (outline ring)",
-    "disabled (grayed out)"
+    "disabled (grayed out)",
+    "loading (shows spinner)"
   ],
-  "htmlUsage": {
-    "basic": "<button>Default</button>",
-    "primary": "<button class=\"primary\">Primary</button>",
-    "outline": "<button class=\"primary border\">Outline</button>",
-    "textOnly": "<button class=\"danger text\">Delete</button>",
-    "withIcon": "<button class=\"primary\"><i class=\"icon-plus\"></i> Add</button>",
-    "disabled": "<button class=\"primary\" disabled>Disabled</button>"
-  },
   "examples": [
     {
-      "title": "Primary solid",
+      "title": "React Primary",
+      "code": "<Button theme=\"primary\">Submit</Button>"
+    },
+    {
+      "title": "React with Icon",
+      "code": "<Button theme=\"success\" icon=\"icon-check\">Confirm</Button>"
+    },
+    {
+      "title": "React Loading",
+      "code": "<Button theme=\"primary\" loading>Processing...</Button>"
+    },
+    {
+      "title": "React Sizes",
+      "code": "<Button theme=\"primary\" size=\"lg\">Large</Button>"
+    },
+    {
+      "title": "HTML Primary solid",
       "code": "<button class=\"primary\">Submit</button>"
     },
     {
-      "title": "Success outline",
+      "title": "HTML Success outline",
       "code": "<button class=\"success border\">Approve</button>"
     },
     {
-      "title": "Danger text",
-      "code": "<button class=\"danger text\">Delete</button>"
-    },
-    {
-      "title": "With icon",
+      "title": "HTML With icon",
       "code": "<button class=\"primary\"><i class=\"icon-save\"></i> Save</button>"
-    },
-    {
-      "title": "Fill style",
-      "code": "<button class=\"info fill\">Info</button>"
     }
   ],
   "related": []

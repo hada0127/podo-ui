@@ -1,10 +1,35 @@
 {
   "name": "Checkbox & Radio",
   "category": "atom",
-  "description": "Styled checkbox and radio inputs (SCSS only)",
-  "scssOnly": true,
+  "description": "Styled checkbox and radio inputs with React components",
+  "scssOnly": false,
   "import": {
+    "react": "import { Checkbox, Radio } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/form/checkbox-radio'"
+  },
+  "props": {
+    "Checkbox": [
+      { "name": "checked", "type": "boolean", "required": false, "description": "Checked state" },
+      { "name": "indeterminate", "type": "boolean", "required": false, "description": "Indeterminate state for select all pattern" },
+      { "name": "label", "type": "string", "required": false, "description": "Label text" },
+      { "name": "disabled", "type": "boolean", "required": false, "description": "Disabled state" },
+      { "name": "onChange", "type": "(e: ChangeEvent) => void", "required": false, "description": "Change callback" }
+    ],
+    "Radio": [
+      { "name": "checked", "type": "boolean", "required": false, "description": "Checked state" },
+      { "name": "name", "type": "string", "required": true, "description": "Group name (required for grouping)" },
+      { "name": "value", "type": "string", "required": true, "description": "Radio value" },
+      { "name": "label", "type": "string", "required": false, "description": "Label text" },
+      { "name": "disabled", "type": "boolean", "required": false, "description": "Disabled state" },
+      { "name": "onChange", "type": "(e: ChangeEvent) => void", "required": false, "description": "Change callback" }
+    ],
+    "Radio.Group": [
+      { "name": "name", "type": "string", "required": true, "description": "Group name" },
+      { "name": "value", "type": "string", "required": false, "description": "Current selected value" },
+      { "name": "options", "type": "Array<{value, label, disabled?}>", "required": true, "description": "Option list" },
+      { "name": "vertical", "type": "boolean", "required": false, "description": "Vertical layout" },
+      { "name": "onChange", "type": "(value: string) => void", "required": false, "description": "Change callback" }
+    ]
   },
   "htmlUsage": {
     "checkbox": "<input type=\"checkbox\" id=\"agree\" />\n<label for=\"agree\">I agree</label>",
@@ -37,16 +62,24 @@
   ],
   "examples": [
     {
-      "title": "Checkbox",
+      "title": "React Checkbox",
+      "code": "<Checkbox label=\"Accept terms\" checked={checked} onChange={(e) => setChecked(e.target.checked)} />"
+    },
+    {
+      "title": "React Checkbox Indeterminate",
+      "code": "<Checkbox label=\"Select All\" indeterminate={true} />"
+    },
+    {
+      "title": "React Radio.Group",
+      "code": "<Radio.Group name=\"plan\" value={selected} onChange={setSelected} options={[{value: 'free', label: 'Free'}, {value: 'pro', label: 'Pro'}]} />"
+    },
+    {
+      "title": "HTML Checkbox",
       "code": "<label>\n  <input type=\"checkbox\" />\n  <span>Accept terms</span>\n</label>"
     },
     {
-      "title": "Radio group",
+      "title": "HTML Radio group",
       "code": "<label><input type=\"radio\" name=\"plan\" value=\"free\" /><span>Free</span></label>\n<label><input type=\"radio\" name=\"plan\" value=\"pro\" /><span>Pro</span></label>"
-    },
-    {
-      "title": "Indeterminate",
-      "code": "<input type=\"checkbox\" id=\"all\" />\n<script>document.getElementById('all').indeterminate = true;</script>"
     }
   ],
   "related": ["toggle", "field"]

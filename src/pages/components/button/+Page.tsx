@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button as ButtonComponent } from 'podo-ui';
 import styles from './Page.module.scss';
 
 export default function Button() {
   const { t } = useTranslation('button');
+  const [loading, setLoading] = useState(false);
 
   const variants = [
     { name: 'primary', key: 'primary' },
@@ -38,6 +41,71 @@ export default function Button() {
       <section className={styles.section}>
         <h1>{t('title')}</h1>
         <p>{t('description')}</p>
+      </section>
+
+      <section className={styles.section}>
+        <h2>React Component</h2>
+        <p>podo-ui React 컴포넌트를 사용한 예제입니다.</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>React</div>
+          <pre><code>{`import { Button } from 'podo-ui';
+
+// Basic
+<Button theme="primary">Primary</Button>
+<Button theme="danger" variant="border">Danger Border</Button>
+
+// With Icons
+<Button theme="primary" icon="icon-plus">Create</Button>
+<Button theme="success" icon="icon-check" rightIcon="icon-arrow-right">Confirm</Button>
+
+// Sizes
+<Button theme="primary" size="xxs">XXS</Button>
+<Button theme="primary" size="lg">Large</Button>
+
+// Loading
+<Button theme="primary" loading>Loading...</Button>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>Button Demo</div>
+          <div className={styles.buttonGroup}>
+            <ButtonComponent theme="primary">Primary</ButtonComponent>
+            <ButtonComponent theme="success">Success</ButtonComponent>
+            <ButtonComponent theme="danger" variant="border">Danger Border</ButtonComponent>
+            <ButtonComponent theme="info" variant="fill">Info Fill</ButtonComponent>
+            <ButtonComponent theme="warning" variant="text">Warning Text</ButtonComponent>
+          </div>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>With Icons & Loading</div>
+          <div className={styles.buttonGroup}>
+            <ButtonComponent theme="primary" icon="icon-plus">Create</ButtonComponent>
+            <ButtonComponent theme="success" icon="icon-check">Confirm</ButtonComponent>
+            <ButtonComponent
+              theme="primary"
+              loading={loading}
+              onClick={() => {
+                setLoading(true);
+                setTimeout(() => setLoading(false), 2000);
+              }}
+            >
+              {loading ? 'Loading...' : 'Click to Load'}
+            </ButtonComponent>
+          </div>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>Sizes</div>
+          <div className={styles.sizeDemo}>
+            <ButtonComponent theme="primary" size="xxs">XXS</ButtonComponent>
+            <ButtonComponent theme="primary" size="xs">XS</ButtonComponent>
+            <ButtonComponent theme="primary" size="sm">SM (Default)</ButtonComponent>
+            <ButtonComponent theme="primary" size="md">MD</ButtonComponent>
+            <ButtonComponent theme="primary" size="lg">LG</ButtonComponent>
+          </div>
+        </div>
       </section>
 
       <section className={styles.section}>

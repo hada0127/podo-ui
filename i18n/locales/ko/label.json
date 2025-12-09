@@ -1,0 +1,50 @@
+{
+  "title": "라벨",
+  "description": "폼 입력 필드를 설명하는 라벨 컴포넌트입니다.",
+  "demo": {
+    "title": "실제 예제:",
+    "codeHeader": "HTML"
+  },
+  "basicUsage": {
+    "title": "기본 사용법",
+    "description": "라벨은 폼 요소에 대한 설명을 제공합니다.",
+    "examples": {
+      "username": "사용자 이름",
+      "email": "이메일",
+      "password": "비밀번호"
+    }
+  },
+  "sizes": {
+    "title": "사이즈",
+    "description": "라벨은 sm, md(기본), lg 세 가지 사이즈를 지원합니다.",
+    "small": "작은 라벨",
+    "medium": "중간 라벨 (기본)",
+    "large": "큰 라벨"
+  },
+  "styles": {
+    "title": "스타일 변형",
+    "description": "semibold와 disabled 스타일을 적용할 수 있습니다.",
+    "semibold": "굵은 라벨",
+    "disabled": "비활성화된 라벨",
+    "normal": "일반 라벨"
+  },
+  "required": {
+    "title": "필수 표시",
+    "description": "required 속성을 사용하여 필수 입력 필드임을 표시합니다.",
+    "email": "이메일",
+    "phone": "연락처"
+  },
+  "withInput": {
+    "title": "입력 필드와 함께 사용",
+    "description": "htmlFor 속성으로 입력 필드와 연결하면 라벨 클릭 시 입력 필드에 포커스됩니다.",
+    "email": "이메일 주소",
+    "username": "사용자 이름"
+  },
+  "scss": {
+    "title": "SCSS 스타일",
+    "description": "podo-ui의 믹스인을 사용하여 라벨 스타일을 적용할 수 있습니다."
+  },
+  "code": {
+    "labelStyle": "라벨 스타일"
+  }
+}
