@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 import { ToastProvider, useToast } from '../../../../react/molecule/toast-provider';
 
@@ -143,17 +144,18 @@ export default function Toast() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<div class="toast">
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<div class="toast">
   <i class="icon-info"></i>
   <div class="toast-content">
     <div class="toast-header">Header</div>
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
   <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -193,9 +195,10 @@ export default function Toast() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('sections.styleProperties.commentBorderFalse')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('sections.styleProperties.commentBorderFalse')} -->
 <div class="toast info">
   <i class="icon-info"></i>
   <div class="toast-content">
@@ -203,8 +206,8 @@ export default function Toast() {
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
   <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
 
         <h3>{t('sections.styleProperties.borderTrueOutline')}</h3>
         <p>
@@ -225,9 +228,10 @@ export default function Toast() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('sections.styleProperties.commentBorderTrue')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('sections.styleProperties.commentBorderTrue')} -->
 <div class="toast border info">
   <i class="icon-info"></i>
   <div class="toast-content">
@@ -235,8 +239,8 @@ export default function Toast() {
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
   <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -263,17 +267,18 @@ export default function Toast() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('sections.longStyle.commentLongTrueBorderFalse')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('sections.longStyle.commentLongTrueBorderFalse')} -->
 <div class="toast long info">
   <i class="icon-info"></i>
   <div class="toast-content">
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
   <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
 
         <h3>{t('sections.longStyle.longTrueBorderTrue')}</h3>
         <p>
@@ -293,17 +298,18 @@ export default function Toast() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('sections.longStyle.commentLongTrueBorderTrue')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('sections.longStyle.commentLongTrueBorderTrue')} -->
 <div class="toast long border success">
   <i class="icon-check"></i>
   <div class="toast-content">
     <div class="toast-body">${t('sections.longStyle.fileUploadSuccess')}</div>
   </div>
   <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -353,9 +359,10 @@ export default function Toast() {
           ))}
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- Default -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- Default -->
 <div class="toast default">...</div>
 
 <!-- Info -->
@@ -368,8 +375,8 @@ export default function Toast() {
 <div class="toast warning">...</div>
 
 <!-- Danger -->
-<div class="toast danger">...</div>`}</code></pre>
-        </div>
+<div class="toast danger">...</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -398,9 +405,10 @@ export default function Toast() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<div class="toast long info">
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<div class="toast long info">
   <i class="icon-info"></i>
   <div class="toast-content">
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
@@ -415,8 +423,8 @@ export default function Toast() {
     <div class="toast-body">${t('sections.longStyle.fileUploadSuccess')}</div>
   </div>
   <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -443,16 +451,17 @@ export default function Toast() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<div class="toast info">
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<div class="toast info">
   <i class="icon-info"></i>
   <div class="toast-content">
     <div class="toast-body">Lorem ipsum dolor sit amet</div>
   </div>
   <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -469,9 +478,10 @@ export default function Toast() {
         <h3>{t('sections.reactUsage.step1Title')}</h3>
         <p>{t('sections.reactUsage.step1Description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>app/layout.tsx</div>
-          <pre><code>{`import { ToastProvider } from 'podo-ui';
+        <CodeBlock
+          title="app/layout.tsx"
+          language="tsx"
+          code={`import { ToastProvider } from 'podo-ui';
 
 export default function RootLayout({ children }) {
   return (
@@ -483,15 +493,16 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <h3>{t('sections.reactUsage.step2Title')}</h3>
         <p>{t('sections.reactUsage.step2Description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.tsx</div>
-          <pre><code>{`import { useToast } from 'podo-ui';
+        <CodeBlock
+          title="component.tsx"
+          language="tsx"
+          code={`import { useToast } from 'podo-ui';
 
 function MyComponent() {
   const { showToast } = useToast();
@@ -508,13 +519,14 @@ function MyComponent() {
   };
 
   return <button onClick={handleClick}>${t('sections.reactUsage.saveButton')}</button>;
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <h3>{t('sections.reactUsage.step3Title')}</h3>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`interface ToastOptions {
+        <CodeBlock
+          title="TypeScript"
+          language="typescript"
+          code={`interface ToastOptions {
   message: string;           // ${t('sections.reactUsage.messageRequired')}
   header?: string;           // ${t('sections.reactUsage.headerOptional')}
   theme?: 'default' | 'primary' | 'info' | 'success' | 'warning' | 'danger';
@@ -525,13 +537,14 @@ function MyComponent() {
   position?: 'top-left' | 'top-center' | 'top-right'
            | 'center-left' | 'center' | 'center-right'
            | 'bottom-left' | 'bottom-center' | 'bottom-right';
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <h3>{t('sections.reactUsage.step4Title')}</h3>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// ${t('sections.reactUsage.exampleComment1')}
+        <CodeBlock
+          title="TypeScript"
+          language="typescript"
+          code={`// ${t('sections.reactUsage.exampleComment1')}
 showToast({
   message: '${t('sections.reactUsage.exampleMessage1')}',
   theme: 'success',
@@ -570,17 +583,18 @@ showToast({
   theme: 'warning',
   duration: 0,
   position: 'center',
-});`}</code></pre>
-        </div>
+});`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('sections.scssUsage.title')}</h2>
         <p>{t('sections.scssUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .customToast {
   display: flex;
@@ -618,8 +632,8 @@ showToast({
       color: color('text-action-hover');
     }
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
       </>
     </ToastProvider>

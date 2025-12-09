@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Radius() {
@@ -16,13 +17,14 @@ export default function Radius() {
           {t('basicUsage.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<div class="r-0">` + t('code.noRadius') + `</div>
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<div class="r-0">` + t('code.noRadius') + `</div>
 <div class="r-2">` + t('code.radius4px') + `</div>
 <div class="r-4">` + t('code.radius8px') + `</div>
-<div class="r-full">` + t('code.fullyRound') + `</div>`}</code></pre>
-        </div>
+<div class="r-full">` + t('code.fullyRound') + `</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -72,9 +74,10 @@ export default function Radius() {
         <h2>{t('scssUsage.title')}</h2>
         <p>{t('scssUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .button {
   border-radius: r(2);  // 4px
@@ -97,8 +100,8 @@ export default function Radius() {
 .badge {
   border-radius: r(6);  // 20px
   padding: s(2) s(4);
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Border() {
@@ -16,9 +17,10 @@ export default function Border() {
           {t('basicUsage.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ` + t('code.defaultBorder') + ` -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ` + t('code.defaultBorder') + ` -->
 <div class="border">Border</div>
 
 <!-- ` + t('code.directionalBorder') + ` -->
@@ -28,8 +30,8 @@ export default function Border() {
 <div class="border-left">` + t('code.leftBorder') + `</div>
 
 <!-- ` + t('code.noBorder') + ` -->
-<div class="border-none">` + t('code.noBorder') + `</div>`}</code></pre>
-        </div>
+<div class="border-none">` + t('code.noBorder') + `</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('basicUsage.demoTitle')}</div>
@@ -57,9 +59,10 @@ export default function Border() {
         <h2>{t('scssUsage.title')}</h2>
         <p>{t('scssUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .card {
   border: 1px solid color(border);
@@ -82,8 +85,8 @@ export default function Border() {
   &:not(:last-child) {
     border-bottom: 1px solid color(border);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -108,9 +111,10 @@ export default function Border() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .primaryBorder {
   border: 2px solid color(primary);
@@ -126,8 +130,8 @@ export default function Border() {
 
 .dangerBorder {
   border: 2px solid color(danger);
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>

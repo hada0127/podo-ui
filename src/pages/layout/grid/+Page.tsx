@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Grid() {
@@ -51,17 +52,18 @@ export default function Grid() {
         <h2>{t('basicGrid.title')}</h2>
         <p>{t('basicGrid.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<section class="grid">
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<section class="grid">
   <div class="w-4">${t('code.columns')}</div>
   <div class="w-4">${t('code.columns')}</div>
   <div class="w-4">${t('code.columns')}</div>
   <div class="w-6">${t('code.sixColumns')}</div>
   <div class="w-6">${t('code.sixColumns')}</div>
   <div class="w-12">${t('code.twelveColumns')}</div>
-</section>`}</code></pre>
-        </div>
+</section>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('basicGrid.example')}</div>
@@ -116,9 +118,10 @@ export default function Grid() {
         <h2>{t('fixedGrid.title')}</h2>
         <p>{t('fixedGrid.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('code.twoColumnFixed')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('code.twoColumnFixed')} -->
 <section class="grid grid-fix-2">
   <div class="w-1_2">50%</div>
   <div class="w-1_2">50%</div>
@@ -134,8 +137,8 @@ export default function Grid() {
 <section class="grid grid-fix-4">
   <div class="w-1_4">25%</div>
   <div class="w-3_4">75%</div>
-</section>`}</code></pre>
-        </div>
+</section>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('fixedGrid.twoColumn')}</div>
@@ -175,15 +178,16 @@ export default function Grid() {
         <h2>{t('fullWidth.title')}</h2>
         <p>{t('fullWidth.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<section class="grid">
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<section class="grid">
   <div class="w-4">${t('code.fourColumns')}</div>
   <div class="w-4">${t('code.fourColumns')}</div>
   <div class="w-4">${t('code.fourColumns')}</div>
   <div class="w-full">${t('code.fullWidth')}</div>
-</section>`}</code></pre>
-        </div>
+</section>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('fullWidth.example')}</div>
@@ -217,17 +221,18 @@ export default function Grid() {
         <h2>{t('objectWidth.title')}</h2>
         <p>{t('objectWidth.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- grid 외부에서 사용 -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- grid 외부에서 사용 -->
 <div>
   <div class="w-3">25% width</div>
   <div class="w-6">50% width</div>
   <div class="w-9">75% width</div>
   <div class="w-12">100% width</div>
   <div class="w-full">100% width</div>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('objectWidth.example')}</div>
@@ -250,13 +255,14 @@ export default function Grid() {
         <h2>{t('pixelWidth.title')}</h2>
         <p>{t('pixelWidth.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<div class="w-100px">100px width</div>
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<div class="w-100px">100px width</div>
 <div class="w-200px">200px width</div>
 <div class="w-300px">300px width</div>
-<div class="w-500px">500px width</div>`}</code></pre>
-        </div>
+<div class="w-500px">500px width</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('pixelWidth.example')}</div>

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Elevation() {
@@ -16,9 +17,10 @@ export default function Elevation() {
           {t('background.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .container {
   background: color(bg-modal);
@@ -38,8 +40,8 @@ export default function Elevation() {
 
 .disabled {
   background: color(bg-disabled);
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('background.demoTitle')}</div>
@@ -93,9 +95,10 @@ export default function Elevation() {
         <h2>{t('shadow.title')}</h2>
         <p>{t('shadow.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .card {
   background: color(bg-modal);
@@ -113,8 +116,8 @@ export default function Elevation() {
   &:hover {
     box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('shadow.demoTitle')}</div>

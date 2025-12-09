@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Display() {
@@ -16,9 +17,10 @@ export default function Display() {
           {t('hideClasses.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ` + t('code.hideAll') + ` -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ` + t('code.hideAll') + ` -->
 <div class="hide">` + t('code.alwaysHidden') + `</div>
 
 <!-- ` + t('code.hidePCOnly') + ` -->
@@ -28,8 +30,8 @@ export default function Display() {
 <div class="hide-tb">` + t('code.hideTBOnlyText') + `</div>
 
 <!-- ` + t('code.hideMOOnly') + ` -->
-<div class="hide-mo">` + t('code.hideMOOnlyText') + `</div>`}</code></pre>
-        </div>
+<div class="hide-mo">` + t('code.hideMOOnlyText') + `</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('hideClasses.demoTitle')}</div>
@@ -61,9 +63,10 @@ export default function Display() {
         <h2>{t('mediaQuery.title')}</h2>
         <p>{t('mediaQuery.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .container {
   padding: s(8);
@@ -99,8 +102,8 @@ export default function Display() {
   @include mo {
     display: block; // ` + t('code.showMobile') + `
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -144,9 +147,10 @@ export default function Display() {
         <h2>{t('realWorld.title')}</h2>
         <p>{t('realWorld.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ` + t('code.desktopNav') + ` -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ` + t('code.desktopNav') + ` -->
 <nav class="hide-mo">
   <a href="/">` + t('code.home') + `</a>
   <a href="/about">` + t('code.about') + `</a>
@@ -162,8 +166,8 @@ export default function Display() {
 <section class="grid">
   <div class="w-4 hide-mo">` + t('code.sidebarHideMobile') + `</div>
   <div class="w-8">` + t('code.mainContent') + `</div>
-</section>`}</code></pre>
-        </div>
+</section>`}
+        />
       </section>
     </>
   );

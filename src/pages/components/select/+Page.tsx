@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select as SelectComponent } from 'podo-ui';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Select() {
@@ -38,9 +39,10 @@ export default function Select() {
         <h2>React Component</h2>
         <p>podo-ui React 컴포넌트를 사용한 예제입니다.</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>React</div>
-          <pre><code>{`import { Select } from 'podo-ui';
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`import { Select } from 'podo-ui';
 
 const options = [
   { value: 'option1', label: '옵션 1' },
@@ -63,8 +65,8 @@ const options = [
   options={roleOptions}
   withIcon="icon-user"
   placeholder="역할 선택"
-/>`}</code></pre>
-        </div>
+/>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>Select Demo</div>
@@ -104,15 +106,16 @@ const options = [
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<select>
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<select>
   <option value="" disabled selected>${t('basicUsage.options.placeholder')}</option>
   <option value="1">${t('basicUsage.options.option1')}</option>
   <option value="2">${t('basicUsage.options.option2')}</option>
   <option value="3">${t('basicUsage.options.option3')}</option>
-</select>`}</code></pre>
-        </div>
+</select>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -140,15 +143,16 @@ const options = [
         <h2>{t('placeholder.title')}</h2>
         <p>{t('placeholder.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<select>
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<select>
   <option value="" disabled selected>${t('placeholder.categoryPlaceholder')}</option>
   <option value="electronics">${t('placeholder.categories.electronics')}</option>
   <option value="fashion">${t('placeholder.categories.fashion')}</option>
   <option value="food">${t('placeholder.categories.food')}</option>
-</select>`}</code></pre>
-        </div>
+</select>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -167,9 +171,10 @@ const options = [
         <h2>{t('icons.title')}</h2>
         <p>{t('icons.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<div class="with-icon">
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<div class="with-icon">
   <i class="icon-user"></i>
   <select>
     <option value="" disabled selected>${t('icons.userPlaceholder')}</option>
@@ -187,8 +192,8 @@ const options = [
     <option value="en">${t('icons.languages.en')}</option>
     <option value="ja">${t('icons.languages.ja')}</option>
   </select>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -253,9 +258,10 @@ const options = [
         <h2>{t('scss.title')}</h2>
         <p>{t('scss.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .customSelect {
   padding: s(3) s(7) s(3) s(5);
@@ -300,8 +306,8 @@ const options = [
   > select {
     padding-left: s(8);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
     </>
   );

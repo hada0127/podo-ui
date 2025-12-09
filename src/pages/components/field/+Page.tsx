@@ -1,5 +1,6 @@
 import Field from '../../../../react/molecule/field';
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from '../input/Page.module.scss';
 
 export default function FieldPage() {
@@ -42,9 +43,10 @@ export default function FieldPage() {
         <h2>{t('react.title')}</h2>
         <p>{t('react.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`import { Field } from 'podo-ui';
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="tsx"
+          code={`import { Field } from 'podo-ui';
 
 export default function MyForm() {
   return (
@@ -70,8 +72,8 @@ export default function MyForm() {
       </Field>
     </div>
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -88,9 +90,10 @@ export default function MyForm() {
         <h2>{t('scss.title')}</h2>
         <p>{t('scss.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>field.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="field.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .style {
   width: 100%;
@@ -98,7 +101,7 @@ export default function MyForm() {
   flex-direction: column;
   gap: s(3);
 
-  // ` + t('code.childElement') + `
+  // ${t('code.childElement')}
   > div.child {
     width: 100%;
 
@@ -108,13 +111,13 @@ export default function MyForm() {
     }
   }
 
-  // ` + t('code.helperText') + `
+  // ${t('code.helperText')}
   > div.helper {
     @include p4;
     color: color(text-sub);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
     </>
   );

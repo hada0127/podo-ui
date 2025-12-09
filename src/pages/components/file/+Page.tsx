@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import FileInput from '../../../react/atom/file';
+import FileInput from '../../../components/FileInput';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from '../input/Page.module.scss';
 
 export default function File() {
@@ -18,9 +19,10 @@ export default function File() {
         <h2>{t('react.title')}</h2>
         <p>{t('react.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>React</div>
-          <pre><code>{`import { FileInput } from 'podo-ui'
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`import { FileInput } from 'podo-ui'
 
 const [files, setFiles] = useState<File[]>([]);
 
@@ -35,8 +37,8 @@ const [files, setFiles] = useState<File[]>([]);
   multiple
   accept="image/*"
   onFileSelect={(files) => setFiles(files)}
-/>`}</code></pre>
-        </div>
+/>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('react.callback.title')}</div>
@@ -60,13 +62,14 @@ const [files, setFiles] = useState<File[]>([]);
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<input type="file" />
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<input type="file" />
 <input type="file" multiple />
 <input type="file" accept="image/*" />
-<input type="file" disabled />`}</code></pre>
-        </div>
+<input type="file" disabled />`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -83,9 +86,10 @@ const [files, setFiles] = useState<File[]>([]);
         <h2>{t('fileTypes.title')}</h2>
         <p>{t('fileTypes.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<!-- 이미지만 -->
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<!-- 이미지만 -->
 <input type="file" accept="image/*" />
 
 <!-- PDF만 -->
@@ -95,19 +99,20 @@ const [files, setFiles] = useState<File[]>([]);
 <input type="file" accept=".doc,.docx,.pdf" />
 
 <!-- 비디오만 -->
-<input type="file" accept="video/*" />`}</code></pre>
-        </div>
+<input type="file" accept="video/*" />`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('multiple.title')}</h2>
         <p>{t('multiple.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<input type="file" multiple />
-<input type="file" accept="image/*" multiple />`}</code></pre>
-        </div>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<input type="file" multiple />
+<input type="file" accept="image/*" multiple />`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -119,9 +124,10 @@ const [files, setFiles] = useState<File[]>([]);
 
       <section className={styles.section}>
         <h2>{t('scss.title')}</h2>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .fileInput {
   width: 100%;
@@ -154,8 +160,8 @@ const [files, setFiles] = useState<File[]>([]);
       color: color(text-action-disabled);
     }
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
     </>
   );

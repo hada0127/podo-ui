@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Typography() {
@@ -122,9 +123,10 @@ export default function Typography() {
         <h2>{t('sections.cssClasses.title')}</h2>
         <p>{t('sections.cssClasses.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
-          <pre><code>{`<!-- Display 스타일 -->
+        <CodeBlock
+          title={t('sections.cssClasses.codeHeader')}
+          language="html"
+          code={`<!-- Display 스타일 -->
 <div class="display1">대형 제목</div>
 <div class="display4">중형 제목</div>
 <div class="display7">소형 제목</div>
@@ -133,8 +135,8 @@ export default function Typography() {
 <p class="p1">큰 본문 텍스트</p>
 <p class="p3">일반 본문 텍스트</p>
 <p class="p3-semibold">강조된 본문 텍스트</p>
-<p class="p5">작은 본문 텍스트</p>`}</code></pre>
-        </div>
+<p class="p5">작은 본문 텍스트</p>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('sections.cssClasses.demoTitle')}</div>
@@ -149,9 +151,10 @@ export default function Typography() {
         <h2>{t('sections.scssUsage.title')}</h2>
         <p>{t('sections.scssUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.scssUsage.codeHeader')}</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title={t('sections.scssUsage.codeHeader')}
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .title {
   @include display3;
@@ -171,25 +174,26 @@ export default function Typography() {
 .caption {
   @include p5;
   color: color(default);
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('sections.fontFamily.title')}</h2>
         <p>{t('sections.fontFamily.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.fontFamily.codeHeader')}</div>
-          <pre><code>{`:root {
+        <CodeBlock
+          title={t('sections.fontFamily.codeHeader')}
+          language="css"
+          code={`:root {
   --base-font-family: 'Pretendard', sans-serif;
 }
 
 /* 커스텀 폰트 사용 */
 :root {
   --base-font-family: 'Your Custom Font', -apple-system, sans-serif;
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>

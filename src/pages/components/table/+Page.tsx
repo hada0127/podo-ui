@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Table() {
@@ -16,9 +17,10 @@ export default function Table() {
           {t('basicUsage.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('basicUsage.codeHeader')}</div>
-          <pre><code>{`<table>
+        <CodeBlock
+          title={t('basicUsage.codeHeader')}
+          language="html"
+          code={`<table>
   <thead>
     <tr>
       <th>${t('basicUsage.table.name')}</th>
@@ -38,8 +40,8 @@ export default function Table() {
       <td>${t('basicUsage.table.data.user2.role')}</td>
     </tr>
   </tbody>
-</table>`}</code></pre>
-        </div>
+</table>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('basicUsage.demoTitle')}</div>
@@ -222,9 +224,10 @@ export default function Table() {
 
       <section className={styles.section}>
         <h2>{t('scssUsage.title')}</h2>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('scssUsage.codeHeader')}</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title={t('scssUsage.codeHeader')}
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 table {
   width: 100%;
@@ -268,8 +271,8 @@ table {
       }
     }
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
     </>
   );

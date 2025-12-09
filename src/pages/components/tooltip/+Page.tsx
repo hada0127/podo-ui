@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import Tooltip from '../../../../react/atom/tooltip';
 import styles from '../input/Page.module.scss';
 
@@ -28,9 +29,10 @@ export default function TooltipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>basic.tsx</div>
-          <pre><code>{`import { Tooltip } from 'podo-ui';
+        <CodeBlock
+          title="basic.tsx"
+          language="tsx"
+          code={`import { Tooltip } from 'podo-ui';
 
 // Wrap a button
 <Tooltip content="추가 정보입니다" variant="default">
@@ -40,8 +42,8 @@ export default function TooltipPage() {
 // Wrap an icon
 <Tooltip content="중요한 안내사항" variant="info">
   <i className="icon-info" />
-</Tooltip>`}</code></pre>
-        </div>
+</Tooltip>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -66,9 +68,10 @@ export default function TooltipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>variants.tsx</div>
-          <pre><code>{`// Default variant (dark gray background)
+        <CodeBlock
+          title="variants.tsx"
+          language="tsx"
+          code={`// Default variant (dark gray background)
 <Tooltip content="기본 툴팁" variant="default">
   <button>Default</button>
 </Tooltip>
@@ -76,8 +79,8 @@ export default function TooltipPage() {
 // Info variant (blue background)
 <Tooltip content="정보 툴팁" variant="info">
   <button>Info</button>
-</Tooltip>`}</code></pre>
-        </div>
+</Tooltip>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -144,9 +147,10 @@ export default function TooltipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>positions.tsx</div>
-          <pre><code>{`// Top positions
+        <CodeBlock
+          title="positions.tsx"
+          language="tsx"
+          code={`// Top positions
 <Tooltip content="툴팁" position="topLeft"><button>Top Left</button></Tooltip>
 <Tooltip content="툴팁" position="top"><button>Top</button></Tooltip>
 <Tooltip content="툴팁" position="topRight"><button>Top Right</button></Tooltip>
@@ -164,8 +168,8 @@ export default function TooltipPage() {
 // Right positions
 <Tooltip content="툴팁" position="rightTop"><button>Right Top</button></Tooltip>
 <Tooltip content="툴팁" position="right"><button>Right</button></Tooltip>
-<Tooltip content="툴팁" position="rightBottom"><button>Right Bottom</button></Tooltip>`}</code></pre>
-        </div>
+<Tooltip content="툴팁" position="rightBottom"><button>Right Bottom</button></Tooltip>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -207,9 +211,10 @@ export default function TooltipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>custom-content.tsx</div>
-          <pre><code>{`// With custom JSX structure
+        <CodeBlock
+          title="custom-content.tsx"
+          language="tsx"
+          code={`// With custom JSX structure
 <Tooltip content={
   <>
     <strong>도움말</strong>
@@ -234,8 +239,8 @@ export default function TooltipPage() {
 // With custom offset (default: 8px)
 <Tooltip content="더 멀리 떨어진 툴팁" offset={20}>
   <button>Offset 20px</button>
-</Tooltip>`}</code></pre>
-        </div>
+</Tooltip>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -254,9 +259,10 @@ export default function TooltipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>controlled.tsx</div>
-          <pre><code>{`// Always visible (without hover)
+        <CodeBlock
+          title="controlled.tsx"
+          language="tsx"
+          code={`// Always visible (without hover)
 <Tooltip content="항상 표시" isVisible={true}>
   <button>Always Visible</button>
 </Tooltip>
@@ -273,8 +279,8 @@ const [show, setShow] = useState(false);
   <button onClick={() => setShow(!show)}>
     Toggle
   </button>
-</Tooltip>`}</code></pre>
-        </div>
+</Tooltip>`}
+        />
       </section>
 
       <section className={styles.section}>

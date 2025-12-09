@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import Avatar from '../../../../react/atom/avatar';
 import styles from '../input/Page.module.scss';
 
@@ -26,9 +27,10 @@ export default function AvatarPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>basic.tsx</div>
-          <pre><code>{`import { Avatar } from 'podo-ui';
+        <CodeBlock
+          title="basic.tsx"
+          language="tsx"
+          code={`import { Avatar } from 'podo-ui';
 
 // Image avatar
 <Avatar type="image" src="/profile.jpg" size={56} />
@@ -40,8 +42,8 @@ export default function AvatarPage() {
 <Avatar type="text" text="AB" size={56} />
 
 // With activity ring
-<Avatar type="image" src="/profile.jpg" size={56} activityRing />`}</code></pre>
-        </div>
+<Avatar type="image" src="/profile.jpg" size={56} activityRing />`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -79,17 +81,18 @@ export default function AvatarPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>types.tsx</div>
-          <pre><code>{`// Image type - displays user photo
+        <CodeBlock
+          title="types.tsx"
+          language="tsx"
+          code={`// Image type - displays user photo
 <Avatar type="image" src="/profile.jpg" size={56} />
 
 // Icon type - displays system icon with gray background
 <Avatar type="icon" icon="icon-user" size={56} />
 
 // Text type - displays initials with gray background
-<Avatar type="text" text="AB" size={56} />`}</code></pre>
-        </div>
+<Avatar type="text" text="AB" size={56} />`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -138,13 +141,14 @@ export default function AvatarPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>sizes.tsx</div>
-          <pre><code>{`// Available sizes: 16, 20, 24, 28, 32, 36, 40, 48, 56
+        <CodeBlock
+          title="sizes.tsx"
+          language="tsx"
+          code={`// Available sizes: 16, 20, 24, 28, 32, 36, 40, 48, 56
 <Avatar type="image" src="/profile.jpg" size={16} />
 <Avatar type="image" src="/profile.jpg" size={32} />
-<Avatar type="image" src="/profile.jpg" size={56} />`}</code></pre>
-        </div>
+<Avatar type="image" src="/profile.jpg" size={56} />`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -169,9 +173,10 @@ export default function AvatarPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>activity-ring.tsx</div>
-          <pre><code>{`// Default state - no ring
+        <CodeBlock
+          title="activity-ring.tsx"
+          language="tsx"
+          code={`// Default state - no ring
 <Avatar type="image" src="/profile.jpg" size={56} />
 
 // Active state - blue ring
@@ -179,8 +184,8 @@ export default function AvatarPage() {
 
 // Works with all types
 <Avatar type="icon" icon="icon-user" size={56} activityRing />
-<Avatar type="text" text="AB" size={56} activityRing />`}</code></pre>
-        </div>
+<Avatar type="text" text="AB" size={56} activityRing />`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -199,9 +204,10 @@ export default function AvatarPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>combinations.tsx</div>
-          <pre><code>{`// Small avatars for list items
+        <CodeBlock
+          title="combinations.tsx"
+          language="tsx"
+          code={`// Small avatars for list items
 <Avatar type="image" src="/user1.jpg" size={32} />
 <Avatar type="icon" icon="icon-user" size={32} />
 <Avatar type="text" text="김" size={32} />
@@ -209,8 +215,8 @@ export default function AvatarPage() {
 // Medium avatars with activity ring
 <Avatar type="image" src="/user2.jpg" size={48} activityRing />
 <Avatar type="icon" icon="icon-user" size={48} activityRing />
-<Avatar type="text" text="AB" size={48} activityRing />`}</code></pre>
-        </div>
+<Avatar type="text" text="AB" size={48} activityRing />`}
+        />
       </section>
 
       <section className={styles.section}>

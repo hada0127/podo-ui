@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Toggle() {
@@ -14,9 +15,10 @@ export default function Toggle() {
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<label>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<label>
   <input type="checkbox" class="toggle" />
   ${t('basicUsage.examples.option')}
 </label>
@@ -34,8 +36,8 @@ export default function Toggle() {
 <label>
   <input type="checkbox" class="toggle" checked disabled />
   ${t('basicUsage.examples.onDisabled')}
-</label>`}</code></pre>
-        </div>
+</label>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -126,9 +128,10 @@ export default function Toggle() {
         <h2>{t('scss.title')}</h2>
         <p>{t('scss.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .toggleWrapper {
   display: flex;
@@ -144,7 +147,7 @@ export default function Toggle() {
   }
 }
 
-// ` + t('code.customToggleStyle') + `
+// ${t('code.customToggleStyle')}
 .toggle {
   appearance: none;
   position: relative;
@@ -188,8 +191,8 @@ export default function Toggle() {
   &:focus-visible:not(:disabled) {
     outline: 4px solid color(primary-outline);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>

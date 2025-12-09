@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Usage() {
@@ -24,11 +25,12 @@ export default function Usage() {
             <button className="info">Info Button</button>
             <button className="danger">Danger Button</button>
           </div>
-          <div className={styles.codeBlock}>
-            <pre><code>{`<button class="primary">Primary Button</button>
+          <CodeBlock
+            language="html"
+            code={`<button class="primary">Primary Button</button>
 <button class="info">Info Button</button>
-<button class="danger">Danger Button</button>`}</code></pre>
-          </div>
+<button class="danger">Danger Button</button>`}
+          />
         </div>
 
         <h3>{t('cssClasses.buttonVariants.title')}</h3>
@@ -38,11 +40,12 @@ export default function Usage() {
             <button className="primary-border">Primary Border</button>
             <button className="primary-text">Primary Text</button>
           </div>
-          <div className={styles.codeBlock}>
-            <pre><code>{`<button class="primary-fill">Primary Fill</button>
+          <CodeBlock
+            language="html"
+            code={`<button class="primary-fill">Primary Fill</button>
 <button class="primary-border">Primary Border</button>
-<button class="primary-text">Primary Text</button>`}</code></pre>
-          </div>
+<button class="primary-text">Primary Text</button>`}
+          />
         </div>
 
         <h3>{t('cssClasses.inputExample.title')}</h3>
@@ -52,11 +55,12 @@ export default function Usage() {
             <input type="text" className="success" placeholder="Success Input" />
             <input type="text" className="danger" placeholder="Danger Input" />
           </div>
-          <div className={styles.codeBlock}>
-            <pre><code>{`<input type="text" placeholder="${t('cssClasses.inputExample.placeholderDefault')}" />
+          <CodeBlock
+            language="html"
+            code={`<input type="text" placeholder="${t('cssClasses.inputExample.placeholderDefault')}" />
 <input type="text" class="success" placeholder="Success Input" />
-<input type="text" class="danger" placeholder="Danger Input" />`}</code></pre>
-          </div>
+<input type="text" class="danger" placeholder="Danger Input" />`}
+          />
         </div>
       </section>
 
@@ -67,8 +71,9 @@ export default function Usage() {
         </p>
 
         <h3>{t('scssFunctions.colorFunction.title')}</h3>
-        <div className={styles.codeBlock}>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .myComponent {
   background: color(primary-base);      // ${t('scssFunctions.colorFunction.comments.primaryColor')}
@@ -78,12 +83,13 @@ export default function Usage() {
   &:hover {
     background: color(primary-hover);   // ${t('scssFunctions.colorFunction.comments.hoverColor')}
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <h3>{t('scssFunctions.spacingFunction.title')}</h3>
-        <div className={styles.codeBlock}>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .myComponent {
   margin: s(4);          // ${t('scssFunctions.spacingFunction.comments.margin')}
@@ -92,23 +98,25 @@ export default function Usage() {
 
   // ${t('scssFunctions.spacingFunction.comments.available')}
   margin-top: s(8);     // ${t('scssFunctions.spacingFunction.comments.marginTop')}
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <h3>{t('scssFunctions.radiusFunction.title')}</h3>
-        <div className={styles.codeBlock}>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .myComponent {
   border-radius: r(2);   // ${t('scssFunctions.radiusFunction.comments.r2')}
   border-radius: r(3);   // ${t('scssFunctions.radiusFunction.comments.r3')}
   border-radius: r(4);   // ${t('scssFunctions.radiusFunction.comments.r4')}
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <h3>{t('scssFunctions.typographyMixin.title')}</h3>
-        <div className={styles.codeBlock}>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .title {
   @include display1;     // ${t('scssFunctions.typographyMixin.comments.display1')}
@@ -124,8 +132,8 @@ export default function Usage() {
 
 .caption {
   @include p5;          // ${t('scssFunctions.typographyMixin.comments.p5')}
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -134,9 +142,10 @@ export default function Usage() {
           {t('reactComponents.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('reactComponents.codeHeader')}</div>
-          <pre><code>{`import { Input, Textarea, Editor, Field } from 'podo-ui';
+        <CodeBlock
+          title={t('reactComponents.codeHeader')}
+          language="tsx"
+          code={`import { Input, Textarea, Editor, Field } from 'podo-ui';
 
 function MyForm() {
   return (
@@ -144,8 +153,8 @@ function MyForm() {
       <Input placeholder="${t('reactComponents.example.placeholder')}" />
     </Field>
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
 
       </section>
 
@@ -155,17 +164,18 @@ function MyForm() {
           {t('theme.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('theme.codeHeader')}</div>
-          <pre><code>{`// ${t('theme.comments.light')}
+        <CodeBlock
+          title={t('theme.codeHeader')}
+          language="javascript"
+          code={`// ${t('theme.comments.light')}
 document.documentElement.setAttribute('data-color-mode', 'light');
 
 // ${t('theme.comments.dark')}
 document.documentElement.setAttribute('data-color-mode', 'dark');
 
 // ${t('theme.comments.system')}
-document.documentElement.setAttribute('data-color-mode', '');`}</code></pre>
-        </div>
+document.documentElement.setAttribute('data-color-mode', '');`}
+        />
 
         <div className={styles.note}>
           <i className="icon-info"></i>

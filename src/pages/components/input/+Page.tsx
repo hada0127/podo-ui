@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input as InputComponent } from 'podo-ui';
 import { z } from 'zod';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Input() {
@@ -21,9 +22,10 @@ export default function Input() {
         <h2>{t('react.title')}</h2>
         <p>{t('react.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>React</div>
-          <pre><code>{`import { Input } from 'podo-ui'
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`import { Input } from 'podo-ui'
 import { z } from 'zod'
 
 // Zod 검증
@@ -49,8 +51,8 @@ import { z } from 'zod'
   onChange={(e) => setDistance(e.target.value)}
   unit="km"
   placeholder="거리"
-/>`}</code></pre>
-        </div>
+/>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('react.validation.title')}</div>
@@ -99,13 +101,14 @@ import { z } from 'zod'
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<input type="text" placeholder="${t('basicUsage.placeholders.text')}" />
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<input type="text" placeholder="${t('basicUsage.placeholders.text')}" />
 <input type="email" placeholder="${t('basicUsage.placeholders.email')}" />
 <input type="password" placeholder="${t('basicUsage.placeholders.password')}" />
-<input type="number" placeholder="${t('basicUsage.placeholders.number')}" />`}</code></pre>
-        </div>
+<input type="number" placeholder="${t('basicUsage.placeholders.number')}" />`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -122,9 +125,10 @@ import { z } from 'zod'
         <h2>{t('types.title')}</h2>
         <p>{t('types.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<input type="text" placeholder="${t('types.placeholders.text')}" />
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<input type="text" placeholder="${t('types.placeholders.text')}" />
 <input type="email" placeholder="${t('types.placeholders.email')}" />
 <input type="password" placeholder="${t('types.placeholders.password')}" />
 <input type="number" placeholder="${t('types.placeholders.number')}" />
@@ -135,8 +139,8 @@ import { z } from 'zod'
 <input type="time" />
 <input type="month" />
 <input type="week" />
-<input type="datetime-local" />`}</code></pre>
-        </div>
+<input type="datetime-local" />`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -197,9 +201,10 @@ import { z } from 'zod'
         <h2>{t('states.title')}</h2>
         <p>{t('states.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('states.default')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('states.default')} -->
 <input type="text" placeholder="${t('states.default')}" />
 
 <!-- ${t('states.success')} -->
@@ -212,8 +217,8 @@ import { z } from 'zod'
 <input type="text" placeholder="${t('states.disabled')}" disabled />
 
 <!-- ${t('states.readonly')} -->
-<input type="text" value="${t('states.readonlyText')}" readonly />`}</code></pre>
-        </div>
+<input type="text" value="${t('states.readonlyText')}" readonly />`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -226,9 +231,10 @@ import { z } from 'zod'
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// ${t('code.successState')} (border: 1px solid color('success'))
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`// ${t('code.successState')} (border: 1px solid color('success'))
 input.success {
   border-color: color('success');
 
@@ -256,17 +262,18 @@ input:disabled {
 input:read-only {
   border: none;
   cursor: default;
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('variants.title')}</h2>
         <p>{t('variants.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('variants.default')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('variants.default')} -->
 <input type="text" placeholder="${t('variants.default')}" />
 
 <!-- ${t('variants.fill')} -->
@@ -276,8 +283,8 @@ input:read-only {
 <input type="text" class="text" placeholder="${t('variants.text')}" />
 
 <!-- ${t('variants.underline')} -->
-<input type="text" class="underline" placeholder="${t('variants.underline')}" />`}</code></pre>
-        </div>
+<input type="text" class="underline" placeholder="${t('variants.underline')}" />`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -289,9 +296,10 @@ input:read-only {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// ${t('code.fillVariant')} (background-color: color('default-fill'))
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`// ${t('code.fillVariant')} (background-color: color('default-fill'))
 input.fill {
   background-color: color('default-fill');
 }
@@ -310,25 +318,26 @@ input.underline {
   &:focus-visible:not(:disabled) {
     border-bottom-color: color('primary-base');
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('sizes.title')}</h2>
         <p>{t('sizes.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('sizes.default')} (padding: s(3) s(4), border-radius: r(3)) -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('sizes.default')} (padding: s(3) s(4), border-radius: r(3)) -->
 <input type="text" placeholder="${t('sizes.default')}" />
 
 <!-- ${t('sizes.medium')} (padding: s(4) s(4), border-radius: r(5)) -->
 <input type="text" class="md" placeholder="${t('sizes.medium')}" />
 
 <!-- ${t('sizes.large')} (padding: s(5) s(4), border-radius: r(6)) -->
-<input type="text" class="lg" placeholder="${t('sizes.large')}" />`}</code></pre>
-        </div>
+<input type="text" class="lg" placeholder="${t('sizes.large')}" />`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -339,9 +348,10 @@ input.underline {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// ${t('code.defaultSize')}
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`// ${t('code.defaultSize')}
 input {
   padding: s(3) s(4);
   border-radius: r(3);
@@ -357,17 +367,18 @@ input.md {
 input.lg {
   padding: s(5) s(4);
   border-radius: r(6);
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('icons.title')}</h2>
         <p>{t('icons.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('icons.leftIcon')} (input padding-left: s(8), ${t('icons.icon')} left: s(3)) -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('icons.leftIcon')} (input padding-left: s(8), ${t('icons.icon')} left: s(3)) -->
 <div class="with-icon">
   <i class="icon-search"></i>
   <input type="text" placeholder="${t('icons.placeholders.search')}" />
@@ -377,8 +388,8 @@ input.lg {
 <div class="with-right-icon">
   <input type="email" placeholder="${t('icons.placeholders.email')}" />
   <i class="icon-mail"></i>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -398,9 +409,10 @@ input.lg {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// ${t('code.leftIcon')}
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`// ${t('code.leftIcon')}
 .with-icon {
   position: relative;
 
@@ -430,17 +442,18 @@ input.lg {
   > input {
     padding-right: s(7);  // ${t('code.iconSpace')}
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('scss.title')}</h2>
         <p>{t('scss.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 // ${t('code.defaultInputStyle')}
 input[type='text'],
@@ -488,8 +501,8 @@ input.md {
 input.lg {
   padding: s(5) s(4);
   border-radius: r(6);
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
     </>
   );

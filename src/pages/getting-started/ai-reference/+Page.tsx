@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 const BASE_URL = 'https://podoui.com';
@@ -20,30 +21,32 @@ export default function AiReference() {
 
       <section className={styles.section}>
         <h2>{t('structure.title')}</h2>
-        <div className={styles.codeBlock}>
-          <pre><code>{`public/
-├── ai.json                    # ${t('structure.mainIndex')}
+        <CodeBlock
+          language="bash"
+          code={`public/
+├── ai.json                    # ` + t('structure.mainIndex') + `
 └── ai/
-    ├── overview.json          # ${t('structure.projectOverview')}
-    ├── components/            # ${t('structure.components')}
+    ├── overview.json          # ` + t('structure.projectOverview') + `
+    ├── components/            # ` + t('structure.components') + `
     │   ├── avatar.json
     │   ├── input.json
     │   ├── textarea.json
     │   └── ... (17 files)
-    └── systems/               # ${t('structure.systems')}
+    └── systems/               # ` + t('structure.systems') + `
         ├── color.json
         ├── typography.json
         ├── spacing.json
-        └── ... (6 files)`}</code></pre>
-        </div>
+        └── ... (6 files)`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('mainIndex.title')}</h2>
         <p>{t('mainIndex.description')}</p>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{BASE_URL}/ai.json</div>
-          <pre><code>{`{
+        <CodeBlock
+          title={`${BASE_URL}/ai.json`}
+          language="json"
+          code={`{
   "name": "podo-ui",
   "version": "1.0.0",
   "description": "Design system: SCSS 97% + React 3%",
@@ -62,8 +65,8 @@ export default function AiReference() {
       ...
     }
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <div className={styles.fieldList}>
           <div className={styles.field}>
@@ -97,9 +100,10 @@ export default function AiReference() {
         <h2>{t('componentFiles.title')}</h2>
         <p>{t('componentFiles.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{BASE_URL}/ai/components/input.json</div>
-          <pre><code>{`{
+        <CodeBlock
+          title={`${BASE_URL}/ai/components/input.json`}
+          language="json"
+          code={`{
   "name": "Input",
   "category": "atom",
   "description": "Form input field with Zod validation support",
@@ -126,8 +130,8 @@ export default function AiReference() {
     ...
   ],
   "related": ["textarea", "field", "select"]
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <div className={styles.fieldList}>
           <div className={styles.field}>
@@ -206,9 +210,10 @@ export default function AiReference() {
             <div className={styles.stepContent}>
               <h4>{t('usage.step1.title')}</h4>
               <p>{t('usage.step1.description')}</p>
-              <div className={styles.codeBlock}>
-                <pre><code>fetch('{BASE_URL}/ai.json').then(r =&gt; r.json())</code></pre>
-              </div>
+              <CodeBlock
+                language="javascript"
+                code={`fetch('${BASE_URL}/ai.json').then(r => r.json())`}
+              />
             </div>
           </div>
 
@@ -217,9 +222,10 @@ export default function AiReference() {
             <div className={styles.stepContent}>
               <h4>{t('usage.step2.title')}</h4>
               <p>{t('usage.step2.description')}</p>
-              <div className={styles.codeBlock}>
-                <pre><code>fetch('{BASE_URL}/ai/components/input.json').then(r =&gt; r.json())</code></pre>
-              </div>
+              <CodeBlock
+                language="javascript"
+                code={`fetch('${BASE_URL}/ai/components/input.json').then(r => r.json())`}
+              />
             </div>
           </div>
 
@@ -249,9 +255,10 @@ export default function AiReference() {
             <li>{t('example.process3')}</li>
           </ol>
 
-          <div className={styles.codeBlock}>
-            <div className={styles.codeHeader}>Result</div>
-            <pre><code>{`import { Input } from 'podo-ui';
+          <CodeBlock
+            title="Result"
+            language="tsx"
+            code={`import { Input } from 'podo-ui';
 import { z } from 'zod';
 
 <Input
@@ -260,8 +267,8 @@ import { z } from 'zod';
   validator={z.string().email()}
   placeholder="Enter your email"
   withIcon="icon-mail"
-/>`}</code></pre>
-          </div>
+/>`}
+          />
         </div>
       </section>
 

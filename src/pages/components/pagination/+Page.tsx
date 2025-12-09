@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Pagination from '../../../../react/molecule/pagination';
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from '../input/Page.module.scss';
 
 export default function PaginationPage() {
@@ -39,9 +40,10 @@ export default function PaginationPage() {
           <p className={styles.demoInfo}>{t('basicUsage.currentPage', { page: currentPage1 })}</p>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('basicUsage.codeHeader')}</div>
-          <pre><code>{`import { useState } from 'react';
+        <CodeBlock
+          title={t('basicUsage.codeHeader')}
+          language="tsx"
+          code={`import { useState } from 'react';
 import { Pagination } from 'podo-ui';
 
 export default function MyComponent() {
@@ -54,8 +56,8 @@ export default function MyComponent() {
       onPageChange={setCurrentPage}
     />
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -92,28 +94,30 @@ export default function MyComponent() {
           <p className={styles.demoInfo}>{t('customVisiblePages.currentPage', { page: currentPage3 })}</p>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('customVisiblePages.codeHeader')}</div>
-          <pre><code>{`<Pagination
+        <CodeBlock
+          title={t('customVisiblePages.codeHeader')}
+          language="tsx"
+          code={`<Pagination
   currentPage={currentPage}
   totalPages={15}
   onPageChange={setCurrentPage}
   maxVisiblePages={3}
-/>`}</code></pre>
-        </div>
+/>`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('props.title')}</h2>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('props.codeHeader')}</div>
-          <pre><code>{`interface PaginationProps {
+        <CodeBlock
+          title={t('props.codeHeader')}
+          language="typescript"
+          code={`interface PaginationProps {
   currentPage: number;        // ${t('props.currentPage')}
   totalPages: number;         // ${t('props.totalPages')}
   onPageChange: (page: number) => void;  // ${t('props.onPageChange')}
   maxVisiblePages?: number;   // ${t('props.maxVisiblePages')}
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -132,9 +136,10 @@ export default function MyComponent() {
         <h2>{t('example.title')}</h2>
         <p>{t('example.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('example.codeHeader')}</div>
-          <pre><code>{`import { useState } from 'react';
+        <CodeBlock
+          title={t('example.codeHeader')}
+          language="tsx"
+          code={`import { useState } from 'react';
 import { Pagination } from 'podo-ui';
 
 export default function DataList() {
@@ -164,8 +169,8 @@ export default function DataList() {
       />
     </div>
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
     </>
   );

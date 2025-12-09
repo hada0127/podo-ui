@@ -114,13 +114,14 @@ export default function Button() {
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<button>${t('basicUsage.examples.basic')}</button>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<button>${t('basicUsage.examples.basic')}</button>
 <button class="primary">${t('basicUsage.examples.primary')}</button>
 <button class="danger">${t('basicUsage.examples.danger')}</button>
-<button disabled>${t('basicUsage.examples.disabled')}</button>`}</code></pre>
-        </div>
+<button disabled>${t('basicUsage.examples.disabled')}</button>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -149,17 +150,18 @@ export default function Button() {
           ))}
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<button class="primary">Primary</button>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<button class="primary">Primary</button>
 <button>Default</button>
 <button class="default-deep">Default Deep</button>
 <button class="info">Info</button>
 <button class="link">Link</button>
 <button class="success">Success</button>
 <button class="warning">Warning</button>
-<button class="danger">Danger</button>`}</code></pre>
-        </div>
+<button class="danger">Danger</button>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -179,11 +181,12 @@ export default function Button() {
               ))}
             </div>
 
-            <div className={styles.codeBlock}>
-              <pre><code>{variants.map((variant) =>
+            <CodeBlock
+              language="html"
+              code={variants.map((variant) =>
                 `<button${getCodeClass(variant.name, style.suffix)}>${t(`variants.${variant.key}.label`)}</button>`
-              ).join('\n')}</code></pre>
-            </div>
+              ).join('\n')}
+            />
           </div>
         ))}
       </section>
@@ -192,9 +195,10 @@ export default function Button() {
         <h2>{t('sizes.title')}</h2>
         <p>{t('sizes.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<button class="primary xxs">
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<button class="primary xxs">
   xxs Button
 </button>
 
@@ -212,9 +216,8 @@ export default function Button() {
 
 <button class="primary lg">
   lg Button
-</button>
-`}</code></pre>
-        </div>
+</button>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -246,17 +249,18 @@ export default function Button() {
         <h2>{t('alignment.title')}</h2>
         <p>{t('alignment.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<!-- ${t('alignment.center')} -->
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<!-- ${t('alignment.center')} -->
 <button class="primary">${t('alignment.center')}</button>
 
 <!-- ${t('alignment.left')} -->
 <button class="primary text-left">${t('alignment.left')}</button>
 
 <!-- ${t('alignment.right')} -->
-<button class="primary text-right">${t('alignment.right')}</button>`}</code></pre>
-        </div>
+<button class="primary text-right">${t('alignment.right')}</button>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -296,9 +300,10 @@ export default function Button() {
         <h2>{t('icons.title')}</h2>
         <p>{t('icons.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<button class="primary">
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<button class="primary">
   <i class="icon-plus"></i>
   ${t('icons.examples.create')}
 </button>
@@ -322,8 +327,8 @@ export default function Button() {
 <!-- Icon only -->
 <button class="primary">
   <i class="icon-search"></i>
-</button>`}</code></pre>
-        </div>
+</button>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -366,12 +371,13 @@ export default function Button() {
         <h2>{t('disabled.title')}</h2>
         <p>{t('disabled.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<button class="primary" disabled>Disabled</button>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<button class="primary" disabled>Disabled</button>
 <button class="success" disabled>Disabled</button>
-<button class="danger" disabled>Disabled</button>`}</code></pre>
-        </div>
+<button class="danger" disabled>Disabled</button>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -388,9 +394,10 @@ export default function Button() {
         <h2>{t('groups.title')}</h2>
         <p>{t('groups.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<div style="display: flex; gap: 0.5rem;">
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<div style="display: flex; gap: 0.5rem;">
   <button class="primary">${t('groups.examples.save')}</button>
   <button class="default">${t('groups.examples.cancel')}</button>
 </div>
@@ -404,8 +411,8 @@ export default function Button() {
     ${t('groups.examples.next')}
     <i class="icon-arrow-right"></i>
   </button>
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -432,9 +439,10 @@ export default function Button() {
         <h2>{t('scss.title')}</h2>
         <p>{t('scss.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .customButton {
   display: flex;
@@ -488,8 +496,8 @@ export default function Button() {
     background: color(primary-base);
     color: color(primary-reverse);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>

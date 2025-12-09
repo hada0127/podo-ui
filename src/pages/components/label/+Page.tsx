@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Label() {
@@ -14,12 +15,13 @@ export default function Label() {
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<label>${t('basicUsage.examples.username')}</label>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<label>${t('basicUsage.examples.username')}</label>
 <label>${t('basicUsage.examples.email')}</label>
-<label>${t('basicUsage.examples.password')}</label>`}</code></pre>
-        </div>
+<label>${t('basicUsage.examples.password')}</label>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -35,12 +37,13 @@ export default function Label() {
         <h2>{t('sizes.title')}</h2>
         <p>{t('sizes.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<label class="sm">${t('sizes.small')}</label>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<label class="sm">${t('sizes.small')}</label>
 <label>${t('sizes.medium')}</label>
-<label class="lg">${t('sizes.large')}</label>`}</code></pre>
-        </div>
+<label class="lg">${t('sizes.large')}</label>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -56,12 +59,13 @@ export default function Label() {
         <h2>{t('styles.title')}</h2>
         <p>{t('styles.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<label>${t('styles.normal')}</label>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<label>${t('styles.normal')}</label>
 <label class="semibold">${t('styles.semibold')}</label>
-<label class="disabled">${t('styles.disabled')}</label>`}</code></pre>
-        </div>
+<label class="disabled">${t('styles.disabled')}</label>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -77,11 +81,12 @@ export default function Label() {
         <h2>{t('required.title')}</h2>
         <p>{t('required.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<label>${t('required.email')} <span class="required">*</span></label>
-<label>${t('required.phone')} <span class="required">*</span></label>`}</code></pre>
-        </div>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<label>${t('required.email')} <span class="required">*</span></label>
+<label>${t('required.phone')} <span class="required">*</span></label>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -96,14 +101,15 @@ export default function Label() {
         <h2>{t('withInput.title')}</h2>
         <p>{t('withInput.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<label for="email">${t('withInput.email')} <span class="required">*</span></label>
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="html"
+          code={`<label for="email">${t('withInput.email')} <span class="required">*</span></label>
 <input id="email" type="email" placeholder="example@email.com" />
 
 <label for="username">${t('withInput.username')}</label>
-<input id="username" type="text" placeholder="${t('basicUsage.examples.username')}" />`}</code></pre>
-        </div>
+<input id="username" type="text" placeholder="${t('basicUsage.examples.username')}" />`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -124,9 +130,10 @@ export default function Label() {
         <h2>{t('scss.title')}</h2>
         <p>{t('scss.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 // ${t('code.labelStyle')}
 label {
@@ -158,8 +165,8 @@ label {
     color: color(danger);
     margin-left: s(1);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
     </>
   );

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Spacing() {
@@ -72,9 +73,10 @@ export default function Spacing() {
         <h2>{t('sections.scssUsage.title')}</h2>
         <p>{t('sections.scssUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.scssUsage.codeHeader')}</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title={t('sections.scssUsage.codeHeader')}
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .container {
   // ` + t('code.margin') + `
@@ -92,17 +94,18 @@ export default function Spacing() {
   // ` + t('code.multipleProps') + `
   border-width: s(1);     // 2px
   min-height: s(10);      // 64px
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('sections.cssClasses.title')}</h2>
         <p>{t('sections.cssClasses.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
-          <pre><code>{`<!-- ` + t('code.margin') + ` -->
+        <CodeBlock
+          title={t('sections.cssClasses.codeHeader')}
+          language="html"
+          code={`<!-- ` + t('code.margin') + ` -->
 <div class="m-4">Margin 12px</div>
 <div class="m-t-5">Margin Top 16px</div>
 <div class="m-b-6">Margin Bottom 24px</div>
@@ -114,8 +117,8 @@ export default function Spacing() {
 <div class="p-t-5">Padding Top 16px</div>
 <div class="p-b-6">Padding Bottom 24px</div>
 <div class="p-l-4">Padding Left 12px</div>
-<div class="p-r-4">Padding Right 12px</div>`}</code></pre>
-        </div>
+<div class="p-r-4">Padding Right 12px</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('sections.cssClasses.demoTitle')}</div>
@@ -158,9 +161,10 @@ export default function Spacing() {
       <section className={styles.section}>
         <h2>{t('sections.borderRadiusScss.title')}</h2>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.borderRadiusScss.codeHeader')}</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title={t('sections.borderRadiusScss.codeHeader')}
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .card {
   border-radius: r(4);    // 8px
@@ -180,20 +184,21 @@ export default function Spacing() {
 
 .modal {
   border-radius: r(5);    // 12px
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('sections.borderRadiusClasses.title')}</h2>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.borderRadiusClasses.codeHeader')}</div>
-          <pre><code>{`<div class="r-0">No Radius</div>
+        <CodeBlock
+          title={t('sections.borderRadiusClasses.codeHeader')}
+          language="html"
+          code={`<div class="r-0">No Radius</div>
 <div class="r-2">Radius 4px</div>
 <div class="r-4">Radius 8px</div>
-<div class="r-full">Radius Full (\${t('code.circular')})</div>`}</code></pre>
-        </div>
+<div class="r-full">Radius Full (${t('code.circular')})</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('sections.borderRadiusClasses.demoTitle')}</div>
@@ -221,9 +226,10 @@ export default function Spacing() {
         <h2>{t('sections.practicalExample.title')}</h2>
         <p>{t('sections.practicalExample.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.practicalExample.codeHeader')}</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title={t('sections.practicalExample.codeHeader')}
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .card {
   padding: s(6);
@@ -255,8 +261,8 @@ export default function Spacing() {
     display: flex;
     gap: s(3);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('sections.practicalExample.demoTitle')}</div>

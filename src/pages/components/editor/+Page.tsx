@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Editor from '../../../../react/atom/editor';
 import EditorView from '../../../../react/atom/editor-view';
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from '../input/Page.module.scss';
 
 export default function EditorPage() {
@@ -43,9 +44,10 @@ export default function EditorPage() {
         <h2>{t('react.title')}</h2>
         <p>{t('react.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`import { Editor } from 'podo-ui';
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="tsx"
+          code={`import { Editor } from 'podo-ui';
 
 export default function MyComponent() {
   const [content, setContent] = useState('');
@@ -58,8 +60,8 @@ export default function MyComponent() {
       placeholder="${t('overview.placeholder')}"
     />
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -96,17 +98,18 @@ export default function MyComponent() {
           />
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<Editor
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="tsx"
+          code={`<Editor
   value={content}
   onChange={setContent}
   height="contents"
   minHeight="150px"
   maxHeight="500px"
   placeholder="${t('height.autoPlaceholder')}"
-/>`}</code></pre>
-        </div>
+/>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -125,9 +128,10 @@ export default function MyComponent() {
           />
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`<Editor
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="tsx"
+          code={`<Editor
   value={content}
   onChange={setContent}
   height="300px"
@@ -135,8 +139,8 @@ export default function MyComponent() {
   maxHeight="600px"
   resizable={true}
   placeholder="${t('resizable.placeholder')}"
-/>`}</code></pre>
-        </div>
+/>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -323,9 +327,10 @@ export default function MyComponent() {
         <h2>{t('editorView.title')}</h2>
         <p>{t('editorView.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('demo.codeHeader')}</div>
-          <pre><code>{`import { EditorView } from 'podo-ui';
+        <CodeBlock
+          title={t('demo.codeHeader')}
+          language="tsx"
+          code={`import { EditorView } from 'podo-ui';
 
 export default function MyComponent() {
   const htmlContent = '<h1>제목</h1><p>본문 내용</p>';
@@ -333,8 +338,8 @@ export default function MyComponent() {
   return (
     <EditorView value={htmlContent} />
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('editorView.preview')}</div>

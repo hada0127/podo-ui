@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Icons() {
@@ -45,9 +46,10 @@ export default function Icons() {
         <h2>{t('sections.htmlUsage.title')}</h2>
         <p dangerouslySetInnerHTML={{ __html: t('sections.htmlUsage.description') }} />
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.htmlUsage.codeHeader')}</div>
-          <pre><code>{`<i class="icon-star"></i>
+        <CodeBlock
+          title={t('sections.htmlUsage.codeHeader')}
+          language="html"
+          code={`<i class="icon-star"></i>
 <i class="icon-search"></i>
 <i class="icon-check"></i>
 <i class="icon-close"></i>
@@ -59,8 +61,8 @@ export default function Icons() {
 <!-- 색상 조정 -->
 <i class="icon-star primary"></i>
 <i class="icon-star success"></i>
-<i class="icon-star danger"></i>`}</code></pre>
-        </div>
+<i class="icon-star danger"></i>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('sections.htmlUsage.demoTitle')}</div>
@@ -79,9 +81,10 @@ export default function Icons() {
       <section className={styles.section}>
         <h2>{t('sections.reactUsage.title')}</h2>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.reactUsage.codeHeader')}</div>
-          <pre><code>{`export default function MyComponent() {
+        <CodeBlock
+          title={t('sections.reactUsage.codeHeader')}
+          language="tsx"
+          code={`export default function MyComponent() {
   return (
     <div>
       <i className="icon-star"></i>
@@ -94,16 +97,17 @@ export default function Icons() {
       <i className="icon-warning warning"></i>
     </div>
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('sections.scssUsage.title')}</h2>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.scssUsage.codeHeader')}</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title={t('sections.scssUsage.codeHeader')}
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .button {
   display: inline-flex;
@@ -129,8 +133,8 @@ export default function Icons() {
     font-size: 20px;
     color: color(primary);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>

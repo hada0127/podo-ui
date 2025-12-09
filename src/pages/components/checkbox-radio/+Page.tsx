@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, Radio } from 'podo-ui';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function CheckboxRadio() {
@@ -19,9 +20,10 @@ export default function CheckboxRadio() {
         <h2>React Component</h2>
         <p>podo-ui React 컴포넌트를 사용한 예제입니다.</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>React (Checkbox)</div>
-          <pre><code>{`import { Checkbox } from 'podo-ui';
+        <CodeBlock
+          title="React (Checkbox)"
+          language="tsx"
+          code={`import { Checkbox } from 'podo-ui';
 
 // Basic
 <Checkbox label="동의합니다" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
@@ -30,8 +32,8 @@ export default function CheckboxRadio() {
 <Checkbox label="전체 선택" indeterminate={true} />
 
 // Disabled
-<Checkbox label="비활성화" disabled />`}</code></pre>
-        </div>
+<Checkbox label="비활성화" disabled />`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>Checkbox Demo</div>
@@ -47,9 +49,10 @@ export default function CheckboxRadio() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>React (Radio.Group)</div>
-          <pre><code>{`import { Radio } from 'podo-ui';
+        <CodeBlock
+          title="React (Radio.Group)"
+          language="tsx"
+          code={`import { Radio } from 'podo-ui';
 
 <Radio.Group
   name="payment"
@@ -60,8 +63,8 @@ export default function CheckboxRadio() {
     { value: 'bank', label: '계좌이체' },
     { value: 'mobile', label: '휴대폰 결제' },
   ]}
-/>`}</code></pre>
-        </div>
+/>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>Radio.Group Demo</div>
@@ -83,9 +86,10 @@ export default function CheckboxRadio() {
         <h2>{t('checkbox.title')}</h2>
         <p>{t('checkbox.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<label>
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<label>
   <input type="checkbox" />
   ${t('checkbox.option')}
 </label>
@@ -103,8 +107,8 @@ export default function CheckboxRadio() {
 <label>
   <input type="checkbox" checked disabled />
   ${t('checkbox.checkedDisabled')}
-</label>`}</code></pre>
-        </div>
+</label>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -133,11 +137,12 @@ export default function CheckboxRadio() {
         <h2>{t('indeterminate.title')}</h2>
         <p>{t('indeterminate.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>JavaScript</div>
-          <pre><code>{`const checkbox = document.querySelector('#myCheckbox');
-checkbox.indeterminate = true;`}</code></pre>
-        </div>
+        <CodeBlock
+          title="JavaScript"
+          language="javascript"
+          code={`const checkbox = document.querySelector('#myCheckbox');
+checkbox.indeterminate = true;`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -161,9 +166,10 @@ checkbox.indeterminate = true;`}</code></pre>
         <h2>{t('radio.title')}</h2>
         <p>{t('radio.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<label>
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<label>
   <input type="radio" name="option" value="1" checked />
   ${t('radio.option1')}
 </label>
@@ -181,8 +187,8 @@ checkbox.indeterminate = true;`}</code></pre>
 <label>
   <input type="radio" name="option" value="4" disabled />
   ${t('radio.disabledOption')}
-</label>`}</code></pre>
-        </div>
+</label>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -265,9 +271,10 @@ checkbox.indeterminate = true;`}</code></pre>
         <h2>{t('scss.title')}</h2>
         <p>{t('scss.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .checkboxWrapper {
   display: flex;
@@ -312,8 +319,8 @@ checkbox.indeterminate = true;`}</code></pre>
   input[type='checkbox']:focus-visible {
     outline: 4px solid color(primary-outline);
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>

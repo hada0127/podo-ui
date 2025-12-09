@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import DatePicker, { DatePickerValue, TimeValue } from '../../../../react/molecule/datepicker';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 // Vanilla JS DatePicker 타입
@@ -193,9 +194,10 @@ export default function DatePickerPage() {
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`import { DatePicker } from 'podo-ui';
+        <CodeBlock
+          title="TSX"
+          language="tsx"
+          code={`import { DatePicker } from 'podo-ui';
 
 // ${t('code.singleDateSelect')}
 <DatePicker
@@ -211,8 +213,8 @@ export default function DatePickerPage() {
   type="date"
   value={value}
   onChange={setValue}
-/>`}</code></pre>
-        </div>
+/>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('basicUsage.demoTitle')}</div>
@@ -300,17 +302,18 @@ export default function DatePickerPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// ${t('code.dateOnlySelect')}
+        <CodeBlock
+          title="TSX"
+          language="tsx"
+          code={`// ${t('code.dateOnlySelect')}
 <DatePicker type="date" />
 
 // ${t('code.timeOnlySelect')}
 <DatePicker type="time" />
 
 // ${t('code.dateTimeSelect')}
-<DatePicker type="datetime" />`}</code></pre>
-        </div>
+<DatePicker type="datetime" />`}
+        />
       </section>
 
       {/* Period Mode */}
@@ -365,17 +368,18 @@ export default function DatePickerPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// ${t('code.periodDateSelect')}
+        <CodeBlock
+          title="TSX"
+          language="tsx"
+          code={`// ${t('code.periodDateSelect')}
 <DatePicker mode="period" type="date" />
 
 // ${t('code.periodTimeSelect')}
 <DatePicker mode="period" type="time" />
 
 // ${t('code.periodDateTimeSelect')}
-<DatePicker mode="period" type="datetime" />`}</code></pre>
-        </div>
+<DatePicker mode="period" type="datetime" />`}
+        />
       </section>
 
       {/* States */}
@@ -415,17 +419,18 @@ export default function DatePickerPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// ${t('code.defaultState')}
+        <CodeBlock
+          title="TSX"
+          language="tsx"
+          code={`// ${t('code.defaultState')}
 <DatePicker type="date" />
 
 // ${t('code.disabledState')}
 <DatePicker type="date" disabled />
 
 // ${t('code.initialValue')}
-<DatePicker type="date" value={{ date: new Date() }} />`}</code></pre>
-        </div>
+<DatePicker type="date" value={{ date: new Date() }} />`}
+        />
       </section>
 
       {/* Props */}
@@ -542,9 +547,10 @@ export default function DatePickerPage() {
         <h2>{t('valueInterface.title')}</h2>
         <p>{t('valueInterface.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// ${t('code.timeValueInterface')}
+        <CodeBlock
+          title="TypeScript"
+          language="typescript"
+          code={`// ${t('code.timeValueInterface')}
 interface TimeValue {
   hour: number;   // 0-23
   minute: number; // 0-59
@@ -556,8 +562,8 @@ interface DatePickerValue {
   time?: TimeValue;   // ${t('code.startTime')}
   endDate?: Date;     // ${t('code.endDatePeriod')}
   endTime?: TimeValue; // ${t('code.endTimePeriod')}
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <table className={styles.propsTable}>
           <thead>
@@ -596,9 +602,10 @@ interface DatePickerValue {
           </tbody>
         </table>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('valueInterface.exampleTitle')}</div>
-          <pre><code>{`// ${t('code.dateOnlySelect')} (type="date")
+        <CodeBlock
+          title={t('valueInterface.exampleTitle')}
+          language="typescript"
+          code={`// ${t('code.dateOnlySelect')} (type="date")
 const dateValue: DatePickerValue = {
   date: new Date(2024, 0, 15), // 2024-01-15
 };
@@ -626,8 +633,8 @@ const periodDatetimeValue: DatePickerValue = {
   time: { hour: 9, minute: 0 },
   endDate: new Date(2024, 0, 20),
   endTime: { hour: 18, minute: 0 },
-};`}</code></pre>
-        </div>
+};`}
+        />
       </section>
 
       {/* Disabling Dates */}
@@ -716,9 +723,10 @@ const periodDatetimeValue: DatePickerValue = {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// ${t('code.specificDateDisable')}
+        <CodeBlock
+          title="TSX"
+          language="tsx"
+          code={`// ${t('code.specificDateDisable')}
 <DatePicker
   type="date"
   disable={[
@@ -749,12 +757,13 @@ const periodDatetimeValue: DatePickerValue = {
   enable={[
     { from: new Date(2024, 0, 1), to: new Date(2024, 0, 7) },
   ]}
-/>`}</code></pre>
-        </div>
+/>`}
+        />
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// ${t('code.dateRangeInterface')}
+        <CodeBlock
+          title="TypeScript"
+          language="typescript"
+          code={`// ${t('code.dateRangeInterface')}
 interface DateRange {
   from: Date;
   to: Date;
@@ -764,8 +773,8 @@ interface DateRange {
 type DateCondition =
   | Date                        // ${t('code.specificDate')}
   | DateRange                   // ${t('code.dateRange')}
-  | ((date: Date) => boolean);  // ${t('code.conditionFunction')}`}</code></pre>
-        </div>
+  | ((date: Date) => boolean);  // ${t('code.conditionFunction')}`}
+        />
       </section>
 
       {/* Min/Max Date */}
@@ -816,9 +825,10 @@ type DateCondition =
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// ${t('code.dateOnlyLimit')}
+        <CodeBlock
+          title="TSX"
+          language="tsx"
+          code={`// ${t('code.dateOnlyLimit')}
 <DatePicker
   type="date"
   minDate={new Date()}                    // ${t('code.todayFrom')}
@@ -836,20 +846,21 @@ type DateCondition =
     date: new Date(2024, 11, 31),
     time: { hour: 18, minute: 0 },       // ${t('code.until')} 2024-12-31 18:00
   }}
-/>`}</code></pre>
-        </div>
+/>`}
+        />
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// ${t('code.dateTimeLimitInterface')}
+        <CodeBlock
+          title="TypeScript"
+          language="typescript"
+          code={`// ${t('code.dateTimeLimitInterface')}
 interface DateTimeLimit {
   date: Date;
   time?: TimeValue; // { hour: number, minute: number }
 }
 
 // ${t('code.minMaxDateType')}
-type MinMaxDate = Date | DateTimeLimit;`}</code></pre>
-        </div>
+type MinMaxDate = Date | DateTimeLimit;`}
+        />
       </section>
 
       {/* Minute Step */}
@@ -952,9 +963,10 @@ type MinMaxDate = Date | DateTimeLimit;`}</code></pre>
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// ${t('code.minuteStepDefault')}
+        <CodeBlock
+          title="TSX"
+          language="tsx"
+          code={`// ${t('code.minuteStepDefault')}
 <DatePicker type="time" minuteStep={1} />
 
 // ${t('code.minuteStep5')}
@@ -973,14 +985,15 @@ type MinMaxDate = Date | DateTimeLimit;`}</code></pre>
 <DatePicker type="time" minuteStep={30} />
 
 // ${t('code.withDatetime')}
-<DatePicker type="datetime" minuteStep={15} />`}</code></pre>
-        </div>
+<DatePicker type="datetime" minuteStep={15} />`}
+        />
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// ${t('code.minuteStepType')}
-type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
-        </div>
+        <CodeBlock
+          title="TypeScript"
+          language="typescript"
+          code={`// ${t('code.minuteStepType')}
+type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}
+        />
       </section>
 
       {/* Format */}
@@ -1053,9 +1066,10 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// ${t('code.dashSeparator')}
+        <CodeBlock
+          title="TSX"
+          language="tsx"
+          code={`// ${t('code.dashSeparator')}
 <DatePicker type="date" format="y-m-d" />
 
 // ${t('code.dotSeparator')}
@@ -1068,18 +1082,19 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
 <DatePicker type="datetime" format="y.m.d h:i" />
 
 // ${t('code.koreanDatetimeFormat')}
-<DatePicker type="datetime" format="y년 m월 d일 h시 i분" />`}</code></pre>
-        </div>
+<DatePicker type="datetime" format="y년 m월 d일 h시 i분" />`}
+        />
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// ${t('code.formatKey')}
+        <CodeBlock
+          title="TypeScript"
+          language="typescript"
+          code={`// ${t('code.formatKey')}
 // y: ${t('code.formatYear')}
 // m: ${t('code.formatMonth')}
 // d: ${t('code.formatDay')}
 // h: ${t('code.formatHour')}
-// i: ${t('code.formatMinute')}`}</code></pre>
-        </div>
+// i: ${t('code.formatMinute')}`}
+        />
       </section>
 
       {/* Initial Calendar */}
@@ -1149,9 +1164,10 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TSX</div>
-          <pre><code>{`// ${t('code.prevCurrentMonth')}
+        <CodeBlock
+          title="TSX"
+          language="tsx"
+          code={`// ${t('code.prevCurrentMonth')}
 <DatePicker
   mode="period"
   type="date"
@@ -1179,20 +1195,21 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}</code></pre>
     start: new Date(2024, 0, 1),  // 2024-01
     end: new Date(2024, 1, 1),    // 2024-02
   }}
-/>`}</code></pre>
-        </div>
+/>`}
+        />
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>TypeScript</div>
-          <pre><code>{`// ${t('code.initialCalendarType')}
+        <CodeBlock
+          title="TypeScript"
+          language="typescript"
+          code={`// ${t('code.initialCalendarType')}
 type CalendarInitial = 'now' | 'prevMonth' | 'nextMonth' | Date;
 
 // ${t('code.initialCalendarInterface')}
 interface InitialCalendar {
   start?: CalendarInitial;  // ${t('code.leftCalendar')}
   end?: CalendarInitial;    // ${t('code.rightCalendar')}
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       {/* CDN Usage */}
@@ -1234,9 +1251,10 @@ interface InitialCalendar {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('cdn.basicUsage')}</div>
-          <pre><code>{`<!-- CSS -->
+        <CodeBlock
+          title={t('cdn.basicUsage')}
+          language="html"
+          code={`<!-- CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-datepicker.min.css">
 
 <!-- JS -->
@@ -1254,15 +1272,16 @@ interface InitialCalendar {
       console.log('Selected:', value);
     }
   });
-</script>`}</code></pre>
-        </div>
+</script>`}
+        />
 
         <p className={styles.note}>{t('cdn.jsDelivrNote')}</p>
 
         <h3>{t('cdn.optionsTitle')}</h3>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>JavaScript</div>
-          <pre><code>{`const picker = new PodoDatePicker('#my-datepicker', {
+        <CodeBlock
+          title="JavaScript"
+          language="javascript"
+          code={`const picker = new PodoDatePicker('#my-datepicker', {
   // ` + t('code.selectionMode') + `
   mode: 'instant',
 
@@ -1326,13 +1345,14 @@ interface InitialCalendar {
     end: 'now'           // ` + t('code.rightCalendarComment') + `
   }
   // ` + t('code.startEndValues') + `
-});`}</code></pre>
-        </div>
+});`}
+        />
 
         <h3>{t('cdn.methodsTitle')}</h3>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>JavaScript</div>
-          <pre><code>{`// ${t('cdn.getValue')}
+        <CodeBlock
+          title="JavaScript"
+          language="javascript"
+          code={`// ${t('cdn.getValue')}
 const value = picker.getValue();
 // { date: Date, time: { hour: 9, minute: 0 }, endDate: Date, endTime: {...} }
 
@@ -1352,14 +1372,15 @@ picker.enable();
 picker.disable();
 
 // ${t('cdn.destroy')}
-picker.destroy();`}</code></pre>
-        </div>
+picker.destroy();`}
+        />
 
         <h3>{t('cdn.localizationTitle')}</h3>
         <p>{t('cdn.localizationDesc')}</p>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>JavaScript</div>
-          <pre><code>{`const picker = new PodoDatePicker('#my-datepicker', {
+        <CodeBlock
+          title="JavaScript"
+          language="javascript"
+          code={`const picker = new PodoDatePicker('#my-datepicker', {
   type: 'date',
   texts: {
     weekDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -1369,8 +1390,8 @@ picker.destroy();`}</code></pre>
     reset: 'Reset',
     apply: 'Apply'
   }
-});`}</code></pre>
-        </div>
+});`}
+        />
       </section>
     </>
   );

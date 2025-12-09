@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Responsive() {
@@ -48,9 +49,10 @@ export default function Responsive() {
         <h2>{t('mediaQueries.title')}</h2>
         <p>{t('mediaQueries.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .container {
   padding: s(8);
@@ -73,17 +75,18 @@ export default function Responsive() {
     max-width: 1200px;
     margin: 0 auto;
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('hiding.title')}</h2>
         <p>{t('hiding.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('hiding.alwaysHide')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('hiding.alwaysHide')} -->
 <div class="hide">${t('hiding.alwaysHide')}</div>
 
 <!-- ${t('hiding.hideOnPcOnly')} -->
@@ -93,8 +96,8 @@ export default function Responsive() {
 <div class="hide-tb">${t('hiding.hideOnTabletOnly')}</div>
 
 <!-- ${t('hiding.hideOnMobileOnly')} -->
-<div class="hide-mo">${t('hiding.hideOnMobileOnly')}</div>`}</code></pre>
-        </div>
+<div class="hide-mo">${t('hiding.hideOnMobileOnly')}</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('hiding.example')}</div>
@@ -110,16 +113,17 @@ export default function Responsive() {
         <h2>{t('gridExample.title')}</h2>
         <p>{t('gridExample.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('code.autoAdjust')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('code.autoAdjust')} -->
 <section class="grid">
   <div class="w-3">25%</div>
   <div class="w-3">25%</div>
   <div class="w-3">25%</div>
   <div class="w-3">25%</div>
-</section>`}</code></pre>
-        </div>
+</section>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('gridExample.example')}</div>
@@ -136,9 +140,10 @@ export default function Responsive() {
         <h2>{t('typography.title')}</h2>
         <p>{t('typography.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('code.example')}</div>
-          <pre><code>{`// display1
+        <CodeBlock
+          title={t('code.example')}
+          language="scss"
+          code={`// display1
 PC: 60px → Mobile: 36px
 
 // display4
@@ -148,8 +153,8 @@ PC: 42px → Mobile: 24px
 PC: 54px → Mobile: 24px
 
 // p3
-PC: 16px → Mobile: 14px`}</code></pre>
-        </div>
+PC: 16px → Mobile: 14px`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('typography.example')}</div>
@@ -162,19 +167,21 @@ PC: 16px → Mobile: 14px`}</code></pre>
         <h2>{t('minWidth.title')}</h2>
         <p>{t('minWidth.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>device.scss</div>
-          <pre><code>{`$min-mo: 375px;  // ` + t('code.minMobileWidth')}</code></pre>
-        </div>
+        <CodeBlock
+          title="device.scss"
+          language="scss"
+          code={`$min-mo: 375px;  // ` + t('code.minMobileWidth')}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('practicalExample.title')}</h2>
         <p>{t('practicalExample.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .header {
   padding: s(6);
@@ -228,8 +235,8 @@ PC: 16px → Mobile: 14px`}</code></pre>
   @include mo {
     width: 100%;
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>

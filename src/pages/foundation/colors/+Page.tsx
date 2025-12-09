@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Colors() {
@@ -77,9 +78,10 @@ export default function Colors() {
         <h2>{t('sections.scssUsage.title')}</h2>
         <p>{t('sections.scssUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.scssUsage.codeHeader')}</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title={t('sections.scssUsage.codeHeader')}
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .button {
   // ` + t('code.defaultColor') + `
@@ -109,17 +111,18 @@ export default function Colors() {
   background: color(primary-fill);
   color: color(primary);
   border: 1px solid color(primary-outline);
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('sections.cssClasses.title')}</h2>
         <p>{t('sections.cssClasses.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.cssClasses.codeHeader')}</div>
-          <pre><code>{`<!-- ` + t('code.textColor') + ` -->
+        <CodeBlock
+          title={t('sections.cssClasses.codeHeader')}
+          language="html"
+          code={`<!-- ` + t('code.textColor') + ` -->
 <div class="primary">Primary Text</div>
 <div class="danger">Danger Text</div>
 
@@ -129,8 +132,8 @@ export default function Colors() {
 
 <!-- ` + t('code.borderColor') + ` -->
 <div class="border-primary">Primary Border</div>
-<div class="border-warning">Warning Border</div>`}</code></pre>
-        </div>
+<div class="border-warning">Warning Border</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('sections.cssClasses.demoTitle')}</div>
@@ -150,17 +153,18 @@ export default function Colors() {
           {t('sections.darkMode.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.darkMode.codeHeader')}</div>
-          <pre><code>{`// ` + t('code.lightMode') + `
+        <CodeBlock
+          title={t('sections.darkMode.codeHeader')}
+          language="javascript"
+          code={`// ` + t('code.lightMode') + `
 document.documentElement.setAttribute('data-color-mode', 'light');
 
 // ` + t('code.darkMode') + `
 document.documentElement.setAttribute('data-color-mode', 'dark');
 
 // ` + t('code.autoMode') + `
-document.documentElement.setAttribute('data-color-mode', '');`}</code></pre>
-        </div>
+document.documentElement.setAttribute('data-color-mode', '');`}
+        />
 
         <div className={styles.note}>
           <i className="icon-info"></i>

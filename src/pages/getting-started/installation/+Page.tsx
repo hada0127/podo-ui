@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Installation() {
@@ -15,17 +16,9 @@ export default function Installation() {
         <h2>{t('npm.title')}</h2>
         <p>{t('npm.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <pre><code>npm install podo-ui</code></pre>
-        </div>
-
-        <div className={styles.codeBlock}>
-          <pre><code>yarn add podo-ui</code></pre>
-        </div>
-
-        <div className={styles.codeBlock}>
-          <pre><code>pnpm add podo-ui</code></pre>
-        </div>
+        <CodeBlock language="bash" code="npm install podo-ui" />
+        <CodeBlock language="bash" code="yarn add podo-ui" />
+        <CodeBlock language="bash" code="pnpm add podo-ui" />
       </section>
 
       <section className={styles.section}>
@@ -34,10 +27,11 @@ export default function Installation() {
         <h3>{t('setup.globalScss.title')}</h3>
         <p>{t('setup.globalScss.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('setup.globalScss.codeHeader')}</div>
-          <pre><code>{`import 'podo-ui/global.scss';`}</code></pre>
-        </div>
+        <CodeBlock
+          title={t('setup.globalScss.codeHeader')}
+          language="tsx"
+          code={`import 'podo-ui/global.scss';`}
+        />
 
         <div className={styles.note}>
           <i className="icon-info"></i>
@@ -59,11 +53,12 @@ export default function Installation() {
 
         <p>{t('setup.vite.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('setup.vite.codeHeader')}</div>
-          <pre><code>{`import 'podo-ui/global.scss';
-import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}</code></pre>
-        </div>
+        <CodeBlock
+          title={t('setup.vite.codeHeader')}
+          language="tsx"
+          code={`import 'podo-ui/global.scss';
+import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}
+        />
 
         <div className={styles.note}>
           <i className="icon-info"></i>
@@ -77,27 +72,29 @@ import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}</code></pr
         <h3>{t('setup.scssModule.title')}</h3>
         <p>{t('setup.scssModule.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('setup.scssModule.codeHeader')}</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title={t('setup.scssModule.codeHeader')}
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 .myComponent {
   color: color(primary);        // ${t('setup.scssModule.comments.color')}
   margin: s(4);                 // ${t('setup.scssModule.comments.spacing')}
   border-radius: r(2);          // ${t('setup.scssModule.comments.radius')}
   @include p2;                  // ${t('setup.scssModule.comments.typography')}
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('reactComponents.title')}</h2>
         <p>{t('reactComponents.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('reactComponents.codeHeader')}</div>
-          <pre><code>{`import { Input, Textarea, Editor, Field, Toast, Chip } from 'podo-ui';`}</code></pre>
-        </div>
+        <CodeBlock
+          title={t('reactComponents.codeHeader')}
+          language="tsx"
+          code={`import { Input, Textarea, Editor, Field, Toast, Chip } from 'podo-ui';`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -106,17 +103,19 @@ import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}</code></pr
 
         <h3>{t('cdn.cssTitle')}</h3>
         <p>{t('cdn.cssDescription')}</p>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- Podo UI Global CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-ui.min.css">`}</code></pre>
-        </div>
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- Podo UI Global CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-ui.min.css">`}
+        />
 
         <h3>{t('cdn.datepickerTitle')}</h3>
         <p>{t('cdn.datepickerDescription')}</p>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- DatePicker CSS -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- DatePicker CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-datepicker.min.css">
 
 <!-- DatePicker JS -->
@@ -131,8 +130,8 @@ import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}</code></pr
       console.log(value);
     }
   });
-</script>`}</code></pre>
-        </div>
+</script>`}
+        />
 
         <div className={styles.note}>
           <i className="icon-info"></i>

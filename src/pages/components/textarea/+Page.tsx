@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Textarea as TextareaComponent } from 'podo-ui';
 import { z } from 'zod';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Textarea() {
@@ -19,9 +20,10 @@ export default function Textarea() {
         <h2>{t('react.title')}</h2>
         <p>{t('react.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>React</div>
-          <pre><code>{`import { Textarea } from 'podo-ui'
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`import { Textarea } from 'podo-ui'
 import { z } from 'zod'
 
 const [content, setContent] = useState('');
@@ -33,8 +35,8 @@ const [content, setContent] = useState('');
   validator={z.string().min(10, '${t('react.minLength')}')}
   placeholder="내용을 입력하세요..."
   rows={4}
-/>`}</code></pre>
-        </div>
+/>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('react.validation.title')}</div>
@@ -54,12 +56,13 @@ const [content, setContent] = useState('');
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<textarea placeholder="${t('basicUsage.placeholders.content')}"></textarea>
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<textarea placeholder="${t('basicUsage.placeholders.content')}"></textarea>
 <textarea placeholder="${t('basicUsage.placeholders.content')}" rows="5"></textarea>
-<textarea placeholder="${t('basicUsage.placeholders.disabled')}" disabled></textarea>`}</code></pre>
-        </div>
+<textarea placeholder="${t('basicUsage.placeholders.disabled')}" disabled></textarea>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -75,14 +78,15 @@ const [content, setContent] = useState('');
         <h2>{t('resize.title')}</h2>
         <p>{t('resize.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('resize.resizable')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('resize.resizable')} -->
 <textarea rows="4" placeholder="${t('resize.placeholders.resizable')}"></textarea>
 
 <!-- ${t('resize.fixed')} (resize: none) -->
-<textarea class="resize-none" rows="4" placeholder="${t('resize.placeholders.fixed')}"></textarea>`}</code></pre>
-        </div>
+<textarea class="resize-none" rows="4" placeholder="${t('resize.placeholders.fixed')}"></textarea>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -98,21 +102,23 @@ const [content, setContent] = useState('');
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`textarea.resize-none {
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`textarea.resize-none {
   resize: none;
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('states.title')}</h2>
         <p>{t('states.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>HTML</div>
-          <pre><code>{`<!-- ${t('states.default')} -->
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('states.default')} -->
 <textarea placeholder="${t('states.default')}"></textarea>
 
 <!-- ${t('states.success')} -->
@@ -125,8 +131,8 @@ const [content, setContent] = useState('');
 <textarea placeholder="${t('states.disabled')}" disabled></textarea>
 
 <!-- ${t('states.readonly')} -->
-<textarea readonly>${t('states.readonlyText')}</textarea>`}</code></pre>
-        </div>
+<textarea readonly>${t('states.readonlyText')}</textarea>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
@@ -154,9 +160,10 @@ const [content, setContent] = useState('');
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>SCSS</div>
-          <pre><code>{`// ${t('code.successState')} (border: 1px solid color('success'))
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`// ${t('code.successState')} (border: 1px solid color('success'))
 textarea.success {
   border: 1px solid color('success');
 
@@ -184,17 +191,18 @@ textarea:disabled {
 textarea:read-only {
   border: none;
   resize: none;
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>
         <h2>{t('scss.title')}</h2>
         <p>{t('scss.description')}</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>component.module.scss</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 // ${t('code.defaultTextareaStyle')}
 textarea {
@@ -246,8 +254,8 @@ textarea:disabled {
 textarea:read-only {
   border: none;
   resize: none;
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
 
       <section className={styles.section}>

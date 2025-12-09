@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Tab() {
@@ -16,9 +17,10 @@ export default function Tab() {
           <code>ul.tabs</code> {t('sections.basicUsage.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.basicUsage.codeHeader')}</div>
-          <pre><code>{`<ul class="tabs">
+        <CodeBlock
+          title={t('sections.basicUsage.codeHeader')}
+          language="html"
+          code={`<ul class="tabs">
   <li class="on">
     <a href="#tab1">${t('tabs.tab1')}</a>
   </li>
@@ -28,8 +30,8 @@ export default function Tab() {
   <li>
     <a href="#tab3">${t('tabs.tab3')}</a>
   </li>
-</ul>`}</code></pre>
-        </div>
+</ul>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('sections.basicUsage.demoTitle')}</div>
@@ -53,9 +55,10 @@ export default function Tab() {
           <code>.fill</code> {t('sections.fillStyle.description')}
         </p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.fillStyle.codeHeader')}</div>
-          <pre><code>{`<ul class="tabs fill">
+        <CodeBlock
+          title={t('sections.fillStyle.codeHeader')}
+          language="html"
+          code={`<ul class="tabs fill">
   <li class="on">
     <a href="#tab1">${t('tabs.home')}</a>
   </li>
@@ -65,8 +68,8 @@ export default function Tab() {
   <li>
     <a href="#tab3">${t('tabs.settings')}</a>
   </li>
-</ul>`}</code></pre>
-        </div>
+</ul>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('sections.fillStyle.demoTitle')}</div>
@@ -144,9 +147,10 @@ export default function Tab() {
 
       <section className={styles.section}>
         <h2>{t('sections.scssUsage.title')}</h2>
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>{t('sections.scssUsage.codeHeader')}</div>
-          <pre><code>{`@use 'podo-ui/mixin' as *;
+        <CodeBlock
+          title={t('sections.scssUsage.codeHeader')}
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
 
 ul.tabs {
   padding: 0;
@@ -186,8 +190,8 @@ ul.tabs {
       margin-bottom: -1px;
     }
   }
-}`}</code></pre>
-        </div>
+}`}
+        />
       </section>
     </>
   );

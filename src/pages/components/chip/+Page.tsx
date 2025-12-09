@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from '../input/Page.module.scss';
 import Chip from '../../../../react/atom/chip';
 
@@ -52,9 +53,10 @@ export default function ChipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>basic.html</div>
-          <pre><code>{`<!-- Default theme (클래스 생략 가능) -->
+        <CodeBlock
+          title="basic.html"
+          language="html"
+          code={`<!-- Default theme (클래스 생략 가능) -->
 <div class="chip">
   <i class="icon icon-ellipse"></i>
   ${t('labels.label')}
@@ -64,8 +66,8 @@ export default function ChipPage() {
 <div class="chip blue">
   <i class="icon icon-ellipse"></i>
   ${t('labels.label')}
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -150,9 +152,10 @@ export default function ChipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>type.html</div>
-          <pre><code>{`<!-- Default type (진한 배경 - 클래스 생략) -->
+        <CodeBlock
+          title="type.html"
+          language="html"
+          code={`<!-- Default type (진한 배경 - 클래스 생략) -->
 <div class="chip blue">
   <i class="icon icon-ellipse"></i>
   ${t('labels.label')}
@@ -168,8 +171,8 @@ export default function ChipPage() {
 <div class="chip border blue">
   <i class="icon icon-ellipse"></i>
   ${t('labels.label')}
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -190,9 +193,10 @@ export default function ChipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>size.html</div>
-          <pre><code>{`<div class="chip sm blue">
+        <CodeBlock
+          title="size.html"
+          language="html"
+          code={`<div class="chip sm blue">
   <i class="icon icon-ellipse"></i>
   ${t('size.small')}
 </div>
@@ -200,8 +204,8 @@ export default function ChipPage() {
 <div class="chip blue">
   <i class="icon icon-ellipse"></i>
   ${t('size.medium')}
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -257,9 +261,10 @@ export default function ChipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>icon.html</div>
-          <pre><code>{`<!-- 아이콘 없이 -->
+        <CodeBlock
+          title="icon.html"
+          language="html"
+          code={`<!-- 아이콘 없이 -->
 <div class="chip blue">${t('labels.label')}</div>
 
 <!-- ellipse 아이콘 -->
@@ -272,8 +277,8 @@ export default function ChipPage() {
 <div class="chip blue">
   <i class="icon icon-user"></i>
   ${t('labels.user')}
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -316,9 +321,10 @@ export default function ChipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>round.html</div>
-          <pre><code>{`<!-- 기본 (약간 각진 모서리) -->
+        <CodeBlock
+          title="round.html"
+          language="html"
+          code={`<!-- 기본 (약간 각진 모서리) -->
 <div class="chip blue">
   <i class="icon icon-ellipse"></i>
   ${t('labels.label')}
@@ -328,8 +334,8 @@ export default function ChipPage() {
 <div class="chip round blue">
   <i class="icon icon-ellipse"></i>
   ${t('labels.label')}
-</div>`}</code></pre>
-        </div>
+</div>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -362,9 +368,10 @@ export default function ChipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>delete.html</div>
-          <pre><code>{`<div class="chip blue">
+        <CodeBlock
+          title="delete.html"
+          language="html"
+          code={`<div class="chip blue">
   <i class="icon icon-ellipse"></i>
   ${t('labels.label')}
   <button aria-label="${t('delete.ariaLabel')}"></button>
@@ -377,8 +384,8 @@ export default function ChipPage() {
       e.target.closest('.chip').remove();
     });
   });
-</script>`}</code></pre>
-        </div>
+</script>`}
+        />
       </section>
 
       <section className={styles.section}>
@@ -400,9 +407,10 @@ export default function ChipPage() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>basic.tsx</div>
-          <pre><code>{`import { Chip } from 'podo-ui';
+        <CodeBlock
+          title="basic.tsx"
+          language="tsx"
+          code={`import { Chip } from 'podo-ui';
 
 function App() {
   return (
@@ -418,8 +426,8 @@ function App() {
       </Chip>
     </>
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('react.withDelete')}</div>
@@ -438,9 +446,10 @@ function App() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>with-delete.tsx</div>
-          <pre><code>{`import { useState } from 'react';
+        <CodeBlock
+          title="with-delete.tsx"
+          language="tsx"
+          code={`import { useState } from 'react';
 import { Chip } from 'podo-ui';
 
 function TagList() {
@@ -469,8 +478,8 @@ function TagList() {
       ))}
     </>
   );
-}`}</code></pre>
-        </div>
+}`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('react.variants')}</div>
@@ -490,9 +499,10 @@ function TagList() {
           </div>
         </div>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>variants.tsx</div>
-          <pre><code>{`<Chip size="sm" theme="blue" icon="icon-user">
+        <CodeBlock
+          title="variants.tsx"
+          language="tsx"
+          code={`<Chip size="sm" theme="blue" icon="icon-user">
   ${t('labels.small')}
 </Chip>
 
@@ -506,8 +516,8 @@ function TagList() {
 
 <Chip theme="red" icon="icon-warning" onDelete={() => alert('${t('delete.ariaLabel')}')}>
   ${t('labels.withDelete')}
-</Chip>`}</code></pre>
-        </div>
+</Chip>`}
+        />
       </section>
 
       <section className={styles.section}>
