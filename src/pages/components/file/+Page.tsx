@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileInput } from 'podo-ui';
+import FileInput from '../../../react/atom/file';
 import styles from '../input/Page.module.scss';
 
 export default function File() {

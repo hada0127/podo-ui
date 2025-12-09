@@ -1,28 +1,100 @@
 @use '../../mixin' as *;
 
 .codeBlock {
-  background: color(default-deep-base);
   border-radius: r(4);
   overflow: hidden;
   margin-bottom: s(4);
+  position: relative;
 
-  .codeHeader {
-    padding: s(3) s(5);
-    background: rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    @include p4-semibold;
-    color: rgba(255, 255, 255, 0.7);
+  // Always dark background
+  background: #24292e;
+}
+
+.codeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: s(2) s(4);
+  min-height: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.title {
+  @include p4-semibold;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: r(2);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+  margin-left: auto;
+
+  i {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.5);
   }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  // Success state - check icon
+  .icon-check {
+    color: #3fb950;
+  }
+}
+
+// Show copy button on hover
+.codeBlock:hover .copyButton {
+  opacity: 1;
+}
+
+.codeContent {
+  overflow-x: auto;
+  background: #24292e;
 
   pre {
     margin: 0;
-    padding: s(5);
-    overflow-x: auto;
+    padding: s(4);
+    background: #24292e !important;
 
     code {
       @include p3;
-      color: #f8f8f2;
       white-space: pre;
+      color: #f8f8f2;
+      background: transparent !important;
     }
   }
+
+  // Shiki generated pre styling
+  :global(.shiki) {
+    margin: 0;
+    padding: s(4);
+    background: #24292e !important;
+
+    code {
+      @include p3;
+      white-space: pre;
+      background: transparent !important;
+    }
+  }
+}
+
+// === Shiki Always Dark Theme ===
+:global(.shiki),
+:global(.shiki span) {
+  color: var(--shiki-dark) !important;
+  background-color: transparent !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
 }

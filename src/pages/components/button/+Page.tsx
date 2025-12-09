@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button as ButtonComponent } from 'podo-ui';
+import CodeBlock from '../../../components/CodeBlock';
 import styles from './Page.module.scss';
 
 export default function Button() {
@@ -47,9 +48,10 @@ export default function Button() {
         <h2>React Component</h2>
         <p>podo-ui React 컴포넌트를 사용한 예제입니다.</p>
 
-        <div className={styles.codeBlock}>
-          <div className={styles.codeHeader}>React</div>
-          <pre><code>{`import { Button } from 'podo-ui';
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`import { Button } from 'podo-ui';
 
 // Basic
 <Button theme="primary">Primary</Button>
@@ -64,8 +66,8 @@ export default function Button() {
 <Button theme="primary" size="lg">Large</Button>
 
 // Loading
-<Button theme="primary" loading>Loading...</Button>`}</code></pre>
-        </div>
+<Button theme="primary" loading>Loading...</Button>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>Button Demo</div>
