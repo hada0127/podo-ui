@@ -1,13 +1,103 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Select as SelectComponent } from 'podo-ui';
 import styles from './Page.module.scss';
 
 export default function Select() {
   const { t } = useTranslation('select');
+  const [selected, setSelected] = useState('');
+  const [city, setCity] = useState('seoul');
+
+  const options = [
+    { value: 'option1', label: t('basicUsage.options.option1') },
+    { value: 'option2', label: t('basicUsage.options.option2') },
+    { value: 'option3', label: t('basicUsage.options.option3') },
+  ];
+
+  const cityOptions = [
+    { value: 'seoul', label: t('basicUsage.cities.seoul') },
+    { value: 'busan', label: t('basicUsage.cities.busan') },
+    { value: 'daegu', label: t('basicUsage.cities.daegu') },
+    { value: 'incheon', label: t('basicUsage.cities.incheon') },
+  ];
+
+  const roleOptions = [
+    { value: 'admin', label: t('icons.roles.admin') },
+    { value: 'user', label: t('icons.roles.user') },
+    { value: 'guest', label: t('icons.roles.guest') },
+  ];
+
   return (
     <>
       <section className={styles.section}>
         <h1>{t('title')}</h1>
         <p>{t('description')}</p>
+      </section>
+
+      <section className={styles.section}>
+        <h2>React Component</h2>
+        <p>podo-ui React 컴포넌트를 사용한 예제입니다.</p>
+
+        <div className={styles.codeBlock}>
+          <div className={styles.codeHeader}>React</div>
+          <pre><code>{`import { Select } from 'podo-ui';
+
+const options = [
+  { value: 'option1', label: '옵션 1' },
+  { value: 'option2', label: '옵션 2' },
+  { value: 'option3', label: '옵션 3' },
+];
+
+// Basic
+<Select
+  value={selected}
+  onChange={(e) => setSelected(e.target.value)}
+  options={options}
+  placeholder="옵션을 선택하세요"
+/>
+
+// With Icon
+<Select
+  value={role}
+  onChange={(e) => setRole(e.target.value)}
+  options={roleOptions}
+  withIcon="icon-user"
+  placeholder="역할 선택"
+/>`}</code></pre>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>Select Demo</div>
+          <div className={styles.selectGroup}>
+            <SelectComponent
+              value={selected}
+              onChange={(e) => setSelected(e.target.value)}
+              options={options}
+              placeholder={t('basicUsage.options.placeholder')}
+            />
+            <SelectComponent
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              options={cityOptions}
+            />
+            <SelectComponent
+              options={roleOptions}
+              withIcon="icon-user"
+              placeholder={t('icons.userPlaceholder')}
+            />
+          </div>
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>Disabled</div>
+          <div className={styles.selectGroup}>
+            <SelectComponent
+              options={options}
+              placeholder={t('basicUsage.disabled')}
+              disabled
+            />
+          </div>
+        </div>
       </section>
 
       <section className={styles.section}>

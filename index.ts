@@ -13,7 +13,7 @@ import Toggle from './react/atom/toggle';
 import Checkbox from './react/atom/checkbox';
 import Radio from './react/atom/radio';
 import Select from './react/atom/select';
-import { File } from './react/atom/file-input';
+import { File } from './react/atom/file';
 import Button from './react/atom/button';
 import Tab from './react/molecule/tab';
 import Table from './react/molecule/table';

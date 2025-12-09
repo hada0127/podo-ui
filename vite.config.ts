@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import vike from 'vike/plugin'
 import path from 'path'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     vike()
@@ -14,6 +14,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // 개발 모드에서는 소스 파일을 직접 참조하여 HMR 활성화
+      ...(mode === 'development' && {
+        'podo-ui': path.resolve(__dirname, './index.ts'),
+      }),
     },
   },
   css: {
@@ -21,4 +25,4 @@ export default defineConfig({
       localsConvention: 'camelCase',
     },
   },
-})
+}))
