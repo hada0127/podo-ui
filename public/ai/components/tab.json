@@ -2,6 +2,7 @@
   "name": "Tab",
   "category": "molecule",
   "description": "Tab navigation component with React support",
+  "documentation": "https://podoui.com/components/tab",
   "scssOnly": false,
   "import": {
     "react": "import { Tab } from 'podo-ui'",

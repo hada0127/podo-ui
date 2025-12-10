@@ -2,6 +2,7 @@
   "name": "Tooltip",
   "category": "atom",
   "description": "Tooltip component with position and variant options",
+  "documentation": "https://podoui.com/components/tooltip",
   "import": {
     "react": "import { Tooltip } from 'podo-ui'"
   },

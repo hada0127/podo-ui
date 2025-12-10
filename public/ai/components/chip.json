@@ -2,6 +2,7 @@
   "name": "Chip",
   "category": "atom",
   "description": "Tag/chip component for labels and categories",
+  "documentation": "https://podoui.com/components/chip",
   "import": {
     "react": "import { Chip } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/atom/chip'"

@@ -2,6 +2,7 @@
   "name": "File",
   "category": "atom",
   "description": "Styled file upload input with React component",
+  "documentation": "https://podoui.com/components/file",
   "scssOnly": false,
   "import": {
     "react": "import { File } from 'podo-ui'",

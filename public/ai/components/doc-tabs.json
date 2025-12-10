@@ -2,6 +2,7 @@
   "name": "DocTabs",
   "category": "docs",
   "description": "Documentation site tab component for SCSS/React/CDN content separation",
+  "internal": true,
   "scssOnly": false,
   "import": {
     "react": "import DocTabs from '../../../components/DocTabs'"

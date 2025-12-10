@@ -2,6 +2,7 @@
   "name": "Input",
   "category": "atom",
   "description": "Form input field with Zod validation support",
+  "documentation": "https://podoui.com/components/input",
   "import": {
     "react": "import { Input } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/form/input'"

@@ -2,6 +2,7 @@
   "name": "Select",
   "category": "atom",
   "description": "Styled native select dropdown with React component",
+  "documentation": "https://podoui.com/components/select",
   "scssOnly": false,
   "import": {
     "react": "import { Select } from 'podo-ui'",

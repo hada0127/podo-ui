@@ -2,6 +2,7 @@
   "name": "Toggle",
   "category": "atom",
   "description": "Toggle switch input with React component",
+  "documentation": "https://podoui.com/components/toggle",
   "scssOnly": false,
   "import": {
     "react": "import { Toggle } from 'podo-ui'",

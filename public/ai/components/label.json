@@ -2,6 +2,7 @@
   "name": "Label",
   "category": "atom",
   "description": "Form label with size, style, and required indicator",
+  "documentation": "https://podoui.com/components/label",
   "scssOnly": false,
   "import": {
     "react": "import { Label } from 'podo-ui'",

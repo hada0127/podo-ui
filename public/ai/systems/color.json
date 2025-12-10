@@ -1,6 +1,7 @@
 {
   "name": "Color System",
   "description": "Semantic color palette with light/dark/warm theme support",
+  "documentation": "https://podoui.com/foundation/colors",
   "import": {
     "scss": "@use 'podo-ui/scss/color/function' as *"
   },

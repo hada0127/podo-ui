@@ -2,6 +2,7 @@
   "name": "DatePicker",
   "category": "molecule",
   "description": "Date/time picker with single and period selection modes",
+  "documentation": "https://podoui.com/components/datepicker",
   "import": {
     "react": "import { DatePicker } from 'podo-ui'",
     "vanilla": "import 'podo-ui/vanilla/datepicker'"

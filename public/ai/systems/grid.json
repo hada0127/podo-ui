@@ -1,6 +1,7 @@
 {
   "name": "Grid System",
   "description": "Responsive 12-column grid with automatic breakpoints",
+  "documentation": "https://podoui.com/layout/grid",
   "import": {
     "scss": "@use 'podo-ui/scss/layout/grid'"
   },

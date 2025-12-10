@@ -1,6 +1,7 @@
 {
   "name": "Typography System",
   "description": "Pretendard font family with display and paragraph styles",
+  "documentation": "https://podoui.com/foundation/typography",
   "import": {
     "scss": "@use 'podo-ui/scss/typo/mixin' as *",
     "fonts": "@use 'podo-ui/vite-fonts.scss'"

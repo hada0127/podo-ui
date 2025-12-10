@@ -1,6 +1,7 @@
 {
   "name": "Button System",
   "description": "Button styling with themes, variants, and states",
+  "documentation": "https://podoui.com/components/button",
   "import": {
     "scss": "@use 'podo-ui/scss/button/class'",
     "layout": "@use 'podo-ui/scss/button/layout'"
@@ -20,6 +21,13 @@
     { "class": "fill", "description": "Light background, colored text and border" },
     { "class": "border", "description": "Transparent background, colored border and text" },
     { "class": "text", "description": "No background/border, colored text only" }
+  ],
+  "sizes": [
+    { "class": "xxs", "padding": "s(2) s(3)", "fontSize": "12px", "description": "Extra extra small" },
+    { "class": "xs", "padding": "s(2) s(4)", "fontSize": "12px", "description": "Extra small" },
+    { "class": "(default/sm)", "padding": "s(3) s(5)", "fontSize": "14px", "description": "Small (default)" },
+    { "class": "md", "padding": "s(4) s(6)", "fontSize": "14px", "description": "Medium" },
+    { "class": "lg", "padding": "s(5) s(7)", "fontSize": "16px", "description": "Large" }
   ],
   "states": [
     { "state": "hover", "description": "Slightly different shade" },

@@ -2,6 +2,7 @@
   "name": "Field",
   "category": "molecule",
   "description": "Form field wrapper with label, required indicator, and helper text",
+  "documentation": "https://podoui.com/components/field",
   "import": {
     "react": "import { Field } from 'podo-ui'"
   },

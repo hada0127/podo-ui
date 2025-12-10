@@ -2,6 +2,7 @@
   "name": "Pagination",
   "category": "molecule",
   "description": "Page navigation component",
+  "documentation": "https://podoui.com/components/pagination",
   "import": {
     "react": "import { Pagination } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/molecule/pagination'"

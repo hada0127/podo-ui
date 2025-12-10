@@ -1,6 +1,7 @@
 {
   "name": "Spacing System",
   "description": "Consistent spacing scale from 0-13 with SCSS function and utility classes",
+  "documentation": "https://podoui.com/foundation/spacing",
   "import": {
     "scss": "@use 'podo-ui/scss/layout/spacing' as *"
   },

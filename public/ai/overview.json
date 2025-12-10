@@ -1,6 +1,8 @@
 {
   "name": "podo-ui",
   "tagline": "SCSS-first design system with React components",
+  "documentation": "https://podoui.com",
+  "repository": "https://github.com/hada0127/podo-ui",
   "philosophy": {
     "core": "SCSS 97% + React 3%",
     "principle": "Maximum flexibility with minimal JS dependency",
@@ -31,8 +33,8 @@
       "fonts": "@use 'podo-ui/vite-fonts.scss'"
     },
     "cdn": {
-      "css": "https://cdn.example.com/podo-ui.min.css",
-      "js": "https://cdn.example.com/podo-datepicker.js"
+      "css": "https://podoui.com/cdn/podo-ui.min.css",
+      "js": "https://podoui.com/cdn/podo-datepicker.min.js"
     }
   },
   "structure": {

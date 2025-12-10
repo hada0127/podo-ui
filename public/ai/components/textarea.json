@@ -2,6 +2,7 @@
   "name": "Textarea",
   "category": "atom",
   "description": "Multi-line text input with Zod validation support",
+  "documentation": "https://podoui.com/components/textarea",
   "import": {
     "react": "import { Textarea } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/form/textarea'"

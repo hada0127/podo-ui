@@ -2,6 +2,7 @@
   "name": "Toast",
   "category": "molecule",
   "description": "Toast notification system with multiple themes and positions",
+  "documentation": "https://podoui.com/components/toast",
   "import": {
     "react": "import { ToastProvider, useToast } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/molecule/toast'"

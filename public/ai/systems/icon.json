@@ -1,6 +1,7 @@
 {
   "name": "Icon System",
   "description": "SVG to WOFF icon font system",
+  "documentation": "https://podoui.com/foundation/icons",
   "import": {
     "scss": "@use 'podo-ui/scss/icon/function' as *"
   },

@@ -2,6 +2,7 @@
   "name": "Avatar",
   "category": "atom",
   "description": "Profile image, icon, or text display component",
+  "documentation": "https://podoui.com/components/avatar",
   "import": {
     "react": "import { Avatar } from 'podo-ui'"
   },

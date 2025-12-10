@@ -2,6 +2,7 @@
   "name": "Button",
   "category": "atom",
   "description": "Styled button with themes and variants",
+  "documentation": "https://podoui.com/components/button",
   "scssOnly": false,
   "import": {
     "react": "import { Button } from 'podo-ui'",

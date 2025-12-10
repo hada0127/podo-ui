@@ -2,6 +2,7 @@
   "name": "Editor",
   "category": "atom",
   "description": "WYSIWYG rich text editor with image/YouTube embedding",
+  "documentation": "https://podoui.com/components/editor",
   "import": {
     "react": "import { Editor } from 'podo-ui/next'"
   },

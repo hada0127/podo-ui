@@ -2,6 +2,7 @@
   "name": "Checkbox & Radio",
   "category": "atom",
   "description": "Styled checkbox and radio inputs with React components",
+  "documentation": "https://podoui.com/components/checkbox-radio",
   "scssOnly": false,
   "import": {
     "react": "import { Checkbox, Radio } from 'podo-ui'",
