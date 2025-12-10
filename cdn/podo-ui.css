@@ -1,5 +1,5 @@
 /*!
- * Podo UI CSS v0.8.4
+ * Podo UI CSS v0.9.0
  * https://podoui.com
  * MIT License
  */
@@ -16574,7 +16574,7 @@ html[data-color-mode=dark] .bg-elevation-3 {
   base font family
   */
 :root {
-  --base-font-family: "Pretendard", sans-serif;
+  --base-font-family: 'Pretendard', sans-serif;
 }
 
 body {
@@ -16637,11 +16637,6 @@ body h3:not(button) {
 /*
   Display
 */
-:root {
-  /*
-    Paragraph
-  */
-}
 :root .display1 {
   font-size: 60px;
   line-height: 1.2;
@@ -16732,6 +16727,11 @@ body h3:not(button) {
   :root .display7 {
     font-size: 16px;
   }
+}
+:root {
+  /*
+    Paragraph
+  */
 }
 :root .p1 {
   font-size: 24px;
@@ -19604,6 +19604,9 @@ label > span.required {
   color: var(--color-danger) !important;
 }
 
+/*
+  Form
+*/
 /*
   Molecule
 */
