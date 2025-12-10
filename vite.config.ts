@@ -14,10 +14,8 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      // 개발 모드에서는 소스 파일을 직접 참조하여 HMR 활성화
-      ...(mode === 'development' && {
-        'podo-ui': path.resolve(__dirname, './index.ts'),
-      }),
+      // 소스 파일을 직접 참조 (개발: HMR, 프로덕션: 로컬 빌드)
+      'podo-ui': path.resolve(__dirname, './index.ts'),
     },
   },
   css: {
