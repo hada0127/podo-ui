@@ -1,10 +1,33 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Typography() {
   const { t } = useTranslation('typography');
 
+  return (
+    <>
+      <section className={styles.section}>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
+      </section>
+
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
   const displayStyles = [
     { name: 'display1', fontSize: '60px', fontWeight: 600, lineHeight: 1.2, mobile: '36px' },
     { name: 'display2', fontSize: '54px', fontWeight: 600, lineHeight: 1.2, mobile: '32px' },
@@ -34,19 +57,17 @@ export default function Typography() {
 
   return (
     <>
-      <section className={styles.section}>
-        <h1>{t('title')}</h1>
-        <p>{t('description')}</p>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.typographySystem.title')}</h2>
-        <p>
-          {t('sections.typographySystem.description')}
-        </p>
+        <p>{t('sections.typographySystem.description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.displayStyles.title')}</h2>
         <p>{t('sections.displayStyles.description')}</p>
 
@@ -69,7 +90,7 @@ export default function Typography() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.paragraphStyles.title')}</h2>
         <p>{t('sections.paragraphStyles.description')}</p>
 
@@ -94,7 +115,7 @@ export default function Typography() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.headingStyles.title')}</h2>
         <p>{t('sections.headingStyles.description')}</p>
 
@@ -119,7 +140,7 @@ export default function Typography() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.cssClasses.title')}</h2>
         <p>{t('sections.cssClasses.description')}</p>
 
@@ -147,7 +168,7 @@ export default function Typography() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.scssUsage.title')}</h2>
         <p>{t('sections.scssUsage.description')}</p>
 
@@ -178,7 +199,7 @@ export default function Typography() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.fontFamily.title')}</h2>
         <p>{t('sections.fontFamily.description')}</p>
 
@@ -196,7 +217,7 @@ export default function Typography() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.responsive.title')}</h2>
         <p>{t('sections.responsive.description')}</p>
 

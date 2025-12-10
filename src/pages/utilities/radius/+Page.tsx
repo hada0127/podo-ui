@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Radius() {
   const { t } = useTranslation('radius');
+
   return (
     <>
       <section className={styles.section}>
@@ -11,7 +13,29 @@ export default function Radius() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
+      </section>
+
+      <section>
         <h2>{t('basicUsage.title')}</h2>
         <p>
           {t('basicUsage.description')}
@@ -27,7 +51,7 @@ export default function Radius() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('allValues.title')}</h2>
         <p>{t('allValues.description')}</p>
 
@@ -70,7 +94,7 @@ export default function Radius() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('scssUsage.title')}</h2>
         <p>{t('scssUsage.description')}</p>
 
@@ -104,7 +128,7 @@ export default function Radius() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('realWorld.title')}</h2>
         <p>{t('realWorld.description')}</p>
 

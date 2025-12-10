@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Toggle() {
   const { t } = useTranslation('toggle');
+
   return (
     <>
       <section className={styles.section}>
@@ -11,12 +13,34 @@ export default function Toggle() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/scss/atom/toggle';`} />
+      </section>
+
+      <section>
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
         <CodeBlock
-          title={t('demo.codeHeader')}
+          title="HTML"
           language="html"
           code={`<label>
   <input type="checkbox" class="toggle" />
@@ -62,7 +86,7 @@ export default function Toggle() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('practicalExample.title')}</h2>
         <p>{t('practicalExample.description')}</p>
 
@@ -101,7 +125,7 @@ export default function Toggle() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('accessibility.title')}</h2>
         <p>{t('accessibility.description')}</p>
 
@@ -124,12 +148,10 @@ export default function Toggle() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('scss.title')}</h2>
-        <p>{t('scss.description')}</p>
-
         <CodeBlock
-          title="component.module.scss"
+          title="SCSS"
           language="scss"
           code={`@use 'podo-ui/mixin' as *;
 
@@ -147,7 +169,7 @@ export default function Toggle() {
   }
 }
 
-// ${t('code.customToggleStyle')}
+// Toggle custom style
 .toggle {
   appearance: none;
   position: relative;
@@ -195,7 +217,7 @@ export default function Toggle() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('darkMode.title')}</h2>
         <p>{t('darkMode.description')}</p>
       </section>

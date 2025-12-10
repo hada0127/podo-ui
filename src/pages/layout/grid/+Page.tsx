@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Grid() {
   const { t } = useTranslation('grid');
+
   return (
     <>
       <section className={styles.section}>
@@ -11,7 +13,29 @@ export default function Grid() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
+      </section>
+
+      <section>
         <h2>{t('gridSystem.title')}</h2>
         <p>
           {t('gridSystem.description')}
@@ -48,7 +72,7 @@ export default function Grid() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('basicGrid.title')}</h2>
         <p>{t('basicGrid.description')}</p>
 
@@ -90,7 +114,7 @@ export default function Grid() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('gridSize.title')}</h2>
         <p>{t('gridSize.description')}</p>
 
@@ -114,7 +138,7 @@ export default function Grid() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('fixedGrid.title')}</h2>
         <p>{t('fixedGrid.description')}</p>
 
@@ -174,7 +198,7 @@ export default function Grid() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('fullWidth.title')}</h2>
         <p>{t('fullWidth.description')}</p>
 
@@ -200,7 +224,7 @@ export default function Grid() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('responsive.title')}</h2>
         <p>{t('responsive.description')}</p>
 
@@ -217,7 +241,7 @@ export default function Grid() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('objectWidth.title')}</h2>
         <p>{t('objectWidth.description')}</p>
 
@@ -251,7 +275,7 @@ export default function Grid() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('pixelWidth.title')}</h2>
         <p>{t('pixelWidth.description')}</p>
 

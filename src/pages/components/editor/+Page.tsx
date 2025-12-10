@@ -3,15 +3,11 @@ import Editor from '../../../../react/atom/editor';
 import EditorView from '../../../../react/atom/editor-view';
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
-import styles from '../input/Page.module.scss';
+import DocTabs from '../../../components/DocTabs';
+import styles from './Page.module.scss';
 
 export default function EditorPage() {
   const { t } = useTranslation('editor');
-  const [content, setContent] = useState('');
-  const [content2, setContent2] = useState('');
-  const [content3, setContent3] = useState('');
-  const [basicContent, setBasicContent] = useState('');
-  const [advancedContent, setAdvancedContent] = useState('');
 
   return (
     <>
@@ -20,29 +16,113 @@ export default function EditorPage() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
-        <h2>{t('overview.title')}</h2>
-        <p>{t('overview.description')}</p>
+      <DocTabs
+        tabs={[
+          {
+            key: 'react',
+            label: 'React',
+            content: <ReactContent t={t} />,
+          },
+        ]}
+        defaultTab="react"
+      />
+    </>
+  );
+}
 
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <Editor
-            value={content}
-            onChange={setContent}
-            height="400px"
-            placeholder={t('overview.placeholder')}
-          />
-        </div>
+function ReactContent({ t }: { t: (key: string) => string }) {
+  const [content, setContent] = useState('');
+  const [content2, setContent2] = useState('');
+  const [content3, setContent3] = useState('');
+  const [basicContent, setBasicContent] = useState('');
+  const [advancedContent, setAdvancedContent] = useState('');
 
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.preview')}</div>
-          <EditorView value={content} />
-        </div>
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="tsx" code={`import { Editor, EditorView } from 'podo-ui';`} />
       </section>
 
-      <section className={styles.section}>
-        <h2>{t('react.title')}</h2>
-        <p>{t('react.description')}</p>
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>string</code></td>
+              <td><code>''</code></td>
+              <td>{t('props.value')}</td>
+            </tr>
+            <tr>
+              <td><code>onChange</code></td>
+              <td><code>function</code></td>
+              <td>-</td>
+              <td>{t('props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>height</code></td>
+              <td><code>string | 'contents'</code></td>
+              <td><code>'400px'</code></td>
+              <td>{t('props.height')}</td>
+            </tr>
+            <tr>
+              <td><code>minHeight</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.minHeight')}</td>
+            </tr>
+            <tr>
+              <td><code>maxHeight</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.maxHeight')}</td>
+            </tr>
+            <tr>
+              <td><code>width</code></td>
+              <td><code>string</code></td>
+              <td><code>'100%'</code></td>
+              <td>{t('props.width')}</td>
+            </tr>
+            <tr>
+              <td><code>resizable</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.resizable')}</td>
+            </tr>
+            <tr>
+              <td><code>placeholder</code></td>
+              <td><code>string</code></td>
+              <td><code>''</code></td>
+              <td>{t('props.placeholder')}</td>
+            </tr>
+            <tr>
+              <td><code>validator</code></td>
+              <td><code>z.ZodType</code></td>
+              <td>-</td>
+              <td>{t('props.validator')}</td>
+            </tr>
+            <tr>
+              <td><code>toolbar</code></td>
+              <td><code>ToolbarItem[]</code></td>
+              <td>-</td>
+              <td>{t('props.toolbar')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('overview.title')}</h2>
+        <p>{t('overview.description')}</p>
 
         <CodeBlock
           title={t('demo.codeHeader')}
@@ -62,9 +142,24 @@ export default function MyComponent() {
   );
 }`}
         />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <Editor
+            value={content}
+            onChange={setContent}
+            height="400px"
+            placeholder={t('overview.placeholder')}
+          />
+        </div>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.preview')}</div>
+          <EditorView value={content} />
+        </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('features.title')}</h2>
         <ul>
           <li>{t('features.textFormat')}</li>
@@ -83,20 +178,8 @@ export default function MyComponent() {
         </ul>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('height.title')}</h2>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('height.auto')}</div>
-          <Editor
-            value={content2}
-            onChange={setContent2}
-            height="contents"
-            minHeight="150px"
-            maxHeight="500px"
-            placeholder={t('height.autoPlaceholder')}
-          />
-        </div>
 
         <CodeBlock
           title={t('demo.codeHeader')}
@@ -110,23 +193,22 @@ export default function MyComponent() {
   placeholder="${t('height.autoPlaceholder')}"
 />`}
         />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('resizable.title')}</h2>
 
         <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('resizable.description')}</div>
+          <div className={styles.demoTitle}>{t('height.auto')}</div>
           <Editor
-            value={content3}
-            onChange={setContent3}
-            height="300px"
-            minHeight="200px"
-            maxHeight="600px"
-            resizable={true}
-            placeholder={t('resizable.placeholder')}
+            value={content2}
+            onChange={setContent2}
+            height="contents"
+            minHeight="150px"
+            maxHeight="500px"
+            placeholder={t('height.autoPlaceholder')}
           />
         </div>
+      </section>
+
+      <section>
+        <h2>{t('resizable.title')}</h2>
 
         <CodeBlock
           title={t('demo.codeHeader')}
@@ -141,91 +223,28 @@ export default function MyComponent() {
   placeholder="${t('resizable.placeholder')}"
 />`}
         />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('resizable.description')}</div>
+          <Editor
+            value={content3}
+            onChange={setContent3}
+            height="300px"
+            minHeight="200px"
+            maxHeight="600px"
+            resizable={true}
+            placeholder={t('resizable.placeholder')}
+          />
+        </div>
       </section>
 
-      <section className={styles.section}>
-        <h2>{t('props.title')}</h2>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Prop</th>
-              <th>Type</th>
-              <th>Default</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>value</td>
-              <td>string</td>
-              <td>''</td>
-              <td>{t('props.value')}</td>
-            </tr>
-            <tr>
-              <td>onChange</td>
-              <td>function</td>
-              <td>-</td>
-              <td>{t('props.onChange')}</td>
-            </tr>
-            <tr>
-              <td>height</td>
-              <td>string | 'contents'</td>
-              <td>'400px'</td>
-              <td>{t('props.height')}</td>
-            </tr>
-            <tr>
-              <td>minHeight</td>
-              <td>string</td>
-              <td>-</td>
-              <td>{t('props.minHeight')}</td>
-            </tr>
-            <tr>
-              <td>maxHeight</td>
-              <td>string</td>
-              <td>-</td>
-              <td>{t('props.maxHeight')}</td>
-            </tr>
-            <tr>
-              <td>width</td>
-              <td>string</td>
-              <td>'100%'</td>
-              <td>{t('props.width')}</td>
-            </tr>
-            <tr>
-              <td>resizable</td>
-              <td>boolean</td>
-              <td>false</td>
-              <td>{t('props.resizable')}</td>
-            </tr>
-            <tr>
-              <td>placeholder</td>
-              <td>string</td>
-              <td>''</td>
-              <td>{t('props.placeholder')}</td>
-            </tr>
-            <tr>
-              <td>validator</td>
-              <td>z.ZodType</td>
-              <td>-</td>
-              <td>{t('props.validator')}</td>
-            </tr>
-            <tr>
-              <td>toolbar</td>
-              <td>ToolbarItem[]</td>
-              <td>-</td>
-              <td>{t('props.toolbar')}</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section className={styles.section}>
+      <section>
         <h2>{t('toolbar.title')}</h2>
         <p>{t('toolbar.description')}</p>
         <p><strong>{t('toolbar.note')}</strong></p>
 
         <h3>{t('toolbar.availableItems')}</h3>
-        <table className={styles.table}>
+        <table className={styles.propsTable}>
           <thead>
             <tr>
               <th>Item</th>
@@ -323,7 +342,7 @@ export default function MyComponent() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('editorView.title')}</h2>
         <p>{t('editorView.description')}</p>
 
@@ -341,21 +360,8 @@ export default function MyComponent() {
 }`}
         />
 
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('editorView.preview')}</div>
-          <div style={{
-            padding: '20px',
-            background: 'var(--bg-elevation)',
-            borderRadius: '8px'
-          }}>
-            <EditorView value={content} />
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('editorView.props.title')}</h2>
-        <table className={styles.table}>
+        <h3>{t('editorView.props.title')}</h3>
+        <table className={styles.propsTable}>
           <thead>
             <tr>
               <th>Prop</th>
@@ -366,14 +372,14 @@ export default function MyComponent() {
           </thead>
           <tbody>
             <tr>
-              <td>value</td>
-              <td>string</td>
-              <td>''</td>
+              <td><code>value</code></td>
+              <td><code>string</code></td>
+              <td><code>''</code></td>
               <td>{t('editorView.props.value')}</td>
             </tr>
             <tr>
-              <td>className</td>
-              <td>string</td>
+              <td><code>className</code></td>
+              <td><code>string</code></td>
               <td>-</td>
               <td>{t('editorView.props.className')}</td>
             </tr>
@@ -388,6 +394,17 @@ export default function MyComponent() {
           <li>{t('editorView.features.responsive')}</li>
           <li>{t('editorView.features.readOnly')}</li>
         </ul>
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('editorView.preview')}</div>
+          <div style={{
+            padding: '20px',
+            background: 'var(--bg-elevation)',
+            borderRadius: '8px'
+          }}>
+            <EditorView value={content} />
+          </div>
+        </div>
       </section>
     </>
   );

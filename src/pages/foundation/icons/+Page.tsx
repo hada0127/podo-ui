@@ -1,9 +1,33 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Icons() {
   const { t } = useTranslation('icons');
+
+  return (
+    <>
+      <section className={styles.section}>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
+      </section>
+
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
   const icons = [
     'star', 'star-fill', 'exchange-horizontally', 'exchange-vertical', 'new-window', 'tag',
     'notification', 'notification-stroke', 'mail', 'global', 'trash', 'dm', 'currency', 'print',
@@ -30,19 +54,17 @@ export default function Icons() {
 
   return (
     <>
-      <section className={styles.section}>
-        <h1>{t('title')}</h1>
-        <p>{t('description')}</p>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.iconSystem.title')}</h2>
-        <p>
-          {t('sections.iconSystem.description')}
-        </p>
+        <p>{t('sections.iconSystem.description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.htmlUsage.title')}</h2>
         <p dangerouslySetInnerHTML={{ __html: t('sections.htmlUsage.description') }} />
 
@@ -78,7 +100,7 @@ export default function Icons() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.reactUsage.title')}</h2>
 
         <CodeBlock
@@ -101,7 +123,7 @@ export default function Icons() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.scssUsage.title')}</h2>
 
         <CodeBlock
@@ -137,7 +159,7 @@ export default function Icons() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.allIcons.title')} ({icons.length}{t('sections.allIcons.count')})</h2>
         <p>{t('sections.allIcons.description')}</p>
 
@@ -160,7 +182,7 @@ export default function Icons() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.categories.title')}</h2>
 
         <div className={styles.categorySection}>
@@ -236,7 +258,7 @@ export default function Icons() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <div className={styles.note}>
           <i className="icon-info"></i>
           <div>

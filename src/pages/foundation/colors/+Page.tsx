@@ -1,10 +1,33 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Colors() {
   const { t } = useTranslation('colors');
 
+  return (
+    <>
+      <section className={styles.section}>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
+      </section>
+
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
   const colors = [
     { name: 'primary', label: t('colors.primary.label'), description: t('colors.primary.description') },
     { name: 'default', label: t('colors.default.label'), description: t('colors.default.description') },
@@ -28,19 +51,17 @@ export default function Colors() {
 
   return (
     <>
-      <section className={styles.section}>
-        <h1>{t('title')}</h1>
-        <p>{t('description')}</p>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.colorSystem.title')}</h2>
-        <p>
-          {t('sections.colorSystem.description')}
-        </p>
+        <p>{t('sections.colorSystem.description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.colorPalette.title')}</h2>
         <div className={styles.colorGrid}>
           {colors.map((color) => (
@@ -56,7 +77,7 @@ export default function Colors() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.colorVariants.title')}</h2>
         <p>{t('sections.colorVariants.description')}</p>
 
@@ -74,7 +95,7 @@ export default function Colors() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.scssUsage.title')}</h2>
         <p>{t('sections.scssUsage.description')}</p>
 
@@ -115,7 +136,7 @@ export default function Colors() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.cssClasses.title')}</h2>
         <p>{t('sections.cssClasses.description')}</p>
 
@@ -147,11 +168,9 @@ export default function Colors() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.darkMode.title')}</h2>
-        <p>
-          {t('sections.darkMode.description')}
-        </p>
+        <p>{t('sections.darkMode.description')}</p>
 
         <CodeBlock
           title={t('sections.darkMode.codeHeader')}
@@ -174,7 +193,7 @@ document.documentElement.setAttribute('data-color-mode', '');`}
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.colorSwatches.title')}</h2>
         <p>{t('sections.colorSwatches.description')}</p>
 

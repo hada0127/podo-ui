@@ -1,10 +1,12 @@
-import Field from '../../../../react/molecule/field';
 import { useTranslation } from 'react-i18next';
+import Field from '../../../../react/molecule/field';
 import CodeBlock from '../../../components/CodeBlock';
-import styles from '../input/Page.module.scss';
+import DocTabs from '../../../components/DocTabs';
+import styles from './Page.module.scss';
 
 export default function FieldPage() {
   const { t } = useTranslation('field');
+
   return (
     <>
       <section className={styles.section}>
@@ -12,96 +14,102 @@ export default function FieldPage() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
-        <h2>{t('overview.title')}</h2>
-        <p>{t('overview.description')}</p>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+          {
+            key: 'react',
+            label: 'React',
+            content: <ReactContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/scss/molecule/field';`} />
+      </section>
+
+      <section>
+        <h2>{t('basicUsage.title')}</h2>
+        <p>{t('basicUsage.description')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<div class="field">
+  <label>${t('overview.email.label')}</label>
+  <div class="child">
+    <input type="email" placeholder="${t('overview.email.placeholder')}" />
+  </div>
+  <div class="helper">${t('overview.email.helper')}</div>
+</div>
+
+<div class="field">
+  <label>${t('overview.password.label')}</label>
+  <div class="child">
+    <input type="password" placeholder="${t('overview.password.placeholder')}" />
+  </div>
+  <div class="helper">${t('overview.password.helper')}</div>
+</div>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.fieldGroup}>
-            <Field label={t('overview.email.label')} helper={t('overview.email.helper')}>
-              <input type="email" placeholder={t('overview.email.placeholder')} />
-            </Field>
-
-            <Field label={t('overview.password.label')} helper={t('overview.password.helper')}>
-              <input type="password" placeholder={t('overview.password.placeholder')} />
-            </Field>
-
-            <Field label={t('overview.category.label')}>
-              <select>
-                <option value="">{t('overview.category.placeholder')}</option>
-                <option value="1">{t('overview.category.option')} 1</option>
-                <option value="2">{t('overview.category.option')} 2</option>
-                <option value="3">{t('overview.category.option')} 3</option>
-              </select>
-            </Field>
+            <div className="field">
+              <label>{t('overview.email.label')}</label>
+              <div className="child">
+                <input type="email" placeholder={t('overview.email.placeholder')} />
+              </div>
+              <div className="helper">{t('overview.email.helper')}</div>
+            </div>
+            <div className="field">
+              <label>{t('overview.password.label')}</label>
+              <div className="child">
+                <input type="password" placeholder={t('overview.password.placeholder')} />
+              </div>
+              <div className="helper">{t('overview.password.helper')}</div>
+            </div>
+            <div className="field">
+              <label>{t('overview.category.label')}</label>
+              <div className="child">
+                <select>
+                  <option value="">{t('overview.category.placeholder')}</option>
+                  <option value="1">{t('overview.category.option')} 1</option>
+                  <option value="2">{t('overview.category.option')} 2</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className={styles.section}>
-        <h2>{t('react.title')}</h2>
-        <p>{t('react.description')}</p>
-
-        <CodeBlock
-          title={t('demo.codeHeader')}
-          language="tsx"
-          code={`import { Field } from 'podo-ui';
-
-export default function MyForm() {
-  return (
-    <div>
-      <Field label="${t('overview.email.label')}" helper="${t('overview.email.helper')}">
-        <input type="email" placeholder="${t('overview.email.placeholder')}" />
-      </Field>
-
-      <Field label="${t('overview.password.label')}" helper="${t('overview.password.helper')}">
-        <input type="password" placeholder="${t('overview.password.placeholder')}" />
-      </Field>
-
-      <Field label="${t('react.description2.label')}" helper="${t('react.description2.helper')}">
-        <textarea rows={4} placeholder="${t('react.description2.placeholder')}"></textarea>
-      </Field>
-
-      <Field label="${t('overview.category.label')}">
-        <select>
-          <option value="" disabled selected>${t('overview.category.placeholder')}</option>
-          <option value="1">${t('overview.category.option')} 1</option>
-          <option value="2">${t('overview.category.option')} 2</option>
-        </select>
-      </Field>
-    </div>
-  );
-}`}
-        />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('structure.title')}</h2>
-        <p>{t('structure.description')}</p>
-        <ul>
-          <li><strong>label:</strong> {t('structure.label')}</li>
-          <li><strong>children:</strong> {t('structure.children')}</li>
-          <li><strong>helper:</strong> {t('structure.helper')}</li>
-        </ul>
-      </section>
-
-      <section className={styles.section}>
+      <section>
         <h2>{t('scss.title')}</h2>
-        <p>{t('scss.description')}</p>
-
         <CodeBlock
-          title="field.module.scss"
+          title="SCSS"
           language="scss"
           code={`@use 'podo-ui/mixin' as *;
 
-.style {
+.field {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: s(3);
 
-  // ${t('code.childElement')}
+  // Child element wrapper
   > div.child {
     width: 100%;
 
@@ -111,13 +119,104 @@ export default function MyForm() {
     }
   }
 
-  // ${t('code.helperText')}
+  // Helper text
   > div.helper {
     @include p4;
     color: color(text-sub);
   }
 }`}
         />
+      </section>
+    </>
+  );
+}
+
+function ReactContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="tsx" code={`import { Field } from 'podo-ui';`} />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>label</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>필드 레이블</td>
+            </tr>
+            <tr>
+              <td><code>helper</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>도움말 텍스트</td>
+            </tr>
+            <tr>
+              <td><code>children</code></td>
+              <td><code>ReactNode</code></td>
+              <td>required</td>
+              <td>입력 요소</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.title')}</h2>
+        <p>{t('react.description')}</p>
+
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`import { Field } from 'podo-ui';
+
+<Field label="${t('overview.email.label')}" helper="${t('overview.email.helper')}">
+  <input type="email" placeholder="${t('overview.email.placeholder')}" />
+</Field>
+
+<Field label="${t('overview.password.label')}" helper="${t('overview.password.helper')}">
+  <input type="password" placeholder="${t('overview.password.placeholder')}" />
+</Field>
+
+<Field label="${t('overview.category.label')}">
+  <select>
+    <option value="" disabled selected>${t('overview.category.placeholder')}</option>
+    <option value="1">${t('overview.category.option')} 1</option>
+    <option value="2">${t('overview.category.option')} 2</option>
+  </select>
+</Field>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>Field Demo</div>
+          <div className={styles.fieldGroup}>
+            <Field label={t('overview.email.label')} helper={t('overview.email.helper')}>
+              <input type="email" placeholder={t('overview.email.placeholder')} />
+            </Field>
+            <Field label={t('overview.password.label')} helper={t('overview.password.helper')}>
+              <input type="password" placeholder={t('overview.password.placeholder')} />
+            </Field>
+            <Field label={t('overview.category.label')}>
+              <select>
+                <option value="">{t('overview.category.placeholder')}</option>
+                <option value="1">{t('overview.category.option')} 1</option>
+                <option value="2">{t('overview.category.option')} 2</option>
+              </select>
+            </Field>
+          </div>
+        </div>
       </section>
     </>
   );

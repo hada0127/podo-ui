@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import DatePicker, { DatePickerValue, TimeValue } from '../../../../react/molecule/datepicker';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 // Vanilla JS DatePicker 타입
@@ -25,6 +26,35 @@ declare global {
 export default function DatePickerPage() {
   const { t } = useTranslation('datepicker');
 
+  // React states
+  const [instantDate, setInstantDate] = useState<DatePickerValue>({});
+  const [periodDate, setPeriodDate] = useState<DatePickerValue>({});
+  const [instantTime, setInstantTime] = useState<DatePickerValue>({});
+  const [periodTime, setPeriodTime] = useState<DatePickerValue>({});
+  const [instantDateTime, setInstantDateTime] = useState<DatePickerValue>({});
+  const [periodDateTime, setPeriodDateTime] = useState<DatePickerValue>({});
+  const [minMaxDate, setMinMaxDate] = useState<DatePickerValue>({});
+  const [minMaxDateTime, setMinMaxDateTime] = useState<DatePickerValue>({});
+  const [statesDefault, setStatesDefault] = useState<DatePickerValue>({});
+  const [statesWithValue, setStatesWithValue] = useState<DatePickerValue>({ date: new Date() });
+  const [disableSpecific, setDisableSpecific] = useState<DatePickerValue>({});
+  const [disableRange, setDisableRange] = useState<DatePickerValue>({});
+  const [disableFunction, setDisableFunction] = useState<DatePickerValue>({});
+  const [enableOnly, setEnableOnly] = useState<DatePickerValue>({});
+  const [minuteStep1, setMinuteStep1] = useState<DatePickerValue>({});
+  const [minuteStep5, setMinuteStep5] = useState<DatePickerValue>({});
+  const [minuteStep10, setMinuteStep10] = useState<DatePickerValue>({});
+  const [minuteStep15, setMinuteStep15] = useState<DatePickerValue>({});
+  const [minuteStep20, setMinuteStep20] = useState<DatePickerValue>({});
+  const [minuteStep30, setMinuteStep30] = useState<DatePickerValue>({});
+  const [formatDash, setFormatDash] = useState<DatePickerValue>({});
+  const [formatDot, setFormatDot] = useState<DatePickerValue>({});
+  const [formatKorean, setFormatKorean] = useState<DatePickerValue>({});
+  const [formatDatetime, setFormatDatetime] = useState<DatePickerValue>({});
+  const [initialPrevNow, setInitialPrevNow] = useState<DatePickerValue>({});
+  const [initialNowNext, setInitialNowNext] = useState<DatePickerValue>({});
+  const [initialCustom, setInitialCustom] = useState<DatePickerValue>({});
+
   // Vanilla JS DatePicker refs
   const vanillaInstantRef = useRef<HTMLDivElement>(null);
   const vanillaPeriodRef = useRef<HTMLDivElement>(null);
@@ -36,7 +66,6 @@ export default function DatePickerPage() {
 
   // Vanilla JS DatePicker 로드 및 초기화
   useEffect(() => {
-    // CSS 로드
     if (!document.getElementById('podo-datepicker-css')) {
       const link = document.createElement('link');
       link.id = 'podo-datepicker-css';
@@ -45,21 +74,17 @@ export default function DatePickerPage() {
       document.head.appendChild(link);
     }
 
-    // JS 로드
     if (!document.getElementById('podo-datepicker-js')) {
       const script = document.createElement('script');
       script.id = 'podo-datepicker-js';
       script.src = '/vanilla/datepicker.js';
-      script.onload = () => {
-        setVanillaLoaded(true);
-      };
+      script.onload = () => setVanillaLoaded(true);
       document.body.appendChild(script);
     } else if (window.PodoDatePicker) {
       setVanillaLoaded(true);
     }
   }, []);
 
-  // Vanilla DatePicker 인스턴스 초기화
   useEffect(() => {
     if (!vanillaLoaded || !window.PodoDatePicker) return;
 
@@ -78,7 +103,6 @@ export default function DatePickerPage() {
       return result;
     };
 
-    // Instant Date
     if (vanillaInstantRef.current && !vanillaInstantRef.current.hasChildNodes()) {
       new window.PodoDatePicker(vanillaInstantRef.current, {
         mode: 'instant',
@@ -87,7 +111,6 @@ export default function DatePickerPage() {
       });
     }
 
-    // Period Date
     if (vanillaPeriodRef.current && !vanillaPeriodRef.current.hasChildNodes()) {
       new window.PodoDatePicker(vanillaPeriodRef.current, {
         mode: 'period',
@@ -96,7 +119,6 @@ export default function DatePickerPage() {
       });
     }
 
-    // DateTime
     if (vanillaDatetimeRef.current && !vanillaDatetimeRef.current.hasChildNodes()) {
       new window.PodoDatePicker(vanillaDatetimeRef.current, {
         mode: 'instant',
@@ -106,47 +128,6 @@ export default function DatePickerPage() {
       });
     }
   }, [vanillaLoaded]);
-
-  // State for demos
-  const [instantDate, setInstantDate] = useState<DatePickerValue>({});
-  const [periodDate, setPeriodDate] = useState<DatePickerValue>({});
-  const [instantTime, setInstantTime] = useState<DatePickerValue>({});
-  const [periodTime, setPeriodTime] = useState<DatePickerValue>({});
-  const [instantDateTime, setInstantDateTime] = useState<DatePickerValue>({});
-  const [periodDateTime, setPeriodDateTime] = useState<DatePickerValue>({});
-
-  // Min/Max Date demo states
-  const [minMaxDate, setMinMaxDate] = useState<DatePickerValue>({});
-  const [minMaxDateTime, setMinMaxDateTime] = useState<DatePickerValue>({});
-
-  // States demo
-  const [statesDefault, setStatesDefault] = useState<DatePickerValue>({});
-  const [statesWithValue, setStatesWithValue] = useState<DatePickerValue>({ date: new Date() });
-
-  // Disabling demo states
-  const [disableSpecific, setDisableSpecific] = useState<DatePickerValue>({});
-  const [disableRange, setDisableRange] = useState<DatePickerValue>({});
-  const [disableFunction, setDisableFunction] = useState<DatePickerValue>({});
-  const [enableOnly, setEnableOnly] = useState<DatePickerValue>({});
-
-  // Minute Step demo states
-  const [minuteStep1, setMinuteStep1] = useState<DatePickerValue>({});
-  const [minuteStep5, setMinuteStep5] = useState<DatePickerValue>({});
-  const [minuteStep10, setMinuteStep10] = useState<DatePickerValue>({});
-  const [minuteStep15, setMinuteStep15] = useState<DatePickerValue>({});
-  const [minuteStep20, setMinuteStep20] = useState<DatePickerValue>({});
-  const [minuteStep30, setMinuteStep30] = useState<DatePickerValue>({});
-
-  // Format demo states
-  const [formatDash, setFormatDash] = useState<DatePickerValue>({});
-  const [formatDot, setFormatDot] = useState<DatePickerValue>({});
-  const [formatKorean, setFormatKorean] = useState<DatePickerValue>({});
-  const [formatDatetime, setFormatDatetime] = useState<DatePickerValue>({});
-
-  // Initial Calendar demo states
-  const [initialPrevNow, setInitialPrevNow] = useState<DatePickerValue>({});
-  const [initialNowNext, setInitialNowNext] = useState<DatePickerValue>({});
-  const [initialCustom, setInitialCustom] = useState<DatePickerValue>({});
 
   const formatDateDisplay = (value: DatePickerValue): string => {
     if (!value.date) return '-';
@@ -189,17 +170,322 @@ export default function DatePickerPage() {
         <p>{t('description')}</p>
       </section>
 
-      {/* Basic Usage */}
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'react',
+            label: 'React',
+            content: (
+              <ReactContent
+                t={t}
+                instantDate={instantDate}
+                setInstantDate={setInstantDate}
+                periodDate={periodDate}
+                setPeriodDate={setPeriodDate}
+                instantTime={instantTime}
+                setInstantTime={setInstantTime}
+                periodTime={periodTime}
+                setPeriodTime={setPeriodTime}
+                instantDateTime={instantDateTime}
+                setInstantDateTime={setInstantDateTime}
+                periodDateTime={periodDateTime}
+                setPeriodDateTime={setPeriodDateTime}
+                minMaxDate={minMaxDate}
+                setMinMaxDate={setMinMaxDate}
+                minMaxDateTime={minMaxDateTime}
+                setMinMaxDateTime={setMinMaxDateTime}
+                statesDefault={statesDefault}
+                setStatesDefault={setStatesDefault}
+                statesWithValue={statesWithValue}
+                setStatesWithValue={setStatesWithValue}
+                disableSpecific={disableSpecific}
+                setDisableSpecific={setDisableSpecific}
+                disableRange={disableRange}
+                setDisableRange={setDisableRange}
+                disableFunction={disableFunction}
+                setDisableFunction={setDisableFunction}
+                enableOnly={enableOnly}
+                setEnableOnly={setEnableOnly}
+                minuteStep1={minuteStep1}
+                setMinuteStep1={setMinuteStep1}
+                minuteStep5={minuteStep5}
+                setMinuteStep5={setMinuteStep5}
+                minuteStep10={minuteStep10}
+                setMinuteStep10={setMinuteStep10}
+                minuteStep15={minuteStep15}
+                setMinuteStep15={setMinuteStep15}
+                minuteStep20={minuteStep20}
+                setMinuteStep20={setMinuteStep20}
+                minuteStep30={minuteStep30}
+                setMinuteStep30={setMinuteStep30}
+                formatDash={formatDash}
+                setFormatDash={setFormatDash}
+                formatDot={formatDot}
+                setFormatDot={setFormatDot}
+                formatKorean={formatKorean}
+                setFormatKorean={setFormatKorean}
+                formatDatetime={formatDatetime}
+                setFormatDatetime={setFormatDatetime}
+                initialPrevNow={initialPrevNow}
+                setInitialPrevNow={setInitialPrevNow}
+                initialNowNext={initialNowNext}
+                setInitialNowNext={setInitialNowNext}
+                initialCustom={initialCustom}
+                setInitialCustom={setInitialCustom}
+                formatDateDisplay={formatDateDisplay}
+                formatTimeDisplay={formatTimeDisplay}
+                formatDateTimeDisplay={formatDateTimeDisplay}
+              />
+            ),
+          },
+          {
+            key: 'cdn',
+            label: 'CDN',
+            content: (
+              <CdnContent
+                t={t}
+                vanillaInstantRef={vanillaInstantRef}
+                vanillaPeriodRef={vanillaPeriodRef}
+                vanillaDatetimeRef={vanillaDatetimeRef}
+                vanillaInstantValue={vanillaInstantValue}
+                vanillaPeriodValue={vanillaPeriodValue}
+                vanillaDatetimeValue={vanillaDatetimeValue}
+              />
+            ),
+          },
+        ]}
+        defaultTab="react"
+      />
+    </>
+  );
+}
+
+interface ReactContentProps {
+  t: (key: string) => string;
+  instantDate: DatePickerValue;
+  setInstantDate: (v: DatePickerValue) => void;
+  periodDate: DatePickerValue;
+  setPeriodDate: (v: DatePickerValue) => void;
+  instantTime: DatePickerValue;
+  setInstantTime: (v: DatePickerValue) => void;
+  periodTime: DatePickerValue;
+  setPeriodTime: (v: DatePickerValue) => void;
+  instantDateTime: DatePickerValue;
+  setInstantDateTime: (v: DatePickerValue) => void;
+  periodDateTime: DatePickerValue;
+  setPeriodDateTime: (v: DatePickerValue) => void;
+  minMaxDate: DatePickerValue;
+  setMinMaxDate: (v: DatePickerValue) => void;
+  minMaxDateTime: DatePickerValue;
+  setMinMaxDateTime: (v: DatePickerValue) => void;
+  statesDefault: DatePickerValue;
+  setStatesDefault: (v: DatePickerValue) => void;
+  statesWithValue: DatePickerValue;
+  setStatesWithValue: (v: DatePickerValue) => void;
+  disableSpecific: DatePickerValue;
+  setDisableSpecific: (v: DatePickerValue) => void;
+  disableRange: DatePickerValue;
+  setDisableRange: (v: DatePickerValue) => void;
+  disableFunction: DatePickerValue;
+  setDisableFunction: (v: DatePickerValue) => void;
+  enableOnly: DatePickerValue;
+  setEnableOnly: (v: DatePickerValue) => void;
+  minuteStep1: DatePickerValue;
+  setMinuteStep1: (v: DatePickerValue) => void;
+  minuteStep5: DatePickerValue;
+  setMinuteStep5: (v: DatePickerValue) => void;
+  minuteStep10: DatePickerValue;
+  setMinuteStep10: (v: DatePickerValue) => void;
+  minuteStep15: DatePickerValue;
+  setMinuteStep15: (v: DatePickerValue) => void;
+  minuteStep20: DatePickerValue;
+  setMinuteStep20: (v: DatePickerValue) => void;
+  minuteStep30: DatePickerValue;
+  setMinuteStep30: (v: DatePickerValue) => void;
+  formatDash: DatePickerValue;
+  setFormatDash: (v: DatePickerValue) => void;
+  formatDot: DatePickerValue;
+  setFormatDot: (v: DatePickerValue) => void;
+  formatKorean: DatePickerValue;
+  setFormatKorean: (v: DatePickerValue) => void;
+  formatDatetime: DatePickerValue;
+  setFormatDatetime: (v: DatePickerValue) => void;
+  initialPrevNow: DatePickerValue;
+  setInitialPrevNow: (v: DatePickerValue) => void;
+  initialNowNext: DatePickerValue;
+  setInitialNowNext: (v: DatePickerValue) => void;
+  initialCustom: DatePickerValue;
+  setInitialCustom: (v: DatePickerValue) => void;
+  formatDateDisplay: (v: DatePickerValue) => string;
+  formatTimeDisplay: (v: DatePickerValue) => string;
+  formatDateTimeDisplay: (v: DatePickerValue) => string;
+}
+
+function ReactContent({
+  t,
+  instantDate,
+  setInstantDate,
+  periodDate,
+  setPeriodDate,
+  instantTime,
+  setInstantTime,
+  periodTime,
+  setPeriodTime,
+  instantDateTime,
+  setInstantDateTime,
+  periodDateTime,
+  setPeriodDateTime,
+  minMaxDate,
+  setMinMaxDate,
+  minMaxDateTime,
+  setMinMaxDateTime,
+  statesDefault,
+  setStatesDefault,
+  statesWithValue,
+  setStatesWithValue,
+  disableSpecific,
+  setDisableSpecific,
+  disableRange,
+  setDisableRange,
+  disableFunction,
+  setDisableFunction,
+  enableOnly,
+  setEnableOnly,
+  minuteStep1,
+  setMinuteStep1,
+  minuteStep5,
+  setMinuteStep5,
+  minuteStep10,
+  setMinuteStep10,
+  minuteStep15,
+  setMinuteStep15,
+  minuteStep20,
+  setMinuteStep20,
+  minuteStep30,
+  setMinuteStep30,
+  formatDash,
+  setFormatDash,
+  formatDot,
+  setFormatDot,
+  formatKorean,
+  setFormatKorean,
+  formatDatetime,
+  setFormatDatetime,
+  initialPrevNow,
+  setInitialPrevNow,
+  initialNowNext,
+  setInitialNowNext,
+  initialCustom,
+  setInitialCustom,
+  formatDateDisplay,
+  formatTimeDisplay,
+  formatDateTimeDisplay,
+}: ReactContentProps) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="tsx" code={`import { DatePicker } from 'podo-ui';`} />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>mode</code></td>
+              <td><code>'instant' | 'period'</code></td>
+              <td><code>'instant'</code></td>
+              <td>{t('props.mode')}</td>
+            </tr>
+            <tr>
+              <td><code>type</code></td>
+              <td><code>'date' | 'time' | 'datetime'</code></td>
+              <td><code>'date'</code></td>
+              <td>{t('props.type')}</td>
+            </tr>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>DatePickerValue</code></td>
+              <td>-</td>
+              <td>{t('props.value')}</td>
+            </tr>
+            <tr>
+              <td><code>onChange</code></td>
+              <td><code>(value) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>placeholder</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.placeholder')}</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.disabled')}</td>
+            </tr>
+            <tr>
+              <td><code>disable</code></td>
+              <td><code>DateCondition[]</code></td>
+              <td>-</td>
+              <td>{t('props.disable')}</td>
+            </tr>
+            <tr>
+              <td><code>enable</code></td>
+              <td><code>DateCondition[]</code></td>
+              <td>-</td>
+              <td>{t('props.enable')}</td>
+            </tr>
+            <tr>
+              <td><code>minDate</code></td>
+              <td><code>Date | DateTimeLimit</code></td>
+              <td>-</td>
+              <td>{t('props.minDate')}</td>
+            </tr>
+            <tr>
+              <td><code>maxDate</code></td>
+              <td><code>Date | DateTimeLimit</code></td>
+              <td>-</td>
+              <td>{t('props.maxDate')}</td>
+            </tr>
+            <tr>
+              <td><code>minuteStep</code></td>
+              <td><code>1 | 5 | 10 | 15 | 20 | 30</code></td>
+              <td><code>1</code></td>
+              <td>{t('props.minuteStep')}</td>
+            </tr>
+            <tr>
+              <td><code>format</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.format')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
         <CodeBlock
-          title="TSX"
+          title="React"
           language="tsx"
           code={`import { DatePicker } from 'podo-ui';
 
-// ${t('code.singleDateSelect')}
+// Single date select
 <DatePicker
   mode="instant"
   type="date"
@@ -207,7 +493,7 @@ export default function DatePickerPage() {
   onChange={setValue}
 />
 
-// ${t('code.periodSelect')}
+// Period select
 <DatePicker
   mode="period"
   type="date"
@@ -247,17 +533,15 @@ export default function DatePickerPage() {
         </div>
       </section>
 
-      {/* Types */}
-      <section className={styles.section}>
+      <section>
         <h2>{t('types.title')}</h2>
         <p>{t('types.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('types.demoTitle')}</div>
           <div className={styles.typeGrid}>
-            {/* Date Only */}
             <div className={styles.typeCard}>
-              <h4>type=&quot;date&quot;</h4>
+              <h4>type="date"</h4>
               <p>{t('types.date')}</p>
               <DatePicker
                 mode="instant"
@@ -270,9 +554,8 @@ export default function DatePickerPage() {
               </div>
             </div>
 
-            {/* Time Only */}
             <div className={styles.typeCard}>
-              <h4>type=&quot;time&quot;</h4>
+              <h4>type="time"</h4>
               <p>{t('types.time')}</p>
               <DatePicker
                 mode="instant"
@@ -285,9 +568,8 @@ export default function DatePickerPage() {
               </div>
             </div>
 
-            {/* DateTime */}
             <div className={styles.typeCard}>
-              <h4>type=&quot;datetime&quot;</h4>
+              <h4>type="datetime"</h4>
               <p>{t('types.datetime')}</p>
               <DatePicker
                 mode="instant"
@@ -301,30 +583,15 @@ export default function DatePickerPage() {
             </div>
           </div>
         </div>
-
-        <CodeBlock
-          title="TSX"
-          language="tsx"
-          code={`// ${t('code.dateOnlySelect')}
-<DatePicker type="date" />
-
-// ${t('code.timeOnlySelect')}
-<DatePicker type="time" />
-
-// ${t('code.dateTimeSelect')}
-<DatePicker type="datetime" />`}
-        />
       </section>
 
-      {/* Period Mode */}
-      <section className={styles.section}>
+      <section>
         <h2>{t('period.title')}</h2>
         <p>{t('period.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('period.demoTitle')}</div>
           <div className={styles.typeGrid}>
-            {/* Period Date */}
             <div className={styles.typeCard}>
               <h4>{t('period.dateRange')}</h4>
               <DatePicker
@@ -338,7 +605,6 @@ export default function DatePickerPage() {
               </div>
             </div>
 
-            {/* Period Time */}
             <div className={styles.typeCard}>
               <h4>{t('period.timeRange')}</h4>
               <DatePicker
@@ -352,7 +618,6 @@ export default function DatePickerPage() {
               </div>
             </div>
 
-            {/* Period DateTime */}
             <div className={styles.typeCard}>
               <h4>{t('period.datetimeRange')}</h4>
               <DatePicker
@@ -367,23 +632,9 @@ export default function DatePickerPage() {
             </div>
           </div>
         </div>
-
-        <CodeBlock
-          title="TSX"
-          language="tsx"
-          code={`// ${t('code.periodDateSelect')}
-<DatePicker mode="period" type="date" />
-
-// ${t('code.periodTimeSelect')}
-<DatePicker mode="period" type="time" />
-
-// ${t('code.periodDateTimeSelect')}
-<DatePicker mode="period" type="datetime" />`}
-        />
       </section>
 
-      {/* States */}
-      <section className={styles.section}>
+      <section>
         <h2>{t('states.title')}</h2>
         <p>{t('states.description')}</p>
 
@@ -418,234 +669,15 @@ export default function DatePickerPage() {
             </div>
           </div>
         </div>
-
-        <CodeBlock
-          title="TSX"
-          language="tsx"
-          code={`// ${t('code.defaultState')}
-<DatePicker type="date" />
-
-// ${t('code.disabledState')}
-<DatePicker type="date" disabled />
-
-// ${t('code.initialValue')}
-<DatePicker type="date" value={{ date: new Date() }} />`}
-        />
       </section>
 
-      {/* Props */}
-      <section className={styles.section}>
-        <h2>{t('props.title')}</h2>
-        <p>{t('props.description')}</p>
-
-        <table className={styles.propsTable}>
-          <thead>
-            <tr>
-              <th>Prop</th>
-              <th>Type</th>
-              <th>Default</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>mode</code></td>
-              <td><code>&apos;instant&apos; | &apos;period&apos;</code></td>
-              <td><code>&apos;instant&apos;</code></td>
-              <td>{t('props.mode')}</td>
-            </tr>
-            <tr>
-              <td><code>type</code></td>
-              <td><code>&apos;date&apos; | &apos;time&apos; | &apos;datetime&apos;</code></td>
-              <td><code>&apos;date&apos;</code></td>
-              <td>{t('props.type')}</td>
-            </tr>
-            <tr>
-              <td><code>value</code></td>
-              <td><code>{`{ date?: Date, time?: TimeValue, endDate?: Date, endTime?: TimeValue }`}</code></td>
-              <td><code>-</code></td>
-              <td>{t('props.value')}</td>
-            </tr>
-            <tr>
-              <td><code>onChange</code></td>
-              <td><code>(value) =&gt; void</code></td>
-              <td><code>-</code></td>
-              <td>{t('props.onChange')}</td>
-            </tr>
-            <tr>
-              <td><code>placeholder</code></td>
-              <td><code>string</code></td>
-              <td><code>-</code></td>
-              <td>{t('props.placeholder')}</td>
-            </tr>
-            <tr>
-              <td><code>disabled</code></td>
-              <td><code>boolean</code></td>
-              <td><code>false</code></td>
-              <td>{t('props.disabled')}</td>
-            </tr>
-            <tr>
-              <td><code>showActions</code></td>
-              <td><code>boolean</code></td>
-              <td><code>period: true</code></td>
-              <td>{t('props.showActions')}</td>
-            </tr>
-            <tr>
-              <td><code>align</code></td>
-              <td><code>&apos;left&apos; | &apos;right&apos;</code></td>
-              <td><code>&apos;left&apos;</code></td>
-              <td>{t('props.align')}</td>
-            </tr>
-            <tr>
-              <td><code>disable</code></td>
-              <td><code>DateCondition[]</code></td>
-              <td><code>-</code></td>
-              <td>{t('props.disable')}</td>
-            </tr>
-            <tr>
-              <td><code>enable</code></td>
-              <td><code>DateCondition[]</code></td>
-              <td><code>-</code></td>
-              <td>{t('props.enable')}</td>
-            </tr>
-            <tr>
-              <td><code>minDate</code></td>
-              <td><code>Date | DateTimeLimit</code></td>
-              <td><code>-</code></td>
-              <td>{t('props.minDate')}</td>
-            </tr>
-            <tr>
-              <td><code>maxDate</code></td>
-              <td><code>Date | DateTimeLimit</code></td>
-              <td><code>-</code></td>
-              <td>{t('props.maxDate')}</td>
-            </tr>
-            <tr>
-              <td><code>minuteStep</code></td>
-              <td><code>1 | 5 | 10 | 15 | 20 | 30</code></td>
-              <td><code>1</code></td>
-              <td>{t('props.minuteStep')}</td>
-            </tr>
-            <tr>
-              <td><code>format</code></td>
-              <td><code>string</code></td>
-              <td><code>-</code></td>
-              <td>{t('props.format')}</td>
-            </tr>
-            <tr>
-              <td><code>initialCalendar</code></td>
-              <td><code>{`{ start?: CalendarInitial, end?: CalendarInitial }`}</code></td>
-              <td><code>-</code></td>
-              <td>{t('props.initialCalendar')}</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      {/* Value Interface */}
-      <section className={styles.section}>
-        <h2>{t('valueInterface.title')}</h2>
-        <p>{t('valueInterface.description')}</p>
-
-        <CodeBlock
-          title="TypeScript"
-          language="typescript"
-          code={`// ${t('code.timeValueInterface')}
-interface TimeValue {
-  hour: number;   // 0-23
-  minute: number; // 0-59
-}
-
-// ${t('code.datepickerValueInterface')}
-interface DatePickerValue {
-  date?: Date;        // ${t('code.startDate')}
-  time?: TimeValue;   // ${t('code.startTime')}
-  endDate?: Date;     // ${t('code.endDatePeriod')}
-  endTime?: TimeValue; // ${t('code.endTimePeriod')}
-}`}
-        />
-
-        <table className={styles.propsTable}>
-          <thead>
-            <tr>
-              <th>{t('valueInterface.field')}</th>
-              <th>{t('valueInterface.type')}</th>
-              <th>{t('valueInterface.usedIn')}</th>
-              <th>{t('valueInterface.fieldDescription')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>date</code></td>
-              <td><code>Date</code></td>
-              <td><code>date, datetime</code></td>
-              <td>{t('valueInterface.date')}</td>
-            </tr>
-            <tr>
-              <td><code>time</code></td>
-              <td><code>TimeValue</code></td>
-              <td><code>time, datetime</code></td>
-              <td>{t('valueInterface.time')}</td>
-            </tr>
-            <tr>
-              <td><code>endDate</code></td>
-              <td><code>Date</code></td>
-              <td><code>period + date/datetime</code></td>
-              <td>{t('valueInterface.endDate')}</td>
-            </tr>
-            <tr>
-              <td><code>endTime</code></td>
-              <td><code>TimeValue</code></td>
-              <td><code>period + time/datetime</code></td>
-              <td>{t('valueInterface.endTime')}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <CodeBlock
-          title={t('valueInterface.exampleTitle')}
-          language="typescript"
-          code={`// ${t('code.dateOnlySelect')} (type="date")
-const dateValue: DatePickerValue = {
-  date: new Date(2024, 0, 15), // 2024-01-15
-};
-
-// ${t('code.timeOnlySelect')} (type="time")
-const timeValue: DatePickerValue = {
-  time: { hour: 14, minute: 30 }, // 14:30
-};
-
-// ${t('code.dateTimeSelect')} (type="datetime")
-const datetimeValue: DatePickerValue = {
-  date: new Date(2024, 0, 15),
-  time: { hour: 14, minute: 30 },
-};
-
-// ${t('code.periodSelect')} (mode="period", type="date")
-const periodValue: DatePickerValue = {
-  date: new Date(2024, 0, 15),    // start
-  endDate: new Date(2024, 0, 20), // end
-};
-
-// ${t('code.periodDateTimeSelect')} (mode="period", type="datetime")
-const periodDatetimeValue: DatePickerValue = {
-  date: new Date(2024, 0, 15),
-  time: { hour: 9, minute: 0 },
-  endDate: new Date(2024, 0, 20),
-  endTime: { hour: 18, minute: 0 },
-};`}
-        />
-      </section>
-
-      {/* Disabling Dates */}
-      <section className={styles.section}>
+      <section>
         <h2>{t('disabling.title')}</h2>
         <p>{t('disabling.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('disabling.demoTitle')}</div>
           <div className={styles.typeGrid}>
-            {/* Disable Specific Dates */}
             <div className={styles.typeCard}>
               <h4>{t('disabling.specificDates')}</h4>
               <p>{t('disabling.specificDatesDesc')}</p>
@@ -664,7 +696,6 @@ const periodDatetimeValue: DatePickerValue = {
               </div>
             </div>
 
-            {/* Disable Date Range */}
             <div className={styles.typeCard}>
               <h4>{t('disabling.dateRange')}</h4>
               <p>{t('disabling.dateRangeDesc')}</p>
@@ -684,7 +715,6 @@ const periodDatetimeValue: DatePickerValue = {
               </div>
             </div>
 
-            {/* Disable with Function */}
             <div className={styles.typeCard}>
               <h4>{t('disabling.function')}</h4>
               <p>{t('disabling.functionDesc')}</p>
@@ -701,7 +731,6 @@ const periodDatetimeValue: DatePickerValue = {
               </div>
             </div>
 
-            {/* Enable Only Specific Dates */}
             <div className={styles.typeCard}>
               <h4>{t('disabling.enableOnly')}</h4>
               <p>{t('disabling.enableOnlyDesc')}</p>
@@ -722,70 +751,15 @@ const periodDatetimeValue: DatePickerValue = {
             </div>
           </div>
         </div>
-
-        <CodeBlock
-          title="TSX"
-          language="tsx"
-          code={`// ${t('code.specificDateDisable')}
-<DatePicker
-  type="date"
-  disable={[
-    new Date(2024, 0, 10), // 2024-01-10
-    new Date(2024, 0, 15), // 2024-01-15
-  ]}
-/>
-
-// ${t('code.dateRangeDisable')}
-<DatePicker
-  type="date"
-  disable={[
-    { from: new Date(2024, 0, 5), to: new Date(2024, 0, 12) },
-  ]}
-/>
-
-// ${t('code.functionDisable')}
-<DatePicker
-  type="date"
-  disable={[
-    (date) => date.getDay() === 0 || date.getDay() === 6,
-  ]}
-/>
-
-// ${t('code.specificDateEnable')}
-<DatePicker
-  type="date"
-  enable={[
-    { from: new Date(2024, 0, 1), to: new Date(2024, 0, 7) },
-  ]}
-/>`}
-        />
-
-        <CodeBlock
-          title="TypeScript"
-          language="typescript"
-          code={`// ${t('code.dateRangeInterface')}
-interface DateRange {
-  from: Date;
-  to: Date;
-}
-
-// ${t('code.dateConditionType')}
-type DateCondition =
-  | Date                        // ${t('code.specificDate')}
-  | DateRange                   // ${t('code.dateRange')}
-  | ((date: Date) => boolean);  // ${t('code.conditionFunction')}`}
-        />
       </section>
 
-      {/* Min/Max Date */}
-      <section className={styles.section}>
+      <section>
         <h2>{t('minMax.title')}</h2>
         <p>{t('minMax.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('minMax.demoTitle')}</div>
           <div className={styles.typeGrid}>
-            {/* Date Only Limit */}
             <div className={styles.typeCard}>
               <h4>{t('minMax.dateOnly')}</h4>
               <p>{t('minMax.dateOnlyDesc')}</p>
@@ -801,7 +775,6 @@ type DateCondition =
               </div>
             </div>
 
-            {/* Date + Time Limit */}
             <div className={styles.typeCard}>
               <h4>{t('minMax.withTime')}</h4>
               <p>{t('minMax.withTimeDesc')}</p>
@@ -824,54 +797,15 @@ type DateCondition =
             </div>
           </div>
         </div>
-
-        <CodeBlock
-          title="TSX"
-          language="tsx"
-          code={`// ${t('code.dateOnlyLimit')}
-<DatePicker
-  type="date"
-  minDate={new Date()}                    // ${t('code.todayFrom')}
-  maxDate={new Date(2024, 11, 31)}        // ${t('code.until')} 2024-12-31
-/>
-
-// ${t('code.dateTimeLimitComment')}
-<DatePicker
-  type="datetime"
-  minDate={{
-    date: new Date(),
-    time: { hour: 9, minute: 0 },        // ${t('code.todayFrom')} 09:00
-  }}
-  maxDate={{
-    date: new Date(2024, 11, 31),
-    time: { hour: 18, minute: 0 },       // ${t('code.until')} 2024-12-31 18:00
-  }}
-/>`}
-        />
-
-        <CodeBlock
-          title="TypeScript"
-          language="typescript"
-          code={`// ${t('code.dateTimeLimitInterface')}
-interface DateTimeLimit {
-  date: Date;
-  time?: TimeValue; // { hour: number, minute: number }
-}
-
-// ${t('code.minMaxDateType')}
-type MinMaxDate = Date | DateTimeLimit;`}
-        />
       </section>
 
-      {/* Minute Step */}
-      <section className={styles.section}>
+      <section>
         <h2>{t('minuteStep.title')}</h2>
         <p>{t('minuteStep.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('minuteStep.demoTitle')}</div>
           <div className={styles.typeGrid}>
-            {/* 1분 단위 */}
             <div className={styles.typeCard}>
               <h4>minuteStep=1</h4>
               <p>{t('minuteStep.step1')}</p>
@@ -886,7 +820,6 @@ type MinMaxDate = Date | DateTimeLimit;`}
               </div>
             </div>
 
-            {/* 5분 단위 */}
             <div className={styles.typeCard}>
               <h4>minuteStep=5</h4>
               <p>{t('minuteStep.step5')}</p>
@@ -901,22 +834,6 @@ type MinMaxDate = Date | DateTimeLimit;`}
               </div>
             </div>
 
-            {/* 10분 단위 */}
-            <div className={styles.typeCard}>
-              <h4>minuteStep=10</h4>
-              <p>{t('minuteStep.step10')}</p>
-              <DatePicker
-                type="time"
-                value={minuteStep10}
-                onChange={setMinuteStep10}
-                minuteStep={10}
-              />
-              <div className={styles.selectedValue}>
-                {formatTimeDisplay(minuteStep10)}
-              </div>
-            </div>
-
-            {/* 15분 단위 */}
             <div className={styles.typeCard}>
               <h4>minuteStep=15</h4>
               <p>{t('minuteStep.step15')}</p>
@@ -931,22 +848,6 @@ type MinMaxDate = Date | DateTimeLimit;`}
               </div>
             </div>
 
-            {/* 20분 단위 */}
-            <div className={styles.typeCard}>
-              <h4>minuteStep=20</h4>
-              <p>{t('minuteStep.step20')}</p>
-              <DatePicker
-                type="time"
-                value={minuteStep20}
-                onChange={setMinuteStep20}
-                minuteStep={20}
-              />
-              <div className={styles.selectedValue}>
-                {formatTimeDisplay(minuteStep20)}
-              </div>
-            </div>
-
-            {/* 30분 단위 */}
             <div className={styles.typeCard}>
               <h4>minuteStep=30</h4>
               <p>{t('minuteStep.step30')}</p>
@@ -962,51 +863,17 @@ type MinMaxDate = Date | DateTimeLimit;`}
             </div>
           </div>
         </div>
-
-        <CodeBlock
-          title="TSX"
-          language="tsx"
-          code={`// ${t('code.minuteStepDefault')}
-<DatePicker type="time" minuteStep={1} />
-
-// ${t('code.minuteStep5')}
-<DatePicker type="time" minuteStep={5} />
-
-// ${t('code.minuteStep10')}
-<DatePicker type="time" minuteStep={10} />
-
-// ${t('code.minuteStep15')}
-<DatePicker type="time" minuteStep={15} />
-
-// ${t('code.minuteStep20')}
-<DatePicker type="time" minuteStep={20} />
-
-// ${t('code.minuteStep30')}
-<DatePicker type="time" minuteStep={30} />
-
-// ${t('code.withDatetime')}
-<DatePicker type="datetime" minuteStep={15} />`}
-        />
-
-        <CodeBlock
-          title="TypeScript"
-          language="typescript"
-          code={`// ${t('code.minuteStepType')}
-type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}
-        />
       </section>
 
-      {/* Format */}
-      <section className={styles.section}>
+      <section>
         <h2>{t('format.title')}</h2>
         <p>{t('format.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('format.demoTitle')}</div>
           <div className={styles.typeGrid}>
-            {/* Dash format */}
             <div className={styles.typeCard}>
-              <h4>format=&quot;y-m-d&quot;</h4>
+              <h4>format="y-m-d"</h4>
               <p>{t('format.dash')}</p>
               <DatePicker
                 type="date"
@@ -1019,9 +886,8 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}
               </div>
             </div>
 
-            {/* Dot format */}
             <div className={styles.typeCard}>
-              <h4>format=&quot;y.m.d&quot;</h4>
+              <h4>format="y.m.d"</h4>
               <p>{t('format.dot')}</p>
               <DatePicker
                 type="date"
@@ -1034,9 +900,8 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}
               </div>
             </div>
 
-            {/* Korean format */}
             <div className={styles.typeCard}>
-              <h4>format=&quot;y년 m월 d일&quot;</h4>
+              <h4>format="y년 m월 d일"</h4>
               <p>{t('format.korean')}</p>
               <DatePicker
                 type="date"
@@ -1049,9 +914,8 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}
               </div>
             </div>
 
-            {/* DateTime format */}
             <div className={styles.typeCard}>
-              <h4>format=&quot;y.m.d h:i&quot;</h4>
+              <h4>format="y.m.d h:i"</h4>
               <p>{t('format.datetime')}</p>
               <DatePicker
                 type="datetime"
@@ -1065,47 +929,15 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}
             </div>
           </div>
         </div>
-
-        <CodeBlock
-          title="TSX"
-          language="tsx"
-          code={`// ${t('code.dashSeparator')}
-<DatePicker type="date" format="y-m-d" />
-
-// ${t('code.dotSeparator')}
-<DatePicker type="date" format="y.m.d" />
-
-// ${t('code.koreanFormat')}
-<DatePicker type="date" format="y년 m월 d일" />
-
-// ${t('code.datetimeFormat')}
-<DatePicker type="datetime" format="y.m.d h:i" />
-
-// ${t('code.koreanDatetimeFormat')}
-<DatePicker type="datetime" format="y년 m월 d일 h시 i분" />`}
-        />
-
-        <CodeBlock
-          title="TypeScript"
-          language="typescript"
-          code={`// ${t('code.formatKey')}
-// y: ${t('code.formatYear')}
-// m: ${t('code.formatMonth')}
-// d: ${t('code.formatDay')}
-// h: ${t('code.formatHour')}
-// i: ${t('code.formatMinute')}`}
-        />
       </section>
 
-      {/* Initial Calendar */}
-      <section className={styles.section}>
+      <section>
         <h2>{t('initialCalendar.title')}</h2>
         <p>{t('initialCalendar.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('initialCalendar.demoTitle')}</div>
           <div className={styles.typeGrid}>
-            {/* prevMonth / now */}
             <div className={styles.typeCard}>
               <h4>prevMonth / now</h4>
               <p>{t('initialCalendar.prevAndNow')}</p>
@@ -1124,7 +956,6 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}
               </div>
             </div>
 
-            {/* now / nextMonth */}
             <div className={styles.typeCard}>
               <h4>now / nextMonth</h4>
               <p>{t('initialCalendar.nowAndNext')}</p>
@@ -1143,7 +974,6 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}
               </div>
             </div>
 
-            {/* Custom Date */}
             <div className={styles.typeCard}>
               <h4>Date</h4>
               <p>{t('initialCalendar.customDate')}</p>
@@ -1163,104 +993,74 @@ type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;`}
             </div>
           </div>
         </div>
+      </section>
 
-        <CodeBlock
-          title="TSX"
-          language="tsx"
-          code={`// ${t('code.prevCurrentMonth')}
-<DatePicker
-  mode="period"
-  type="date"
-  initialCalendar={{
-    start: 'prevMonth',
-    end: 'now',
-  }}
-/>
-
-// ${t('code.currentNextMonth')}
-<DatePicker
-  mode="period"
-  type="date"
-  initialCalendar={{
-    start: 'now',
-    end: 'nextMonth',
-  }}
-/>
-
-// ${t('code.specificDateSet')}
-<DatePicker
-  mode="period"
-  type="date"
-  initialCalendar={{
-    start: new Date(2024, 0, 1),  // 2024-01
-    end: new Date(2024, 1, 1),    // 2024-02
-  }}
-/>`}
-        />
+      <section>
+        <h2>{t('valueInterface.title')}</h2>
+        <p>{t('valueInterface.description')}</p>
 
         <CodeBlock
           title="TypeScript"
           language="typescript"
-          code={`// ${t('code.initialCalendarType')}
-type CalendarInitial = 'now' | 'prevMonth' | 'nextMonth' | Date;
+          code={`interface TimeValue {
+  hour: number;   // 0-23
+  minute: number; // 0-59
+}
 
-// ${t('code.initialCalendarInterface')}
-interface InitialCalendar {
-  start?: CalendarInitial;  // ${t('code.leftCalendar')}
-  end?: CalendarInitial;    // ${t('code.rightCalendar')}
+interface DatePickerValue {
+  date?: Date;        // Start date
+  time?: TimeValue;   // Start time
+  endDate?: Date;     // End date (period mode)
+  endTime?: TimeValue; // End time (period mode)
 }`}
         />
       </section>
+    </>
+  );
+}
 
-      {/* CDN Usage */}
-      <section className={styles.section}>
-        <h2>{t('cdn.title')}</h2>
-        <p>{t('cdn.description')}</p>
+interface CdnContentProps {
+  t: (key: string) => string;
+  vanillaInstantRef: React.RefObject<HTMLDivElement>;
+  vanillaPeriodRef: React.RefObject<HTMLDivElement>;
+  vanillaDatetimeRef: React.RefObject<HTMLDivElement>;
+  vanillaInstantValue: string;
+  vanillaPeriodValue: string;
+  vanillaDatetimeValue: string;
+}
 
-        {/* Live Demo */}
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('cdn.liveDemo')}</div>
-          <p>{t('cdn.liveDemoDesc')}</p>
-          <div className={styles.typeGrid}>
-            {/* Instant Date */}
-            <div className={styles.typeCard}>
-              <h4>{t('cdn.instantDate')}</h4>
-              <div ref={vanillaInstantRef}></div>
-              <div className={styles.selectedValue}>
-                {vanillaInstantValue}
-              </div>
-            </div>
-
-            {/* Period Date */}
-            <div className={styles.typeCard}>
-              <h4>{t('cdn.periodDate')}</h4>
-              <div ref={vanillaPeriodRef}></div>
-              <div className={styles.selectedValue}>
-                {vanillaPeriodValue}
-              </div>
-            </div>
-
-            {/* DateTime */}
-            <div className={styles.typeCard}>
-              <h4>{t('cdn.datetime')}</h4>
-              <div ref={vanillaDatetimeRef}></div>
-              <div className={styles.selectedValue}>
-                {vanillaDatetimeValue}
-              </div>
-            </div>
-          </div>
-        </div>
-
+function CdnContent({
+  t,
+  vanillaInstantRef,
+  vanillaPeriodRef,
+  vanillaDatetimeRef,
+  vanillaInstantValue,
+  vanillaPeriodValue,
+  vanillaDatetimeValue,
+}: CdnContentProps) {
+  return (
+    <>
+      <section>
+        <h2>CDN Links</h2>
         <CodeBlock
-          title={t('cdn.basicUsage')}
+          title="HTML"
           language="html"
           code={`<!-- CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-datepicker.min.css">
 
 <!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-datepicker.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/podo-ui@latest/cdn/podo-datepicker.min.js"></script>`}
+        />
+      </section>
 
-<!-- HTML -->
+      <section>
+        <h2>{t('cdn.title')}</h2>
+        <p>{t('cdn.description')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- HTML -->
 <div id="my-datepicker"></div>
 
 <!-- Initialize -->
@@ -1275,107 +1075,111 @@ interface InitialCalendar {
 </script>`}
         />
 
-        <p className={styles.note}>{t('cdn.jsDelivrNote')}</p>
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('cdn.liveDemo')}</div>
+          <p>{t('cdn.liveDemoDesc')}</p>
+          <div className={styles.typeGrid}>
+            <div className={styles.typeCard}>
+              <h4>{t('cdn.instantDate')}</h4>
+              <div ref={vanillaInstantRef}></div>
+              <div className={styles.selectedValue}>
+                {vanillaInstantValue}
+              </div>
+            </div>
 
-        <h3>{t('cdn.optionsTitle')}</h3>
+            <div className={styles.typeCard}>
+              <h4>{t('cdn.periodDate')}</h4>
+              <div ref={vanillaPeriodRef}></div>
+              <div className={styles.selectedValue}>
+                {vanillaPeriodValue}
+              </div>
+            </div>
+
+            <div className={styles.typeCard}>
+              <h4>{t('cdn.datetime')}</h4>
+              <div ref={vanillaDatetimeRef}></div>
+              <div className={styles.selectedValue}>
+                {vanillaDatetimeValue}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('cdn.optionsTitle')}</h2>
         <CodeBlock
           title="JavaScript"
           language="javascript"
           code={`const picker = new PodoDatePicker('#my-datepicker', {
-  // ` + t('code.selectionMode') + `
-  mode: 'instant',
+  mode: 'instant',        // 'instant' | 'period'
+  type: 'date',           // 'date' | 'time' | 'datetime'
 
-  // ` + t('code.valueType') + `
-  type: 'date',
-
-  // ` + t('code.initialValueComment') + `
   value: {
     date: new Date(),
     time: { hour: 9, minute: 0 }
   },
 
-  // ` + t('code.onChangeCallback') + `
   onChange: function(value) {
     console.log(value);
   },
 
-  // ` + t('code.disabledComment') + `
   disabled: false,
-
-  // ` + t('code.dropdownAlign') + `
-  align: 'left',
-
-  // ` + t('code.showActionsComment') + `
+  align: 'left',          // 'left' | 'right'
   showActions: true,
+  minuteStep: 15,         // 1 | 5 | 10 | 15 | 20 | 30
 
-  // ` + t('code.minuteStepComment') + `
-  minuteStep: 15,
-
-  // ` + t('code.minMaxDateComment') + `
   minDate: new Date(),
   maxDate: new Date(2025, 11, 31),
 
-  // ` + t('code.orWithTime') + `
-  minDate: {
-    date: new Date(),
-    time: { hour: 9, minute: 0 }
-  },
-
-  // ` + t('code.disableConditions') + `
   disable: [
-    new Date(2024, 0, 1),  // ` + t('code.specificDateCondition') + `
-    { from: new Date(2024, 0, 10), to: new Date(2024, 0, 20) },  // ` + t('code.rangeCondition') + `
-    function(date) { return date.getDay() === 0; }  // ` + t('code.sundayCondition') + `
+    new Date(2024, 0, 1),
+    { from: new Date(2024, 0, 10), to: new Date(2024, 0, 20) },
+    function(date) { return date.getDay() === 0; }
   ],
 
-  // ` + t('code.enableSpecificOnly') + `
   enable: [
     { from: new Date(2024, 0, 1), to: new Date(2024, 0, 15) }
   ],
 
-  // ` + t('code.formatComment') + `
-  format: 'y-m-d',  // ` + t('code.formatExample') + ` 2024-01-15
-  // format: 'y.m.d',  // ` + t('code.formatExample') + ` 2024.01.15
-  // format: 'y년 m월 d일',  // ` + t('code.formatExample') + ` 2024년 01월 15일
-  // format: 'y-m-d h:i',  // ` + t('code.formatExample') + ` 2024-01-15 14:30
+  format: 'y-m-d',
 
-  // ` + t('code.initialCalendarComment') + `
   initialCalendar: {
-    start: 'prevMonth',  // ` + t('code.leftCalendarComment') + `
-    end: 'now'           // ` + t('code.rightCalendarComment') + `
+    start: 'prevMonth',
+    end: 'now'
   }
-  // ` + t('code.startEndValues') + `
 });`}
         />
+      </section>
 
-        <h3>{t('cdn.methodsTitle')}</h3>
+      <section>
+        <h2>{t('cdn.methodsTitle')}</h2>
         <CodeBlock
           title="JavaScript"
           language="javascript"
-          code={`// ${t('cdn.getValue')}
+          code={`// Get value
 const value = picker.getValue();
-// { date: Date, time: { hour: 9, minute: 0 }, endDate: Date, endTime: {...} }
 
-// ${t('cdn.setValue')}
+// Set value
 picker.setValue({
   date: new Date(2024, 5, 15),
   time: { hour: 14, minute: 30 }
 });
 
-// ${t('cdn.clear')}
+// Clear
 picker.clear();
 
-// ${t('cdn.enable')}
+// Enable/Disable
 picker.enable();
-
-// ${t('cdn.disable')}
 picker.disable();
 
-// ${t('cdn.destroy')}
+// Destroy
 picker.destroy();`}
         />
+      </section>
 
-        <h3>{t('cdn.localizationTitle')}</h3>
+      <section>
+        <h2>{t('cdn.localizationTitle')}</h2>
         <p>{t('cdn.localizationDesc')}</p>
         <CodeBlock
           title="JavaScript"
@@ -1386,7 +1190,7 @@ picker.destroy();`}
     weekDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    yearSuffix: '',  // 년 -> 빈 문자열
+    yearSuffix: '',
     reset: 'Reset',
     apply: 'Apply'
   }

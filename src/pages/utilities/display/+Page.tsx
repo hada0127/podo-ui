@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Display() {
   const { t } = useTranslation('display');
+
   return (
     <>
       <section className={styles.section}>
@@ -11,7 +13,29 @@ export default function Display() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
+      </section>
+
+      <section>
         <h2>{t('hideClasses.title')}</h2>
         <p>
           {t('hideClasses.description')}
@@ -49,7 +73,7 @@ export default function Display() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('breakpoints.title')}</h2>
         <p>{t('breakpoints.description')}</p>
         <ul>
@@ -59,7 +83,7 @@ export default function Display() {
         </ul>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('mediaQuery.title')}</h2>
         <p>{t('mediaQuery.description')}</p>
 
@@ -106,7 +130,7 @@ export default function Display() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('currentSize.title')}</h2>
         <p>{t('currentSize.description')}</p>
 
@@ -143,7 +167,7 @@ export default function Display() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('realWorld.title')}</h2>
         <p>{t('realWorld.description')}</p>
 

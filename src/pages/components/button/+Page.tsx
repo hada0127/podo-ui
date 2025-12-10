@@ -2,12 +2,40 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button as ButtonComponent } from 'podo-ui';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Button() {
   const { t } = useTranslation('button');
   const [loading, setLoading] = useState(false);
 
+  return (
+    <>
+      <section className={styles.section}>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
+      </section>
+
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+          {
+            key: 'react',
+            label: 'React',
+            content: <ReactContent t={t} loading={loading} setLoading={setLoading} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
   const variants = [
     { name: 'primary', key: 'primary' },
     { name: '', key: 'default' },
@@ -19,12 +47,10 @@ export default function Button() {
     { name: 'danger', key: 'danger' },
   ];
 
-  // Helper to generate class string (removes leading/trailing spaces)
   const getClassName = (variant: string, style: string) => {
     return `${variant}${style}`.trim();
   };
 
-  // Helper to generate code example class attribute
   const getCodeClass = (variant: string, style: string) => {
     const cls = getClassName(variant, style);
     return cls ? ` class="${cls}"` : '';
@@ -39,15 +65,308 @@ export default function Button() {
 
   return (
     <>
-      <section className={styles.section}>
-        <h1>{t('title')}</h1>
-        <p>{t('description')}</p>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="scss"
+          code={`@use 'podo-ui/scss/atom/button';`}
+        />
       </section>
 
-      <section className={styles.section}>
-        <h2>React Component</h2>
-        <p>podo-ui React 컴포넌트를 사용한 예제입니다.</p>
+      <section>
+        <h2>{t('basicUsage.title')}</h2>
+        <p>{t('basicUsage.description')}</p>
 
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<button>${t('basicUsage.examples.basic')}</button>
+<button class="primary">${t('basicUsage.examples.primary')}</button>
+<button class="danger">${t('basicUsage.examples.danger')}</button>
+<button disabled>${t('basicUsage.examples.disabled')}</button>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.buttonGroup}>
+            <button>{t('basicUsage.examples.basic')}</button>
+            <button className="primary">{t('basicUsage.examples.primary')}</button>
+            <button className="danger">{t('basicUsage.examples.danger')}</button>
+            <button disabled>{t('basicUsage.examples.disabled')}</button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('variants.title')}</h2>
+        <p>{t('variants.description')}</p>
+
+        <div className={styles.variantsShowcase}>
+          {variants.map((variant) => (
+            <div key={variant.name} className={styles.variantCard}>
+              <div className={styles.variantHeader}>
+                <h3>{t(`variants.${variant.key}.label`)}</h3>
+                <p>{t(`variants.${variant.key}.description`)}</p>
+              </div>
+              <button className={variant.name || undefined}>{t(`variants.${variant.key}.label`)}</button>
+            </div>
+          ))}
+        </div>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<button class="primary">Primary</button>
+<button>Default</button>
+<button class="default-deep">Default Deep</button>
+<button class="info">Info</button>
+<button class="link">Link</button>
+<button class="success">Success</button>
+<button class="warning">Warning</button>
+<button class="danger">Danger</button>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('styles.title')}</h2>
+        <p>{t('styles.description')}</p>
+
+        {buttonStyles.map((style) => (
+          <div key={style.suffix} className={styles.styleSection}>
+            <h3>{t(`styles.${style.key}.label`)}</h3>
+            <p>{t(`styles.${style.key}.description`)}</p>
+
+            <div className={styles.buttonGroup}>
+              {variants.map((variant) => (
+                <button key={variant.key} className={getClassName(variant.name, style.suffix) || undefined}>
+                  {t(`variants.${variant.key}.label`)}
+                </button>
+              ))}
+            </div>
+
+            <CodeBlock
+              language="html"
+              code={variants.map((variant) =>
+                `<button${getCodeClass(variant.name, style.suffix)}>${t(`variants.${variant.key}.label`)}</button>`
+              ).join('\n')}
+            />
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <h2>{t('sizes.title')}</h2>
+        <p>{t('sizes.description')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<button class="primary xxs">xxs Button</button>
+<button class="primary xs">xs Button</button>
+<button class="primary sm">sm Button</button>
+<button class="primary md">md Button</button>
+<button class="primary lg">lg Button</button>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.sizeDemo}>
+            <button className="primary xxs">xxs Button</button>
+            <button className="primary xs">xs Button</button>
+            <button className="primary sm">sm Button</button>
+            <button className="primary md">md Button</button>
+            <button className="primary lg">lg Button</button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('icons.title')}</h2>
+        <p>{t('icons.description')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<button class="primary">
+  <i class="icon-plus"></i>
+  ${t('icons.examples.create')}
+</button>
+
+<button class="success">
+  <i class="icon-check"></i>
+  ${t('icons.examples.confirm')}
+</button>
+
+<!-- Icon only -->
+<button class="primary">
+  <i class="icon-search"></i>
+</button>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.iconButtonDemo}>
+            <button className="primary">
+              <i className="icon-plus"></i>
+              {t('icons.examples.create')}
+            </button>
+            <button className="success">
+              <i className="icon-check"></i>
+              {t('icons.examples.confirm')}
+            </button>
+            <button className="danger">
+              <i className="icon-trash"></i>
+              {t('icons.examples.delete')}
+            </button>
+            <button className="primary">
+              <i className="icon-search"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('scss.title')}</h2>
+        <p>{t('scss.description')}</p>
+
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
+
+.customButton {
+  display: flex;
+  align-items: center;
+  gap: s(2);
+  padding: s(3) s(5);
+  background: color(primary-base);
+  color: color(primary-reverse);
+  border: none;
+  border-radius: r(3);
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: color(primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    background: color(primary-pressed);
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('showcase.title')}</h2>
+        <p>{t('showcase.description')}</p>
+
+        <div className={styles.showcase}>
+          {variants.map((variant) => (
+            <div key={variant.key} className={styles.showcaseRow}>
+              <div className={styles.showcaseLabel}>
+                <strong>{t(`variants.${variant.key}.label`)}</strong>
+                <span>{t(`variants.${variant.key}.description`)}</span>
+              </div>
+              <div className={styles.showcaseButtons}>
+                <button className={variant.name || undefined}>Solid</button>
+                <button className={getClassName(variant.name, ' fill') || undefined}>Fill</button>
+                <button className={getClassName(variant.name, ' border') || undefined}>Border</button>
+                <button className={getClassName(variant.name, ' text') || undefined}>Text</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+}
+
+interface ReactContentProps {
+  t: (key: string) => string;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+}
+
+function ReactContent({ t, loading, setLoading }: ReactContentProps) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="tsx"
+          code={`import { Button } from 'podo-ui';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>theme</code></td>
+              <td><code>'primary' | 'success' | 'warning' | 'danger' | 'info' | 'link'</code></td>
+              <td>-</td>
+              <td>버튼 테마 색상</td>
+            </tr>
+            <tr>
+              <td><code>variant</code></td>
+              <td><code>'solid' | 'fill' | 'border' | 'text'</code></td>
+              <td>'solid'</td>
+              <td>버튼 스타일 변형</td>
+            </tr>
+            <tr>
+              <td><code>size</code></td>
+              <td><code>'xxs' | 'xs' | 'sm' | 'md' | 'lg'</code></td>
+              <td>'sm'</td>
+              <td>버튼 크기</td>
+            </tr>
+            <tr>
+              <td><code>icon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>왼쪽 아이콘 클래스명</td>
+            </tr>
+            <tr>
+              <td><code>rightIcon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>오른쪽 아이콘 클래스명</td>
+            </tr>
+            <tr>
+              <td><code>loading</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>로딩 상태</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>비활성화 상태</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>기본 사용법</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -79,6 +398,23 @@ export default function Button() {
             <ButtonComponent theme="warning" variant="text">Warning Text</ButtonComponent>
           </div>
         </div>
+      </section>
+
+      <section>
+        <h2>아이콘 & 로딩</h2>
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`<Button theme="primary" icon="icon-plus">Create</Button>
+<Button theme="success" icon="icon-check">Confirm</Button>
+<Button
+  theme="primary"
+  loading={loading}
+  onClick={() => setLoading(true)}
+>
+  {loading ? 'Loading...' : 'Click to Load'}
+</Button>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>With Icons & Loading</div>
@@ -97,6 +433,19 @@ export default function Button() {
             </ButtonComponent>
           </div>
         </div>
+      </section>
+
+      <section>
+        <h2>크기</h2>
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`<Button theme="primary" size="xxs">XXS</Button>
+<Button theme="primary" size="xs">XS</Button>
+<Button theme="primary" size="sm">SM (Default)</Button>
+<Button theme="primary" size="md">MD</Button>
+<Button theme="primary" size="lg">LG</Button>`}
+        />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>Sizes</div>
@@ -107,418 +456,6 @@ export default function Button() {
             <ButtonComponent theme="primary" size="md">MD</ButtonComponent>
             <ButtonComponent theme="primary" size="lg">LG</ButtonComponent>
           </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('basicUsage.title')}</h2>
-        <p>{t('basicUsage.description')}</p>
-
-        <CodeBlock
-          title={t('demo.codeHeader')}
-          language="html"
-          code={`<button>${t('basicUsage.examples.basic')}</button>
-<button class="primary">${t('basicUsage.examples.primary')}</button>
-<button class="danger">${t('basicUsage.examples.danger')}</button>
-<button disabled>${t('basicUsage.examples.disabled')}</button>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.buttonGroup}>
-            <button>{t('basicUsage.examples.basic')}</button>
-            <button className="primary">{t('basicUsage.examples.primary')}</button>
-            <button className="danger">{t('basicUsage.examples.danger')}</button>
-            <button disabled>{t('basicUsage.examples.disabled')}</button>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('variants.title')}</h2>
-        <p>{t('variants.description')}</p>
-
-        <div className={styles.variantsShowcase}>
-          {variants.map((variant) => (
-            <div key={variant.name} className={styles.variantCard}>
-              <div className={styles.variantHeader}>
-                <h3>{t(`variants.${variant.key}.label`)}</h3>
-                <p>{t(`variants.${variant.key}.description`)}</p>
-              </div>
-              <button className={variant.name || undefined}>{t(`variants.${variant.key}.label`)}</button>
-            </div>
-          ))}
-        </div>
-
-        <CodeBlock
-          title={t('demo.codeHeader')}
-          language="html"
-          code={`<button class="primary">Primary</button>
-<button>Default</button>
-<button class="default-deep">Default Deep</button>
-<button class="info">Info</button>
-<button class="link">Link</button>
-<button class="success">Success</button>
-<button class="warning">Warning</button>
-<button class="danger">Danger</button>`}
-        />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('styles.title')}</h2>
-        <p>{t('styles.description')}</p>
-
-        {buttonStyles.map((style) => (
-          <div key={style.suffix} className={styles.styleSection}>
-            <h3>{t(`styles.${style.key}.label`)}</h3>
-            <p>{t(`styles.${style.key}.description`)}</p>
-
-            <div className={styles.buttonGroup}>
-              {variants.map((variant) => (
-                <button key={variant.key} className={getClassName(variant.name, style.suffix) || undefined}>
-                  {t(`variants.${variant.key}.label`)}
-                </button>
-              ))}
-            </div>
-
-            <CodeBlock
-              language="html"
-              code={variants.map((variant) =>
-                `<button${getCodeClass(variant.name, style.suffix)}>${t(`variants.${variant.key}.label`)}</button>`
-              ).join('\n')}
-            />
-          </div>
-        ))}
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('sizes.title')}</h2>
-        <p>{t('sizes.description')}</p>
-
-        <CodeBlock
-          title={t('demo.codeHeader')}
-          language="html"
-          code={`<button class="primary xxs">
-  xxs Button
-</button>
-
-<button class="primary xs">
-  xs Button
-</button>
-
-<button class="primary sm">
-  sm Button
-</button>
-
-<button class="primary md">
-  md Button
-</button>
-
-<button class="primary lg">
-  lg Button
-</button>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.sizeDemo}>
-            <button className="primary xxs">
-              xxs Button
-            </button>
-
-            <button className="primary xs">
-              xs Button
-            </button>
-
-            <button className="primary sm">
-              sm Button
-            </button>
-
-            <button className="primary md">
-              md Button
-            </button>
-
-            <button className="primary lg">
-              lg Button
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('alignment.title')}</h2>
-        <p>{t('alignment.description')}</p>
-
-        <CodeBlock
-          title={t('demo.codeHeader')}
-          language="html"
-          code={`<!-- ${t('alignment.center')} -->
-<button class="primary">${t('alignment.center')}</button>
-
-<!-- ${t('alignment.left')} -->
-<button class="primary text-left">${t('alignment.left')}</button>
-
-<!-- ${t('alignment.right')} -->
-<button class="primary text-right">${t('alignment.right')}</button>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.alignDemo}>
-            <button className="primary" style={{ width: '200px' }}>
-              {t('alignment.center')}
-            </button>
-            <button className="primary text-left" style={{ width: '200px' }}>
-              {t('alignment.left')}
-            </button>
-            <button className="primary text-right" style={{ width: '200px' }}>
-              {t('alignment.right')}
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('alignment.withIcons')}</div>
-          <div className={styles.alignDemo}>
-            <button className="success text-left" style={{ width: '200px' }}>
-              <i className="icon-check"></i>
-              {t('alignment.left')}
-            </button>
-            <button className="info" style={{ width: '200px' }}>
-              <i className="icon-download"></i>
-              {t('alignment.center')}
-            </button>
-            <button className="warning text-right" style={{ width: '200px' }}>
-              {t('alignment.right')}
-              <i className="icon-arrow-right"></i>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('icons.title')}</h2>
-        <p>{t('icons.description')}</p>
-
-        <CodeBlock
-          title={t('demo.codeHeader')}
-          language="html"
-          code={`<button class="primary">
-  <i class="icon-plus"></i>
-  ${t('icons.examples.create')}
-</button>
-
-<button class="success">
-  <i class="icon-check"></i>
-  ${t('icons.examples.confirm')}
-</button>
-
-<button class="danger">
-  <i class="icon-trash"></i>
-  ${t('icons.examples.delete')}
-</button>
-
-<!-- Text style -->
-<button class="primary text">
-  <i class="icon-plus"></i>
-  ${t('icons.examples.create')}
-</button>
-
-<!-- Icon only -->
-<button class="primary">
-  <i class="icon-search"></i>
-</button>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.iconButtonDemo}>
-            <button className="primary">
-              <i className="icon-plus"></i>
-              {t('icons.examples.create')}
-            </button>
-            <button className="success">
-              <i className="icon-check"></i>
-              {t('icons.examples.confirm')}
-            </button>
-            <button className="danger">
-              <i className="icon-trash"></i>
-              {t('icons.examples.delete')}
-            </button>
-            <button className="info">
-              <i className="icon-download"></i>
-              {t('icons.examples.download')}
-            </button>
-            <button className="primary text">
-              <i className="icon-plus"></i>
-              {t('icons.examples.create')}
-            </button>
-            <button className="danger text">
-              <i className="icon-trash"></i>
-              {t('icons.examples.delete')}
-            </button>
-            <button className="primary">
-              <i className="icon-search"></i>
-            </button>
-            <button className="danger">
-              <i className="icon-close"></i>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('disabled.title')}</h2>
-        <p>{t('disabled.description')}</p>
-
-        <CodeBlock
-          title={t('demo.codeHeader')}
-          language="html"
-          code={`<button class="primary" disabled>Disabled</button>
-<button class="success" disabled>Disabled</button>
-<button class="danger" disabled>Disabled</button>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.buttonGroup}>
-            <button className="primary" disabled>Primary</button>
-            <button className="default" disabled>Default</button>
-            <button className="success" disabled>Success</button>
-            <button className="danger" disabled>Danger</button>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('groups.title')}</h2>
-        <p>{t('groups.description')}</p>
-
-        <CodeBlock
-          title={t('demo.codeHeader')}
-          language="html"
-          code={`<div style="display: flex; gap: 0.5rem;">
-  <button class="primary">${t('groups.examples.save')}</button>
-  <button class="default">${t('groups.examples.cancel')}</button>
-</div>
-
-<div style="display: flex; gap: 0.5rem;">
-  <button class="primary">
-    <i class="icon-arrow-left"></i>
-    ${t('groups.examples.previous')}
-  </button>
-  <button class="primary">
-    ${t('groups.examples.next')}
-    <i class="icon-arrow-right"></i>
-  </button>
-</div>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.groupDemo}>
-            <div className={styles.buttonRow}>
-              <button className="primary">{t('groups.examples.save')}</button>
-              <button className="default">{t('groups.examples.cancel')}</button>
-            </div>
-            <div className={styles.buttonRow}>
-              <button className="primary">
-                <i className="icon-arrow-left"></i>
-                {t('groups.examples.previous')}
-              </button>
-              <button className="primary">
-                {t('groups.examples.next')}
-                <i className="icon-arrow-right"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('scss.title')}</h2>
-        <p>{t('scss.description')}</p>
-
-        <CodeBlock
-          title="component.module.scss"
-          language="scss"
-          code={`@use 'podo-ui/mixin' as *;
-
-.customButton {
-  display: flex;
-  align-items: center;
-  gap: s(2);
-  padding: s(3) s(5);
-  background: color(primary-base);
-  color: color(primary-reverse);
-  border: none;
-  border-radius: r(3);
-  cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    background: color(primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  &:active {
-    background: color(primary-pressed);
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  i {
-    font-size: 16px;
-  }
-}
-
-.iconOnlyButton {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: color(primary-fill);
-  color: color(primary-base);
-  border: 1px solid color(primary-outline);
-  border-radius: r(2);
-  cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    background: color(primary-base);
-    color: color(primary-reverse);
-  }
-}`}
-        />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('showcase.title')}</h2>
-        <p>{t('showcase.description')}</p>
-
-        <div className={styles.showcase}>
-          {variants.map((variant) => (
-            <div key={variant.key} className={styles.showcaseRow}>
-              <div className={styles.showcaseLabel}>
-                <strong>{t(`variants.${variant.key}.label`)}</strong>
-                <span>{t(`variants.${variant.key}.description`)}</span>
-              </div>
-              <div className={styles.showcaseButtons}>
-                <button className={variant.name || undefined}>Solid</button>
-                <button className={getClassName(variant.name, ' fill') || undefined}>Fill</button>
-                <button className={getClassName(variant.name, ' border') || undefined}>Border</button>
-                <button className={getClassName(variant.name, ' text') || undefined}>Text</button>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
     </>

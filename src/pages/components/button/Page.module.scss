@@ -268,3 +268,35 @@
     width: 100%;
   }
 }
+
+// Props Table
+.propsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: s(4);
+
+  th,
+  td {
+    @include p3;
+    padding: s(3) s(4);
+    text-align: left;
+    border-bottom: 1px solid color(border);
+  }
+
+  th {
+    @include p3-semibold;
+    background: color(bg-block);
+  }
+
+  td code {
+    @include p4;
+    background: color(default-fill);
+    padding: s(1) s(2);
+    border-radius: r(2);
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+    overflow-x: auto;
+  }
+}

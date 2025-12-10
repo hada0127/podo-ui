@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Select as SelectComponent } from 'podo-ui';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Select() {
@@ -35,74 +36,45 @@ export default function Select() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
-        <h2>React Component</h2>
-        <p>podo-ui React 컴포넌트를 사용한 예제입니다.</p>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+          {
+            key: 'react',
+            label: 'React',
+            content: (
+              <ReactContent
+                t={t}
+                selected={selected}
+                setSelected={setSelected}
+                city={city}
+                setCity={setCity}
+                options={options}
+                cityOptions={cityOptions}
+                roleOptions={roleOptions}
+              />
+            ),
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
 
-        <CodeBlock
-          title="React"
-          language="tsx"
-          code={`import { Select } from 'podo-ui';
-
-const options = [
-  { value: 'option1', label: '옵션 1' },
-  { value: 'option2', label: '옵션 2' },
-  { value: 'option3', label: '옵션 3' },
-];
-
-// Basic
-<Select
-  value={selected}
-  onChange={(e) => setSelected(e.target.value)}
-  options={options}
-  placeholder="옵션을 선택하세요"
-/>
-
-// With Icon
-<Select
-  value={role}
-  onChange={(e) => setRole(e.target.value)}
-  options={roleOptions}
-  withIcon="icon-user"
-  placeholder="역할 선택"
-/>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>Select Demo</div>
-          <div className={styles.selectGroup}>
-            <SelectComponent
-              value={selected}
-              onChange={(e) => setSelected(e.target.value)}
-              options={options}
-              placeholder={t('basicUsage.options.placeholder')}
-            />
-            <SelectComponent
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              options={cityOptions}
-            />
-            <SelectComponent
-              options={roleOptions}
-              withIcon="icon-user"
-              placeholder={t('icons.userPlaceholder')}
-            />
-          </div>
-        </div>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>Disabled</div>
-          <div className={styles.selectGroup}>
-            <SelectComponent
-              options={options}
-              placeholder={t('basicUsage.disabled')}
-              disabled
-            />
-          </div>
-        </div>
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/scss/atom/select';`} />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
@@ -120,8 +92,8 @@ const options = [
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('demo.title')}</div>
           <div className={styles.selectGroup}>
-            <select>
-              <option value="" disabled selected>{t('basicUsage.options.placeholder')}</option>
+            <select defaultValue="">
+              <option value="" disabled>{t('basicUsage.options.placeholder')}</option>
               <option value="1">{t('basicUsage.options.option1')}</option>
               <option value="2">{t('basicUsage.options.option2')}</option>
               <option value="3">{t('basicUsage.options.option3')}</option>
@@ -130,7 +102,6 @@ const options = [
               <option value="1">{t('basicUsage.cities.seoul')}</option>
               <option value="2">{t('basicUsage.cities.busan')}</option>
               <option value="3">{t('basicUsage.cities.daegu')}</option>
-              <option value="4">{t('basicUsage.cities.incheon')}</option>
             </select>
             <select disabled>
               <option>{t('basicUsage.disabled')}</option>
@@ -139,35 +110,7 @@ const options = [
         </div>
       </section>
 
-      <section className={styles.section}>
-        <h2>{t('placeholder.title')}</h2>
-        <p>{t('placeholder.description')}</p>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<select>
-  <option value="" disabled selected>${t('placeholder.categoryPlaceholder')}</option>
-  <option value="electronics">${t('placeholder.categories.electronics')}</option>
-  <option value="fashion">${t('placeholder.categories.fashion')}</option>
-  <option value="food">${t('placeholder.categories.food')}</option>
-</select>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.selectGroup}>
-            <select>
-              <option value="" disabled selected>{t('placeholder.categoryPlaceholder')}</option>
-              <option value="electronics">{t('placeholder.categories.electronics')}</option>
-              <option value="fashion">{t('placeholder.categories.fashion')}</option>
-              <option value="food">{t('placeholder.categories.food')}</option>
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
+      <section>
         <h2>{t('icons.title')}</h2>
         <p>{t('icons.description')}</p>
 
@@ -180,17 +123,6 @@ const options = [
     <option value="" disabled selected>${t('icons.userPlaceholder')}</option>
     <option value="admin">${t('icons.roles.admin')}</option>
     <option value="user">${t('icons.roles.user')}</option>
-    <option value="guest">${t('icons.roles.guest')}</option>
-  </select>
-</div>
-
-<div class="with-icon">
-  <i class="icon-globe"></i>
-  <select>
-    <option value="" disabled selected>${t('icons.languagePlaceholder')}</option>
-    <option value="ko">${t('icons.languages.ko')}</option>
-    <option value="en">${t('icons.languages.en')}</option>
-    <option value="ja">${t('icons.languages.ja')}</option>
   </select>
 </div>`}
         />
@@ -200,107 +132,57 @@ const options = [
           <div className={styles.selectGroup}>
             <div className="with-icon">
               <i className="icon-user"></i>
-              <select>
-                <option value="" disabled selected>{t('icons.userPlaceholder')}</option>
+              <select defaultValue="">
+                <option value="" disabled>{t('icons.userPlaceholder')}</option>
                 <option value="admin">{t('icons.roles.admin')}</option>
                 <option value="user">{t('icons.roles.user')}</option>
-                <option value="guest">{t('icons.roles.guest')}</option>
               </select>
             </div>
             <div className="with-icon">
               <i className="icon-globe"></i>
-              <select>
-                <option value="" disabled selected>{t('icons.languagePlaceholder')}</option>
+              <select defaultValue="">
+                <option value="" disabled>{t('icons.languagePlaceholder')}</option>
                 <option value="ko">{t('icons.languages.ko')}</option>
                 <option value="en">{t('icons.languages.en')}</option>
-                <option value="ja">{t('icons.languages.ja')}</option>
               </select>
             </div>
           </div>
         </div>
       </section>
 
-      <section className={styles.section}>
-        <h2>{t('states.title')}</h2>
-        <p>{t('states.description')}</p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.selectGroup}>
-            <div>
-              <label className={styles.label}>{t('states.default')}</label>
-              <select>
-                <option value="" disabled selected>{t('states.selectOption')}</option>
-                <option value="1">{t('basicUsage.options.option1')}</option>
-                <option value="2">{t('basicUsage.options.option2')}</option>
-              </select>
-            </div>
-            <div>
-              <label className={styles.label}>{t('states.disabled')}</label>
-              <select disabled>
-                <option>{t('states.disabledSelect')}</option>
-              </select>
-            </div>
-            <div>
-              <label className={styles.label}>{t('states.multiple')}</label>
-              <select multiple size={4}>
-                <option value="1">{t('basicUsage.options.option1')}</option>
-                <option value="2">{t('basicUsage.options.option2')}</option>
-                <option value="3">{t('basicUsage.options.option3')}</option>
-                <option value="4">{t('states.option4')}</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
+      <section>
         <h2>{t('scss.title')}</h2>
-        <p>{t('scss.description')}</p>
-
         <CodeBlock
-          title="component.module.scss"
+          title="SCSS"
           language="scss"
           code={`@use 'podo-ui/mixin' as *;
 
-.customSelect {
+select {
   padding: s(3) s(7) s(3) s(5);
   border: 1px solid color(border);
   border-radius: r(3);
   background: color(bg-block);
-  color: color(default-deep-base);
-  outline: none;
   appearance: none;
   cursor: pointer;
-
-  // ${t('code.customArrow')}
-  background-image: url('data:image/svg+xml,...');
-  background-repeat: no-repeat;
-  background-position: right 11px center;
 
   &:focus-visible:not(:disabled) {
     outline: 4px solid color(primary-outline);
   }
 
   &:disabled {
-    color: color(text-action-disabled);
     background-color: color(bg-disabled);
     cursor: not-allowed;
   }
 }
 
-// ${t('code.withIcon')}
-.withIcon {
+.with-icon {
   position: relative;
-  display: inline-block;
 
   > i {
     position: absolute;
     left: s(3);
     top: 50%;
     transform: translateY(-50%);
-    color: color(text-action);
-    pointer-events: none;
   }
 
   > select {
@@ -308,6 +190,166 @@ const options = [
   }
 }`}
         />
+      </section>
+    </>
+  );
+}
+
+interface ReactContentProps {
+  t: (key: string) => string;
+  selected: string;
+  setSelected: (v: string) => void;
+  city: string;
+  setCity: (v: string) => void;
+  options: { value: string; label: string }[];
+  cityOptions: { value: string; label: string }[];
+  roleOptions: { value: string; label: string }[];
+}
+
+function ReactContent({
+  t,
+  selected,
+  setSelected,
+  city,
+  setCity,
+  options,
+  cityOptions,
+  roleOptions,
+}: ReactContentProps) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="tsx" code={`import { Select } from 'podo-ui';`} />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>선택된 값</td>
+            </tr>
+            <tr>
+              <td><code>onChange</code></td>
+              <td><code>(e: ChangeEvent) =&gt; void</code></td>
+              <td>-</td>
+              <td>값 변경 핸들러</td>
+            </tr>
+            <tr>
+              <td><code>options</code></td>
+              <td><code>{`{ value: string; label: string }[]`}</code></td>
+              <td>required</td>
+              <td>선택 옵션 배열</td>
+            </tr>
+            <tr>
+              <td><code>placeholder</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>플레이스홀더</td>
+            </tr>
+            <tr>
+              <td><code>withIcon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>왼쪽 아이콘 클래스명</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>비활성화 상태</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>기본 사용법</h2>
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`import { Select } from 'podo-ui';
+
+const options = [
+  { value: 'option1', label: '옵션 1' },
+  { value: 'option2', label: '옵션 2' },
+  { value: 'option3', label: '옵션 3' },
+];
+
+<Select
+  value={selected}
+  onChange={(e) => setSelected(e.target.value)}
+  options={options}
+  placeholder="옵션을 선택하세요"
+/>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>Select Demo</div>
+          <div className={styles.selectGroup}>
+            <SelectComponent
+              value={selected}
+              onChange={(e) => setSelected(e.target.value)}
+              options={options}
+              placeholder={t('basicUsage.options.placeholder')}
+            />
+            <SelectComponent
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              options={cityOptions}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>아이콘</h2>
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`<Select
+  options={roleOptions}
+  withIcon="icon-user"
+  placeholder="역할 선택"
+/>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>With Icon</div>
+          <div className={styles.selectGroup}>
+            <SelectComponent
+              options={roleOptions}
+              withIcon="icon-user"
+              placeholder={t('icons.userPlaceholder')}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>비활성화</h2>
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>Disabled</div>
+          <div className={styles.selectGroup}>
+            <SelectComponent
+              options={options}
+              placeholder={t('basicUsage.disabled')}
+              disabled
+            />
+          </div>
+        </div>
       </section>
     </>
   );

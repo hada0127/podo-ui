@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Elevation() {
   const { t } = useTranslation('elevation');
+
   return (
     <>
       <section className={styles.section}>
@@ -11,7 +13,29 @@ export default function Elevation() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
+      </section>
+
+      <section>
         <h2>{t('background.title')}</h2>
         <p>
           {t('background.description')}
@@ -66,7 +90,7 @@ export default function Elevation() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('elevation.title')}</h2>
         <p>
           {t('elevation.description')}
@@ -91,7 +115,7 @@ export default function Elevation() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('shadow.title')}</h2>
         <p>{t('shadow.description')}</p>
 
@@ -138,7 +162,7 @@ export default function Elevation() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('realWorld.title')}</h2>
         <p>{t('realWorld.description')}</p>
 

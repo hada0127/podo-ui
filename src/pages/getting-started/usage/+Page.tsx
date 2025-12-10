@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Usage() {
@@ -12,7 +13,34 @@ export default function Usage() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+          {
+            key: 'react',
+            label: 'React',
+            content: <ReactContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
+      </section>
+
+      <section>
         <h2>{t('cssClasses.title')}</h2>
         <p>
           {t('cssClasses.description')}
@@ -64,7 +92,7 @@ export default function Usage() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('scssFunctions.title')}</h2>
         <p>
           {t('scssFunctions.description')}
@@ -136,29 +164,7 @@ export default function Usage() {
         />
       </section>
 
-      <section className={styles.section}>
-        <h2>{t('reactComponents.title')}</h2>
-        <p>
-          {t('reactComponents.description')}
-        </p>
-
-        <CodeBlock
-          title={t('reactComponents.codeHeader')}
-          language="tsx"
-          code={`import { Input, Textarea, Editor, Field } from 'podo-ui';
-
-function MyForm() {
-  return (
-    <Field label="${t('reactComponents.example.label')}" required>
-      <Input placeholder="${t('reactComponents.example.placeholder')}" />
-    </Field>
-  );
-}`}
-        />
-
-      </section>
-
-      <section className={styles.section}>
+      <section>
         <h2>{t('theme.title')}</h2>
         <p>
           {t('theme.description')}
@@ -185,7 +191,7 @@ document.documentElement.setAttribute('data-color-mode', '');`}
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('nextSteps.title')}</h2>
         <p>{t('nextSteps.description')}</p>
 
@@ -233,6 +239,68 @@ document.documentElement.setAttribute('data-color-mode', '');`}
             </div>
             <i className="icon-arrow-right"></i>
           </a>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function ReactContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="tsx"
+          code={`import { Input, Textarea, Editor, Field } from 'podo-ui';`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('reactComponents.title')}</h2>
+        <p>
+          {t('reactComponents.description')}
+        </p>
+
+        <CodeBlock
+          title={t('reactComponents.codeHeader')}
+          language="tsx"
+          code={`import { Input, Textarea, Editor, Field } from 'podo-ui';
+
+function MyForm() {
+  return (
+    <Field label="${t('reactComponents.example.label')}" required>
+      <Input placeholder="${t('reactComponents.example.placeholder')}" />
+    </Field>
+  );
+}`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('theme.title')}</h2>
+        <p>
+          {t('theme.description')}
+        </p>
+
+        <CodeBlock
+          title={t('theme.codeHeader')}
+          language="javascript"
+          code={`// ${t('theme.comments.light')}
+document.documentElement.setAttribute('data-color-mode', 'light');
+
+// ${t('theme.comments.dark')}
+document.documentElement.setAttribute('data-color-mode', 'dark');
+
+// ${t('theme.comments.system')}
+document.documentElement.setAttribute('data-color-mode', '');`}
+        />
+
+        <div className={styles.note}>
+          <i className="icon-info"></i>
+          <div>
+            <strong>{t('theme.note.title')}</strong> {t('theme.note.content')}
+          </div>
         </div>
       </section>
     </>

@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Label() {
   const { t } = useTranslation('label');
+
   return (
     <>
       <section className={styles.section}>
@@ -11,12 +13,34 @@ export default function Label() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/scss/atom/label';`} />
+      </section>
+
+      <section>
         <h2>{t('basicUsage.title')}</h2>
         <p>{t('basicUsage.description')}</p>
 
         <CodeBlock
-          title={t('demo.codeHeader')}
+          title="HTML"
           language="html"
           code={`<label>${t('basicUsage.examples.username')}</label>
 <label>${t('basicUsage.examples.email')}</label>
@@ -33,12 +57,12 @@ export default function Label() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sizes.title')}</h2>
         <p>{t('sizes.description')}</p>
 
         <CodeBlock
-          title={t('demo.codeHeader')}
+          title="HTML"
           language="html"
           code={`<label class="sm">${t('sizes.small')}</label>
 <label>${t('sizes.medium')}</label>
@@ -55,12 +79,12 @@ export default function Label() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('styles.title')}</h2>
         <p>{t('styles.description')}</p>
 
         <CodeBlock
-          title={t('demo.codeHeader')}
+          title="HTML"
           language="html"
           code={`<label>${t('styles.normal')}</label>
 <label class="semibold">${t('styles.semibold')}</label>
@@ -77,12 +101,12 @@ export default function Label() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('required.title')}</h2>
         <p>{t('required.description')}</p>
 
         <CodeBlock
-          title={t('demo.codeHeader')}
+          title="HTML"
           language="html"
           code={`<label>${t('required.email')} <span class="required">*</span></label>
 <label>${t('required.phone')} <span class="required">*</span></label>`}
@@ -97,12 +121,12 @@ export default function Label() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('withInput.title')}</h2>
         <p>{t('withInput.description')}</p>
 
         <CodeBlock
-          title={t('demo.codeHeader')}
+          title="HTML"
           language="html"
           code={`<label for="email">${t('withInput.email')} <span class="required">*</span></label>
 <input id="email" type="email" placeholder="example@email.com" />
@@ -126,16 +150,13 @@ export default function Label() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('scss.title')}</h2>
-        <p>{t('scss.description')}</p>
-
         <CodeBlock
-          title="component.module.scss"
+          title="SCSS"
           language="scss"
           code={`@use 'podo-ui/mixin' as *;
 
-// ${t('code.labelStyle')}
 label {
   @include p3;
   color: color(default-deep-base);

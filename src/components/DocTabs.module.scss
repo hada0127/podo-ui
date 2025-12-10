@@ -1,0 +1,34 @@
+@use '../../mixin' as *;
+
+.docTabs {
+  margin-top: s(6);
+
+  > ul.tabs {
+    margin-bottom: s(6);
+  }
+}
+
+.tabContent {
+  margin-top: s(4);
+
+  > section {
+    margin-bottom: s(8);
+
+    > h2 {
+      @include display7;
+      margin-bottom: s(3);
+    }
+
+    > h3 {
+      @include p3-semibold;
+      margin-bottom: s(2);
+      margin-top: s(5);
+    }
+
+    > p {
+      @include p3;
+      color: color(text-sub);
+      margin-bottom: s(4);
+    }
+  }
+}

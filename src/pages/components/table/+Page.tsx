@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Table() {
@@ -11,11 +12,31 @@ export default function Table() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
+      </section>
+
+      <section>
         <h2>{t('basicUsage.title')}</h2>
-        <p>
-          {t('basicUsage.description')}
-        </p>
+        <p>{t('basicUsage.description')}</p>
 
         <CodeBlock
           title={t('basicUsage.codeHeader')}
@@ -74,11 +95,9 @@ export default function Table() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('listStyle.title')}</h2>
-        <p>
-          {t('listStyle.description')}
-        </p>
+        <p>{t('listStyle.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('listStyle.demoTitle')}</div>
@@ -111,11 +130,9 @@ export default function Table() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('borderStyle.title')}</h2>
-        <p>
-          {t('borderStyle.description')}
-        </p>
+        <p>{t('borderStyle.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('borderStyle.demoTitle')}</div>
@@ -148,11 +165,9 @@ export default function Table() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('fillStyle.title')}</h2>
-        <p>
-          {t('fillStyle.description')}
-        </p>
+        <p>{t('fillStyle.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('fillStyle.demoTitle')}</div>
@@ -185,11 +200,9 @@ export default function Table() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('combinedStyle.title')}</h2>
-        <p>
-          {t('combinedStyle.description')}
-        </p>
+        <p>{t('combinedStyle.description')}</p>
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('combinedStyle.demoTitle')}</div>
@@ -222,7 +235,7 @@ export default function Table() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('scssUsage.title')}</h2>
         <CodeBlock
           title={t('scssUsage.codeHeader')}

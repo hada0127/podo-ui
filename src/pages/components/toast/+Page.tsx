@@ -1,10 +1,349 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 import { ToastProvider, useToast } from '../../../../react/molecule/toast-provider';
 
-function ToastExamples() {
+export default function Toast() {
   const { t } = useTranslation('toast');
+
+  return (
+    <ToastProvider>
+      <>
+        <section className={styles.section}>
+          <h1>{t('title')}</h1>
+          <p>{t('description')}</p>
+        </section>
+
+        <DocTabs
+          tabs={[
+            {
+              key: 'scss',
+              label: 'SCSS',
+              content: <ScssContent t={t} />,
+            },
+            {
+              key: 'react',
+              label: 'React',
+              content: <ReactContent t={t} />,
+            },
+          ]}
+          defaultTab="scss"
+        />
+      </>
+    </ToastProvider>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  const variants = [
+    { name: 'default', label: t('variants.default.label'), description: t('variants.default.description') },
+    { name: 'primary', label: t('variants.primary.label'), description: t('variants.primary.description') },
+    { name: 'info', label: t('variants.info.label'), description: t('variants.info.description') },
+    { name: 'success', label: t('variants.success.label'), description: t('variants.success.description') },
+    { name: 'warning', label: t('variants.warning.label'), description: t('variants.warning.description') },
+    { name: 'danger', label: t('variants.danger.label'), description: t('variants.danger.description') },
+  ];
+
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
+      </section>
+
+      <section>
+        <h2>{t('sections.basicUsage.title')}</h2>
+        <p>{t('sections.basicUsage.description')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<div class="toast">
+  <i class="icon-info"></i>
+  <div class="toast-content">
+    <div class="toast-header">Header</div>
+    <div class="toast-body">Lorem ipsum dolor sit amet</div>
+  </div>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
+</div>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
+          <div className="toast">
+            <i className="icon-info"></i>
+            <div className="toast-content">
+              <div className="toast-header">Header</div>
+              <div className="toast-body">Lorem ipsum dolor sit amet</div>
+            </div>
+            <button aria-label={t('sections.basicUsage.closeLabel')}></button>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('sections.styleProperties.title')}</h2>
+        <p>{t('sections.styleProperties.description')}</p>
+
+        <h3>{t('sections.styleProperties.borderProperty')}</h3>
+        <ul>
+          <li><strong>{t('sections.styleProperties.borderFalseDefault')}</strong></li>
+          <li><strong>{t('sections.styleProperties.borderTrue')}</strong></li>
+        </ul>
+
+        <h3>{t('sections.styleProperties.longProperty')}</h3>
+        <ul>
+          <li><strong>{t('sections.styleProperties.longFalseDefault')}</strong></li>
+          <li><strong>{t('sections.styleProperties.longTrue')}</strong></li>
+        </ul>
+
+        <h3>{t('sections.styleProperties.borderFalseAccent')}</h3>
+        <p>{t('sections.styleProperties.borderFalseDescription')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('sections.styleProperties.commentBorderFalse')} -->
+<div class="toast info">
+  <i class="icon-info"></i>
+  <div class="toast-content">
+    <div class="toast-header">Header</div>
+    <div class="toast-body">Lorem ipsum dolor sit amet</div>
+  </div>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
+</div>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
+          <div className={styles.toastGroup}>
+            <div className="toast info">
+              <i className="icon-info"></i>
+              <div className="toast-content">
+                <div className="toast-header">Header</div>
+                <div className="toast-body">Lorem ipsum dolor sit amet</div>
+              </div>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
+            </div>
+          </div>
+        </div>
+
+        <h3>{t('sections.styleProperties.borderTrueOutline')}</h3>
+        <p>{t('sections.styleProperties.borderTrueDescription')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('sections.styleProperties.commentBorderTrue')} -->
+<div class="toast border info">
+  <i class="icon-info"></i>
+  <div class="toast-content">
+    <div class="toast-header">Header</div>
+    <div class="toast-body">Lorem ipsum dolor sit amet</div>
+  </div>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
+</div>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
+          <div className={styles.toastGroup}>
+            <div className="toast border info">
+              <i className="icon-info"></i>
+              <div className="toast-content">
+                <div className="toast-header">Header</div>
+                <div className="toast-body">Lorem ipsum dolor sit amet</div>
+              </div>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('sections.longStyle.title')}</h2>
+        <p>{t('sections.longStyle.description')}</p>
+
+        <h3>{t('sections.longStyle.longTrueBorderFalse')}</h3>
+        <p>{t('sections.longStyle.longTrueBorderFalseDescription')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('sections.longStyle.commentLongTrueBorderFalse')} -->
+<div class="toast long info">
+  <i class="icon-info"></i>
+  <div class="toast-content">
+    <div class="toast-body">Lorem ipsum dolor sit amet</div>
+  </div>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
+</div>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
+          <div className={styles.toastGroup}>
+            <div className="toast long info">
+              <i className="icon-info"></i>
+              <div className="toast-content">
+                <div className="toast-body">Lorem ipsum dolor sit amet</div>
+              </div>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
+            </div>
+          </div>
+        </div>
+
+        <h3>{t('sections.longStyle.longTrueBorderTrue')}</h3>
+        <p>{t('sections.longStyle.longTrueBorderTrueDescription')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- ${t('sections.longStyle.commentLongTrueBorderTrue')} -->
+<div class="toast long border success">
+  <i class="icon-check"></i>
+  <div class="toast-content">
+    <div class="toast-body">${t('sections.longStyle.fileUploadSuccess')}</div>
+  </div>
+  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
+</div>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
+          <div className={styles.toastGroup}>
+            <div className="toast long border success">
+              <i className="icon-check"></i>
+              <div className="toast-content">
+                <div className="toast-body">{t('sections.longStyle.fileUploadSuccess')}</div>
+              </div>
+              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('sections.colorVariants.title')}</h2>
+        <p>{t('sections.colorVariants.description')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<!-- Default -->
+<div class="toast default">...</div>
+
+<!-- Info -->
+<div class="toast info">...</div>
+
+<!-- Success -->
+<div class="toast success">...</div>
+
+<!-- Warning -->
+<div class="toast warning">...</div>
+
+<!-- Danger -->
+<div class="toast danger">...</div>`}
+        />
+
+        <div className={styles.variantsShowcase}>
+          {variants.map((variant) => (
+            <div key={variant.name} className={styles.variantCard}>
+              <div className={styles.variantHeader}>
+                <h3>{variant.label}</h3>
+                <p>{variant.description}</p>
+              </div>
+              <div className={styles.variantExamples}>
+                <div className={`toast ${variant.name}`}>
+                  <i className="icon-info"></i>
+                  <div className="toast-content">
+                    <div className="toast-header">{variant.label}</div>
+                    <div className="toast-body">{t('sections.styleProperties.borderFalseAccentBorder')}</div>
+                  </div>
+                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
+                </div>
+                <div className={`toast border ${variant.name}`}>
+                  <i className="icon-info"></i>
+                  <div className="toast-content">
+                    <div className="toast-header">{variant.label}</div>
+                    <div className="toast-body">{t('sections.styleProperties.borderTrueOutlineBorder')}</div>
+                  </div>
+                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
+                </div>
+                <div className={`toast long ${variant.name}`}>
+                  <i className="icon-info"></i>
+                  <div className="toast-content">
+                    <div className="toast-body">{t('sections.colorVariants.longBorderFalse')}</div>
+                  </div>
+                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
+                </div>
+                <div className={`toast long border ${variant.name}`}>
+                  <i className="icon-info"></i>
+                  <div className="toast-content">
+                    <div className="toast-body">{t('sections.colorVariants.longBorderTrue')}</div>
+                  </div>
+                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('sections.scssUsage.title')}</h2>
+        <p>{t('sections.scssUsage.description')}</p>
+
+        <CodeBlock
+          title="component.module.scss"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
+
+.customToast {
+  display: flex;
+  align-items: flex-start;
+  gap: s(3);
+  padding: s(4);
+  border-radius: r(2);
+  background-color: color('bg-elevation-1');
+  border: 1px solid color('border');
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  .icon {
+    color: color('info');
+  }
+
+  .content {
+    flex: 1;
+  }
+
+  .header {
+    font-weight: 600;
+    color: color('text-body');
+    margin-bottom: s(1);
+  }
+
+  .body {
+    color: color('text-body');
+  }
+
+  .close {
+    cursor: pointer;
+    color: color('text-action');
+
+    &:hover {
+      color: color('text-action-hover');
+    }
+  }
+}`}
+        />
+      </section>
+    </>
+  );
+}
+
+function ToastExamples({ t }: { t: (key: string) => string }) {
   const { showToast } = useToast();
 
   const examples = [
@@ -107,375 +446,16 @@ function ToastExamples() {
   );
 }
 
-export default function Toast() {
-  const { t } = useTranslation('toast');
-  const variants = [
-    { name: 'default', label: t('variants.default.label'), description: t('variants.default.description') },
-    { name: 'primary', label: t('variants.primary.label'), description: t('variants.primary.description') },
-    { name: 'info', label: t('variants.info.label'), description: t('variants.info.description') },
-    { name: 'success', label: t('variants.success.label'), description: t('variants.success.description') },
-    { name: 'warning', label: t('variants.warning.label'), description: t('variants.warning.description') },
-    { name: 'danger', label: t('variants.danger.label'), description: t('variants.danger.description') },
-  ];
-
+function ReactContent({ t }: { t: (key: string) => string }) {
   return (
-    <ToastProvider>
-      <>
-        <section className={styles.section}>
-          <h1>{t('title')}</h1>
-          <p>{t('description')}</p>
-        </section>
-
-      <section className={styles.section}>
-        <h2>{t('sections.basicUsage.title')}</h2>
-        <p>
-          {t('sections.basicUsage.description')}
-        </p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
-          <div className="toast">
-            <i className="icon-info"></i>
-            <div className="toast-content">
-              <div className="toast-header">Header</div>
-              <div className="toast-body">Lorem ipsum dolor sit amet</div>
-            </div>
-            <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-          </div>
-        </div>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<div class="toast">
-  <i class="icon-info"></i>
-  <div class="toast-content">
-    <div class="toast-header">Header</div>
-    <div class="toast-body">Lorem ipsum dolor sit amet</div>
-  </div>
-  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}
-        />
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="tsx" code={`import { ToastProvider, useToast } from 'podo-ui';`} />
       </section>
 
-      <section className={styles.section}>
-        <h2>{t('sections.styleProperties.title')}</h2>
-        <p>
-          {t('sections.styleProperties.description')}
-        </p>
-
-        <h3>{t('sections.styleProperties.borderProperty')}</h3>
-        <ul>
-          <li><strong>{t('sections.styleProperties.borderFalseDefault')}</strong></li>
-          <li><strong>{t('sections.styleProperties.borderTrue')}</strong></li>
-        </ul>
-
-        <h3>{t('sections.styleProperties.longProperty')}</h3>
-        <ul>
-          <li><strong>{t('sections.styleProperties.longFalseDefault')}</strong></li>
-          <li><strong>{t('sections.styleProperties.longTrue')}</strong></li>
-        </ul>
-
-        <h3>{t('sections.styleProperties.borderFalseAccent')}</h3>
-        <p>
-          {t('sections.styleProperties.borderFalseDescription')}
-        </p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
-          <div className={styles.toastGroup}>
-            <div className="toast info">
-              <i className="icon-info"></i>
-              <div className="toast-content">
-                <div className="toast-header">Header</div>
-                <div className="toast-body">Lorem ipsum dolor sit amet</div>
-              </div>
-              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-            </div>
-          </div>
-        </div>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<!-- ${t('sections.styleProperties.commentBorderFalse')} -->
-<div class="toast info">
-  <i class="icon-info"></i>
-  <div class="toast-content">
-    <div class="toast-header">Header</div>
-    <div class="toast-body">Lorem ipsum dolor sit amet</div>
-  </div>
-  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}
-        />
-
-        <h3>{t('sections.styleProperties.borderTrueOutline')}</h3>
-        <p>
-          {t('sections.styleProperties.borderTrueDescription')}
-        </p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
-          <div className={styles.toastGroup}>
-            <div className="toast border info">
-              <i className="icon-info"></i>
-              <div className="toast-content">
-                <div className="toast-header">Header</div>
-                <div className="toast-body">Lorem ipsum dolor sit amet</div>
-              </div>
-              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-            </div>
-          </div>
-        </div>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<!-- ${t('sections.styleProperties.commentBorderTrue')} -->
-<div class="toast border info">
-  <i class="icon-info"></i>
-  <div class="toast-content">
-    <div class="toast-header">Header</div>
-    <div class="toast-body">Lorem ipsum dolor sit amet</div>
-  </div>
-  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}
-        />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('sections.longStyle.title')}</h2>
-        <p>
-          {t('sections.longStyle.description')}
-        </p>
-
-        <h3>{t('sections.longStyle.longTrueBorderFalse')}</h3>
-        <p>
-          {t('sections.longStyle.longTrueBorderFalseDescription')}
-        </p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
-          <div className={styles.toastGroup}>
-            <div className="toast long info">
-              <i className="icon-info"></i>
-              <div className="toast-content">
-                <div className="toast-body">Lorem ipsum dolor sit amet</div>
-              </div>
-              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-            </div>
-          </div>
-        </div>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<!-- ${t('sections.longStyle.commentLongTrueBorderFalse')} -->
-<div class="toast long info">
-  <i class="icon-info"></i>
-  <div class="toast-content">
-    <div class="toast-body">Lorem ipsum dolor sit amet</div>
-  </div>
-  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}
-        />
-
-        <h3>{t('sections.longStyle.longTrueBorderTrue')}</h3>
-        <p>
-          {t('sections.longStyle.longTrueBorderTrueDescription')}
-        </p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
-          <div className={styles.toastGroup}>
-            <div className="toast long border success">
-              <i className="icon-check"></i>
-              <div className="toast-content">
-                <div className="toast-body">{t('sections.longStyle.fileUploadSuccess')}</div>
-              </div>
-              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-            </div>
-          </div>
-        </div>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<!-- ${t('sections.longStyle.commentLongTrueBorderTrue')} -->
-<div class="toast long border success">
-  <i class="icon-check"></i>
-  <div class="toast-content">
-    <div class="toast-body">${t('sections.longStyle.fileUploadSuccess')}</div>
-  </div>
-  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}
-        />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('sections.colorVariants.title')}</h2>
-        <p>{t('sections.colorVariants.description')}</p>
-
-        <div className={styles.variantsShowcase}>
-          {variants.map((variant) => (
-            <div key={variant.name} className={styles.variantCard}>
-              <div className={styles.variantHeader}>
-                <h3>{variant.label}</h3>
-                <p>{variant.description}</p>
-              </div>
-              <div className={styles.variantExamples}>
-                <div className={`toast ${variant.name}`}>
-                  <i className="icon-info"></i>
-                  <div className="toast-content">
-                    <div className="toast-header">{variant.label}</div>
-                    <div className="toast-body">{t('sections.styleProperties.borderFalseAccentBorder')}</div>
-                  </div>
-                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-                </div>
-                <div className={`toast border ${variant.name}`}>
-                  <i className="icon-info"></i>
-                  <div className="toast-content">
-                    <div className="toast-header">{variant.label}</div>
-                    <div className="toast-body">{t('sections.styleProperties.borderTrueOutlineBorder')}</div>
-                  </div>
-                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-                </div>
-                <div className={`toast long ${variant.name}`}>
-                  <i className="icon-info"></i>
-                  <div className="toast-content">
-                    <div className="toast-body">{t('sections.colorVariants.longBorderFalse')}</div>
-                  </div>
-                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-                </div>
-                <div className={`toast long border ${variant.name}`}>
-                  <i className="icon-info"></i>
-                  <div className="toast-content">
-                    <div className="toast-body">{t('sections.colorVariants.longBorderTrue')}</div>
-                  </div>
-                  <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<!-- Default -->
-<div class="toast default">...</div>
-
-<!-- Info -->
-<div class="toast info">...</div>
-
-<!-- Success -->
-<div class="toast success">...</div>
-
-<!-- Warning -->
-<div class="toast warning">...</div>
-
-<!-- Danger -->
-<div class="toast danger">...</div>`}
-        />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('sections.combinationExamples.title')}</h2>
-        <p>
-          {t('sections.combinationExamples.description')}
-        </p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
-          <div className={styles.toastGroup}>
-            <div className="toast long info">
-              <i className="icon-info"></i>
-              <div className="toast-content">
-                <div className="toast-body">Lorem ipsum dolor sit amet</div>
-              </div>
-              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-            </div>
-            <div className="toast long border success">
-              <i className="icon-check"></i>
-              <div className="toast-content">
-                <div className="toast-body">{t('sections.longStyle.fileUploadSuccess')}</div>
-              </div>
-              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-            </div>
-          </div>
-        </div>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<div class="toast long info">
-  <i class="icon-info"></i>
-  <div class="toast-content">
-    <div class="toast-body">Lorem ipsum dolor sit amet</div>
-  </div>
-  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>
-
-<!-- ${t('sections.combinationExamples.commentLongBorder')} -->
-<div class="toast long border success">
-  <i class="icon-check"></i>
-  <div class="toast-content">
-    <div class="toast-body">${t('sections.longStyle.fileUploadSuccess')}</div>
-  </div>
-  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}
-        />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('sections.simpleMessage.title')}</h2>
-        <p>{t('sections.simpleMessage.description')}</p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('sections.basicUsage.demo')}</div>
-          <div className={styles.toastGroup}>
-            <div className="toast border info">
-              <i className="icon-info"></i>
-              <div className="toast-content">
-                <div className="toast-body">Lorem ipsum dolor sit amet</div>
-              </div>
-              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-            </div>
-            <div className="toast success">
-              <i className="icon-check"></i>
-              <div className="toast-content">
-                <div className="toast-body">{t('sections.longStyle.fileUploadSuccess')}</div>
-              </div>
-              <button aria-label={t('sections.basicUsage.closeLabel')}></button>
-            </div>
-          </div>
-        </div>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<div class="toast info">
-  <i class="icon-info"></i>
-  <div class="toast-content">
-    <div class="toast-body">Lorem ipsum dolor sit amet</div>
-  </div>
-  <button aria-label="${t('sections.basicUsage.closeLabel')}"></button>
-</div>`}
-        />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('sections.reactComponentExample.title')}</h2>
-        <p>{t('sections.reactComponentExample.description')}</p>
-
-        <ToastExamples />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('sections.reactUsage.title')}</h2>
-        <p>{t('sections.reactUsage.description')}</p>
-
-        <h3>{t('sections.reactUsage.step1Title')}</h3>
+      <section>
+        <h2>{t('sections.reactUsage.step1Title')}</h2>
         <p>{t('sections.reactUsage.step1Description')}</p>
 
         <CodeBlock
@@ -495,8 +475,10 @@ export default function RootLayout({ children }) {
   );
 }`}
         />
+      </section>
 
-        <h3>{t('sections.reactUsage.step2Title')}</h3>
+      <section>
+        <h2>{t('sections.reactUsage.step2Title')}</h2>
         <p>{t('sections.reactUsage.step2Description')}</p>
 
         <CodeBlock
@@ -521,8 +503,10 @@ function MyComponent() {
   return <button onClick={handleClick}>${t('sections.reactUsage.saveButton')}</button>;
 }`}
         />
+      </section>
 
-        <h3>{t('sections.reactUsage.step3Title')}</h3>
+      <section>
+        <h2>{t('sections.reactUsage.step3Title')}</h2>
         <CodeBlock
           title="TypeScript"
           language="typescript"
@@ -539,8 +523,17 @@ function MyComponent() {
            | 'bottom-left' | 'bottom-center' | 'bottom-right';
 }`}
         />
+      </section>
 
-        <h3>{t('sections.reactUsage.step4Title')}</h3>
+      <section>
+        <h2>{t('sections.reactComponentExample.title')}</h2>
+        <p>{t('sections.reactComponentExample.description')}</p>
+
+        <ToastExamples t={t} />
+      </section>
+
+      <section>
+        <h2>{t('sections.reactUsage.step4Title')}</h2>
         <CodeBlock
           title="TypeScript"
           language="typescript"
@@ -586,56 +579,6 @@ showToast({
 });`}
         />
       </section>
-
-      <section className={styles.section}>
-        <h2>{t('sections.scssUsage.title')}</h2>
-        <p>{t('sections.scssUsage.description')}</p>
-
-        <CodeBlock
-          title="component.module.scss"
-          language="scss"
-          code={`@use 'podo-ui/mixin' as *;
-
-.customToast {
-  display: flex;
-  align-items: flex-start;
-  gap: s(3);
-  padding: s(4);
-  border-radius: r(2);
-  background-color: color('bg-elevation-1');
-  border: 1px solid color('border');
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-  .icon {
-    color: color('info');
-  }
-
-  .content {
-    flex: 1;
-  }
-
-  .header {
-    font-weight: 600;
-    color: color('text-body');
-    margin-bottom: s(1);
-  }
-
-  .body {
-    color: color('text-body');
-  }
-
-  .close {
-    cursor: pointer;
-    color: color('text-action');
-
-    &:hover {
-      color: color('text-action-hover');
-    }
-  }
-}`}
-        />
-      </section>
-      </>
-    </ToastProvider>
+    </>
   );
 }

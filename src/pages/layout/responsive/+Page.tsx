@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Responsive() {
   const { t } = useTranslation('responsive');
+
   return (
     <>
       <section className={styles.section}>
@@ -11,7 +13,29 @@ export default function Responsive() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
+      </section>
+
+      <section>
         <h2>{t('breakpoints.title')}</h2>
         <p>
           {t('breakpoints.description')}
@@ -45,7 +69,7 @@ export default function Responsive() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('mediaQueries.title')}</h2>
         <p>{t('mediaQueries.description')}</p>
 
@@ -79,7 +103,7 @@ export default function Responsive() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('hiding.title')}</h2>
         <p>{t('hiding.description')}</p>
 
@@ -109,7 +133,7 @@ export default function Responsive() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('gridExample.title')}</h2>
         <p>{t('gridExample.description')}</p>
 
@@ -136,7 +160,7 @@ export default function Responsive() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('typography.title')}</h2>
         <p>{t('typography.description')}</p>
 
@@ -163,7 +187,7 @@ PC: 16px → Mobile: 14px`}
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('minWidth.title')}</h2>
         <p>{t('minWidth.description')}</p>
 
@@ -174,7 +198,7 @@ PC: 16px → Mobile: 14px`}
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('practicalExample.title')}</h2>
         <p>{t('practicalExample.description')}</p>
 
@@ -239,7 +263,7 @@ PC: 16px → Mobile: 14px`}
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <div className={styles.note}>
           <i className="icon-info"></i>
           <div>
@@ -248,7 +272,7 @@ PC: 16px → Mobile: 14px`}
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('currentDevice.title')}</h2>
         <div className={styles.deviceIndicator}>
           <div className={styles.deviceInfo + ' hide-tb hide-mo'}>

@@ -1,0 +1,61 @@
+{
+  "name": "DocTabs",
+  "category": "docs",
+  "description": "Documentation site tab component for SCSS/React/CDN content separation",
+  "scssOnly": false,
+  "import": {
+    "react": "import DocTabs from '../../../components/DocTabs'"
+  },
+  "props": [
+    {
+      "name": "tabs",
+      "type": "DocTabItem[]",
+      "required": true,
+      "description": "Array of tabs to display (only tabs with content)"
+    },
+    {
+      "name": "defaultTab",
+      "type": "'scss' | 'react' | 'cdn'",
+      "required": false,
+      "description": "Default active tab key"
+    }
+  ],
+  "interfaces": {
+    "DocTabItem": {
+      "key": "'scss' | 'react' | 'cdn'",
+      "label": "string",
+      "content": "React.ReactNode"
+    }
+  },
+  "features": [
+    "URL hash synchronization (#scss, #react, #cdn)",
+    "Only displays tabs with content",
+    "Uses podo-ui ul.tabs styling",
+    "Consistent structure for all doc pages"
+  ],
+  "examples": [
+    {
+      "title": "Basic Usage",
+      "code": "<DocTabs\n  tabs={[\n    { key: 'scss', label: 'SCSS', content: <ScssContent /> },\n    { key: 'react', label: 'React', content: <ReactContent /> },\n  ]}\n  defaultTab=\"scss\"\n/>"
+    },
+    {
+      "title": "With CDN Tab",
+      "code": "<DocTabs\n  tabs={[\n    { key: 'scss', label: 'SCSS', content: <ScssContent /> },\n    { key: 'react', label: 'React', content: <ReactContent /> },\n    { key: 'cdn', label: 'CDN', content: <CdnContent /> },\n  ]}\n/>"
+    }
+  ],
+  "tabStructure": {
+    "scss": {
+      "sections": ["Import", "Basic Usage", "Variants/Options", "Custom Styling"],
+      "description": "HTML + CSS class examples"
+    },
+    "react": {
+      "sections": ["Import", "Props Table", "Basic Usage", "Advanced Examples"],
+      "description": "podo-ui React component examples"
+    },
+    "cdn": {
+      "sections": ["CSS/JS Links", "HTML Usage", "JavaScript API"],
+      "description": "Vanilla JS with CDN examples"
+    }
+  },
+  "related": ["tab", "codeblock"]
+}

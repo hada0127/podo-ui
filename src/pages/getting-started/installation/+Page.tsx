@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Installation() {
@@ -12,7 +13,29 @@ export default function Installation() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'NPM',
+            content: <NpmContent t={t} />,
+          },
+          {
+            key: 'cdn',
+            label: 'CDN',
+            content: <CdnContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function NpmContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
         <h2>{t('npm.title')}</h2>
         <p>{t('npm.description')}</p>
 
@@ -21,7 +44,7 @@ export default function Installation() {
         <CodeBlock language="bash" code="pnpm add podo-ui" />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('setup.title')}</h2>
 
         <h3>{t('setup.globalScss.title')}</h3>
@@ -41,7 +64,7 @@ export default function Installation() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h3>{t('setup.vite.title')}</h3>
 
         <div className={styles.warning}>
@@ -68,7 +91,7 @@ import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h3>{t('setup.scssModule.title')}</h3>
         <p>{t('setup.scssModule.description')}</p>
 
@@ -86,7 +109,7 @@ import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('reactComponents.title')}</h2>
         <p>{t('reactComponents.description')}</p>
 
@@ -97,7 +120,53 @@ import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
+        <h2>{t('nextSteps.title')}</h2>
+        <p>{t('nextSteps.description')}</p>
+
+        <div className={styles.linkGrid}>
+          <a href="/getting-started/usage" className={styles.linkCard}>
+            <div className={styles.linkIcon}>
+              <i className="icon-file"></i>
+            </div>
+            <div>
+              <h3>{t('nextSteps.links.usage.title')}</h3>
+              <p>{t('nextSteps.links.usage.description')}</p>
+            </div>
+            <i className="icon-arrow-right"></i>
+          </a>
+
+          <a href="/foundation/colors" className={styles.linkCard}>
+            <div className={styles.linkIcon}>
+              <i className="icon-ellipse"></i>
+            </div>
+            <div>
+              <h3>{t('nextSteps.links.colors.title')}</h3>
+              <p>{t('nextSteps.links.colors.description')}</p>
+            </div>
+            <i className="icon-arrow-right"></i>
+          </a>
+
+          <a href="/components/button" className={styles.linkCard}>
+            <div className={styles.linkIcon}>
+              <i className="icon-layers"></i>
+            </div>
+            <div>
+              <h3>{t('nextSteps.links.components.title')}</h3>
+              <p>{t('nextSteps.links.components.description')}</p>
+            </div>
+            <i className="icon-arrow-right"></i>
+          </a>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function CdnContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
         <h2>{t('cdn.title')}</h2>
         <p>{t('cdn.description')}</p>
 
@@ -138,46 +207,6 @@ import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}
           <div>
             <strong>{t('cdn.note.title')}</strong> {t('cdn.note.content')}
           </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('nextSteps.title')}</h2>
-        <p>{t('nextSteps.description')}</p>
-
-        <div className={styles.linkGrid}>
-          <a href="/getting-started/usage" className={styles.linkCard}>
-            <div className={styles.linkIcon}>
-              <i className="icon-file"></i>
-            </div>
-            <div>
-              <h3>{t('nextSteps.links.usage.title')}</h3>
-              <p>{t('nextSteps.links.usage.description')}</p>
-            </div>
-            <i className="icon-arrow-right"></i>
-          </a>
-
-          <a href="/foundation/colors" className={styles.linkCard}>
-            <div className={styles.linkIcon}>
-              <i className="icon-ellipse"></i>
-            </div>
-            <div>
-              <h3>{t('nextSteps.links.colors.title')}</h3>
-              <p>{t('nextSteps.links.colors.description')}</p>
-            </div>
-            <i className="icon-arrow-right"></i>
-          </a>
-
-          <a href="/components/button" className={styles.linkCard}>
-            <div className={styles.linkIcon}>
-              <i className="icon-layers"></i>
-            </div>
-            <div>
-              <h3>{t('nextSteps.links.components.title')}</h3>
-              <p>{t('nextSteps.links.components.description')}</p>
-            </div>
-            <i className="icon-arrow-right"></i>
-          </a>
         </div>
       </section>
     </>

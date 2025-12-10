@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, Radio } from 'podo-ui';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function CheckboxRadio() {
@@ -16,19 +17,284 @@ export default function CheckboxRadio() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
-        <h2>React Component</h2>
-        <p>podo-ui React 컴포넌트를 사용한 예제입니다.</p>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+          {
+            key: 'react',
+            label: 'React',
+            content: (
+              <ReactContent
+                t={t}
+                checked={checked}
+                setChecked={setChecked}
+                selectedRadio={selectedRadio}
+                setSelectedRadio={setSelectedRadio}
+              />
+            ),
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/scss/atom/checkbox';
+@use 'podo-ui/scss/atom/radio';`} />
+      </section>
+
+      <section>
+        <h2>{t('checkbox.title')}</h2>
+        <p>{t('checkbox.description')}</p>
 
         <CodeBlock
-          title="React (Checkbox)"
+          title="HTML"
+          language="html"
+          code={`<label>
+  <input type="checkbox" />
+  ${t('checkbox.option')}
+</label>
+
+<label>
+  <input type="checkbox" checked />
+  ${t('checkbox.checked')}
+</label>
+
+<label>
+  <input type="checkbox" disabled />
+  ${t('checkbox.disabled')}
+</label>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.checkboxGroup}>
+            <label>
+              <input type="checkbox" />
+              {t('checkbox.option')}
+            </label>
+            <label>
+              <input type="checkbox" defaultChecked />
+              {t('checkbox.checked')}
+            </label>
+            <label>
+              <input type="checkbox" disabled />
+              {t('checkbox.disabled')}
+            </label>
+            <label>
+              <input type="checkbox" defaultChecked disabled />
+              {t('checkbox.checkedDisabled')}
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('indeterminate.title')}</h2>
+        <p>{t('indeterminate.description')}</p>
+
+        <CodeBlock
+          title="JavaScript"
+          language="javascript"
+          code={`const checkbox = document.querySelector('#myCheckbox');
+checkbox.indeterminate = true;`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.checkboxGroup}>
+            <label>
+              <input
+                type="checkbox"
+                ref={(el) => {
+                  if (el) el.indeterminate = true;
+                }}
+              />
+              {t('indeterminate.state')}
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('radio.title')}</h2>
+        <p>{t('radio.description')}</p>
+
+        <CodeBlock
+          title="HTML"
+          language="html"
+          code={`<label>
+  <input type="radio" name="option" value="1" checked />
+  ${t('radio.option1')}
+</label>
+
+<label>
+  <input type="radio" name="option" value="2" />
+  ${t('radio.option2')}
+</label>
+
+<label>
+  <input type="radio" name="option" value="3" disabled />
+  ${t('radio.disabledOption')}
+</label>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('demo.title')}</div>
+          <div className={styles.radioGroup}>
+            <label>
+              <input type="radio" name="example1" value="1" defaultChecked />
+              {t('radio.option1')}
+            </label>
+            <label>
+              <input type="radio" name="example1" value="2" />
+              {t('radio.option2')}
+            </label>
+            <label>
+              <input type="radio" name="example1" value="3" />
+              {t('radio.option3')}
+            </label>
+            <label>
+              <input type="radio" name="example1" value="4" disabled />
+              {t('radio.disabledOption')}
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('scss.title')}</h2>
+        <CodeBlock
+          title="SCSS"
+          language="scss"
+          code={`@use 'podo-ui/mixin' as *;
+
+.checkboxWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: s(3);
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: s(2);
+    cursor: pointer;
+
+    &:hover {
+      color: color(primary);
+    }
+  }
+}
+
+.radioWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: s(3);
+
+  label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+}`}
+        />
+      </section>
+    </>
+  );
+}
+
+interface ReactContentProps {
+  t: (key: string) => string;
+  checked: boolean;
+  setChecked: (v: boolean) => void;
+  selectedRadio: string;
+  setSelectedRadio: (v: string) => void;
+}
+
+function ReactContent({
+  t,
+  checked,
+  setChecked,
+  selectedRadio,
+  setSelectedRadio,
+}: ReactContentProps) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="tsx" code={`import { Checkbox, Radio } from 'podo-ui';`} />
+      </section>
+
+      <section>
+        <h2>Checkbox Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>label</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>레이블 텍스트</td>
+            </tr>
+            <tr>
+              <td><code>checked</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>체크 상태</td>
+            </tr>
+            <tr>
+              <td><code>onChange</code></td>
+              <td><code>(e: ChangeEvent) =&gt; void</code></td>
+              <td>-</td>
+              <td>변경 핸들러</td>
+            </tr>
+            <tr>
+              <td><code>indeterminate</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>불확정 상태</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>비활성화</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Checkbox 사용법</h2>
+        <CodeBlock
+          title="React"
           language="tsx"
           code={`import { Checkbox } from 'podo-ui';
 
-// Basic
-<Checkbox label="동의합니다" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
+<Checkbox
+  label="동의합니다"
+  checked={checked}
+  onChange={(e) => setChecked(e.target.checked)}
+/>
 
-// Indeterminate (전체 선택)
+// Indeterminate
 <Checkbox label="전체 선택" indeterminate={true} />
 
 // Disabled
@@ -48,9 +314,12 @@ export default function CheckboxRadio() {
             <Checkbox label="체크된 비활성화" checked disabled />
           </div>
         </div>
+      </section>
 
+      <section>
+        <h2>Radio.Group 사용법</h2>
         <CodeBlock
-          title="React (Radio.Group)"
+          title="React"
           language="tsx"
           code={`import { Radio } from 'podo-ui';
 
@@ -80,252 +349,6 @@ export default function CheckboxRadio() {
             ]}
           />
         </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('checkbox.title')}</h2>
-        <p>{t('checkbox.description')}</p>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<label>
-  <input type="checkbox" />
-  ${t('checkbox.option')}
-</label>
-
-<label>
-  <input type="checkbox" checked />
-  ${t('checkbox.checked')}
-</label>
-
-<label>
-  <input type="checkbox" disabled />
-  ${t('checkbox.disabled')}
-</label>
-
-<label>
-  <input type="checkbox" checked disabled />
-  ${t('checkbox.checkedDisabled')}
-</label>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.checkboxGroup}>
-            <label>
-              <input type="checkbox" />
-              {t('checkbox.option')}
-            </label>
-            <label>
-              <input type="checkbox" defaultChecked />
-              {t('checkbox.checked')}
-            </label>
-            <label>
-              <input type="checkbox" disabled />
-              {t('checkbox.disabled')}
-            </label>
-            <label>
-              <input type="checkbox" defaultChecked disabled />
-              {t('checkbox.checkedDisabled')}
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('indeterminate.title')}</h2>
-        <p>{t('indeterminate.description')}</p>
-
-        <CodeBlock
-          title="JavaScript"
-          language="javascript"
-          code={`const checkbox = document.querySelector('#myCheckbox');
-checkbox.indeterminate = true;`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.checkboxGroup}>
-            <label>
-              <input
-                type="checkbox"
-                ref={(el) => {
-                  if (el) {
-                    el.indeterminate = true;
-                  }
-                }}
-              />
-              {t('indeterminate.state')}
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('radio.title')}</h2>
-        <p>{t('radio.description')}</p>
-
-        <CodeBlock
-          title="HTML"
-          language="html"
-          code={`<label>
-  <input type="radio" name="option" value="1" checked />
-  ${t('radio.option1')}
-</label>
-
-<label>
-  <input type="radio" name="option" value="2" />
-  ${t('radio.option2')}
-</label>
-
-<label>
-  <input type="radio" name="option" value="3" />
-  ${t('radio.option3')}
-</label>
-
-<label>
-  <input type="radio" name="option" value="4" disabled />
-  ${t('radio.disabledOption')}
-</label>`}
-        />
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('demo.title')}</div>
-          <div className={styles.radioGroup}>
-            <label>
-              <input type="radio" name="example1" value="1" defaultChecked />
-              {t('radio.option1')}
-            </label>
-            <label>
-              <input type="radio" name="example1" value="2" />
-              {t('radio.option2')}
-            </label>
-            <label>
-              <input type="radio" name="example1" value="3" />
-              {t('radio.option3')}
-            </label>
-            <label>
-              <input type="radio" name="example1" value="4" disabled />
-              {t('radio.disabledOption')}
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('checkboxGroup.title')}</h2>
-        <p>{t('checkboxGroup.description')}</p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('checkboxGroup.interests')}</div>
-          <div className={styles.checkboxGroup}>
-            <label>
-              <input type="checkbox" name="interests" value="design" />
-              {t('checkboxGroup.options.design')}
-            </label>
-            <label>
-              <input type="checkbox" name="interests" value="development" />
-              {t('checkboxGroup.options.development')}
-            </label>
-            <label>
-              <input type="checkbox" name="interests" value="marketing" />
-              {t('checkboxGroup.options.marketing')}
-            </label>
-            <label>
-              <input type="checkbox" name="interests" value="business" />
-              {t('checkboxGroup.options.business')}
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('radioGroup.title')}</h2>
-        <p>{t('radioGroup.description')}</p>
-
-        <div className={styles.demo}>
-          <div className={styles.demoTitle}>{t('radioGroup.payment')}</div>
-          <div className={styles.radioGroup}>
-            <label>
-              <input type="radio" name="payment" value="card" defaultChecked />
-              {t('radioGroup.options.card')}
-            </label>
-            <label>
-              <input type="radio" name="payment" value="bank" />
-              {t('radioGroup.options.bank')}
-            </label>
-            <label>
-              <input type="radio" name="payment" value="mobile" />
-              {t('radioGroup.options.mobile')}
-            </label>
-            <label>
-              <input type="radio" name="payment" value="kakao" />
-              {t('radioGroup.options.kakao')}
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('scss.title')}</h2>
-        <p>{t('scss.description')}</p>
-
-        <CodeBlock
-          title="component.module.scss"
-          language="scss"
-          code={`@use 'podo-ui/mixin' as *;
-
-.checkboxWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: s(3);
-
-  label {
-    display: flex;
-    align-items: center;
-    gap: s(2);
-    cursor: pointer;
-    user-select: none;
-
-    input[type='checkbox'] {
-      margin-right: s(2);
-    }
-
-    &:hover {
-      color: color(primary);
-    }
-  }
-}
-
-.radioWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: s(3);
-
-  label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-
-    input[type='radio'] {
-      margin-right: s(2);
-    }
-  }
-}
-
-// ${t('code.customStyle')}
-.customCheckbox {
-  input[type='checkbox']:focus-visible {
-    outline: 4px solid color(primary-outline);
-  }
-}`}
-        />
-      </section>
-
-      <section className={styles.section}>
-        <h2>{t('darkMode.title')}</h2>
-        <p>{t('darkMode.description')}</p>
       </section>
     </>
   );

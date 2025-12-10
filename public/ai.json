@@ -8,6 +8,7 @@
   "modules": {
     "overview": "/ai/overview.json",
     "components": {
+      "doc-tabs": "/ai/components/doc-tabs.json",
       "avatar": "/ai/components/avatar.json",
       "label": "/ai/components/label.json",
       "input": "/ai/components/input.json",

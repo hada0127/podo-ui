@@ -1,10 +1,33 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 export default function Spacing() {
   const { t } = useTranslation('spacing');
 
+  return (
+    <>
+      <section className={styles.section}>
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
+      </section>
+
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'SCSS',
+            content: <ScssContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function ScssContent({ t }: { t: (key: string) => string }) {
   const spacingValues = [
     { key: 0, value: '0' },
     { key: 1, value: '2px' },
@@ -35,19 +58,17 @@ export default function Spacing() {
 
   return (
     <>
-      <section className={styles.section}>
-        <h1>{t('title')}</h1>
-        <p>{t('description')}</p>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock language="scss" code={`@use 'podo-ui/mixin' as *;`} />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.spacingSystem.title')}</h2>
-        <p>
-          {t('sections.spacingSystem.description')}
-        </p>
+        <p>{t('sections.spacingSystem.description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.spacingValues.title')}</h2>
         <p>{t('sections.spacingValues.description')}</p>
 
@@ -69,7 +90,7 @@ export default function Spacing() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.scssUsage.title')}</h2>
         <p>{t('sections.scssUsage.description')}</p>
 
@@ -98,7 +119,7 @@ export default function Spacing() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.cssClasses.title')}</h2>
         <p>{t('sections.cssClasses.description')}</p>
 
@@ -136,7 +157,7 @@ export default function Spacing() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.borderRadius.title')}</h2>
         <p>{t('sections.borderRadius.description')}</p>
 
@@ -158,7 +179,7 @@ export default function Spacing() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.borderRadiusScss.title')}</h2>
 
         <CodeBlock
@@ -188,7 +209,7 @@ export default function Spacing() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.borderRadiusClasses.title')}</h2>
 
         <CodeBlock
@@ -222,7 +243,7 @@ export default function Spacing() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('sections.practicalExample.title')}</h2>
         <p>{t('sections.practicalExample.description')}</p>
 
@@ -281,7 +302,7 @@ export default function Spacing() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <div className={styles.note}>
           <i className="icon-info"></i>
           <div>

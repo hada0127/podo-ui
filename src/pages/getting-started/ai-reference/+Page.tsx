@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';
+import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
 const BASE_URL = 'https://podoui.com';
@@ -14,12 +15,29 @@ export default function AiReference() {
         <p>{t('description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <DocTabs
+        tabs={[
+          {
+            key: 'scss',
+            label: 'Guide',
+            content: <GuideContent t={t} />,
+          },
+        ]}
+        defaultTab="scss"
+      />
+    </>
+  );
+}
+
+function GuideContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
         <h2>{t('overview.title')}</h2>
         <p>{t('overview.description')}</p>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('structure.title')}</h2>
         <CodeBlock
           language="bash"
@@ -40,7 +58,7 @@ export default function AiReference() {
         />
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('mainIndex.title')}</h2>
         <p>{t('mainIndex.description')}</p>
         <CodeBlock
@@ -96,7 +114,7 @@ export default function AiReference() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('componentFiles.title')}</h2>
         <p>{t('componentFiles.description')}</p>
 
@@ -169,7 +187,7 @@ export default function AiReference() {
         </p>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('systemFiles.title')}</h2>
         <p>{t('systemFiles.description')}</p>
 
@@ -201,7 +219,7 @@ export default function AiReference() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('usage.title')}</h2>
 
         <div className={styles.steps}>
@@ -239,7 +257,7 @@ export default function AiReference() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('example.title')}</h2>
 
         <div className={styles.exampleBox}>
@@ -272,7 +290,7 @@ import { z } from 'zod';
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('benefits.title')}</h2>
 
         <div className={styles.benefitGrid}>
@@ -295,7 +313,7 @@ import { z } from 'zod';
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section>
         <h2>{t('accessUrls.title')}</h2>
         <p>{t('accessUrls.description')}</p>
 
