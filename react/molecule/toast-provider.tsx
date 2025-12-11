@@ -70,9 +70,9 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const getToastsByPosition = (position: ToastPosition) => {
+  const getToastsByPosition = useCallback((position: ToastPosition) => {
     return toasts.filter((toast) => toast.position === position);
-  };
+  }, [toasts]);
 
   const positions: ToastPosition[] = [
     'top-left',

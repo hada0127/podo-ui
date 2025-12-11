@@ -22,7 +22,14 @@
       "Bash(git rebase:*)",
       "Bash(git reset:*)",
       "Bash(git pull:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(ls:*)",
+      "Bash(git -C /Users/eunkyulee/project/podo-ui log --oneline)",
+      "Bash(npm run build:lib:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

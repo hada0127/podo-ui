@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 export interface TableColumn<T> {
   /** Column key */
@@ -42,12 +42,23 @@ function Table<T extends Record<string, unknown>>({
   onRowClick,
   className,
 }: TableProps<T>) {
-  const getRowKey = (record: T, index: number): string => {
+  const getRowKey = useCallback((record: T, index: number): string => {
     if (typeof rowKey === 'function') {
       return rowKey(record);
     }
     return String(record[rowKey] ?? index);
-  };
+  }, [rowKey]);
+
+  const handleRowClick = useCallback((record: T, index: number) => {
+    onRowClick?.(record, index);
+  }, [onRowClick]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent, record: T, index: number) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onRowClick?.(record, index);
+    }
+  }, [onRowClick]);
 
   const tableClass = [list && 'list', border && 'border', fill && 'fill', className]
     .filter(Boolean)
@@ -60,6 +71,7 @@ function Table<T extends Record<string, unknown>>({
           {columns.map((col) => (
             <th
               key={col.key}
+              scope="col"
               style={{
                 width: col.width,
                 textAlign: col.align,
@@ -74,8 +86,11 @@ function Table<T extends Record<string, unknown>>({
         {dataSource.map((record, index) => (
           <tr
             key={getRowKey(record, index)}
-            onClick={() => onRowClick?.(record, index)}
+            onClick={() => handleRowClick(record, index)}
             style={onRowClick ? { cursor: 'pointer' } : undefined}
+            role={onRowClick ? 'button' : undefined}
+            tabIndex={onRowClick ? 0 : undefined}
+            onKeyDown={onRowClick ? (e) => handleKeyDown(e, record, index) : undefined}
           >
             {columns.map((col) => (
               <td key={col.key} style={{ textAlign: col.align }}>

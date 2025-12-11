@@ -11,11 +11,12 @@ Podo UI는 **SCSS 모듈 기반 디자인 시스템 + React UI 컴포넌트 라�
 ### 기술 스택
 | 분류 | 기술 |
 |------|------|
-| 프레임워크 | Next.js 14.1.0 |
+| 프레임워크 | Vike 0.4 + vike-react |
 | 언어 | TypeScript |
 | 스타일 | SCSS (CSS Modules) |
+| 빌드 도구 | Vite 5.4 |
 | 검증 | Zod |
-| 국제화 | next-intl |
+| 국제화 | i18next + react-i18next |
 | 배포 | Cloudflare Pages |
 
 ---

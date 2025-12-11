@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import styles from './avatar.module.scss';
 
 export interface AvatarProps {
@@ -56,7 +56,7 @@ export interface AvatarProps {
   onClick?: () => void;
 }
 
-const Avatar: React.FC<AvatarProps> = ({
+const Avatar: React.FC<AvatarProps> = memo(({
   type = 'icon',
   src,
   icon = 'icon-user',
@@ -90,7 +90,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const displayText = text ? text.slice(0, 2) : '';
 
   // Calculate font size based on avatar size and type
-  const getFontSize = (contentType: 'icon' | 'text') => {
+  const getFontSize = useCallback((contentType: 'icon' | 'text') => {
     if (contentType === 'icon') {
       // 아이콘: size={56}일 때 44px 기준 (약 78.5%)
       const iconRatio = 0.785;
@@ -100,7 +100,7 @@ const Avatar: React.FC<AvatarProps> = ({
       const textRatio = 0.43;
       return Math.round(size * textRatio);
     }
-  };
+  }, [size]);
 
   const renderContent = () => {
     if (type === 'image' && src) {
@@ -139,6 +139,8 @@ const Avatar: React.FC<AvatarProps> = ({
       </div>
     </div>
   );
-};
+});
+
+Avatar.displayName = 'Avatar';
 
 export default Avatar;

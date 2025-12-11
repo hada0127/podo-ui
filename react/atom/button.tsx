@@ -70,6 +70,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={buttonClass || undefined}
         disabled={disabled || loading}
+        aria-busy={loading ? true : undefined}
+        aria-disabled={disabled ? true : undefined}
         {...rest}
       >
         {loading ? (

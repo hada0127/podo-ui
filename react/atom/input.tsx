@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { z } from 'zod';
 import styles from './input.module.scss';
+import { useValidation } from '../hooks/useValidation';
 
 export interface InputWrapperProps extends React.ComponentProps<'input'> {
   value?: string | number;
@@ -9,6 +10,10 @@ export interface InputWrapperProps extends React.ComponentProps<'input'> {
   withIcon?: string;
   withRightIcon?: string;
   unit?: string;
+  /** Accessible label for screen readers */
+  'aria-label'?: string;
+  /** ID of element describing the input */
+  'aria-describedby'?: string;
 }
 
 const Input: React.FC<InputWrapperProps> = ({
@@ -19,30 +24,16 @@ const Input: React.FC<InputWrapperProps> = ({
   withRightIcon,
   unit,
   type = 'text',
+  id,
   ...rest
 }) => {
-  const [message, setMessage] = useState('');
-  const [statusClass, setStatusClass] = useState('');
-
-  const validateHandler = useCallback(() => {
-    setMessage('');
-    setStatusClass('');
-    if (validator && value) {
-      try {
-        validator.parse(value);
-        setStatusClass('success');
-      } catch (e) {
-        if (e instanceof z.ZodError) {
-          setMessage(e.errors[0].message);
-          setStatusClass('danger');
-        }
-      }
-    }
-  }, [validator, value]);
+  const inputId = id || `input-${Math.random().toString(36).slice(2, 9)}`;
+  const errorId = `${inputId}-error`;
+  const { message, statusClass, validate } = useValidation(validator);
 
   useEffect(() => {
-    validateHandler();
-  }, [validateHandler, value]);
+    validate(value);
+  }, [validate, value]);
 
   return (
     <div className={`${styles.style} ${className || ''}`}>
@@ -51,16 +42,21 @@ const Input: React.FC<InputWrapperProps> = ({
       >
         {withIcon && <i className={withIcon} />}
         <input
+          id={inputId}
           type={type}
           {...rest}
           value={value ?? ''}
           className={`${statusClass} ${className || ''}`}
+          aria-invalid={statusClass === 'danger' ? true : undefined}
+          aria-describedby={message ? errorId : rest['aria-describedby']}
         />
         {withRightIcon && <i className={withRightIcon} />}
         {unit && <span className="unit">{unit}</span>}
       </div>
       {validator && message !== '' && (
-        <div className="validator">{message}</div>
+        <div id={errorId} className="validator" role="alert">
+          {message}
+        </div>
       )}
     </div>
   );

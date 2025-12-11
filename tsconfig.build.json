@@ -32,6 +32,10 @@
     "src",
     "app",
     "public",
-    "cli"
+    "cli",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
   ]
 }

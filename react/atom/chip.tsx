@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 export interface ChipProps {
   children: React.ReactNode;
@@ -11,7 +11,7 @@ export interface ChipProps {
   className?: string;
 }
 
-const Chip: React.FC<ChipProps> = ({
+const Chip: React.FC<ChipProps> = memo(({
   children,
   theme = 'default',
   type = 'default',
@@ -39,6 +39,8 @@ const Chip: React.FC<ChipProps> = ({
       {onDelete && <button aria-label="삭제" onClick={onDelete} />}
     </div>
   );
-};
+});
+
+Chip.displayName = 'Chip';
 
 export default Chip;
