@@ -251,73 +251,73 @@ function ReactContent({
               <td><code>label</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>레이블 텍스트</td>
+              <td>{t('react.props.label')}</td>
             </tr>
             <tr>
               <td><code>checked</code></td>
               <td><code>boolean</code></td>
               <td>false</td>
-              <td>체크 상태</td>
+              <td>{t('react.props.checked')}</td>
             </tr>
             <tr>
               <td><code>onChange</code></td>
               <td><code>(e: ChangeEvent) =&gt; void</code></td>
               <td>-</td>
-              <td>변경 핸들러</td>
+              <td>{t('react.props.onChange')}</td>
             </tr>
             <tr>
               <td><code>indeterminate</code></td>
               <td><code>boolean</code></td>
               <td>false</td>
-              <td>불확정 상태</td>
+              <td>{t('react.props.indeterminate')}</td>
             </tr>
             <tr>
               <td><code>disabled</code></td>
               <td><code>boolean</code></td>
               <td>false</td>
-              <td>비활성화</td>
+              <td>{t('react.props.disabled')}</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section>
-        <h2>Checkbox 사용법</h2>
+        <h2>{t('react.sections.checkboxUsage')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
           code={`import { Checkbox } from 'podo-ui';
 
 <Checkbox
-  label="동의합니다"
+  label="I agree"
   checked={checked}
   onChange={(e) => setChecked(e.target.checked)}
 />
 
 // Indeterminate
-<Checkbox label="전체 선택" indeterminate={true} />
+<Checkbox label="Select all" indeterminate={true} />
 
 // Disabled
-<Checkbox label="비활성화" disabled />`}
+<Checkbox label="Disabled" disabled />`}
         />
 
         <div className={styles.demo}>
           <div className={styles.demoTitle}>Checkbox Demo</div>
           <div className={styles.checkboxGroup}>
             <Checkbox
-              label="동의합니다"
+              label={t('react.labels.agree')}
               checked={checked}
               onChange={(e) => setChecked(e.target.checked)}
             />
-            <Checkbox label="기본 체크박스" />
-            <Checkbox label="비활성화" disabled />
-            <Checkbox label="체크된 비활성화" checked disabled />
+            <Checkbox label={t('react.labels.defaultCheckbox')} />
+            <Checkbox label={t('react.labels.disabled')} disabled />
+            <Checkbox label={t('react.labels.checkedDisabled')} checked disabled />
           </div>
         </div>
       </section>
 
       <section>
-        <h2>Radio.Group 사용법</h2>
+        <h2>{t('react.sections.radioGroupUsage')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -328,9 +328,9 @@ function ReactContent({
   value={selectedRadio}
   onChange={(value) => setSelectedRadio(value)}
   options={[
-    { value: 'card', label: '신용카드' },
-    { value: 'bank', label: '계좌이체' },
-    { value: 'mobile', label: '휴대폰 결제' },
+    { value: 'card', label: 'Credit Card' },
+    { value: 'bank', label: 'Bank Transfer' },
+    { value: 'mobile', label: 'Mobile Payment' },
   ]}
 />`}
         />
@@ -342,10 +342,10 @@ function ReactContent({
             value={selectedRadio}
             onChange={(value) => setSelectedRadio(value)}
             options={[
-              { value: 'option1', label: '옵션 1' },
-              { value: 'option2', label: '옵션 2' },
-              { value: 'option3', label: '옵션 3' },
-              { value: 'option4', label: '비활성화', disabled: true },
+              { value: 'option1', label: t('react.labels.option1') },
+              { value: 'option2', label: t('react.labels.option2') },
+              { value: 'option3', label: t('react.labels.option3') },
+              { value: 'option4', label: t('react.labels.disabled'), disabled: true },
             ]}
           />
         </div>

@@ -27,5 +27,31 @@
   },
   "scss": {
     "title": "SCSS 스타일링 예시"
+  },
+  "react": {
+    "sections": {
+      "checkboxUsage": "Checkbox 사용법",
+      "radioGroupUsage": "Radio.Group 사용법"
+    },
+    "props": {
+      "label": "레이블 텍스트",
+      "checked": "체크 상태",
+      "onChange": "변경 핸들러",
+      "indeterminate": "불확정 상태",
+      "disabled": "비활성화"
+    },
+    "labels": {
+      "agree": "동의합니다",
+      "defaultCheckbox": "기본 체크박스",
+      "disabled": "비활성화",
+      "checkedDisabled": "체크된 비활성화",
+      "selectAll": "전체 선택",
+      "option1": "옵션 1",
+      "option2": "옵션 2",
+      "option3": "옵션 3",
+      "creditCard": "신용카드",
+      "bankTransfer": "계좌이체",
+      "mobilePayment": "휴대폰 결제"
+    }
   }
 }

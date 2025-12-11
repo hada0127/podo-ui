@@ -117,10 +117,10 @@ function ReactContent({ t }: { t: (key: string) => string }) {
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('overview.basicExample')}</div>
           <div className={styles.tooltipRow}>
-            <Tooltip content="추가 정보입니다" variant="default" position="top">
+            <Tooltip content={t('demo.additionalInfo')} variant="default" position="top">
               <button className={styles.demoButton}>Hover me</button>
             </Tooltip>
-            <Tooltip content="중요한 안내사항" variant="info" position="top">
+            <Tooltip content={t('demo.importantNotice')} variant="info" position="top">
               <i className="icon-info" style={{ fontSize: '24px', cursor: 'pointer' }}></i>
             </Tooltip>
           </div>
@@ -148,7 +148,7 @@ function ReactContent({ t }: { t: (key: string) => string }) {
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('variants.default')}</div>
           <div className={styles.tooltipRow}>
-            <Tooltip content="기본 툴팁입니다" variant="default" position="top">
+            <Tooltip content={t('demo.defaultTooltip')} variant="default" position="top">
               <button className={styles.demoButton}>Default</button>
             </Tooltip>
           </div>
@@ -157,7 +157,7 @@ function ReactContent({ t }: { t: (key: string) => string }) {
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('variants.info')}</div>
           <div className={styles.tooltipRow}>
-            <Tooltip content="정보 툴팁입니다" variant="info" position="top">
+            <Tooltip content={t('demo.infoTooltip')} variant="info" position="top">
               <button className={styles.demoButton}>Info</button>
             </Tooltip>
           </div>
@@ -195,13 +195,13 @@ function ReactContent({ t }: { t: (key: string) => string }) {
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('positions.top')}</div>
           <div className={styles.tooltipRow}>
-            <Tooltip content="왼쪽 상단" variant="default" position="topLeft">
+            <Tooltip content={t('demo.topLeft')} variant="default" position="topLeft">
               <button className={styles.demoButton}>Top Left</button>
             </Tooltip>
-            <Tooltip content="중앙 상단" variant="default" position="top">
+            <Tooltip content={t('demo.topCenter')} variant="default" position="top">
               <button className={styles.demoButton}>Top</button>
             </Tooltip>
-            <Tooltip content="오른쪽 상단" variant="default" position="topRight">
+            <Tooltip content={t('demo.topRight')} variant="default" position="topRight">
               <button className={styles.demoButton}>Top Right</button>
             </Tooltip>
           </div>
@@ -210,13 +210,13 @@ function ReactContent({ t }: { t: (key: string) => string }) {
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('positions.bottom')}</div>
           <div className={styles.tooltipRow}>
-            <Tooltip content="왼쪽 하단" variant="default" position="bottomLeft">
+            <Tooltip content={t('demo.bottomLeft')} variant="default" position="bottomLeft">
               <button className={styles.demoButton}>Bottom Left</button>
             </Tooltip>
-            <Tooltip content="중앙 하단" variant="default" position="bottom">
+            <Tooltip content={t('demo.bottomCenter')} variant="default" position="bottom">
               <button className={styles.demoButton}>Bottom</button>
             </Tooltip>
-            <Tooltip content="오른쪽 하단" variant="default" position="bottomRight">
+            <Tooltip content={t('demo.bottomRight')} variant="default" position="bottomRight">
               <button className={styles.demoButton}>Bottom Right</button>
             </Tooltip>
           </div>
@@ -225,13 +225,13 @@ function ReactContent({ t }: { t: (key: string) => string }) {
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('positions.left')}</div>
           <div className={styles.tooltipRow}>
-            <Tooltip content="왼쪽 상단" variant="default" position="leftTop">
+            <Tooltip content={t('demo.leftTop')} variant="default" position="leftTop">
               <button className={styles.demoButton}>Left Top</button>
             </Tooltip>
-            <Tooltip content="왼쪽 중앙" variant="default" position="left">
+            <Tooltip content={t('demo.leftCenter')} variant="default" position="left">
               <button className={styles.demoButton}>Left</button>
             </Tooltip>
-            <Tooltip content="왼쪽 하단" variant="default" position="leftBottom">
+            <Tooltip content={t('demo.leftBottom')} variant="default" position="leftBottom">
               <button className={styles.demoButton}>Left Bottom</button>
             </Tooltip>
           </div>
@@ -240,13 +240,13 @@ function ReactContent({ t }: { t: (key: string) => string }) {
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('positions.right')}</div>
           <div className={styles.tooltipRow}>
-            <Tooltip content="오른쪽 상단" variant="default" position="rightTop">
+            <Tooltip content={t('demo.rightTop')} variant="default" position="rightTop">
               <button className={styles.demoButton}>Right Top</button>
             </Tooltip>
-            <Tooltip content="오른쪽 중앙" variant="default" position="right">
+            <Tooltip content={t('demo.rightCenter')} variant="default" position="right">
               <button className={styles.demoButton}>Right</button>
             </Tooltip>
-            <Tooltip content="오른쪽 하단" variant="default" position="rightBottom">
+            <Tooltip content={t('demo.rightBottom')} variant="default" position="rightBottom">
               <button className={styles.demoButton}>Right Bottom</button>
             </Tooltip>
           </div>
@@ -294,9 +294,9 @@ function ReactContent({ t }: { t: (key: string) => string }) {
             <Tooltip
               content={
                 <>
-                  <strong>도움말</strong>
+                  <strong>{t('demo.help')}</strong>
                   <br />
-                  이 버튼을 클릭하면 작업이 실행됩니다
+                  {t('demo.detailedDescription')}
                 </>
               }
               variant="default"
@@ -307,9 +307,9 @@ function ReactContent({ t }: { t: (key: string) => string }) {
             <Tooltip
               content={
                 <div style={{ color: '#ffd700' }}>
-                  <strong>⚠️ 중요</strong>
+                  <strong>⚠️ {t('demo.important')}</strong>
                   <br />
-                  이 기능은 되돌릴 수 없습니다
+                  {t('demo.cannotBeUndone')}
                 </div>
               }
               variant="info"
@@ -317,7 +317,7 @@ function ReactContent({ t }: { t: (key: string) => string }) {
             >
               <button className={styles.demoButton}>Custom Style</button>
             </Tooltip>
-            <Tooltip content="더 멀리 떨어진 툴팁" variant="default" position="top" offset={20}>
+            <Tooltip content={t('demo.tooltipFarAway')} variant="default" position="top" offset={20}>
               <button className={styles.demoButton}>Offset 20px</button>
             </Tooltip>
           </div>
@@ -354,10 +354,10 @@ const [show, setShow] = useState(false);
         <div className={styles.demo}>
           <div className={styles.demoTitle}>{t('controlled.example')}</div>
           <div className={styles.tooltipRow}>
-            <Tooltip content="항상 표시되는 툴팁" variant="default" position="top" isVisible={true}>
+            <Tooltip content={t('demo.alwaysVisible')} variant="default" position="top" isVisible={true}>
               <button className={styles.demoButton}>Always Visible</button>
             </Tooltip>
-            <Tooltip content="호버 불가능" variant="info" position="top" isVisible={false}>
+            <Tooltip content={t('demo.hoverDisabled')} variant="info" position="top" isVisible={false}>
               <button className={styles.demoButton}>Disabled Hover</button>
             </Tooltip>
           </div>

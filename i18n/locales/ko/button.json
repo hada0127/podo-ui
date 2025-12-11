@@ -1,6 +1,22 @@
 {
   "title": "버튼",
   "description": "Podo UI의 버튼 컴포넌트와 다양한 변형 사용법을 안내합니다",
+  "react": {
+    "sections": {
+      "basicUsage": "기본 사용법",
+      "iconsAndLoading": "아이콘 & 로딩",
+      "sizes": "크기"
+    },
+    "props": {
+      "theme": "버튼 테마 색상",
+      "variant": "버튼 스타일 변형",
+      "size": "버튼 크기",
+      "icon": "왼쪽 아이콘 클래스명",
+      "rightIcon": "오른쪽 아이콘 클래스명",
+      "loading": "로딩 상태",
+      "disabled": "비활성화 상태"
+    }
+  },
   "basicUsage": {
     "title": "기본 사용법",
     "description": "HTML button 태그에 컬러 클래스를 추가하여 버튼을 만들 수 있습니다. 클래스명만으로 다양한 스타일의 버튼을 구현할 수 있습니다.",

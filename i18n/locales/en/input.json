@@ -101,6 +101,21 @@
     "unit": {
       "title": "Unit Display",
       "description": "Display units on the right side of the input field using the unit prop."
+    },
+    "props": {
+      "value": "Input value",
+      "onChange": "Value change handler",
+      "validator": "Zod validation schema",
+      "withIcon": "Left icon class name",
+      "withRightIcon": "Right icon class name",
+      "unit": "Unit display (e.g., km, %)"
+    },
+    "placeholders": {
+      "email": "Email",
+      "emailInput": "Enter your email",
+      "search": "Search...",
+      "distance": "Distance",
+      "validEmail": "Please enter a valid email"
     }
   }
 }

@@ -31,6 +31,11 @@
       "label": "Description",
       "helper": "Enter a detailed description",
       "placeholder": "Enter content..."
+    },
+    "props": {
+      "label": "Field label",
+      "helper": "Helper text",
+      "children": "Input element"
     }
   },
   "structure": {

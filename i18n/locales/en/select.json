@@ -64,5 +64,24 @@
   "code": {
     "customArrow": "Custom arrow (auto-included)",
     "withIcon": "With icon"
+  },
+  "react": {
+    "sections": {
+      "basicUsage": "Basic Usage",
+      "icons": "Icons",
+      "disabled": "Disabled"
+    },
+    "props": {
+      "value": "Selected value",
+      "onChange": "Value change handler",
+      "options": "Select options array",
+      "placeholder": "Placeholder",
+      "withIcon": "Left icon class name",
+      "disabled": "Disabled state"
+    },
+    "placeholders": {
+      "selectOption": "Select an option",
+      "selectRole": "Select role"
+    }
   }
 }

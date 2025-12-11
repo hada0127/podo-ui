@@ -51,5 +51,20 @@
   "content": {
     "overviewTitle": "개요",
     "overviewContent": "Podo UI는 현대적인 디자인 시스템입니다."
+  },
+  "react": {
+    "sections": {
+      "basicUsage": "기본 사용법",
+      "fillMode": "Fill 모드",
+      "disabledTab": "Disabled 탭"
+    },
+    "props": {
+      "items": "탭 아이템 배열 (key, label 필수)",
+      "activeKey": "활성 탭 키 (controlled)",
+      "defaultActiveKey": "기본 활성 탭 키 (uncontrolled)",
+      "defaultActiveKeyDefault": "첫 번째 탭",
+      "fill": "탭 너비 균등 분배",
+      "onChange": "탭 변경 콜백"
+    }
   }
 }

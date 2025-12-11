@@ -155,19 +155,19 @@ function ReactContent({ t }: { t: (key: string) => string }) {
               <td><code>label</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>필드 레이블</td>
+              <td>{t('react.props.label')}</td>
             </tr>
             <tr>
               <td><code>helper</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>도움말 텍스트</td>
+              <td>{t('react.props.helper')}</td>
             </tr>
             <tr>
               <td><code>children</code></td>
               <td><code>ReactNode</code></td>
               <td>required</td>
-              <td>입력 요소</td>
+              <td>{t('react.props.children')}</td>
             </tr>
           </tbody>
         </table>

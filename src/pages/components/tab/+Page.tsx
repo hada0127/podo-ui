@@ -253,38 +253,38 @@ function ReactContent({ t, activeKey, setActiveKey, tabItems }: ReactContentProp
               <td><code>items</code></td>
               <td><code>TabItem[]</code></td>
               <td>required</td>
-              <td>탭 아이템 배열 (key, label 필수)</td>
+              <td>{t('react.props.items')}</td>
             </tr>
             <tr>
               <td><code>activeKey</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>활성 탭 키 (controlled)</td>
+              <td>{t('react.props.activeKey')}</td>
             </tr>
             <tr>
               <td><code>defaultActiveKey</code></td>
               <td><code>string</code></td>
-              <td>첫 번째 탭</td>
-              <td>기본 활성 탭 키 (uncontrolled)</td>
+              <td>{t('react.props.defaultActiveKeyDefault')}</td>
+              <td>{t('react.props.defaultActiveKey')}</td>
             </tr>
             <tr>
               <td><code>fill</code></td>
               <td><code>boolean</code></td>
               <td>false</td>
-              <td>탭 너비 균등 분배</td>
+              <td>{t('react.props.fill')}</td>
             </tr>
             <tr>
               <td><code>onChange</code></td>
               <td><code>(key: string) =&gt; void</code></td>
               <td>-</td>
-              <td>탭 변경 콜백</td>
+              <td>{t('react.props.onChange')}</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section>
-        <h2>기본 사용법</h2>
+        <h2>{t('react.sections.basicUsage')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -340,7 +340,7 @@ const tabItems = [
       </section>
 
       <section>
-        <h2>Fill 모드</h2>
+        <h2>{t('react.sections.fillMode')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -368,7 +368,7 @@ const tabItems = [
       </section>
 
       <section>
-        <h2>Disabled 탭</h2>
+        <h2>{t('react.sections.disabledTab')}</h2>
         <CodeBlock
           title="React"
           language="tsx"

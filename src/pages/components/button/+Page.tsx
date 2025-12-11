@@ -323,50 +323,50 @@ function ReactContent({ t, loading, setLoading }: ReactContentProps) {
               <td><code>theme</code></td>
               <td><code>'primary' | 'success' | 'warning' | 'danger' | 'info' | 'link'</code></td>
               <td>-</td>
-              <td>버튼 테마 색상</td>
+              <td>{t('react.props.theme')}</td>
             </tr>
             <tr>
               <td><code>variant</code></td>
               <td><code>'solid' | 'fill' | 'border' | 'text'</code></td>
               <td>'solid'</td>
-              <td>버튼 스타일 변형</td>
+              <td>{t('react.props.variant')}</td>
             </tr>
             <tr>
               <td><code>size</code></td>
               <td><code>'xxs' | 'xs' | 'sm' | 'md' | 'lg'</code></td>
               <td>'sm'</td>
-              <td>버튼 크기</td>
+              <td>{t('react.props.size')}</td>
             </tr>
             <tr>
               <td><code>icon</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>왼쪽 아이콘 클래스명</td>
+              <td>{t('react.props.icon')}</td>
             </tr>
             <tr>
               <td><code>rightIcon</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>오른쪽 아이콘 클래스명</td>
+              <td>{t('react.props.rightIcon')}</td>
             </tr>
             <tr>
               <td><code>loading</code></td>
               <td><code>boolean</code></td>
               <td>false</td>
-              <td>로딩 상태</td>
+              <td>{t('react.props.loading')}</td>
             </tr>
             <tr>
               <td><code>disabled</code></td>
               <td><code>boolean</code></td>
               <td>false</td>
-              <td>비활성화 상태</td>
+              <td>{t('react.props.disabled')}</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section>
-        <h2>기본 사용법</h2>
+        <h2>{t('react.sections.basicUsage')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -401,7 +401,7 @@ function ReactContent({ t, loading, setLoading }: ReactContentProps) {
       </section>
 
       <section>
-        <h2>아이콘 & 로딩</h2>
+        <h2>{t('react.sections.iconsAndLoading')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -436,7 +436,7 @@ function ReactContent({ t, loading, setLoading }: ReactContentProps) {
       </section>
 
       <section>
-        <h2>크기</h2>
+        <h2>{t('react.sections.sizes')}</h2>
         <CodeBlock
           title="React"
           language="tsx"

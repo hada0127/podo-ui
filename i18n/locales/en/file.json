@@ -29,6 +29,13 @@
       "description": "Use the onFileSelect prop to receive the selected files array directly."
     },
     "selectedFiles": "Selected Files",
-    "noFiles": "No files selected"
+    "noFiles": "No files selected",
+    "props": {
+      "accept": "Accepted file types (e.g., \"image/*\", \".pdf\")",
+      "multiple": "Allow multiple file selection",
+      "onChange": "Handler called on file change",
+      "onFileSelect": "Callback called on file select (receives File[] array)",
+      "disabled": "Disabled state"
+    }
   }
 }

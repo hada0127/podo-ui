@@ -51,5 +51,20 @@
   "content": {
     "overviewTitle": "Overview",
     "overviewContent": "Podo UI is a modern design system."
+  },
+  "react": {
+    "sections": {
+      "basicUsage": "Basic Usage",
+      "fillMode": "Fill Mode",
+      "disabledTab": "Disabled Tab"
+    },
+    "props": {
+      "items": "Tab items array (key, label required)",
+      "activeKey": "Active tab key (controlled)",
+      "defaultActiveKey": "Default active tab key (uncontrolled)",
+      "defaultActiveKeyDefault": "First tab",
+      "fill": "Distribute tab width evenly",
+      "onChange": "Tab change callback"
+    }
   }
 }

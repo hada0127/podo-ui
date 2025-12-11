@@ -31,6 +31,11 @@
       "label": "설명",
       "helper": "상세한 설명을 입력하세요",
       "placeholder": "내용을 입력하세요..."
+    },
+    "props": {
+      "label": "필드 레이블",
+      "helper": "도움말 텍스트",
+      "children": "입력 요소"
     }
   },
   "structure": {

@@ -101,6 +101,21 @@
     "unit": {
       "title": "단위 표시",
       "description": "unit prop으로 입력 필드 오른쪽에 단위를 표시할 수 있습니다."
+    },
+    "props": {
+      "value": "입력값",
+      "onChange": "값 변경 핸들러",
+      "validator": "Zod 검증 스키마",
+      "withIcon": "왼쪽 아이콘 클래스명",
+      "withRightIcon": "오른쪽 아이콘 클래스명",
+      "unit": "단위 표시 (예: km, %)"
+    },
+    "placeholders": {
+      "email": "이메일",
+      "emailInput": "이메일을 입력하세요",
+      "search": "검색...",
+      "distance": "거리",
+      "validEmail": "올바른 이메일을 입력하세요"
     }
   }
 }

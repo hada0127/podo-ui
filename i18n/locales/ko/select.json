@@ -64,5 +64,24 @@
   "code": {
     "customArrow": "커스텀 화살표 (자동 포함됨)",
     "withIcon": "아이콘과 함께 사용"
+  },
+  "react": {
+    "sections": {
+      "basicUsage": "기본 사용법",
+      "icons": "아이콘",
+      "disabled": "비활성화"
+    },
+    "props": {
+      "value": "선택된 값",
+      "onChange": "값 변경 핸들러",
+      "options": "선택 옵션 배열",
+      "placeholder": "플레이스홀더",
+      "withIcon": "왼쪽 아이콘 클래스명",
+      "disabled": "비활성화 상태"
+    },
+    "placeholders": {
+      "selectOption": "옵션을 선택하세요",
+      "selectRole": "역할 선택"
+    }
   }
 }

@@ -239,60 +239,60 @@ function ReactContent({
               <td><code>value</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>선택된 값</td>
+              <td>{t('react.props.value')}</td>
             </tr>
             <tr>
               <td><code>onChange</code></td>
               <td><code>(e: ChangeEvent) =&gt; void</code></td>
               <td>-</td>
-              <td>값 변경 핸들러</td>
+              <td>{t('react.props.onChange')}</td>
             </tr>
             <tr>
               <td><code>options</code></td>
               <td><code>{`{ value: string; label: string }[]`}</code></td>
               <td>required</td>
-              <td>선택 옵션 배열</td>
+              <td>{t('react.props.options')}</td>
             </tr>
             <tr>
               <td><code>placeholder</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>플레이스홀더</td>
+              <td>{t('react.props.placeholder')}</td>
             </tr>
             <tr>
               <td><code>withIcon</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>왼쪽 아이콘 클래스명</td>
+              <td>{t('react.props.withIcon')}</td>
             </tr>
             <tr>
               <td><code>disabled</code></td>
               <td><code>boolean</code></td>
               <td>false</td>
-              <td>비활성화 상태</td>
+              <td>{t('react.props.disabled')}</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section>
-        <h2>기본 사용법</h2>
+        <h2>{t('react.sections.basicUsage')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
           code={`import { Select } from 'podo-ui';
 
 const options = [
-  { value: 'option1', label: '옵션 1' },
-  { value: 'option2', label: '옵션 2' },
-  { value: 'option3', label: '옵션 3' },
+  { value: 'option1', label: 'Option 1' },
+  { value: 'option2', label: 'Option 2' },
+  { value: 'option3', label: 'Option 3' },
 ];
 
 <Select
   value={selected}
   onChange={(e) => setSelected(e.target.value)}
   options={options}
-  placeholder="옵션을 선택하세요"
+  placeholder="Select an option"
 />`}
         />
 
@@ -315,14 +315,14 @@ const options = [
       </section>
 
       <section>
-        <h2>아이콘</h2>
+        <h2>{t('react.sections.icons')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
           code={`<Select
   options={roleOptions}
   withIcon="icon-user"
-  placeholder="역할 선택"
+  placeholder="Select role"
 />`}
         />
 
@@ -339,7 +339,7 @@ const options = [
       </section>
 
       <section>
-        <h2>비활성화</h2>
+        <h2>{t('react.sections.disabled')}</h2>
         <div className={styles.demo}>
           <div className={styles.demoTitle}>Disabled</div>
           <div className={styles.selectGroup}>

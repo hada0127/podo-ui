@@ -1,6 +1,22 @@
 {
   "title": "Button",
   "description": "Explore the Button component and its various usage patterns in Podo UI",
+  "react": {
+    "sections": {
+      "basicUsage": "Basic Usage",
+      "iconsAndLoading": "Icons & Loading",
+      "sizes": "Sizes"
+    },
+    "props": {
+      "theme": "Button theme color",
+      "variant": "Button style variant",
+      "size": "Button size",
+      "icon": "Left icon class name",
+      "rightIcon": "Right icon class name",
+      "loading": "Loading state",
+      "disabled": "Disabled state"
+    }
+  },
   "basicUsage": {
     "title": "Basic Usage",
     "description": "Create buttons by adding color classes to HTML button tags. You can implement various button styles with class names alone.",

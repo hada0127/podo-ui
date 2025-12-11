@@ -27,5 +27,31 @@
   },
   "scss": {
     "title": "SCSS Styling Example"
+  },
+  "react": {
+    "sections": {
+      "checkboxUsage": "Checkbox Usage",
+      "radioGroupUsage": "Radio.Group Usage"
+    },
+    "props": {
+      "label": "Label text",
+      "checked": "Checked state",
+      "onChange": "Change handler",
+      "indeterminate": "Indeterminate state",
+      "disabled": "Disabled"
+    },
+    "labels": {
+      "agree": "I agree",
+      "defaultCheckbox": "Default checkbox",
+      "disabled": "Disabled",
+      "checkedDisabled": "Checked disabled",
+      "selectAll": "Select all",
+      "option1": "Option 1",
+      "option2": "Option 2",
+      "option3": "Option 3",
+      "creditCard": "Credit Card",
+      "bankTransfer": "Bank Transfer",
+      "mobilePayment": "Mobile Payment"
+    }
   }
 }

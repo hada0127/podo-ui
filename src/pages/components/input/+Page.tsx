@@ -316,44 +316,44 @@ function ReactContent({
               <td><code>value</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>입력값</td>
+              <td>{t('react.props.value')}</td>
             </tr>
             <tr>
               <td><code>onChange</code></td>
               <td><code>(e: ChangeEvent) =&gt; void</code></td>
               <td>-</td>
-              <td>값 변경 핸들러</td>
+              <td>{t('react.props.onChange')}</td>
             </tr>
             <tr>
               <td><code>validator</code></td>
               <td><code>ZodSchema</code></td>
               <td>-</td>
-              <td>Zod 검증 스키마</td>
+              <td>{t('react.props.validator')}</td>
             </tr>
             <tr>
               <td><code>withIcon</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>왼쪽 아이콘 클래스명</td>
+              <td>{t('react.props.withIcon')}</td>
             </tr>
             <tr>
               <td><code>withRightIcon</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>오른쪽 아이콘 클래스명</td>
+              <td>{t('react.props.withRightIcon')}</td>
             </tr>
             <tr>
               <td><code>unit</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>단위 표시 (예: km, %)</td>
+              <td>{t('react.props.unit')}</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section>
-        <h2>Zod 검증</h2>
+        <h2>{t('react.validation.title')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -363,8 +363,8 @@ import { z } from 'zod';
 <Input
   value={email}
   onChange={(e) => setEmail(e.target.value)}
-  validator={z.string().email('올바른 이메일을 입력하세요')}
-  placeholder="이메일"
+  validator={z.string().email('Please enter a valid email')}
+  placeholder="Email"
 />`}
         />
 
@@ -374,15 +374,15 @@ import { z } from 'zod';
             <InputComponent
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              validator={z.string().email('올바른 이메일을 입력하세요')}
-              placeholder="이메일을 입력하세요"
+              validator={z.string().email(t('react.placeholders.validEmail'))}
+              placeholder={t('react.placeholders.emailInput')}
             />
           </div>
         </div>
       </section>
 
       <section>
-        <h2>아이콘</h2>
+        <h2>{t('react.icons.title')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -390,12 +390,12 @@ import { z } from 'zod';
   value={search}
   onChange={(e) => setSearch(e.target.value)}
   withIcon="icon-search"
-  placeholder="검색..."
+  placeholder="Search..."
 />
 
 <Input
   withRightIcon="icon-mail"
-  placeholder="이메일"
+  placeholder="Email"
 />`}
         />
 
@@ -406,19 +406,19 @@ import { z } from 'zod';
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               withIcon="icon-search"
-              placeholder="검색..."
+              placeholder={t('react.placeholders.search')}
             />
             <InputComponent
               defaultValue=""
               withRightIcon="icon-mail"
-              placeholder="이메일"
+              placeholder={t('react.placeholders.email')}
             />
           </div>
         </div>
       </section>
 
       <section>
-        <h2>단위 표시</h2>
+        <h2>{t('react.unit.title')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -427,7 +427,7 @@ import { z } from 'zod';
   value={distance}
   onChange={(e) => setDistance(e.target.value)}
   unit="km"
-  placeholder="거리"
+  placeholder="Distance"
 />`}
         />
 
@@ -439,7 +439,7 @@ import { z } from 'zod';
               value={distance}
               onChange={(e) => setDistance(e.target.value)}
               unit="km"
-              placeholder="거리"
+              placeholder={t('react.placeholders.distance')}
             />
           </div>
         </div>

@@ -71,6 +71,15 @@
       "title": "Zod 검증",
       "description": "validator prop에 Zod 스키마를 전달하면 자동으로 검증하고 상태를 표시합니다."
     },
-    "minLength": "최소 10자 이상 입력하세요"
+    "minLength": "최소 10자 이상 입력하세요",
+    "props": {
+      "value": "입력값",
+      "onChange": "값 변경 핸들러",
+      "validator": "Zod 검증 스키마",
+      "rows": "표시 행 수"
+    },
+    "placeholders": {
+      "content": "내용을 입력하세요..."
+    }
   }
 }

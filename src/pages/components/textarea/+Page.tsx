@@ -185,32 +185,32 @@ function ReactContent({ t, content, setContent }: ReactContentProps) {
               <td><code>value</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>입력값</td>
+              <td>{t('react.props.value')}</td>
             </tr>
             <tr>
               <td><code>onChange</code></td>
               <td><code>(e: ChangeEvent) =&gt; void</code></td>
               <td>-</td>
-              <td>값 변경 핸들러</td>
+              <td>{t('react.props.onChange')}</td>
             </tr>
             <tr>
               <td><code>validator</code></td>
               <td><code>ZodSchema</code></td>
               <td>-</td>
-              <td>Zod 검증 스키마</td>
+              <td>{t('react.props.validator')}</td>
             </tr>
             <tr>
               <td><code>rows</code></td>
               <td><code>number</code></td>
               <td>3</td>
-              <td>표시 행 수</td>
+              <td>{t('react.props.rows')}</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <section>
-        <h2>Zod 검증</h2>
+        <h2>{t('react.validation.title')}</h2>
         <CodeBlock
           title="React"
           language="tsx"
@@ -220,8 +220,8 @@ import { z } from 'zod';
 <Textarea
   value={content}
   onChange={(e) => setContent(e.target.value)}
-  validator={z.string().min(10, '${t('react.minLength')}')}
-  placeholder="내용을 입력하세요..."
+  validator={z.string().min(10, 'Please enter at least 10 characters')}
+  placeholder="Enter your content..."
   rows={4}
 />`}
         />
@@ -233,7 +233,7 @@ import { z } from 'zod';
               value={content}
               onChange={(e) => setContent(e.target.value)}
               validator={z.string().min(10, t('react.minLength'))}
-              placeholder="내용을 입력하세요..."
+              placeholder={t('react.placeholders.content')}
               rows={4}
             />
           </div>

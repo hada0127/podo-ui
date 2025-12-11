@@ -73,16 +73,16 @@ function ScssContent({ t }: { t: (key: string) => string }) {
         <CodeBlock
           title={t('demo.codeHeader')}
           language="html"
-          code={`<!-- 이미지만 -->
+          code={`<!-- Images only -->
 <input type="file" accept="image/*" />
 
-<!-- PDF만 -->
+<!-- PDF only -->
 <input type="file" accept=".pdf" />
 
-<!-- 문서 파일 -->
+<!-- Documents -->
 <input type="file" accept=".doc,.docx,.pdf" />
 
-<!-- 비디오만 -->
+<!-- Videos only -->
 <input type="file" accept="video/*" />`}
         />
       </section>
@@ -177,31 +177,31 @@ function ReactContent({ t }: { t: (key: string) => string }) {
               <td><code>accept</code></td>
               <td><code>string</code></td>
               <td>-</td>
-              <td>허용할 파일 형식 (예: "image/*", ".pdf")</td>
+              <td>{t('react.props.accept')}</td>
             </tr>
             <tr>
               <td><code>multiple</code></td>
               <td><code>boolean</code></td>
               <td><code>false</code></td>
-              <td>다중 파일 선택 허용 여부</td>
+              <td>{t('react.props.multiple')}</td>
             </tr>
             <tr>
               <td><code>onChange</code></td>
               <td><code>(e: ChangeEvent) =&gt; void</code></td>
               <td>-</td>
-              <td>파일 변경 시 호출되는 핸들러</td>
+              <td>{t('react.props.onChange')}</td>
             </tr>
             <tr>
               <td><code>onFileSelect</code></td>
               <td><code>(files: File[]) =&gt; void</code></td>
               <td>-</td>
-              <td>파일 선택 시 호출되는 콜백 (File[] 배열 전달)</td>
+              <td>{t('react.props.onFileSelect')}</td>
             </tr>
             <tr>
               <td><code>disabled</code></td>
               <td><code>boolean</code></td>
               <td><code>false</code></td>
-              <td>비활성화 상태</td>
+              <td>{t('react.props.disabled')}</td>
             </tr>
           </tbody>
         </table>
@@ -218,13 +218,13 @@ function ReactContent({ t }: { t: (key: string) => string }) {
 
 const [files, setFiles] = useState<File[]>([]);
 
-// 기본 사용
+// Basic usage
 <FileInput onChange={(e) => console.log(e.target.files)} />
 
-// 이미지만 허용
+// Images only
 <FileInput accept="image/*" />
 
-// 다중 선택 + 콜백
+// Multiple selection + callback
 <FileInput
   multiple
   accept="image/*"
