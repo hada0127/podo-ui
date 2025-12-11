@@ -27,6 +27,3 @@ dist-ssr
 .env
 .next
 .npmrc
-
-# AI agent
-.claude/*
