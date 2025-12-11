@@ -1,4 +1,31 @@
 {
   "title": "Checkbox & Radio",
-  "description": "Checkbox and radio button components"
+  "description": "Checkbox and radio button components",
+  "demo": {
+    "title": "Preview"
+  },
+  "checkbox": {
+    "title": "Checkbox",
+    "description": "Checkbox is an input element that allows selecting one or more options.",
+    "option": "Option",
+    "checked": "Checked",
+    "disabled": "Disabled",
+    "checkedDisabled": "Checked Disabled"
+  },
+  "indeterminate": {
+    "title": "Indeterminate State",
+    "description": "Represents a partially selected state. Must be set via JavaScript.",
+    "state": "Indeterminate"
+  },
+  "radio": {
+    "title": "Radio",
+    "description": "Radio button is an input element that allows selecting only one option from multiple choices.",
+    "option1": "Option 1",
+    "option2": "Option 2",
+    "option3": "Option 3",
+    "disabledOption": "Disabled Option"
+  },
+  "scss": {
+    "title": "SCSS Styling Example"
+  }
 }

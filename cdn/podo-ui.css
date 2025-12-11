@@ -1,5 +1,5 @@
 /*!
- * Podo UI CSS v0.9.2
+ * Podo UI CSS v0.9.3
  * https://podoui.com
  * MIT License
  */
@@ -163,6 +163,9 @@ li {
 }
 
 /*
+  Dark mode color variables (shared mixin)
+*/
+/*
   Auto mode: Follow system preference
 */
 @media (prefers-color-scheme: dark) {
@@ -253,10 +256,10 @@ li {
     --color-text-action-reverse: #ffffff;
   }
 }
+/*
+  Manual dark mode
+*/
 html[data-color-mode=dark] {
-  /*
-    Dark mode colors
-  */
   --color-primary: #7c3aed;
   --color-primary-hover: #8b5cf6;
   --color-primary-pressed: #7c3aed;
