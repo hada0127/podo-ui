@@ -21,7 +21,8 @@
       "Bash(npm run build:all:*)",
       "Bash(git rebase:*)",
       "Bash(git reset:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(node -e:*)"
     ],
     "deny": [],
     "ask": []
