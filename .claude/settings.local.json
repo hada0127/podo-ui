@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__TalkToFigma__get_document_info",
+      "mcp__TalkToFigma__get_selection",
+      "mcp__TalkToFigma__get_node_info",
+      "Bash(npm run dev:*)",
+      "Bash(node test-i18n.js:*)",
+      "Bash(curl:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "mcp__TalkToFigma__join_channel",
+      "Bash(cat:*)",
+      "Bash(npm publish)",
+      "Bash(mkdir:*)",
+      "mcp__figma__whoami",
+      "mcp__TalkToFigma__read_my_design",
+      "Bash(npm run build:cdn:*)",
+      "Bash(npm run icon:*)",
+      "Bash(npm run build:all:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(git pull:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -50,6 +50,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
     'align-left', 'align-center', 'align-right', 'input',
     'margin-right', 'margin-top', 'margin-left', 'margin-bottom',
     'login', 'margin-horizontal', 'margin-vertical',
+    'button', 'desktop', 'mobile',
   ];
 
   return (
@@ -248,7 +249,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.etc')}</h2>
           <div className={styles.iconList}>
-            {['unlink-alt', 'horizontalLine', 'gap', 'inputForm', 'detailView', 'company', 'landing', 'footer', 'click', 'align-left', 'align-center', 'align-right', 'input', 'margin-right', 'margin-top', 'margin-left', 'margin-bottom', 'login', 'margin-horizontal', 'margin-vertical'].map(icon => (
+            {['unlink-alt', 'horizontalLine', 'gap', 'inputForm', 'detailView', 'company', 'landing', 'footer', 'click', 'align-left', 'align-center', 'align-right', 'input', 'margin-right', 'margin-top', 'margin-left', 'margin-bottom', 'login', 'margin-horizontal', 'margin-vertical', 'button', 'desktop', 'mobile'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
