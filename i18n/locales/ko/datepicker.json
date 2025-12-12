@@ -48,6 +48,7 @@
     "enable": "선택 가능한 날짜 조건 (지정된 날짜만 활성화)",
     "minDate": "선택 가능한 최소 날짜 (Date 또는 DateTimeLimit)",
     "maxDate": "선택 가능한 최대 날짜 (Date 또는 DateTimeLimit)",
+    "yearRange": "년도 선택 범위 (min/max). minDate/maxDate보다 우선 적용",
     "minuteStep": "분 단위 선택 간격 (1, 5, 10, 15, 20, 30)",
     "format": "날짜/시간 표시 포맷 (y: 년, m: 월, d: 일, h: 시, i: 분)",
     "initialCalendar": "기간 선택 모드에서 초기 달력 표시 월 설정"
@@ -103,6 +104,17 @@
     "dateOnlyDesc": "오늘부터 30일 이내 선택 가능",
     "withTime": "날짜+시간 제한",
     "withTimeDesc": "시작/종료 시간까지 정밀하게 제한"
+  },
+  "yearRange": {
+    "title": "년도 범위 설정",
+    "description": "yearRange props를 사용하여 년도 선택 범위를 지정할 수 있습니다. minDate/maxDate가 있으면 자동으로 년도를 추출하며, yearRange가 명시적으로 지정되면 우선 적용됩니다.",
+    "demoTitle": "년도 범위 예제:",
+    "onlyYearRange": "yearRange만 사용",
+    "onlyYearRangeDesc": "2020~2030년 선택 가능",
+    "withMinMax": "minDate/maxDate와 함께",
+    "withMinMaxDesc": "yearRange 우선, 날짜 제한은 minDate/maxDate 적용",
+    "partial": "부분 지정",
+    "partialDesc": "min만 yearRange로, max는 maxDate에서 추출"
   },
   "minuteStep": {
     "title": "분 단위 선택",

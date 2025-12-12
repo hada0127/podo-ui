@@ -48,6 +48,7 @@
     "enable": "Selectable date conditions (only specified dates are enabled)",
     "minDate": "Minimum selectable date (Date or DateTimeLimit)",
     "maxDate": "Maximum selectable date (Date or DateTimeLimit)",
+    "yearRange": "Year selection range (min/max). Takes priority over minDate/maxDate",
     "minuteStep": "Minute selection interval (1, 5, 10, 15, 20, 30)",
     "format": "Date/time display format (y: year, m: month, d: day, h: hour, i: minute)",
     "initialCalendar": "Initial calendar display month in period mode"
@@ -103,6 +104,17 @@
     "dateOnlyDesc": "Selectable from today to 30 days later",
     "withTime": "Date + Time Limit",
     "withTimeDesc": "Precise limit including start/end time"
+  },
+  "yearRange": {
+    "title": "Year Range",
+    "description": "Use the yearRange prop to specify the year selection range. If minDate/maxDate are set, years are automatically extracted. When yearRange is explicitly specified, it takes priority.",
+    "demoTitle": "Year Range Examples:",
+    "onlyYearRange": "yearRange only",
+    "onlyYearRangeDesc": "Selectable from 2020 to 2030",
+    "withMinMax": "With minDate/maxDate",
+    "withMinMaxDesc": "yearRange takes priority, date limits from minDate/maxDate apply",
+    "partial": "Partial specification",
+    "partialDesc": "min from yearRange, max extracted from maxDate"
   },
   "minuteStep": {
     "title": "Minute Step",

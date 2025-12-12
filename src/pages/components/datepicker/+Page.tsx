@@ -54,6 +54,9 @@ export default function DatePickerPage() {
   const [initialPrevNow, setInitialPrevNow] = useState<DatePickerValue>({});
   const [initialNowNext, setInitialNowNext] = useState<DatePickerValue>({});
   const [initialCustom, setInitialCustom] = useState<DatePickerValue>({});
+  const [yearRangeOnly, setYearRangeOnly] = useState<DatePickerValue>({});
+  const [yearRangeWithMinMax, setYearRangeWithMinMax] = useState<DatePickerValue>({});
+  const [yearRangePartial, setYearRangePartial] = useState<DatePickerValue>({});
 
   // Vanilla JS DatePicker refs
   const vanillaInstantRef = useRef<HTMLDivElement>(null);
@@ -232,6 +235,12 @@ export default function DatePickerPage() {
                 setInitialNowNext={setInitialNowNext}
                 initialCustom={initialCustom}
                 setInitialCustom={setInitialCustom}
+                yearRangeOnly={yearRangeOnly}
+                setYearRangeOnly={setYearRangeOnly}
+                yearRangeWithMinMax={yearRangeWithMinMax}
+                setYearRangeWithMinMax={setYearRangeWithMinMax}
+                yearRangePartial={yearRangePartial}
+                setYearRangePartial={setYearRangePartial}
                 formatDateDisplay={formatDateDisplay}
                 formatTimeDisplay={formatTimeDisplay}
                 formatDateTimeDisplay={formatDateTimeDisplay}
@@ -316,6 +325,12 @@ interface ReactContentProps {
   setInitialNowNext: (v: DatePickerValue) => void;
   initialCustom: DatePickerValue;
   setInitialCustom: (v: DatePickerValue) => void;
+  yearRangeOnly: DatePickerValue;
+  setYearRangeOnly: (v: DatePickerValue) => void;
+  yearRangeWithMinMax: DatePickerValue;
+  setYearRangeWithMinMax: (v: DatePickerValue) => void;
+  yearRangePartial: DatePickerValue;
+  setYearRangePartial: (v: DatePickerValue) => void;
   formatDateDisplay: (v: DatePickerValue) => string;
   formatTimeDisplay: (v: DatePickerValue) => string;
   formatDateTimeDisplay: (v: DatePickerValue) => string;
@@ -377,6 +392,12 @@ function ReactContent({
   setInitialNowNext,
   initialCustom,
   setInitialCustom,
+  yearRangeOnly,
+  setYearRangeOnly,
+  yearRangeWithMinMax,
+  setYearRangeWithMinMax,
+  yearRangePartial,
+  setYearRangePartial,
   formatDateDisplay,
   formatTimeDisplay,
   formatDateTimeDisplay,
@@ -459,6 +480,12 @@ function ReactContent({
               <td><code>Date | DateTimeLimit</code></td>
               <td>-</td>
               <td>{t('props.maxDate')}</td>
+            </tr>
+            <tr>
+              <td><code>yearRange</code></td>
+              <td><code>YearRange</code></td>
+              <td>-</td>
+              <td>{t('props.yearRange')}</td>
             </tr>
             <tr>
               <td><code>minuteStep</code></td>
@@ -793,6 +820,81 @@ function ReactContent({
               />
               <div className={styles.selectedValue}>
                 {formatDateTimeDisplay(minMaxDateTime)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('yearRange.title')}</h2>
+        <p>{t('yearRange.description')}</p>
+
+        <CodeBlock
+          language="tsx"
+          code={`// yearRange만 사용 (명시적 지정)
+<DatePicker
+  yearRange={{ min: 2020, max: 2030 }}
+/>
+
+// minDate/maxDate만 사용 (년도 자동 추출)
+<DatePicker
+  minDate={new Date(2022, 0, 1)}
+  maxDate={new Date(2025, 11, 31)}
+/>
+
+// 둘 다 사용 (yearRange 우선, 날짜 비활성화는 minDate/maxDate 적용)
+<DatePicker
+  yearRange={{ min: 2020, max: 2030 }}
+  minDate={new Date(2022, 0, 1)}
+/>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('yearRange.demoTitle')}</div>
+          <div className={styles.typeGrid}>
+            <div className={styles.typeCard}>
+              <h4>{t('yearRange.onlyYearRange')}</h4>
+              <p>{t('yearRange.onlyYearRangeDesc')}</p>
+              <DatePicker
+                type="date"
+                value={yearRangeOnly}
+                onChange={setYearRangeOnly}
+                yearRange={{ min: 2020, max: 2030 }}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(yearRangeOnly)}
+              </div>
+            </div>
+
+            <div className={styles.typeCard}>
+              <h4>{t('yearRange.withMinMax')}</h4>
+              <p>{t('yearRange.withMinMaxDesc')}</p>
+              <DatePicker
+                type="date"
+                value={yearRangeWithMinMax}
+                onChange={setYearRangeWithMinMax}
+                yearRange={{ min: 2020, max: 2030 }}
+                minDate={new Date(2023, 0, 1)}
+                maxDate={new Date(2025, 11, 31)}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(yearRangeWithMinMax)}
+              </div>
+            </div>
+
+            <div className={styles.typeCard}>
+              <h4>{t('yearRange.partial')}</h4>
+              <p>{t('yearRange.partialDesc')}</p>
+              <DatePicker
+                type="date"
+                value={yearRangePartial}
+                onChange={setYearRangePartial}
+                yearRange={{ min: 2000 }}
+                maxDate={new Date(2025, 11, 31)}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(yearRangePartial)}
               </div>
             </div>
           </div>

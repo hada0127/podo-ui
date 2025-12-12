@@ -42,6 +42,14 @@ export interface DateTimeLimit {
 /** 분 단위 선택 옵션 */
 export type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;
 
+/** 년도 선택 범위 */
+export interface YearRange {
+  /** 최소 년도 */
+  min?: number;
+  /** 최대 년도 */
+  max?: number;
+}
+
 /** 초기 달력 표시 월 설정 */
 export type CalendarInitial = 'now' | 'prevMonth' | 'nextMonth' | Date;
 
@@ -93,6 +101,12 @@ export interface DatePickerProps {
    * 값: 'now' | 'prevMonth' | 'nextMonth' | Date
    */
   initialCalendar?: InitialCalendar;
+  /**
+   * 년도 선택 범위 설정
+   * minDate/maxDate보다 우선 적용됨
+   * 예시: { min: 2020, max: 2030 }
+   */
+  yearRange?: YearRange;
 }
 
 // Helper functions
@@ -326,6 +340,8 @@ interface CalendarProps {
   minDate?: Date | DateTimeLimit;
   /** 선택 가능한 최대 날짜 */
   maxDate?: Date | DateTimeLimit;
+  /** 년도 선택 범위 */
+  yearRange?: YearRange;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -343,6 +359,7 @@ const Calendar: React.FC<CalendarProps> = ({
   enable,
   minDate,
   maxDate,
+  yearRange,
 }) => {
   const today = new Date();
 
@@ -351,9 +368,34 @@ const Calendar: React.FC<CalendarProps> = ({
 
   const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
-  // 년도 옵션: 현재 년도 ±10년
+  // 년도 범위 계산 (우선순위: yearRange > minDate/maxDate > 기본값 ±10년)
   const currentYear = today.getFullYear();
-  const yearOptions = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
+  const calculateYearBounds = () => {
+    let minYearBound = currentYear - 10;
+    let maxYearBound = currentYear + 10;
+
+    // minDate/maxDate에서 년도 추출
+    if (minDate) {
+      const { date } = extractDateTimeLimit(minDate);
+      minYearBound = Math.max(minYearBound, date.getFullYear());
+    }
+    if (maxDate) {
+      const { date } = extractDateTimeLimit(maxDate);
+      maxYearBound = Math.min(maxYearBound, date.getFullYear());
+    }
+
+    // yearRange가 있으면 우선 적용
+    if (yearRange?.min !== undefined) minYearBound = yearRange.min;
+    if (yearRange?.max !== undefined) maxYearBound = yearRange.max;
+
+    return { minYearBound, maxYearBound };
+  };
+
+  const { minYearBound, maxYearBound } = calculateYearBounds();
+  const yearOptions = Array.from(
+    { length: Math.max(0, maxYearBound - minYearBound + 1) },
+    (_, i) => minYearBound + i
+  );
 
   // 월 옵션: 1~12월
   const monthOptions = Array.from({ length: 12 }, (_, i) => i);
@@ -599,6 +641,8 @@ interface PeriodCalendarProps {
   minDate?: Date | DateTimeLimit;
   /** 선택 가능한 최대 날짜 */
   maxDate?: Date | DateTimeLimit;
+  /** 년도 선택 범위 */
+  yearRange?: YearRange;
 }
 
 const PeriodCalendar: React.FC<PeriodCalendarProps> = ({
@@ -613,6 +657,7 @@ const PeriodCalendar: React.FC<PeriodCalendarProps> = ({
   enable,
   minDate,
   maxDate,
+  yearRange,
 }) => {
   // 왼쪽 달력: 오른쪽 달력(endViewDate)보다 이후로 이동 불가
   // 오른쪽 달력: 왼쪽 달력(viewDate)보다 이전으로 이동 불가
@@ -633,6 +678,7 @@ const PeriodCalendar: React.FC<PeriodCalendarProps> = ({
           enable={enable}
           minDate={minDate}
           maxDate={maxDate}
+          yearRange={yearRange}
         />
       </div>
       <div className={styles.periodCalendarRight}>
@@ -650,6 +696,7 @@ const PeriodCalendar: React.FC<PeriodCalendarProps> = ({
           enable={enable}
           minDate={minDate}
           maxDate={maxDate}
+          yearRange={yearRange}
         />
       </div>
     </div>
@@ -677,6 +724,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   minuteStep = 1,
   format,
   initialCalendar,
+  yearRange,
 }) => {
   const [selectingPart, setSelectingPart] = useState<SelectingPart>(null);
   const [tempValue, setTempValue] = useState<DatePickerValue>(value || {});
@@ -1187,6 +1235,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
             enable={enable}
             minDate={minDate}
             maxDate={maxDate}
+            yearRange={yearRange}
           />
         );
       }
@@ -1203,6 +1252,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
           enable={enable}
           minDate={minDate}
           maxDate={maxDate}
+          yearRange={yearRange}
         />
       );
     }
