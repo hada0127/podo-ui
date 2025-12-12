@@ -147,16 +147,16 @@ function ScssContent({ t }: { t: (key: string) => string }) {
         <CodeBlock
           title={t('sections.cssClasses.codeHeader')}
           language="html"
-          code={`<!-- Display 스타일 -->
-<div class="display1">대형 제목</div>
-<div class="display4">중형 제목</div>
-<div class="display7">소형 제목</div>
+          code={`<!-- Display styles -->
+<div class="display1">Large heading</div>
+<div class="display4">Medium heading</div>
+<div class="display7">Small heading</div>
 
-<!-- Paragraph 스타일 -->
-<p class="p1">큰 본문 텍스트</p>
-<p class="p3">일반 본문 텍스트</p>
-<p class="p3-semibold">강조된 본문 텍스트</p>
-<p class="p5">작은 본문 텍스트</p>`}
+<!-- Paragraph styles -->
+<p class="p1">Large body text</p>
+<p class="p3">Regular body text</p>
+<p class="p3-semibold">Bold body text</p>
+<p class="p5">Small body text</p>`}
         />
 
         <div className={styles.demo}>
@@ -210,7 +210,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
   --base-font-family: 'Pretendard', sans-serif;
 }
 
-/* 커스텀 폰트 사용 */
+/* Custom font usage */
 :root {
   --base-font-family: 'Your Custom Font', -apple-system, sans-serif;
 }`}

@@ -77,11 +77,11 @@ function ScssContent({ t }: { t: (key: string) => string }) {
 <i class="icon-check"></i>
 <i class="icon-close"></i>
 
-<!-- 크기 조정 -->
+<!-- Size adjustment -->
 <i class="icon-star" style="font-size: 24px;"></i>
 <i class="icon-star" style="font-size: 32px;"></i>
 
-<!-- 색상 조정 -->
+<!-- Color adjustment -->
 <i class="icon-star primary"></i>
 <i class="icon-star success"></i>
 <i class="icon-star danger"></i>`}
@@ -113,10 +113,10 @@ function ScssContent({ t }: { t: (key: string) => string }) {
       <i className="icon-star"></i>
       <i className="icon-search"></i>
 
-      {/* 스타일 적용 */}
+      {/* Apply styles */}
       <i className="icon-check" style={{ fontSize: '24px', color: 'green' }}></i>
 
-      {/* CSS 클래스와 함께 사용 */}
+      {/* Use with CSS classes */}
       <i className="icon-warning warning"></i>
     </div>
   );

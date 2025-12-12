@@ -196,7 +196,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
 }
 
 .avatar {
-  border-radius: r(full); // 9999px (원형)
+  border-radius: r(full); // 9999px (circle)
 }
 
 .input {

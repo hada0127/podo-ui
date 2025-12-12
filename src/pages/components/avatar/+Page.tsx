@@ -163,8 +163,8 @@ function ReactContent({ t }: { t: (key: string) => string }) {
             <Avatar type="text" text="AB" size={24} />
             <Avatar type="text" text="CD" size={32} />
             <Avatar type="text" text="EF" size={40} />
-            <Avatar type="text" text="김철" size={48} />
-            <Avatar type="text" text="보라" size={56} />
+            <Avatar type="text" text="GH" size={48} />
+            <Avatar type="text" text="IJ" size={56} />
           </div>
         </div>
       </section>

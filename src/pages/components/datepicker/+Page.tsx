@@ -5,7 +5,7 @@ import CodeBlock from '../../../components/CodeBlock';
 import DocTabs from '../../../components/DocTabs';
 import styles from './Page.module.scss';
 
-// Vanilla JS DatePicker 타입
+// Vanilla JS DatePicker type
 interface VanillaDatePickerValue {
   date?: Date;
   time?: { hour: number; minute: number };
@@ -64,7 +64,7 @@ export default function DatePickerPage() {
   const [vanillaPeriodValue, setVanillaPeriodValue] = useState<string>('-');
   const [vanillaDatetimeValue, setVanillaDatetimeValue] = useState<string>('-');
 
-  // Vanilla JS DatePicker 로드 및 초기화
+  // Vanilla JS DatePicker load and initialization
   useEffect(() => {
     if (!document.getElementById('podo-datepicker-css')) {
       const link = document.createElement('link');

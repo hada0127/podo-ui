@@ -104,12 +104,12 @@ function ReactContent({ t }: { t: (key: string) => string }) {
           code={`import { Tooltip } from 'podo-ui';
 
 // Wrap a button
-<Tooltip content="추가 정보입니다" variant="default">
+<Tooltip content="Additional information" variant="default">
   <button>Hover me</button>
 </Tooltip>
 
 // Wrap an icon
-<Tooltip content="중요한 안내사항" variant="info">
+<Tooltip content="Important notice" variant="info">
   <i className="icon-info" />
 </Tooltip>`}
         />
@@ -135,12 +135,12 @@ function ReactContent({ t }: { t: (key: string) => string }) {
           title="variants.tsx"
           language="tsx"
           code={`// Default variant (dark gray background)
-<Tooltip content="기본 툴팁" variant="default">
+<Tooltip content="Default tooltip" variant="default">
   <button>Default</button>
 </Tooltip>
 
 // Info variant (blue background)
-<Tooltip content="정보 툴팁" variant="info">
+<Tooltip content="Info tooltip" variant="info">
   <button>Info</button>
 </Tooltip>`}
         />
@@ -172,24 +172,24 @@ function ReactContent({ t }: { t: (key: string) => string }) {
           title="positions.tsx"
           language="tsx"
           code={`// Top positions
-<Tooltip content="툴팁" position="topLeft"><button>Top Left</button></Tooltip>
-<Tooltip content="툴팁" position="top"><button>Top</button></Tooltip>
-<Tooltip content="툴팁" position="topRight"><button>Top Right</button></Tooltip>
+<Tooltip content="Tooltip" position="topLeft"><button>Top Left</button></Tooltip>
+<Tooltip content="Tooltip" position="top"><button>Top</button></Tooltip>
+<Tooltip content="Tooltip" position="topRight"><button>Top Right</button></Tooltip>
 
 // Bottom positions
-<Tooltip content="툴팁" position="bottomLeft"><button>Bottom Left</button></Tooltip>
-<Tooltip content="툴팁" position="bottom"><button>Bottom</button></Tooltip>
-<Tooltip content="툴팁" position="bottomRight"><button>Bottom Right</button></Tooltip>
+<Tooltip content="Tooltip" position="bottomLeft"><button>Bottom Left</button></Tooltip>
+<Tooltip content="Tooltip" position="bottom"><button>Bottom</button></Tooltip>
+<Tooltip content="Tooltip" position="bottomRight"><button>Bottom Right</button></Tooltip>
 
 // Left positions
-<Tooltip content="툴팁" position="leftTop"><button>Left Top</button></Tooltip>
-<Tooltip content="툴팁" position="left"><button>Left</button></Tooltip>
-<Tooltip content="툴팁" position="leftBottom"><button>Left Bottom</button></Tooltip>
+<Tooltip content="Tooltip" position="leftTop"><button>Left Top</button></Tooltip>
+<Tooltip content="Tooltip" position="left"><button>Left</button></Tooltip>
+<Tooltip content="Tooltip" position="leftBottom"><button>Left Bottom</button></Tooltip>
 
 // Right positions
-<Tooltip content="툴팁" position="rightTop"><button>Right Top</button></Tooltip>
-<Tooltip content="툴팁" position="right"><button>Right</button></Tooltip>
-<Tooltip content="툴팁" position="rightBottom"><button>Right Bottom</button></Tooltip>`}
+<Tooltip content="Tooltip" position="rightTop"><button>Right Top</button></Tooltip>
+<Tooltip content="Tooltip" position="right"><button>Right</button></Tooltip>
+<Tooltip content="Tooltip" position="rightBottom"><button>Right Bottom</button></Tooltip>`}
         />
 
         <div className={styles.demo}>
@@ -263,9 +263,9 @@ function ReactContent({ t }: { t: (key: string) => string }) {
           code={`// With custom JSX structure
 <Tooltip content={
   <>
-    <strong>도움말</strong>
+    <strong>Help</strong>
     <br />
-    상세 설명입니다
+    Detailed description
   </>
 }>
   <button>Custom JSX</button>
@@ -274,16 +274,16 @@ function ReactContent({ t }: { t: (key: string) => string }) {
 // With custom inline styles
 <Tooltip content={
   <div style={{ color: '#ffd700' }}>
-    <strong>⚠️ 중요</strong>
+    <strong>⚠️ Important</strong>
     <br />
-    주의사항
+    Caution
   </div>
 } variant="info">
   <button>Custom Style</button>
 </Tooltip>
 
 // With custom offset (default: 8px)
-<Tooltip content="더 멀리 떨어진 툴팁" offset={20}>
+<Tooltip content="Tooltip far away" offset={20}>
   <button>Offset 20px</button>
 </Tooltip>`}
         />
@@ -332,19 +332,19 @@ function ReactContent({ t }: { t: (key: string) => string }) {
           title="controlled.tsx"
           language="tsx"
           code={`// Always visible (without hover)
-<Tooltip content="항상 표시" isVisible={true}>
+<Tooltip content="Always visible" isVisible={true}>
   <button>Always Visible</button>
 </Tooltip>
 
 // Disabled (hover doesn't work)
-<Tooltip content="호버 불가능" isVisible={false}>
+<Tooltip content="Hover disabled" isVisible={false}>
   <button>Disabled</button>
 </Tooltip>
 
 // Controlled with state
 const [show, setShow] = useState(false);
 
-<Tooltip content="상태로 제어" isVisible={show}>
+<Tooltip content="Controlled by state" isVisible={show}>
   <button onClick={() => setShow(!show)}>
     Toggle
   </button>

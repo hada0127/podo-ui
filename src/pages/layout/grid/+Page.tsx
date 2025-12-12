@@ -248,7 +248,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
         <CodeBlock
           title="HTML"
           language="html"
-          code={`<!-- grid 외부에서 사용 -->
+          code={`<!-- Use outside grid -->
 <div>
   <div class="w-3">25% width</div>
   <div class="w-6">50% width</div>

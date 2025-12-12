@@ -352,7 +352,7 @@ export default function MyComponent() {
           code={`import { EditorView } from 'podo-ui';
 
 export default function MyComponent() {
-  const htmlContent = '<h1>제목</h1><p>본문 내용</p>';
+  const htmlContent = '<h1>Title</h1><p>Body content</p>';
 
   return (
     <EditorView value={htmlContent} />
