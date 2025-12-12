@@ -368,11 +368,11 @@ const Calendar: React.FC<CalendarProps> = ({
 
   const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
-  // 년도 범위 계산 (우선순위: yearRange > minDate/maxDate > 기본값 ±10년)
+  // 년도 범위 계산 (우선순위: yearRange > minDate/maxDate > 기본값 ±100년)
   const currentYear = today.getFullYear();
   const calculateYearBounds = () => {
-    let minYearBound = currentYear - 10;
-    let maxYearBound = currentYear + 10;
+    let minYearBound = currentYear - 100;
+    let maxYearBound = currentYear + 100;
 
     // minDate/maxDate에서 년도 추출
     if (minDate) {
