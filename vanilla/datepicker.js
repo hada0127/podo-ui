@@ -228,6 +228,7 @@
      * @param {Object} [options.texts] - Custom texts for localization
      * @param {string} [options.format] - Date/time format (y: year, m: month, d: day, h: hour, i: minute)
      * @param {Object} [options.initialCalendar] - Initial calendar display month { start, end }
+     * @param {Object} [options.yearRange] - Year range for year selector { min, max }
      */
     constructor(container, options = {}) {
       this.container =
@@ -255,6 +256,7 @@
       this.texts = { ...DEFAULT_TEXTS, ...options.texts };
       this.format = options.format;
       this.initialCalendar = options.initialCalendar || {};
+      this.yearRange = options.yearRange;
 
       // State
       this.isOpen = false;
@@ -584,6 +586,32 @@
       return calendar;
     }
 
+    /**
+     * Calculate year bounds for year selector
+     * Priority: yearRange > minDate/maxDate > default (±100 years)
+     */
+    calculateYearBounds(minViewYear, maxViewYear) {
+      const currentYear = new Date().getFullYear();
+      let minYearBound = currentYear - 100;
+      let maxYearBound = currentYear + 100;
+
+      // Apply minDate/maxDate limits
+      if (this.minDate) {
+        const { date } = extractDateTimeLimit(this.minDate);
+        minYearBound = Math.max(minYearBound, date.getFullYear());
+      }
+      if (this.maxDate) {
+        const { date } = extractDateTimeLimit(this.maxDate);
+        maxYearBound = Math.min(maxYearBound, date.getFullYear());
+      }
+
+      // yearRange takes priority
+      if (this.yearRange?.min !== undefined) minYearBound = this.yearRange.min;
+      if (this.yearRange?.max !== undefined) maxYearBound = this.yearRange.max;
+
+      return { minYearBound, maxYearBound };
+    }
+
     renderCalendarNav(viewDate, onViewDateChange, opts = {}) {
       const nav = createElement('div', `${PREFIX}__calendar-nav`);
       const year = viewDate.getFullYear();
@@ -624,8 +652,8 @@
       // Year select
       const yearWrapper = createElement('div', `${PREFIX}__nav-select-wrapper`);
       const yearSelect = createElement('select', `${PREFIX}__nav-select`);
-      const currentYear = new Date().getFullYear();
-      for (let y = currentYear - 10; y <= currentYear + 10; y++) {
+      const { minYearBound, maxYearBound } = this.calculateYearBounds(minYear, maxYear);
+      for (let y = minYearBound; y <= maxYearBound; y++) {
         if (minYear !== undefined && y < minYear) continue;
         if (maxYear !== undefined && y > maxYear) continue;
         const opt = createElement('option', null, `${y}${this.texts.yearSuffix}`);

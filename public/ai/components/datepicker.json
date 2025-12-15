@@ -22,14 +22,16 @@
     { "name": "maxDate", "type": "Date | DateTimeLimit", "required": false },
     { "name": "minuteStep", "type": "1 | 5 | 10 | 15 | 20 | 30", "default": "1" },
     { "name": "format", "type": "string", "required": false, "description": "Custom format: y-m-d h:i" },
-    { "name": "initialCalendar", "type": "{ start?: CalendarInitial, end?: CalendarInitial }", "required": false }
+    { "name": "initialCalendar", "type": "{ start?: CalendarInitial, end?: CalendarInitial }", "required": false },
+    { "name": "yearRange", "type": "YearRange", "required": false, "description": "Year selection range (default: ±100 years from current year, takes priority over minDate/maxDate)" }
   ],
   "types": {
     "DatePickerValue": "{ date?: Date, time?: TimeValue, endDate?: Date, endTime?: TimeValue }",
     "TimeValue": "{ hour: number, minute: number }",
     "DateCondition": "Date | { from: Date, to: Date } | ((date: Date) => boolean)",
     "DateTimeLimit": "{ date: Date, time?: TimeValue }",
-    "CalendarInitial": "'now' | 'prevMonth' | 'nextMonth' | Date"
+    "CalendarInitial": "'now' | 'prevMonth' | 'nextMonth' | Date",
+    "YearRange": "{ min?: number, max?: number }"
   },
   "examples": [
     {
@@ -51,6 +53,10 @@
     {
       "title": "Custom format",
       "code": "<DatePicker format=\"y년 m월 d일 h시 i분\" />"
+    },
+    {
+      "title": "Year range",
+      "code": "<DatePicker yearRange={{ min: 2020, max: 2030 }} />"
     }
   ],
   "related": ["field", "input"]
