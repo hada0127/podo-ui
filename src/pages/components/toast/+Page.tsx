@@ -27,11 +27,235 @@ export default function Toast() {
               label: 'React',
               content: <ReactContent t={t} />,
             },
+            {
+              key: 'svelte',
+              label: 'Svelte',
+              content: <SvelteContent t={t} />,
+            },
           ]}
           defaultTab="scss"
         />
       </>
     </ToastProvider>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { ToastProvider, useToast } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <h3>ToastProvider</h3>
+        <p>{t('sections.reactUsage.step1Description')}</p>
+
+        <h3>useToast</h3>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>showToast</code></td>
+              <td><code>(options: ToastOptions) =&gt; void</code></td>
+              <td>Show a toast notification</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>ToastOptions</h3>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>message</code></td>
+              <td><code>string</code></td>
+              <td>required</td>
+              <td>{t('sections.reactUsage.messageRequired')}</td>
+            </tr>
+            <tr>
+              <td><code>header</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('sections.reactUsage.headerOptional')}</td>
+            </tr>
+            <tr>
+              <td><code>theme</code></td>
+              <td><code>'default' | 'primary' | 'info' | 'success' | 'warning' | 'danger'</code></td>
+              <td><code>'default'</code></td>
+              <td>Toast color theme</td>
+            </tr>
+            <tr>
+              <td><code>border</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('sections.reactUsage.borderOption')}</td>
+            </tr>
+            <tr>
+              <td><code>long</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('sections.reactUsage.longOption')}</td>
+            </tr>
+            <tr>
+              <td><code>duration</code></td>
+              <td><code>number</code></td>
+              <td><code>3000</code></td>
+              <td>{t('sections.reactUsage.durationOption')}</td>
+            </tr>
+            <tr>
+              <td><code>position</code></td>
+              <td><code>string</code></td>
+              <td><code>'top-right'</code></td>
+              <td>9 positions available</td>
+            </tr>
+            <tr>
+              <td><code>width</code></td>
+              <td><code>string | number</code></td>
+              <td>-</td>
+              <td>{t('sections.reactUsage.widthOption')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('sections.reactUsage.step1Title')}</h2>
+        <p>{t('sections.reactUsage.step1Description')}</p>
+
+        <CodeBlock
+          title="+layout.svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { ToastProvider } from 'podo-ui/svelte';
+  import type { Snippet } from 'svelte';
+
+  let { children }: { children: Snippet } = $props();
+</script>
+
+<ToastProvider>
+  {@render children()}
+</ToastProvider>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('sections.reactUsage.step2Title')}</h2>
+        <p>{t('sections.reactUsage.step2Description')}</p>
+
+        <CodeBlock
+          title="Component.svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { useToast } from 'podo-ui/svelte';
+
+  const { showToast } = useToast();
+
+  function handleClick() {
+    showToast({
+      message: '${t('sections.reactUsage.savedMessage')}',
+      header: '${t('variants.success.label')}',
+      theme: 'success',
+      border: false,
+      position: 'top-right',
+      duration: 3000,
+    });
+  }
+</script>
+
+<button onclick={handleClick}>${t('sections.reactUsage.saveButton')}</button>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('sections.reactUsage.step4Title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { useToast } from 'podo-ui/svelte';
+
+  const { showToast } = useToast();
+
+  // ${t('sections.reactUsage.exampleComment1')}
+  function showSuccess() {
+    showToast({
+      message: '${t('sections.reactUsage.exampleMessage1')}',
+      theme: 'success',
+      position: 'top-right',
+    });
+  }
+
+  // ${t('sections.reactUsage.exampleComment2')}
+  function showInfo() {
+    showToast({
+      header: '${t('sections.reactUsage.exampleHeader2')}',
+      message: '${t('sections.reactUsage.exampleMessage2')}',
+      theme: 'info',
+      border: true,
+      position: 'bottom-center',
+    });
+  }
+
+  // ${t('sections.reactUsage.exampleComment3')}
+  function showLong() {
+    showToast({
+      message: '${t('sections.reactUsage.exampleMessage3')}',
+      theme: 'success',
+      long: true,
+      position: 'bottom-right',
+      duration: 2000,
+    });
+  }
+
+  // ${t('sections.reactUsage.exampleComment5')}
+  function showManualClose() {
+    showToast({
+      header: '${t('sections.reactUsage.exampleHeader5')}',
+      message: '${t('sections.reactUsage.exampleMessage5')}',
+      theme: 'warning',
+      duration: 0,
+      position: 'center',
+    });
+  }
+</script>
+
+<button onclick={showSuccess}>Success Toast</button>
+<button onclick={showInfo}>Info Toast</button>
+<button onclick={showLong}>Long Toast</button>
+<button onclick={showManualClose}>Manual Close Toast</button>`}
+        />
+      </section>
+
+      <section>
+        <h2>Position Options</h2>
+        <CodeBlock
+          language="typescript"
+          code={`type ToastPosition =
+  | 'top-left' | 'top-center' | 'top-right'
+  | 'center-left' | 'center' | 'center-right'
+  | 'bottom-left' | 'bottom-center' | 'bottom-right';`}
+        />
+      </section>
+    </>
   );
 }
 

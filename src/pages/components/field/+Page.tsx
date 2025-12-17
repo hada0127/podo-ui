@@ -26,9 +26,91 @@ export default function FieldPage() {
             label: 'React',
             content: <ReactContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Field } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>label</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.label')}</td>
+            </tr>
+            <tr>
+              <td><code>helper</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.helper')}</td>
+            </tr>
+            <tr>
+              <td><code>children</code></td>
+              <td><code>Snippet</code></td>
+              <td>required</td>
+              <td>{t('react.props.children')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Field, Input, Select } from 'podo-ui/svelte';
+</script>
+
+<Field label="Email" helper="We'll never share your email.">
+  <Input type="email" placeholder="example@email.com" />
+</Field>
+
+<Field label="Password" helper="At least 8 characters.">
+  <Input type="password" placeholder="Enter password" />
+</Field>
+
+<Field label="Category">
+  <Select
+    options={[
+      { value: '1', label: 'Option 1' },
+      { value: '2', label: 'Option 2' },
+    ]}
+    placeholder="Select a category"
+  />
+</Field>`}
+        />
+      </section>
     </>
   );
 }

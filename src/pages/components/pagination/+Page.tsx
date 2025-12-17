@@ -22,9 +22,103 @@ export default function PaginationPage() {
             label: 'React',
             content: <ReactContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="react"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string, options?: object) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Pagination } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>currentPage</code></td>
+              <td><code>number</code></td>
+              <td>-</td>
+              <td>{t('props.currentPage')}</td>
+            </tr>
+            <tr>
+              <td><code>totalPages</code></td>
+              <td><code>number</code></td>
+              <td>-</td>
+              <td>{t('props.totalPages')}</td>
+            </tr>
+            <tr>
+              <td><code>onpagechange</code></td>
+              <td><code>(page: number) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('props.onPageChange')}</td>
+            </tr>
+            <tr>
+              <td><code>maxVisiblePages</code></td>
+              <td><code>number</code></td>
+              <td><code>5</code></td>
+              <td>{t('props.maxVisiblePages')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('basicUsage.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Pagination } from 'podo-ui/svelte';
+
+  let currentPage = $state(1);
+</script>
+
+<Pagination
+  bind:currentPage
+  totalPages={10}
+  onpagechange={(page) => currentPage = page}
+/>
+
+<p>Current page: {currentPage}</p>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('customVisiblePages.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<Pagination
+  bind:currentPage
+  totalPages={15}
+  maxVisiblePages={3}
+  onpagechange={(page) => currentPage = page}
+/>`}
+        />
+      </section>
     </>
   );
 }

@@ -21,9 +21,134 @@ export default function AvatarPage() {
             label: 'React',
             content: <ReactContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="react"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Avatar } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>type</code></td>
+              <td><code>'image' | 'icon' | 'text'</code></td>
+              <td><code>'icon'</code></td>
+              <td>{t('props.type')}</td>
+            </tr>
+            <tr>
+              <td><code>src</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.src')}</td>
+            </tr>
+            <tr>
+              <td><code>icon</code></td>
+              <td><code>string</code></td>
+              <td><code>'icon-user'</code></td>
+              <td>{t('props.icon')}</td>
+            </tr>
+            <tr>
+              <td><code>text</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.text')}</td>
+            </tr>
+            <tr>
+              <td><code>size</code></td>
+              <td><code>16 | 20 | 24 | 28 | 32 | 36 | 40 | 48 | 56</code></td>
+              <td><code>56</code></td>
+              <td>{t('props.size')}</td>
+            </tr>
+            <tr>
+              <td><code>activityRing</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.activityRing')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('overview.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Avatar } from 'podo-ui/svelte';
+</script>
+
+<!-- Image avatar -->
+<Avatar type="image" src="/profile.jpg" size={56} />
+
+<!-- Icon avatar (default) -->
+<Avatar type="icon" icon="icon-user" size={56} />
+
+<!-- Text avatar -->
+<Avatar type="text" text="AB" size={56} />
+
+<!-- With activity ring -->
+<Avatar type="image" src="/profile.jpg" size={56} activityRing />`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('sizes.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<Avatar type="image" src="/profile.jpg" size={16} />
+<Avatar type="image" src="/profile.jpg" size={24} />
+<Avatar type="image" src="/profile.jpg" size={32} />
+<Avatar type="image" src="/profile.jpg" size={40} />
+<Avatar type="image" src="/profile.jpg" size={48} />
+<Avatar type="image" src="/profile.jpg" size={56} />`}
+        />
+      </section>
+
+      <section>
+        <h2>Clickable Avatar</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Avatar } from 'podo-ui/svelte';
+
+  function handleClick() {
+    console.log('Avatar clicked');
+  }
+</script>
+
+<Avatar type="image" src="/profile.jpg" onclick={handleClick} />`}
+        />
+      </section>
     </>
   );
 }

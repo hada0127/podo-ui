@@ -24,7 +24,9 @@
       "Bash(git pull:*)",
       "Bash(node -e:*)",
       "Bash(find:*)",
-      "Bash(npm run build:lib:*)"
+      "Bash(npm run build:lib:*)",
+      "Bash(xargs:*)",
+      "Bash(npm run build:svelte:*)"
     ],
     "deny": [],
     "ask": []

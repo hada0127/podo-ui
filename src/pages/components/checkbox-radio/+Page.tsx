@@ -37,9 +37,128 @@ export default function CheckboxRadio() {
               />
             ),
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Checkbox, Radio, RadioGroup } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Checkbox Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>label</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.label')}</td>
+            </tr>
+            <tr>
+              <td><code>checked</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('react.props.checked')}</td>
+            </tr>
+            <tr>
+              <td><code>indeterminate</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('react.props.indeterminate')}</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('react.props.disabled')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.sections.checkboxUsage')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Checkbox } from 'podo-ui/svelte';
+
+  let checked = $state(false);
+</script>
+
+<Checkbox label="I agree" bind:checked />
+<Checkbox label="Disabled" disabled />
+<Checkbox label="Indeterminate" indeterminate />`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('react.sections.radioGroupUsage')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { RadioGroup } from 'podo-ui/svelte';
+
+  let selected = $state('option1');
+
+  const options = [
+    { value: 'option1', label: 'Option 1' },
+    { value: 'option2', label: 'Option 2' },
+    { value: 'option3', label: 'Option 3' },
+    { value: 'option4', label: 'Disabled', disabled: true },
+  ];
+</script>
+
+<RadioGroup
+  name="myRadio"
+  bind:value={selected}
+  {options}
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>Individual Radio</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Radio } from 'podo-ui/svelte';
+
+  let selected = $state('a');
+</script>
+
+<Radio name="group" value="a" label="Option A" bind:group={selected} />
+<Radio name="group" value="b" label="Option B" bind:group={selected} />
+<Radio name="group" value="c" label="Option C" bind:group={selected} />`}
+        />
+      </section>
     </>
   );
 }

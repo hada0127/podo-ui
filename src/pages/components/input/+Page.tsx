@@ -41,6 +41,11 @@ export default function Input() {
               />
             ),
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
@@ -265,6 +270,157 @@ input.success {
 input.danger {
   border: 1px solid color('danger');
 }`}
+        />
+      </section>
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Input } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.value')}</td>
+            </tr>
+            <tr>
+              <td><code>oninput</code></td>
+              <td><code>(e: Event) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('react.props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>validator</code></td>
+              <td><code>ZodSchema</code></td>
+              <td>-</td>
+              <td>{t('react.props.validator')}</td>
+            </tr>
+            <tr>
+              <td><code>withIcon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.withIcon')}</td>
+            </tr>
+            <tr>
+              <td><code>withRightIcon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.withRightIcon')}</td>
+            </tr>
+            <tr>
+              <td><code>unit</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.unit')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.validation.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Input } from 'podo-ui/svelte';
+  import { z } from 'zod';
+
+  let email = $state('');
+</script>
+
+<Input
+  value={email}
+  oninput={(e) => email = e.currentTarget.value}
+  validator={z.string().email('Please enter a valid email')}
+  placeholder="Email"
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('react.icons.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Input } from 'podo-ui/svelte';
+
+  let search = $state('');
+</script>
+
+<Input
+  value={search}
+  oninput={(e) => search = e.currentTarget.value}
+  withIcon="icon-search"
+  placeholder="Search..."
+/>
+
+<Input
+  withRightIcon="icon-mail"
+  placeholder="Email"
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('react.unit.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Input } from 'podo-ui/svelte';
+
+  let distance = $state('');
+</script>
+
+<Input
+  type="number"
+  value={distance}
+  oninput={(e) => distance = e.currentTarget.value}
+  unit="km"
+  placeholder="Distance"
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>Two-way Binding</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Input } from 'podo-ui/svelte';
+
+  let value = $state('');
+</script>
+
+<!-- Using bind:value for two-way binding -->
+<Input bind:value placeholder="Type here..." />
+
+<p>Value: {value}</p>`}
         />
       </section>
     </>

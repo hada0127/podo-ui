@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "dist/svelte",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2020",
+    "verbatimModuleSyntax": true,
+    "types": ["svelte"]
+  },
+  "include": ["svelte/**/*.ts", "svelte/**/*.svelte"],
+  "exclude": ["node_modules", "dist"]
+}

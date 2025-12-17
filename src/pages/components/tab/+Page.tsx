@@ -41,9 +41,119 @@ export default function TabPage() {
               />
             ),
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Tab, TabPanel } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>items</code></td>
+              <td><code>TabItem[]</code></td>
+              <td>required</td>
+              <td>{t('react.props.items')}</td>
+            </tr>
+            <tr>
+              <td><code>activeKey</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.activeKey')}</td>
+            </tr>
+            <tr>
+              <td><code>fill</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('react.props.fill')}</td>
+            </tr>
+            <tr>
+              <td><code>onchange</code></td>
+              <td><code>(key: string) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('react.props.onChange')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.sections.basicUsage')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Tab, TabPanel } from 'podo-ui/svelte';
+
+  let activeKey = $state('overview');
+
+  const tabItems = [
+    { key: 'overview', label: 'Overview' },
+    { key: 'features', label: 'Features' },
+    { key: 'pricing', label: 'Pricing' },
+  ];
+</script>
+
+<Tab
+  items={tabItems}
+  bind:activeKey
+  onchange={(key) => activeKey = key}
+/>
+
+<TabPanel tabKey="overview" {activeKey}>
+  Overview content here
+</TabPanel>
+<TabPanel tabKey="features" {activeKey}>
+  Features content here
+</TabPanel>
+<TabPanel tabKey="pricing" {activeKey}>
+  Pricing content here
+</TabPanel>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('react.sections.fillMode')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<Tab
+  items={[
+    { key: 'left', label: 'Left' },
+    { key: 'right', label: 'Right' },
+  ]}
+  fill
+  activeKey="left"
+/>`}
+        />
+      </section>
     </>
   );
 }

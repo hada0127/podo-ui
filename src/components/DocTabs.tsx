@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from './DocTabs.module.scss';
 
-export type DocTabKey = 'scss' | 'react' | 'cdn';
+export type DocTabKey = 'scss' | 'react' | 'svelte' | 'cdn';
 
 export interface DocTabItem {
   key: DocTabKey;

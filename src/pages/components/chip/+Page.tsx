@@ -36,9 +36,138 @@ export default function ChipPage() {
             label: 'React',
             content: <ReactContent t={t} tags={tags} handleDelete={handleDelete} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Chip } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>theme</code></td>
+              <td><code>'default' | 'blue' | 'green' | 'orange' | 'red'</code></td>
+              <td><code>'default'</code></td>
+              <td>{t('props.theme')}</td>
+            </tr>
+            <tr>
+              <td><code>type</code></td>
+              <td><code>'default' | 'fill' | 'border'</code></td>
+              <td><code>'default'</code></td>
+              <td>{t('props.type')}</td>
+            </tr>
+            <tr>
+              <td><code>size</code></td>
+              <td><code>'sm' | 'md'</code></td>
+              <td><code>'md'</code></td>
+              <td>{t('props.size')}</td>
+            </tr>
+            <tr>
+              <td><code>round</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.round')}</td>
+            </tr>
+            <tr>
+              <td><code>icon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.icon')}</td>
+            </tr>
+            <tr>
+              <td><code>ondelete</code></td>
+              <td><code>() =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('props.onDelete')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.basicUsage')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Chip } from 'podo-ui/svelte';
+</script>
+
+<Chip theme="blue" icon="icon-ellipse">Label</Chip>
+<Chip theme="green" icon="icon-ellipse">Label</Chip>
+<Chip theme="orange" icon="icon-ellipse">Label</Chip>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('react.withDelete')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Chip } from 'podo-ui/svelte';
+
+  let tags = $state([
+    { id: 1, label: 'React' },
+    { id: 2, label: 'TypeScript' },
+  ]);
+
+  function handleDelete(id: number) {
+    tags = tags.filter((tag) => tag.id !== id);
+  }
+</script>
+
+{#each tags as tag (tag.id)}
+  <Chip
+    theme="blue"
+    round
+    icon="icon-ellipse"
+    ondelete={() => handleDelete(tag.id)}
+  >
+    {tag.label}
+  </Chip>
+{/each}`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('react.variants')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<Chip size="sm" theme="blue" icon="icon-user">Small</Chip>
+<Chip theme="green" type="fill" icon="icon-check">Fill Type</Chip>
+<Chip theme="orange" type="border" round>Border Round</Chip>
+<Chip theme="red" icon="icon-warning" ondelete={() => {}}>With Delete</Chip>`}
+        />
+      </section>
     </>
   );
 }

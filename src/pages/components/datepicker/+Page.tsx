@@ -248,6 +248,11 @@ export default function DatePickerPage() {
             ),
           },
           {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
+          {
             key: 'cdn',
             label: 'CDN',
             content: (
@@ -265,6 +270,390 @@ export default function DatePickerPage() {
         ]}
         defaultTab="react"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { DatePicker } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>mode</code></td>
+              <td><code>'instant' | 'period'</code></td>
+              <td><code>'instant'</code></td>
+              <td>{t('props.mode')}</td>
+            </tr>
+            <tr>
+              <td><code>type</code></td>
+              <td><code>'date' | 'time' | 'datetime'</code></td>
+              <td><code>'date'</code></td>
+              <td>{t('props.type')}</td>
+            </tr>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>DatePickerValue</code></td>
+              <td>-</td>
+              <td>{t('props.value')}</td>
+            </tr>
+            <tr>
+              <td><code>onchange</code></td>
+              <td><code>(value) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>placeholder</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.placeholder')}</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.disabled')}</td>
+            </tr>
+            <tr>
+              <td><code>disable</code></td>
+              <td><code>DateCondition[]</code></td>
+              <td>-</td>
+              <td>{t('props.disable')}</td>
+            </tr>
+            <tr>
+              <td><code>enable</code></td>
+              <td><code>DateCondition[]</code></td>
+              <td>-</td>
+              <td>{t('props.enable')}</td>
+            </tr>
+            <tr>
+              <td><code>minDate</code></td>
+              <td><code>Date | DateTimeLimit</code></td>
+              <td>-</td>
+              <td>{t('props.minDate')}</td>
+            </tr>
+            <tr>
+              <td><code>maxDate</code></td>
+              <td><code>Date | DateTimeLimit</code></td>
+              <td>-</td>
+              <td>{t('props.maxDate')}</td>
+            </tr>
+            <tr>
+              <td><code>yearRange</code></td>
+              <td><code>YearRange</code></td>
+              <td>-</td>
+              <td>{t('props.yearRange')}</td>
+            </tr>
+            <tr>
+              <td><code>minuteStep</code></td>
+              <td><code>1 | 5 | 10 | 15 | 20 | 30</code></td>
+              <td><code>1</code></td>
+              <td>{t('props.minuteStep')}</td>
+            </tr>
+            <tr>
+              <td><code>format</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.format')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('basicUsage.title')}</h2>
+        <p>{t('basicUsage.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let instantDate = $state<DatePickerValue>({});
+  let periodDate = $state<DatePickerValue>({});
+</script>
+
+<!-- Single date select -->
+<DatePicker
+  mode="instant"
+  type="date"
+  bind:value={instantDate}
+/>
+
+<!-- Period select -->
+<DatePicker
+  mode="period"
+  type="date"
+  bind:value={periodDate}
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('types.title')}</h2>
+        <p>{t('types.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let dateValue = $state<DatePickerValue>({});
+  let timeValue = $state<DatePickerValue>({});
+  let datetimeValue = $state<DatePickerValue>({});
+</script>
+
+<!-- Date only -->
+<DatePicker type="date" bind:value={dateValue} />
+
+<!-- Time only -->
+<DatePicker type="time" bind:value={timeValue} />
+
+<!-- Date and time -->
+<DatePicker type="datetime" bind:value={datetimeValue} />`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('period.title')}</h2>
+        <p>{t('period.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let periodDate = $state<DatePickerValue>({});
+  let periodTime = $state<DatePickerValue>({});
+  let periodDatetime = $state<DatePickerValue>({});
+</script>
+
+<!-- Date range -->
+<DatePicker mode="period" type="date" bind:value={periodDate} />
+
+<!-- Time range -->
+<DatePicker mode="period" type="time" bind:value={periodTime} />
+
+<!-- Datetime range -->
+<DatePicker mode="period" type="datetime" bind:value={periodDatetime} />`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('minMax.title')}</h2>
+        <p>{t('minMax.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let value = $state<DatePickerValue>({});
+
+  const today = new Date();
+  const thirtyDaysLater = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+</script>
+
+<!-- Date only min/max -->
+<DatePicker
+  type="date"
+  bind:value
+  minDate={today}
+  maxDate={thirtyDaysLater}
+/>
+
+<!-- DateTime with time limits -->
+<DatePicker
+  type="datetime"
+  bind:value
+  minDate={{ date: today, time: { hour: 9, minute: 0 } }}
+  maxDate={{ date: thirtyDaysLater, time: { hour: 18, minute: 0 } }}
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('disabling.title')}</h2>
+        <p>{t('disabling.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let value = $state<DatePickerValue>({});
+  const now = new Date();
+</script>
+
+<!-- Disable specific dates -->
+<DatePicker
+  type="date"
+  bind:value
+  disable={[
+    new Date(now.getFullYear(), now.getMonth(), 10),
+    new Date(now.getFullYear(), now.getMonth(), 15),
+  ]}
+/>
+
+<!-- Disable date range -->
+<DatePicker
+  type="date"
+  bind:value
+  disable={[
+    {
+      from: new Date(now.getFullYear(), now.getMonth(), 5),
+      to: new Date(now.getFullYear(), now.getMonth(), 12),
+    },
+  ]}
+/>
+
+<!-- Disable weekends -->
+<DatePicker
+  type="date"
+  bind:value
+  disable={[
+    (date) => date.getDay() === 0 || date.getDay() === 6,
+  ]}
+/>
+
+<!-- Enable only specific dates -->
+<DatePicker
+  type="date"
+  bind:value
+  enable={[
+    {
+      from: new Date(now.getFullYear(), now.getMonth(), 1),
+      to: new Date(now.getFullYear(), now.getMonth(), 7),
+    },
+  ]}
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('minuteStep.title')}</h2>
+        <p>{t('minuteStep.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let value1 = $state<DatePickerValue>({});
+  let value15 = $state<DatePickerValue>({});
+  let value30 = $state<DatePickerValue>({});
+</script>
+
+<DatePicker type="time" bind:value={value1} minuteStep={1} />
+<DatePicker type="time" bind:value={value15} minuteStep={15} />
+<DatePicker type="time" bind:value={value30} minuteStep={30} />`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('format.title')}</h2>
+        <p>{t('format.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let value = $state<DatePickerValue>({});
+</script>
+
+<DatePicker type="date" format="y-m-d" bind:value />
+<DatePicker type="date" format="y.m.d" bind:value />
+<DatePicker type="date" format="y년 m월 d일" bind:value />
+<DatePicker type="datetime" format="y.m.d h:i" bind:value />`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('yearRange.title')}</h2>
+        <p>{t('yearRange.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let value = $state<DatePickerValue>({});
+</script>
+
+<!-- Explicit year range -->
+<DatePicker
+  type="date"
+  bind:value
+  yearRange={{ min: 2020, max: 2030 }}
+/>
+
+<!-- Combined with minDate/maxDate -->
+<DatePicker
+  type="date"
+  bind:value
+  yearRange={{ min: 2020, max: 2030 }}
+  minDate={new Date(2023, 0, 1)}
+  maxDate={new Date(2025, 11, 31)}
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('valueInterface.title')}</h2>
+        <p>{t('valueInterface.description')}</p>
+
+        <CodeBlock
+          title="TypeScript"
+          language="typescript"
+          code={`interface TimeValue {
+  hour: number;   // 0-23
+  minute: number; // 0-59
+}
+
+interface DatePickerValue {
+  date?: Date;        // Start date
+  time?: TimeValue;   // Start time
+  endDate?: Date;     // End date (period mode)
+  endTime?: TimeValue; // End time (period mode)
+}`}
+        />
+      </section>
     </>
   );
 }

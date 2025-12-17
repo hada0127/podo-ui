@@ -1,0 +1,227 @@
+@use '../../mixin.scss' as *;
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.tooltipBox {
+  position: absolute;
+  padding: s(2) s(4);
+  border-radius: r(3);
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22.4px;
+  white-space: nowrap;
+  z-index: 1000;
+
+  // Default variant
+  &.variantDefault {
+    background-color: color(default-deep);
+    color: color(text-action-reverse) !important;
+  }
+
+  // Info variant
+  &.variantInfo {
+    background-color: color(info);
+    color: color(text-action-reverse) !important;
+  }
+
+  // Arrow styles
+  &::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    transform-origin: center;
+  }
+
+  // Top positions
+  &.top,
+  &.topLeft,
+  &.topRight {
+    bottom: calc(100% + var(--tooltip-offset, 8px));
+
+    &::before {
+      bottom: -6px;
+      border-radius: 0 0 2px 0;
+      transform: rotate(45deg);
+    }
+
+    &.variantDefault::before {
+      background-color: color(default-deep);
+    }
+
+    &.variantInfo::before {
+      background-color: color(info);
+    }
+  }
+
+  &.top {
+    left: 50%;
+    transform: translateX(-50%);
+
+    &::before {
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+  }
+
+  &.topLeft {
+    left: 0;
+
+    &::before {
+      left: 8px;
+    }
+  }
+
+  &.topRight {
+    right: 0;
+
+    &::before {
+      right: 8px;
+    }
+  }
+
+  // Bottom positions
+  &.bottom,
+  &.bottomLeft,
+  &.bottomRight {
+    top: calc(100% + var(--tooltip-offset, 8px));
+
+    &::before {
+      top: -6px;
+      border-radius: 2px 0 0 0;
+      transform: rotate(45deg);
+    }
+
+    &.variantDefault::before {
+      background-color: color(default-deep);
+    }
+
+    &.variantInfo::before {
+      background-color: color(info);
+    }
+  }
+
+  &.bottom {
+    left: 50%;
+    transform: translateX(-50%);
+
+    &::before {
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+  }
+
+  &.bottomLeft {
+    left: 0;
+
+    &::before {
+      left: 8px;
+    }
+  }
+
+  &.bottomRight {
+    right: 0;
+
+    &::before {
+      right: 8px;
+    }
+  }
+
+  // Left positions
+  &.left,
+  &.leftTop,
+  &.leftBottom {
+    right: calc(100% + var(--tooltip-offset, 8px));
+
+    &::before {
+      right: -6px;
+      border-radius: 0 2px 0 0;
+      transform: rotate(45deg);
+    }
+
+    &.variantDefault::before {
+      background-color: color(default-deep);
+    }
+
+    &.variantInfo::before {
+      background-color: color(info);
+    }
+  }
+
+  &.left {
+    top: 50%;
+    transform: translateY(-50%);
+
+    &::before {
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+    }
+  }
+
+  &.leftTop {
+    top: 0;
+
+    &::before {
+      top: 8px;
+    }
+  }
+
+  &.leftBottom {
+    bottom: 0;
+
+    &::before {
+      bottom: 8px;
+    }
+  }
+
+  // Right positions
+  &.right,
+  &.rightTop,
+  &.rightBottom {
+    left: calc(100% + var(--tooltip-offset, 8px));
+
+    &::before {
+      left: -6px;
+      border-radius: 0 0 0 2px;
+      transform: rotate(45deg);
+    }
+
+    &.variantDefault::before {
+      background-color: color(default-deep);
+    }
+
+    &.variantInfo::before {
+      background-color: color(info);
+    }
+  }
+
+  &.right {
+    top: 50%;
+    transform: translateY(-50%);
+
+    &::before {
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+    }
+  }
+
+  &.rightTop {
+    top: 0;
+
+    &::before {
+      top: 8px;
+    }
+  }
+
+  &.rightBottom {
+    bottom: 0;
+
+    &::before {
+      bottom: 8px;
+    }
+  }
+}

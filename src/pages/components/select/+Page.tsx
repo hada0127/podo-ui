@@ -59,9 +59,112 @@ export default function Select() {
               />
             ),
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Select } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.value')}</td>
+            </tr>
+            <tr>
+              <td><code>onchange</code></td>
+              <td><code>(e: Event) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('react.props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>options</code></td>
+              <td><code>{`{ value: string; label: string }[]`}</code></td>
+              <td>required</td>
+              <td>{t('react.props.options')}</td>
+            </tr>
+            <tr>
+              <td><code>placeholder</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.placeholder')}</td>
+            </tr>
+            <tr>
+              <td><code>withIcon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.withIcon')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.sections.basicUsage')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Select } from 'podo-ui/svelte';
+
+  let selected = $state('');
+
+  const options = [
+    { value: 'option1', label: 'Option 1' },
+    { value: 'option2', label: 'Option 2' },
+    { value: 'option3', label: 'Option 3' },
+  ];
+</script>
+
+<Select
+  bind:value={selected}
+  {options}
+  placeholder="Select an option"
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('react.sections.icons')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<Select
+  options={roleOptions}
+  withIcon="icon-user"
+  placeholder="Select role"
+/>`}
+        />
+      </section>
     </>
   );
 }

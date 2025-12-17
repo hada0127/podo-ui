@@ -21,9 +21,133 @@ export default function TooltipPage() {
             label: 'React',
             content: <ReactContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="react"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Tooltip } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>content</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.content')}</td>
+            </tr>
+            <tr>
+              <td><code>variant</code></td>
+              <td><code>'default' | 'info'</code></td>
+              <td><code>'default'</code></td>
+              <td>{t('props.variant')}</td>
+            </tr>
+            <tr>
+              <td><code>position</code></td>
+              <td><code>'top' | 'bottom' | 'left' | 'right' | ...</code></td>
+              <td><code>'top'</code></td>
+              <td>{t('props.position')}</td>
+            </tr>
+            <tr>
+              <td><code>offset</code></td>
+              <td><code>number</code></td>
+              <td><code>8</code></td>
+              <td>{t('props.offset')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('overview.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Tooltip } from 'podo-ui/svelte';
+</script>
+
+<Tooltip content="Additional information" variant="default">
+  <button>Hover me</button>
+</Tooltip>
+
+<Tooltip content="Important notice" variant="info">
+  <i class="icon-info"></i>
+</Tooltip>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('positions.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<Tooltip content="Top" position="top">
+  <button>Top</button>
+</Tooltip>
+
+<Tooltip content="Bottom" position="bottom">
+  <button>Bottom</button>
+</Tooltip>
+
+<Tooltip content="Left" position="left">
+  <button>Left</button>
+</Tooltip>
+
+<Tooltip content="Right" position="right">
+  <button>Right</button>
+</Tooltip>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('controlled.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Tooltip } from 'podo-ui/svelte';
+
+  let show = $state(false);
+</script>
+
+<!-- Always visible -->
+<Tooltip content="Always visible" isVisible={true}>
+  <button>Always Visible</button>
+</Tooltip>
+
+<!-- Controlled with state -->
+<Tooltip content="Controlled" isVisible={show}>
+  <button onclick={() => show = !show}>Toggle</button>
+</Tooltip>`}
+        />
+      </section>
     </>
   );
 }

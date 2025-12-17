@@ -28,6 +28,11 @@ export default function Button() {
             label: 'React',
             content: <ReactContent t={t} loading={loading} setLoading={setLoading} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
@@ -294,6 +299,164 @@ interface ReactContentProps {
   t: (key: string) => string;
   loading: boolean;
   setLoading: (loading: boolean) => void;
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Button } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>theme</code></td>
+              <td><code>'primary' | 'success' | 'warning' | 'danger' | 'info' | 'link'</code></td>
+              <td>-</td>
+              <td>{t('react.props.theme')}</td>
+            </tr>
+            <tr>
+              <td><code>variant</code></td>
+              <td><code>'solid' | 'fill' | 'border' | 'text'</code></td>
+              <td>'solid'</td>
+              <td>{t('react.props.variant')}</td>
+            </tr>
+            <tr>
+              <td><code>size</code></td>
+              <td><code>'xxs' | 'xs' | 'sm' | 'md' | 'lg'</code></td>
+              <td>'sm'</td>
+              <td>{t('react.props.size')}</td>
+            </tr>
+            <tr>
+              <td><code>icon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.icon')}</td>
+            </tr>
+            <tr>
+              <td><code>rightIcon</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.rightIcon')}</td>
+            </tr>
+            <tr>
+              <td><code>loading</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('react.props.loading')}</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('react.props.disabled')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.sections.basicUsage')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Button } from 'podo-ui/svelte';
+</script>
+
+<!-- Basic -->
+<Button theme="primary">Primary</Button>
+<Button theme="danger" variant="border">Danger Border</Button>
+
+<!-- With Icons -->
+<Button theme="primary" icon="icon-plus">Create</Button>
+<Button theme="success" icon="icon-check" rightIcon="icon-arrow-right">Confirm</Button>
+
+<!-- Sizes -->
+<Button theme="primary" size="xxs">XXS</Button>
+<Button theme="primary" size="lg">Large</Button>
+
+<!-- Loading -->
+<Button theme="primary" loading>Loading...</Button>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('react.sections.iconsAndLoading')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Button } from 'podo-ui/svelte';
+
+  let loading = $state(false);
+
+  function handleClick() {
+    loading = true;
+    setTimeout(() => loading = false, 2000);
+  }
+</script>
+
+<Button theme="primary" icon="icon-plus">Create</Button>
+<Button theme="success" icon="icon-check">Confirm</Button>
+<Button theme="primary" {loading} onclick={handleClick}>
+  {loading ? 'Loading...' : 'Click to Load'}
+</Button>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('react.sections.sizes')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Button } from 'podo-ui/svelte';
+</script>
+
+<Button theme="primary" size="xxs">XXS</Button>
+<Button theme="primary" size="xs">XS</Button>
+<Button theme="primary" size="sm">SM (Default)</Button>
+<Button theme="primary" size="md">MD</Button>
+<Button theme="primary" size="lg">LG</Button>`}
+        />
+      </section>
+
+      <section>
+        <h2>Snippets (Children)</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Button } from 'podo-ui/svelte';
+</script>
+
+<!-- Text content -->
+<Button theme="primary">Click me</Button>
+
+<!-- With custom content -->
+<Button theme="success">
+  <span>Custom</span> Content
+</Button>`}
+        />
+      </section>
+    </>
+  );
 }
 
 function ReactContent({ t, loading, setLoading }: ReactContentProps) {

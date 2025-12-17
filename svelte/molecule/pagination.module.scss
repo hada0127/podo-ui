@@ -1,0 +1,61 @@
+@use '../../mixin.scss' as *;
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: s(1);
+}
+
+.pageButton {
+  @include p3;
+  min-width: 32px;
+  height: 32px;
+  padding: s(1) s(2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: color(text-action);
+  border: 1px solid transparent;
+  border-radius: r(2);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+
+  &:hover:not(.active) {
+    background-color: color(default-fill);
+    color: color(text-action-hover);
+  }
+
+  &:active:not(.active) {
+    background-color: color(default-hover);
+  }
+
+  &.active {
+    background-color: color(primary);
+    color: color(primary-reverse);
+    border-color: color(primary);
+    font-weight: 600;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 4px solid color(primary-outline);
+  }
+
+  &:disabled {
+    color: color(text-action-disabled);
+    cursor: not-allowed;
+    background-color: transparent;
+  }
+
+  i {
+    font-size: 16px;
+  }
+}
+
+.pageButtonPlaceholder {
+  min-width: 32px;
+  height: 32px;
+}

@@ -19,9 +19,126 @@ export default function Table() {
             label: 'SCSS',
             content: <ScssContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Table } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>columns</code></td>
+              <td><code>TableColumn[]</code></td>
+              <td>required</td>
+              <td>Column definitions</td>
+            </tr>
+            <tr>
+              <td><code>dataSource</code></td>
+              <td><code>T[]</code></td>
+              <td>required</td>
+              <td>Data array</td>
+            </tr>
+            <tr>
+              <td><code>rowKey</code></td>
+              <td><code>keyof T | (record: T) =&gt; string</code></td>
+              <td>required</td>
+              <td>Unique key for each row</td>
+            </tr>
+            <tr>
+              <td><code>list</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>Clickable rows with hover effect</td>
+            </tr>
+            <tr>
+              <td><code>border</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>Show row borders</td>
+            </tr>
+            <tr>
+              <td><code>fill</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>Filled background style</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('basicUsage.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Table } from 'podo-ui/svelte';
+
+  const columns = [
+    { key: 'name', title: 'Name' },
+    { key: 'email', title: 'Email' },
+    { key: 'role', title: 'Role' },
+  ];
+
+  const dataSource = [
+    { id: 1, name: 'John', email: 'john@example.com', role: 'Admin' },
+    { id: 2, name: 'Jane', email: 'jane@example.com', role: 'User' },
+  ];
+</script>
+
+<Table
+  {columns}
+  {dataSource}
+  rowKey="id"
+/>
+
+<!-- With list style (clickable rows) -->
+<Table
+  {columns}
+  {dataSource}
+  rowKey="id"
+  list
+  onrowclick={(record) => console.log(record)}
+/>
+
+<!-- With border and fill -->
+<Table
+  {columns}
+  {dataSource}
+  rowKey="id"
+  border
+  fill
+/>`}
+        />
+      </section>
     </>
   );
 }

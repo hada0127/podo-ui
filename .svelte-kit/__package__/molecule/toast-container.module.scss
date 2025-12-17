@@ -1,0 +1,70 @@
+@use '../../mixin' as *;
+
+.toastPortal {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.toastContainer {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: s(3);
+  padding: s(5);
+  pointer-events: auto;
+
+  // Top positions
+  &.top-left {
+    top: 0;
+    left: 0;
+  }
+
+  &.top-center {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &.top-right {
+    top: 0;
+    right: 0;
+  }
+
+  // Center positions
+  &.center-left {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  &.center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &.center-right {
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+  }
+
+  // Bottom positions
+  &.bottom-left {
+    bottom: 0;
+    left: 0;
+  }
+
+  &.bottom-center {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &.bottom-right {
+    bottom: 0;
+    right: 0;
+  }
+}

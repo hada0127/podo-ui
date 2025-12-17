@@ -25,6 +25,11 @@ export default function Usage() {
             label: 'React',
             content: <ReactContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
@@ -302,6 +307,124 @@ document.documentElement.setAttribute('data-color-mode', '');`}
             <strong>{t('theme.note.title')}</strong> {t('theme.note.content')}
           </div>
         </div>
+      </section>
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="svelte"
+          code={`<script lang="ts">
+  import { Input, Textarea, Editor, Field } from 'podo-ui/svelte';
+</script>`}
+        />
+      </section>
+
+      <section>
+        <h2>Svelte Components</h2>
+        <p>
+          Svelte 5 runes mode components are available from the <code>/svelte</code> path.
+          All components support two-way binding with <code>bind:</code> syntax.
+        </p>
+
+        <CodeBlock
+          title="Basic Form Example"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Input, Textarea, Editor, Field } from 'podo-ui/svelte';
+
+  let name = $state('');
+  let description = $state('');
+</script>
+
+<Field label="${t('reactComponents.example.label')}" required>
+  <Input bind:value={name} placeholder="${t('reactComponents.example.placeholder')}" />
+</Field>
+
+<Field label="Description">
+  <Textarea bind:value={description} placeholder="Enter description" />
+</Field>`}
+        />
+      </section>
+
+      <section>
+        <h2>Svelte 5 Runes Mode</h2>
+        <p>
+          podo-ui Svelte components use Svelte 5 runes mode with <code>$state()</code>, <code>$derived()</code>, and <code>$effect()</code>.
+        </p>
+
+        <CodeBlock
+          title="State Management"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Input, Button } from 'podo-ui/svelte';
+
+  let value = $state('');
+  let isValid = $derived(value.length >= 3);
+</script>
+
+<Input bind:value placeholder="Enter at least 3 characters" />
+<Button disabled={!isValid}>Submit</Button>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('theme.title')}</h2>
+        <p>
+          {t('theme.description')}
+        </p>
+
+        <CodeBlock
+          title="Theme Toggle"
+          language="svelte"
+          code={`<script lang="ts">
+  let theme = $state<'light' | 'dark' | ''>('');
+
+  function setTheme(mode: 'light' | 'dark' | '') {
+    theme = mode;
+    document.documentElement.setAttribute('data-color-mode', mode);
+  }
+</script>
+
+<button onclick={() => setTheme('light')}>Light</button>
+<button onclick={() => setTheme('dark')}>Dark</button>
+<button onclick={() => setTheme('')}>System</button>`}
+        />
+
+        <div className={styles.note}>
+          <i className="icon-info"></i>
+          <div>
+            <strong>{t('theme.note.title')}</strong> {t('theme.note.content')}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Available Components</h2>
+        <p>All React components are available in Svelte with the same functionality.</p>
+
+        <CodeBlock
+          title="All Components"
+          language="svelte"
+          code={`<script lang="ts">
+  // Atom Components
+  import {
+    Button, Label, Input, Textarea, Checkbox, Radio,
+    Select, Toggle, File, Avatar, Chip, Tooltip
+  } from 'podo-ui/svelte';
+
+  // Molecule Components
+  import {
+    Field, Pagination, Tab, Table, Toast, ToastProvider,
+    DatePicker, Editor, EditorView
+  } from 'podo-ui/svelte';
+</script>`}
+        />
       </section>
     </>
   );

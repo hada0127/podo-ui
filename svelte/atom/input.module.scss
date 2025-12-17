@@ -1,0 +1,98 @@
+@use '../../mixin.scss' as *;
+.style {
+  display: flex;
+  flex-direction: column;
+  gap: s(3);
+
+  > div {
+    position: relative;
+    width: fit-content;
+
+    > i {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: color('text-sub');
+      pointer-events: none;
+    }
+
+    &:global(.with-icon) {
+      > i {
+        left: s(3);
+      }
+
+      > input {
+        padding-left: s(8);
+      }
+    }
+
+    &:global(.with-right-icon) {
+      > i {
+        right: s(3);
+      }
+
+      > input {
+        padding-right: s(7);
+      }
+    }
+
+    :global(.unit) {
+      position: absolute;
+      right: s(3);
+      top: 50%;
+      transform: translateY(-50%);
+      color: color('text-sub');
+      pointer-events: none;
+    }
+
+    > input {
+      @include p3;
+      padding: s(3) s(4);
+      background-color: color('bg-block');
+      border-radius: r(3);
+      border: 1px solid color('border-disabled');
+
+      &:focus-visible:not(:disabled) {
+        border-color: color('primary-base');
+        outline: 4px solid color('primary-outline');
+      }
+
+      &::placeholder {
+        color: color('placeholder');
+      }
+
+      &:global(.success) {
+        border-color: color('success');
+
+        &:focus-visible:not(:disabled) {
+          outline: 4px solid color('success-outline');
+        }
+      }
+
+      &:global(.danger) {
+        border-color: color('danger');
+
+        &:focus-visible:not(:disabled) {
+          outline: 4px solid color('danger-outline');
+        }
+      }
+
+      /* Chrome, Safari, Edge, Opera */
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* Firefox  */
+      &[type='number'] {
+        -moz-appearance: textfield;
+      }
+    }
+  }
+
+  :global(.validator) {
+    @include p4;
+    color: color('danger');
+  }
+}

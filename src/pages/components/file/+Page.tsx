@@ -27,9 +27,102 @@ export default function File() {
             label: 'React',
             content: <ReactContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { FileInput } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>accept</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.accept')}</td>
+            </tr>
+            <tr>
+              <td><code>multiple</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('react.props.multiple')}</td>
+            </tr>
+            <tr>
+              <td><code>onchange</code></td>
+              <td><code>(e: Event) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('react.props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>onfileselect</code></td>
+              <td><code>(files: File[]) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('react.props.onFileSelect')}</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('react.props.disabled')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { FileInput } from 'podo-ui/svelte';
+
+  let files: File[] = $state([]);
+</script>
+
+<!-- Basic usage -->
+<FileInput onchange={(e) => console.log(e.currentTarget.files)} />
+
+<!-- Images only -->
+<FileInput accept="image/*" />
+
+<!-- Multiple selection + callback -->
+<FileInput
+  multiple
+  accept="image/*"
+  onfileselect={(selectedFiles) => files = selectedFiles}
+/>
+
+<p>Selected: {files.map(f => f.name).join(', ')}</p>`}
+        />
+      </section>
     </>
   );
 }

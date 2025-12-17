@@ -16,9 +16,14 @@ export default function Installation() {
       <DocTabs
         tabs={[
           {
-            key: 'scss',
-            label: 'NPM',
-            content: <NpmContent t={t} />,
+            key: 'react',
+            label: 'React',
+            content: <ReactContent t={t} />,
+          },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
           },
           {
             key: 'cdn',
@@ -26,13 +31,13 @@ export default function Installation() {
             content: <CdnContent t={t} />,
           },
         ]}
-        defaultTab="scss"
+        defaultTab="react"
       />
     </>
   );
 }
 
-function NpmContent({ t }: { t: (key: string) => string }) {
+function ReactContent({ t }: { t: (key: string) => string }) {
   return (
     <>
       <section>
@@ -117,6 +122,147 @@ import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}`}
           title={t('reactComponents.codeHeader')}
           language="tsx"
           code={`import { Input, Textarea, Editor, Field, Toast, Chip } from 'podo-ui';`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('nextSteps.title')}</h2>
+        <p>{t('nextSteps.description')}</p>
+
+        <div className={styles.linkGrid}>
+          <a href="/getting-started/usage" className={styles.linkCard}>
+            <div className={styles.linkIcon}>
+              <i className="icon-file"></i>
+            </div>
+            <div>
+              <h3>{t('nextSteps.links.usage.title')}</h3>
+              <p>{t('nextSteps.links.usage.description')}</p>
+            </div>
+            <i className="icon-arrow-right"></i>
+          </a>
+
+          <a href="/foundation/colors" className={styles.linkCard}>
+            <div className={styles.linkIcon}>
+              <i className="icon-ellipse"></i>
+            </div>
+            <div>
+              <h3>{t('nextSteps.links.colors.title')}</h3>
+              <p>{t('nextSteps.links.colors.description')}</p>
+            </div>
+            <i className="icon-arrow-right"></i>
+          </a>
+
+          <a href="/components/button" className={styles.linkCard}>
+            <div className={styles.linkIcon}>
+              <i className="icon-layers"></i>
+            </div>
+            <div>
+              <h3>{t('nextSteps.links.components.title')}</h3>
+              <p>{t('nextSteps.links.components.description')}</p>
+            </div>
+            <i className="icon-arrow-right"></i>
+          </a>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>{t('npm.title')}</h2>
+        <p>{t('npm.description')}</p>
+
+        <CodeBlock language="bash" code="npm install podo-ui" />
+        <CodeBlock language="bash" code="yarn add podo-ui" />
+        <CodeBlock language="bash" code="pnpm add podo-ui" />
+      </section>
+
+      <section>
+        <h2>{t('setup.title')}</h2>
+
+        <h3>{t('setup.globalScss.title')}</h3>
+        <p>{t('setup.globalScss.description')}</p>
+
+        <CodeBlock
+          title="src/app.html or +layout.svelte"
+          language="svelte"
+          code={`<script>
+  import 'podo-ui/global.scss';
+</script>`}
+        />
+
+        <div className={styles.note}>
+          <i className="icon-info"></i>
+          <div>
+            <strong>{t('setup.globalScss.note.title')}</strong> {t('setup.globalScss.note.content')}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>{t('setup.vite.title')}</h3>
+
+        <div className={styles.warning}>
+          <i className="icon-warning"></i>
+          <div>
+            <strong>{t('setup.vite.warning.title')}</strong> {t('setup.vite.warning.content')}
+          </div>
+        </div>
+
+        <p>{t('setup.vite.description')}</p>
+
+        <CodeBlock
+          title="src/routes/+layout.svelte"
+          language="svelte"
+          code={`<script>
+  import 'podo-ui/global.scss';
+  import 'podo-ui/vite-fonts.scss'; // ${t('setup.vite.codeComment')}
+</script>
+
+{@render children()}`}
+        />
+
+        <div className={styles.note}>
+          <i className="icon-info"></i>
+          <div>
+            <strong>{t('setup.vite.note.title')}</strong> {t('setup.vite.note.content')}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3>{t('setup.scssModule.title')}</h3>
+        <p>{t('setup.scssModule.description')}</p>
+
+        <CodeBlock
+          title="MyComponent.svelte"
+          language="svelte"
+          code={`<style lang="scss">
+  @use 'podo-ui/mixin' as *;
+
+  .myComponent {
+    color: color(primary);        // ${t('setup.scssModule.comments.color')}
+    margin: s(4);                 // ${t('setup.scssModule.comments.spacing')}
+    border-radius: r(2);          // ${t('setup.scssModule.comments.radius')}
+    @include p2;                  // ${t('setup.scssModule.comments.typography')}
+  }
+</style>`}
+        />
+      </section>
+
+      <section>
+        <h2>Svelte Components</h2>
+        <p>Svelte 5 runes mode components are available from the <code>/svelte</code> path.</p>
+
+        <CodeBlock
+          title="Import"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Input, Textarea, Editor, Field, Toast, Chip } from 'podo-ui/svelte';
+</script>`}
         />
       </section>
 

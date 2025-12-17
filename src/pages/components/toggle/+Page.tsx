@@ -20,9 +20,104 @@ export default function Toggle() {
             label: 'SCSS',
             content: <ScssContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Toggle } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>checked</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('basicUsage.examples.option')}</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('basicUsage.examples.disabled')}</td>
+            </tr>
+            <tr>
+              <td><code>onchange</code></td>
+              <td><code>(e: Event) =&gt; void</code></td>
+              <td>-</td>
+              <td>Change handler</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('basicUsage.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Toggle } from 'podo-ui/svelte';
+
+  let enabled = $state(false);
+</script>
+
+<Toggle bind:checked={enabled} />
+<Toggle checked disabled />
+<Toggle disabled />`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('practicalExample.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Toggle } from 'podo-ui/svelte';
+
+  let emailNotification = $state(true);
+  let pushNotification = $state(false);
+</script>
+
+<div class="settings">
+  <div class="setting-item">
+    <span>Email Notification</span>
+    <Toggle bind:checked={emailNotification} />
+  </div>
+  <div class="setting-item">
+    <span>Push Notification</span>
+    <Toggle bind:checked={pushNotification} />
+  </div>
+</div>`}
+        />
+      </section>
     </>
   );
 }

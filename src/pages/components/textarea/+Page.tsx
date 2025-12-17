@@ -29,9 +29,105 @@ export default function Textarea() {
             label: 'React',
             content: <ReactContent t={t} content={content} setContent={setContent} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Textarea } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.value')}</td>
+            </tr>
+            <tr>
+              <td><code>oninput</code></td>
+              <td><code>(e: Event) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('react.props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>validator</code></td>
+              <td><code>ZodSchema</code></td>
+              <td>-</td>
+              <td>{t('react.props.validator')}</td>
+            </tr>
+            <tr>
+              <td><code>rows</code></td>
+              <td><code>number</code></td>
+              <td>3</td>
+              <td>{t('react.props.rows')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('react.validation.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Textarea } from 'podo-ui/svelte';
+  import { z } from 'zod';
+
+  let content = $state('');
+</script>
+
+<Textarea
+  bind:value={content}
+  validator={z.string().min(10, 'Please enter at least 10 characters')}
+  placeholder="Enter your content..."
+  rows={4}
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>Two-way Binding</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Textarea } from 'podo-ui/svelte';
+
+  let content = $state('');
+</script>
+
+<Textarea bind:value={content} placeholder="Type here..." rows={5} />
+<p>Character count: {content.length}</p>`}
+        />
+      </section>
     </>
   );
 }

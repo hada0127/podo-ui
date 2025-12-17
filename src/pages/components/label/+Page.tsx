@@ -20,9 +20,132 @@ export default function Label() {
             label: 'SCSS',
             content: <ScssContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="scss"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Label } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>size</code></td>
+              <td><code>'sm' | 'md' | 'lg'</code></td>
+              <td>'md'</td>
+              <td>{t('sizes.description')}</td>
+            </tr>
+            <tr>
+              <td><code>semibold</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('styles.semibold')}</td>
+            </tr>
+            <tr>
+              <td><code>disabled</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('styles.disabled')}</td>
+            </tr>
+            <tr>
+              <td><code>required</code></td>
+              <td><code>boolean</code></td>
+              <td>false</td>
+              <td>{t('required.description')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('basicUsage.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Label } from 'podo-ui/svelte';
+</script>
+
+<Label>Username</Label>
+<Label>Email</Label>
+<Label>Password</Label>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('sizes.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<Label size="sm">Small Label</Label>
+<Label size="md">Medium Label</Label>
+<Label size="lg">Large Label</Label>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('styles.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<Label>Normal</Label>
+<Label semibold>Semibold</Label>
+<Label disabled>Disabled</Label>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('required.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<Label required>Email</Label>
+<Label required>Phone</Label>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('withInput.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Label, Input } from 'podo-ui/svelte';
+</script>
+
+<Label for="email" required>Email</Label>
+<Input id="email" type="email" placeholder="example@email.com" />
+
+<Label for="username">Username</Label>
+<Input id="username" type="text" placeholder="Enter username" />`}
+        />
+      </section>
     </>
   );
 }

@@ -23,9 +23,328 @@ export default function EditorPage() {
             label: 'React',
             content: <ReactContent t={t} />,
           },
+          {
+            key: 'svelte',
+            label: 'Svelte',
+            content: <SvelteContent t={t} />,
+          },
         ]}
         defaultTab="react"
       />
+    </>
+  );
+}
+
+function SvelteContent({ t }: { t: (key: string) => string }) {
+  return (
+    <>
+      <section>
+        <h2>Import</h2>
+        <CodeBlock
+          language="typescript"
+          code={`import { Editor, EditorView } from 'podo-ui/svelte';`}
+        />
+      </section>
+
+      <section>
+        <h2>Props</h2>
+        <h3>Editor</h3>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>string</code></td>
+              <td><code>''</code></td>
+              <td>{t('props.value')}</td>
+            </tr>
+            <tr>
+              <td><code>onchange</code></td>
+              <td><code>(value: string) =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>height</code></td>
+              <td><code>string | 'contents'</code></td>
+              <td><code>'400px'</code></td>
+              <td>{t('props.height')}</td>
+            </tr>
+            <tr>
+              <td><code>minHeight</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.minHeight')}</td>
+            </tr>
+            <tr>
+              <td><code>maxHeight</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('props.maxHeight')}</td>
+            </tr>
+            <tr>
+              <td><code>width</code></td>
+              <td><code>string</code></td>
+              <td><code>'100%'</code></td>
+              <td>{t('props.width')}</td>
+            </tr>
+            <tr>
+              <td><code>resizable</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.resizable')}</td>
+            </tr>
+            <tr>
+              <td><code>placeholder</code></td>
+              <td><code>string</code></td>
+              <td><code>''</code></td>
+              <td>{t('props.placeholder')}</td>
+            </tr>
+            <tr>
+              <td><code>toolbar</code></td>
+              <td><code>ToolbarItem[]</code></td>
+              <td>-</td>
+              <td>{t('props.toolbar')}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>EditorView</h3>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Prop</th>
+              <th>Type</th>
+              <th>Default</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>value</code></td>
+              <td><code>string</code></td>
+              <td><code>''</code></td>
+              <td>{t('editorView.props.value')}</td>
+            </tr>
+            <tr>
+              <td><code>class</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('editorView.props.className')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>{t('overview.title')}</h2>
+        <p>{t('overview.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Editor, EditorView } from 'podo-ui/svelte';
+
+  let content = $state('');
+</script>
+
+<Editor
+  bind:value={content}
+  height="400px"
+  placeholder="${t('overview.placeholder')}"
+/>
+
+<!-- Preview the content -->
+<EditorView value={content} />`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('height.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Editor } from 'podo-ui/svelte';
+
+  let content = $state('');
+</script>
+
+<!-- Auto height based on content -->
+<Editor
+  bind:value={content}
+  height="contents"
+  minHeight="150px"
+  maxHeight="500px"
+  placeholder="${t('height.autoPlaceholder')}"
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('resizable.title')}</h2>
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Editor } from 'podo-ui/svelte';
+
+  let content = $state('');
+</script>
+
+<Editor
+  bind:value={content}
+  height="300px"
+  minHeight="200px"
+  maxHeight="600px"
+  resizable={true}
+  placeholder="${t('resizable.placeholder')}"
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('toolbar.title')}</h2>
+        <p>{t('toolbar.description')}</p>
+        <p><strong>{t('toolbar.note')}</strong></p>
+
+        <h3>{t('toolbar.availableItems')}</h3>
+        <table className={styles.propsTable}>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>'undo-redo'</code></td>
+              <td>{t('toolbar.items.undoRedo')}</td>
+            </tr>
+            <tr>
+              <td><code>'paragraph'</code></td>
+              <td>{t('toolbar.items.paragraph')}</td>
+            </tr>
+            <tr>
+              <td><code>'text-style'</code></td>
+              <td>{t('toolbar.items.textStyle')}</td>
+            </tr>
+            <tr>
+              <td><code>'color'</code></td>
+              <td>{t('toolbar.items.color')}</td>
+            </tr>
+            <tr>
+              <td><code>'align'</code></td>
+              <td>{t('toolbar.items.align')}</td>
+            </tr>
+            <tr>
+              <td><code>'list'</code></td>
+              <td>{t('toolbar.items.list')}</td>
+            </tr>
+            <tr>
+              <td><code>'hr'</code></td>
+              <td>{t('toolbar.items.hr')}</td>
+            </tr>
+            <tr>
+              <td><code>'table'</code></td>
+              <td>{t('toolbar.items.table')}</td>
+            </tr>
+            <tr>
+              <td><code>'link'</code></td>
+              <td>{t('toolbar.items.link')}</td>
+            </tr>
+            <tr>
+              <td><code>'image'</code></td>
+              <td>{t('toolbar.items.image')}</td>
+            </tr>
+            <tr>
+              <td><code>'youtube'</code></td>
+              <td>{t('toolbar.items.youtube')}</td>
+            </tr>
+            <tr>
+              <td><code>'format'</code></td>
+              <td>{t('toolbar.items.format')}</td>
+            </tr>
+            <tr>
+              <td><code>'code'</code></td>
+              <td>{t('toolbar.items.code')}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Editor } from 'podo-ui/svelte';
+
+  let basicContent = $state('');
+  let advancedContent = $state('');
+</script>
+
+<!-- Basic editor with minimal toolbar -->
+<Editor
+  bind:value={basicContent}
+  height="300px"
+  placeholder="${t('toolbar.basicPlaceholder')}"
+  toolbar={['undo-redo', 'text-style', 'paragraph', 'color']}
+/>
+
+<!-- Advanced editor with full toolbar -->
+<Editor
+  bind:value={advancedContent}
+  height="300px"
+  placeholder="${t('toolbar.advancedPlaceholder')}"
+  toolbar={[
+    'undo-redo',
+    'paragraph',
+    'text-style',
+    'color',
+    'align',
+    'list',
+    'hr',
+    'table',
+    'link',
+    'image',
+    'code'
+  ]}
+/>`}
+        />
+      </section>
+
+      <section>
+        <h2>{t('editorView.title')}</h2>
+        <p>{t('editorView.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { EditorView } from 'podo-ui/svelte';
+
+  const htmlContent = '<h1>Title</h1><p>Body content</p>';
+</script>
+
+<EditorView value={htmlContent} />`}
+        />
+
+        <h3>{t('editorView.features.title')}</h3>
+        <ul>
+          <li>{t('editorView.features.formatting')}</li>
+          <li>{t('editorView.features.darkMode')}</li>
+          <li>{t('editorView.features.code')}</li>
+          <li>{t('editorView.features.responsive')}</li>
+          <li>{t('editorView.features.readOnly')}</li>
+        </ul>
+      </section>
     </>
   );
 }

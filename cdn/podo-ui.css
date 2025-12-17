@@ -1,5 +1,5 @@
 /*!
- * Podo UI CSS v0.9.6
+ * Podo UI CSS v1.0.0
  * https://podoui.com
  * MIT License
  */
@@ -19458,7 +19458,7 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="8" viewBox="0 0 14 8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.4244 0.575719C13.19 0.341404 12.8101 0.341404 12.5758 0.575719L7.0001 6.15145L1.42436 0.575719C1.19005 0.341405 0.810148 0.341405 0.575833 0.575719C0.341518 0.810034 0.341518 1.18993 0.575833 1.42425L7.0001 7.84851L13.4244 1.42425C13.6587 1.18993 13.6587 0.810033 13.4244 0.575719Z" fill="%2371717A"/></svg>') no-repeat right 11px center;
+  background: var(--color-bg-block) url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="8" viewBox="0 0 14 8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.4244 0.575719C13.19 0.341404 12.8101 0.341404 12.5758 0.575719L7.0001 6.15145L1.42436 0.575719C1.19005 0.341405 0.810148 0.341405 0.575833 0.575719C0.341518 0.810034 0.341518 1.18993 0.575833 1.42425L7.0001 7.84851L13.4244 1.42425C13.6587 1.18993 13.6587 0.810033 13.4244 0.575719Z" fill="%2371717A"/></svg>') no-repeat right 11px center;
 }
 select:focus-visible:not(:disabled) {
   outline: 4px solid var(--color-primary-outline);
