@@ -448,12 +448,113 @@ const Editor = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onChange, addToHistory]);
 
+  // 이미지를 커서 위치에 삽입하는 함수
+  const insertImageAtCursor = useCallback((src: string, alt = '') => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = alt;
+    img.style.maxWidth = '100%';
+
+    range.deleteContents();
+    range.insertNode(img);
+
+    // 커서를 이미지 다음으로 이동
+    const newRange = document.createRange();
+    newRange.setStartAfter(img);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+
+    handleInput();
+  }, []);
+
+  // 드래그 앤 드롭 이벤트 핸들러
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const files = e.dataTransfer?.files;
+    if (!files || files.length === 0) return;
+
+    // 이미지 파일만 처리
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target?.result as string;
+          if (dataUrl) {
+            // 드롭 위치에 커서 설정
+            if (editorRef.current) {
+              editorRef.current.focus();
+            }
+            insertImageAtCursor(dataUrl, file.name || 'dropped-image');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  }, [insertImageAtCursor]);
+
   // 붙여넣기 이벤트 핸들러 - 지원하지 않는 스타일 제거
   const handlePaste = useCallback((e: React.ClipboardEvent<HTMLDivElement>) => {
-    e.preventDefault();
-
     const clipboardData = e.clipboardData;
     if (!clipboardData) return;
+
+    // 클립보드에서 이미지 파일 확인
+    const items = clipboardData.items;
+    if (items) {
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              const dataUrl = event.target?.result as string;
+              if (dataUrl) {
+                insertImageAtCursor(dataUrl, file.name || 'pasted-image');
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+          return;
+        }
+      }
+    }
+
+    // 파일로 붙여넣은 경우 (드래그 앤 드롭 등)
+    const files = clipboardData.files;
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.type.startsWith('image/')) {
+          e.preventDefault();
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const dataUrl = event.target?.result as string;
+            if (dataUrl) {
+              insertImageAtCursor(dataUrl, file.name || 'pasted-image');
+            }
+          };
+          reader.readAsDataURL(file);
+          return;
+        }
+      }
+    }
+
+    // HTML/텍스트 붙여넣기 처리
+    e.preventDefault();
 
     // HTML 데이터 가져오기
     const html = clipboardData.getData('text/html');
@@ -3976,6 +4077,8 @@ const Editor = ({
             onCompositionStart={handleCompositionStart}
             onCompositionEnd={handleCompositionEnd}
             onPaste={handlePaste}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
             onClick={handleEditorClick}
             onContextMenu={handleEditorContextMenu}
             onKeyUp={() => {
