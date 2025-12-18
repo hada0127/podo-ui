@@ -8,6 +8,7 @@ interface Props {
     /** Maximum visible page numbers */
     maxVisiblePages?: number;
 }
-declare const Pagination: import("svelte").Component<Props, {}, "currentPage">;
+type $$ComponentProps = Props & Record<string, unknown>;
+declare const Pagination: import("svelte").Component<$$ComponentProps, {}, "currentPage">;
 type Pagination = ReturnType<typeof Pagination>;
 export default Pagination;

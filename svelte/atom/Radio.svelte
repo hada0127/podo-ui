@@ -46,7 +46,8 @@
       type="radio"
       {name}
       {value}
-      bind:checked
+      {checked}
+      onchange={(e) => checked = e.currentTarget.checked}
       {disabled}
       class={className}
       {...rest}
@@ -59,7 +60,8 @@
     type="radio"
     {name}
     {value}
-    bind:checked
+    {checked}
+    onchange={(e) => checked = e.currentTarget.checked}
     {disabled}
     class={className}
     {...rest}

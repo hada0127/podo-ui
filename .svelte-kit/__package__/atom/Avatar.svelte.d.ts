@@ -25,6 +25,7 @@ interface Props {
     /** Click handler */
     onclick?: () => void;
 }
-declare const Avatar: import("svelte").Component<Props, {}, "">;
+type $$ComponentProps = Props & Record<string, unknown>;
+declare const Avatar: import("svelte").Component<$$ComponentProps, {}, "">;
 type Avatar = ReturnType<typeof Avatar>;
 export default Avatar;

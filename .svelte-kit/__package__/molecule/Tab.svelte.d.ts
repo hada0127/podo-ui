@@ -20,6 +20,7 @@ interface Props {
     /** Additional class name */
     class?: string;
 }
-declare const Tab: import("svelte").Component<Props, {}, "">;
+type $$ComponentProps = Props & Record<string, unknown>;
+declare const Tab: import("svelte").Component<$$ComponentProps, {}, "">;
 type Tab = ReturnType<typeof Tab>;
 export default Tab;

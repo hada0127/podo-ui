@@ -40,7 +40,8 @@
     class: className = '',
     alt = 'Avatar',
     onclick,
-  }: Props = $props();
+    ...rest
+  }: Props & Record<string, unknown> = $props();
 
   let wrapperClasses = $derived(
     [styles.wrapper, activityRing && styles.activityRing, className]
@@ -75,6 +76,7 @@
   onkeydown={onclick ? (e) => e.key === 'Enter' && onclick() : undefined}
   role={onclick ? 'button' : undefined}
   tabindex={onclick ? 0 : undefined}
+  {...rest}
 >
   <div
     class={avatarClasses}

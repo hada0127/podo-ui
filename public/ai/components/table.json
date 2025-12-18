@@ -1,27 +1,30 @@
 {
   "name": "Table",
   "category": "molecule",
-  "description": "Styled HTML table with React component",
+  "description": "Styled HTML table with React and Svelte component",
   "documentation": "https://podoui.com/components/table",
   "scssOnly": false,
   "import": {
     "react": "import { Table } from 'podo-ui'",
+    "svelte": "import { Table, type TableColumn } from 'podo-ui/svelte'",
     "scss": "@use 'podo-ui/scss/molecule/table'"
   },
   "props": [
-    { "name": "columns", "type": "TableColumn<T>[]", "required": true, "description": "Column definitions with key, title, render" },
+    { "name": "columns", "type": "TableColumn<T>[]", "required": true, "description": "Column definitions with key and title" },
     { "name": "dataSource", "type": "T[]", "required": true, "description": "Data array" },
     { "name": "rowKey", "type": "keyof T | ((record: T) => string)", "required": true, "description": "Unique key for each row" },
     { "name": "list", "type": "boolean", "required": false, "description": "Enable row hover effect" },
     { "name": "border", "type": "boolean", "required": false, "description": "Show cell borders" },
     { "name": "fill", "type": "boolean", "required": false, "description": "Filled background" },
-    { "name": "onRowClick", "type": "(record: T) => void", "required": false, "description": "Row click callback" }
+    { "name": "onRowClick/onrowclick", "type": "(record: T, index: number) => void", "required": false, "description": "Row click callback. React: onRowClick, Svelte: onrowclick (lowercase)" }
   ],
   "types": {
     "TableColumn<T>": {
-      "key": "keyof T | string",
-      "title": "string",
-      "render": "(value: any, record: T) => ReactNode (optional)"
+      "key": "keyof T | string (required)",
+      "title": "string (required)",
+      "width": "string | number (optional)",
+      "align": "'left' | 'center' | 'right' (optional)",
+      "render": "(value: any, record: T, index: number) => ReactNode | Snippet (optional)"
     }
   },
   "cssClasses": [
@@ -44,6 +47,18 @@
     "Proper padding on cells"
   ],
   "examples": [
+    {
+      "title": "Svelte Basic",
+      "code": "<script>\n  import { Table, type TableColumn } from 'podo-ui/svelte';\n  const data = [\n    { id: '1', name: 'John', email: 'john@example.com' },\n    { id: '2', name: 'Jane', email: 'jane@example.com' }\n  ];\n  const columns: TableColumn<typeof data[0]>[] = [\n    { key: 'name', title: 'Name' },\n    { key: 'email', title: 'Email' }\n  ];\n</script>\n<Table {columns} dataSource={data} rowKey=\"id\" />"
+    },
+    {
+      "title": "Svelte with styles",
+      "code": "<Table columns={columns} dataSource={data} rowKey=\"id\" list border />"
+    },
+    {
+      "title": "Svelte clickable rows",
+      "code": "<Table columns={columns} dataSource={users} rowKey=\"id\" list onrowclick={(user) => goto(`/user/${user.id}`)} />"
+    },
     {
       "title": "React Basic",
       "code": "<Table columns={[{ key: 'id', title: 'ID' }, { key: 'name', title: 'Name' }]} dataSource={users} rowKey=\"id\" />"

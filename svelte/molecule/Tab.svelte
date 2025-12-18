@@ -32,7 +32,8 @@
     fill = false,
     onchange,
     class: className = '',
-  }: Props = $props();
+    ...rest
+  }: Props & Record<string, unknown> = $props();
 
   let internalActiveKey = $state(defaultActiveKey || items[0]?.key);
 
@@ -49,7 +50,7 @@
   );
 </script>
 
-<ul class={tabsClass}>
+<ul class={tabsClass} {...rest}>
   {#each items as item (item.key)}
     <li class={activeKey === item.key ? 'on' : undefined}>
       <a

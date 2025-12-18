@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { z } from 'zod';
+  import { ZodError } from 'zod';
   import styles from './field.module.scss';
 
   interface Props {
@@ -34,7 +35,8 @@
     validator,
     value = '',
     class: className = '',
-  }: Props = $props();
+    ...rest
+  }: Props & Record<string, unknown> = $props();
 
   let message = $state('');
   let statusClass = $state('');
@@ -48,7 +50,7 @@
         validator.parse(value);
         statusClass = 'success';
       } catch (e) {
-        if (e instanceof (await import('zod')).ZodError) {
+        if (e instanceof ZodError) {
           message = e.errors[0].message;
           statusClass = 'danger';
         }
@@ -57,7 +59,7 @@
   });
 </script>
 
-<div class="{styles.style} {className}">
+<div class="{styles.style} {className}" {...rest}>
   {#if label}
     <label class={labelClass}>
       {label}

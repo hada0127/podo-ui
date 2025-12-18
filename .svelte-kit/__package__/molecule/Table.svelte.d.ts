@@ -29,7 +29,7 @@ declare function $$render<T extends Record<string, unknown>>(): {
         onrowclick?: (record: T, index: number) => void;
         /** Additional class name */
         class?: string;
-    };
+    } & Record<string, unknown>;
     exports: {};
     bindings: "";
     slots: {};

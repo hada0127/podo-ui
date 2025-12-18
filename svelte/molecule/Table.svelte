@@ -44,7 +44,8 @@
     fill = false,
     onrowclick,
     class: className = '',
-  }: Props = $props();
+    ...rest
+  }: Props & Record<string, unknown> = $props();
 
   function getRowKey(record: T, index: number): string {
     if (typeof rowKey === 'function') {
@@ -71,7 +72,7 @@
   );
 </script>
 
-<table class={tableClass || undefined}>
+<table class={tableClass || undefined} {...rest}>
   <thead>
     <tr>
       {#each columns as col (col.key)}

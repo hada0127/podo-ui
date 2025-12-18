@@ -20,6 +20,7 @@ interface Props {
     /** Additional class name */
     class?: string;
 }
-declare const Field: import("svelte").Component<Props, {}, "">;
+type $$ComponentProps = Props & Record<string, unknown>;
+declare const Field: import("svelte").Component<$$ComponentProps, {}, "">;
 type Field = ReturnType<typeof Field>;
 export default Field;

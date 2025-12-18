@@ -35,7 +35,8 @@
     duration = 3000,
     width,
     onclose,
-  }: Props = $props();
+    ...rest
+  }: Props & Record<string, unknown> = $props();
 
   let isVisible = $state(false);
   let isClosing = $state(false);
@@ -98,7 +99,7 @@
   }
 </script>
 
-<div class={toastClasses} style={toastStyle}>
+<div class={toastClasses} style={toastStyle} {...rest}>
   <i class={getIcon()}></i>
   <div class="toast-content">
     {#if header && !long}

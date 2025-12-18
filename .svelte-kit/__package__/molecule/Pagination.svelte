@@ -17,7 +17,8 @@
     totalPages,
     onpagechange,
     maxVisiblePages = 5,
-  }: Props = $props();
+    ...rest
+  }: Props & Record<string, unknown> = $props();
 
   function getPageNumbers(): number[] {
     const pages: number[] = [];
@@ -55,7 +56,7 @@
 </script>
 
 {#if totalPages > 0}
-  <div class={styles.pagination}>
+  <div class={styles.pagination} {...rest}>
     {#if currentPage > 1}
       <button
         onclick={handlePrevious}

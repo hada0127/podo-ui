@@ -17,6 +17,7 @@ interface Props {
     /** Additional CSS class */
     class?: string;
 }
-declare const Tooltip: import("svelte").Component<Props, {}, "">;
+type $$ComponentProps = Props & Record<string, unknown>;
+declare const Tooltip: import("svelte").Component<$$ComponentProps, {}, "">;
 type Tooltip = ReturnType<typeof Tooltip>;
 export default Tooltip;

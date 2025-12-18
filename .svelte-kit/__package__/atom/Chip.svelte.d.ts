@@ -19,6 +19,7 @@ interface Props {
     /** Additional class name */
     class?: string;
 }
-declare const Chip: import("svelte").Component<Props, {}, "">;
+type $$ComponentProps = Props & Record<string, unknown>;
+declare const Chip: import("svelte").Component<$$ComponentProps, {}, "">;
 type Chip = ReturnType<typeof Chip>;
 export default Chip;

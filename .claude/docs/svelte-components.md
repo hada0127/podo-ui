@@ -83,40 +83,60 @@ import Field from 'podo-ui/svelte/molecule/Field';
 
 ```svelte
 <script lang="ts">
-  import { Table } from 'podo-ui/svelte';
-
-  const columns = [
-    { key: 'name', label: '이름' },
-    { key: 'email', label: '이메일' },
-    { key: 'role', label: '역할' }
-  ];
+  import { Table, type TableColumn } from 'podo-ui/svelte';
 
   const data = [
-    { name: '홍길동', email: 'hong@example.com', role: '관리자' },
-    { name: '김철수', email: 'kim@example.com', role: '사용자' }
+    { id: '1', name: '홍길동', email: 'hong@example.com', role: '관리자' },
+    { id: '2', name: '김철수', email: 'kim@example.com', role: '사용자' }
+  ];
+
+  // TableColumn의 key는 data의 키와 일치, title은 헤더 텍스트
+  const columns: TableColumn<typeof data[0]>[] = [
+    { key: 'name', title: '이름' },
+    { key: 'email', title: '이메일' },
+    { key: 'role', title: '역할' }
   ];
 </script>
 
-<Table {columns} {data} />
+<!-- dataSource: 데이터 배열, rowKey: 고유 식별자 -->
+<Table {columns} dataSource={data} rowKey="id" />
+
+<!-- 옵션: list (호버효과), border (셀 테두리), fill (배경색) -->
+<Table {columns} dataSource={data} rowKey="id" list border />
+
+<!-- 클릭 이벤트 (React: onRowClick, Svelte: onrowclick) -->
+<Table {columns} dataSource={data} rowKey="id" list onrowclick={(record) => console.log(record)} />
 ```
 
 ### 탭
 
 ```svelte
 <script lang="ts">
-  import { Tab, TabPanel } from 'podo-ui/svelte';
+  import { Tab, TabPanel, type TabItem } from 'podo-ui/svelte';
 
   let activeTab = $state('tab1');
+
+  // TabItem: key (필수), label (필수), disabled (옵션)
+  const items: TabItem[] = [
+    { key: 'tab1', label: '탭 1' },
+    { key: 'tab2', label: '탭 2' },
+    { key: 'tab3', label: '탭 3', disabled: true }
+  ];
 </script>
 
-<Tab bind:value={activeTab}>
-  <TabPanel value="tab1" label="탭 1">
-    첫 번째 탭 내용
-  </TabPanel>
-  <TabPanel value="tab2" label="탭 2">
-    두 번째 탭 내용
-  </TabPanel>
-</Tab>
+<!-- 기본 사용 (React: onChange, Svelte: onchange) -->
+<Tab {items} activeKey={activeTab} onchange={(key) => activeTab = key} />
+
+<!-- 또는 defaultActiveKey로 초기값만 설정 -->
+<Tab {items} defaultActiveKey="tab1" />
+
+<!-- fill 옵션: 탭이 동일한 너비로 확장 -->
+<Tab {items} fill activeKey={activeTab} onchange={(key) => activeTab = key} />
+
+<!-- TabPanel과 함께 사용 -->
+<Tab {items} activeKey={activeTab} onchange={(key) => activeTab = key} />
+<TabPanel tabKey="tab1" activeKey={activeTab}>첫 번째 탭 내용</TabPanel>
+<TabPanel tabKey="tab2" activeKey={activeTab}>두 번째 탭 내용</TabPanel>
 ```
 
 ### 토스트
@@ -147,6 +167,33 @@ import Field from 'podo-ui/svelte/molecule/Field';
 | 양방향 바인딩 | value + onChange | bind:value |
 | 이벤트 핸들러 | onClick | onclick |
 | 파일 네이밍 | input.tsx (소문자) | Input.svelte (PascalCase) |
+
+### 콜백 Props 네이밍 차이 (중요!)
+
+Svelte는 DOM 이벤트 네이밍 규칙을 따르므로 콜백이 소문자입니다:
+
+| 컴포넌트 | React | Svelte |
+|----------|-------|--------|
+| Tab | `onChange` | `onchange` |
+| Table | `onRowClick` | `onrowclick` |
+| Pagination | `onPageChange` | `onPageChange` (동일) |
+| Toast | `onClose` | `onClose` (동일) |
+
+### Props 타입 참조
+
+```typescript
+// Tab
+import { Tab, type TabItem } from 'podo-ui/svelte';
+// TabItem: { key: string, label: string, disabled?: boolean }
+
+// Table
+import { Table, type TableColumn } from 'podo-ui/svelte';
+// TableColumn<T>: { key: keyof T, title: string, width?: string, align?: 'left'|'center'|'right' }
+
+// Select
+import { Select, type SelectOption } from 'podo-ui/svelte';
+// SelectOption: { value: string, label: string }
+```
 
 ## 스타일링
 

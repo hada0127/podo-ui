@@ -43,7 +43,8 @@
     offset = 8,
     isVisible: controlledIsVisible,
     class: className = '',
-  }: Props = $props();
+    ...rest
+  }: Props & Record<string, unknown> = $props();
 
   let hoverIsVisible = $state(false);
 
@@ -66,6 +67,7 @@
   onmouseenter={() => (hoverIsVisible = true)}
   onmouseleave={() => (hoverIsVisible = false)}
   role="presentation"
+  {...rest}
 >
   {@render children()}
   {#if shouldShowTooltip}

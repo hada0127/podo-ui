@@ -1,20 +1,28 @@
 {
   "name": "Tab",
   "category": "molecule",
-  "description": "Tab navigation component with React support",
+  "description": "Tab navigation component with React and Svelte support",
   "documentation": "https://podoui.com/components/tab",
   "scssOnly": false,
   "import": {
     "react": "import { Tab } from 'podo-ui'",
+    "svelte": "import { Tab, type TabItem } from 'podo-ui/svelte'",
     "scss": "@use 'podo-ui/scss/molecule/tab'"
   },
   "props": [
-    { "name": "items", "type": "TabItem[]", "required": true, "description": "Tab items array with key and label" },
+    { "name": "items", "type": "TabItem[]", "required": true, "description": "Tab items array with key and label. TabItem: { key: string, label: string, disabled?: boolean }" },
     { "name": "activeKey", "type": "string", "required": false, "description": "Active tab key (controlled)" },
     { "name": "defaultActiveKey", "type": "string", "required": false, "description": "Default active tab key (uncontrolled)" },
     { "name": "fill", "type": "boolean", "required": false, "description": "Equal width tabs" },
-    { "name": "onChange", "type": "(key: string) => void", "required": false, "description": "Tab change callback" }
+    { "name": "onChange/onchange", "type": "(key: string) => void", "required": false, "description": "Tab change callback. React: onChange, Svelte: onchange (lowercase)" }
   ],
+  "types": {
+    "TabItem": {
+      "key": "string (required)",
+      "label": "string (required)",
+      "disabled": "boolean (optional)"
+    }
+  },
   "subComponents": {
     "Tab.Panel": {
       "description": "Tab panel for content display",
@@ -42,6 +50,18 @@
     "Semibold text for active tab"
   ],
   "examples": [
+    {
+      "title": "Svelte Basic",
+      "code": "<script>\n  import { Tab, type TabItem } from 'podo-ui/svelte';\n  let activeTab = $state('overview');\n  const items: TabItem[] = [\n    { key: 'overview', label: 'Overview' },\n    { key: 'details', label: 'Details' }\n  ];\n</script>\n<Tab items={items} activeKey={activeTab} onchange={(key) => activeTab = key} />"
+    },
+    {
+      "title": "Svelte with TabPanel",
+      "code": "<script>\n  import { Tab, TabPanel, type TabItem } from 'podo-ui/svelte';\n  let activeTab = $state('tab1');\n  const items: TabItem[] = [\n    { key: 'tab1', label: 'Tab 1' },\n    { key: 'tab2', label: 'Tab 2' }\n  ];\n</script>\n<Tab items={items} activeKey={activeTab} onchange={(key) => activeTab = key} />\n<TabPanel tabKey=\"tab1\" {activeTab}>Content 1</TabPanel>\n<TabPanel tabKey=\"tab2\" {activeTab}>Content 2</TabPanel>"
+    },
+    {
+      "title": "Svelte Fill width",
+      "code": "<Tab items={items} fill defaultActiveKey=\"left\" />"
+    },
     {
       "title": "React Basic",
       "code": "<Tab items={[{ key: 'overview', label: 'Overview' }, { key: 'details', label: 'Details' }]} defaultActiveKey=\"overview\" onChange={(key) => console.log(key)} />"

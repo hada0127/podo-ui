@@ -32,7 +32,8 @@
     icon,
     ondelete,
     class: className = '',
-  }: Props = $props();
+    ...rest
+  }: Props & Record<string, unknown> = $props();
 
   let chipClasses = $derived(
     [
@@ -48,7 +49,7 @@
   );
 </script>
 
-<div class={chipClasses}>
+<div class={chipClasses} {...rest}>
   {#if icon}
     <i class="icon {icon}"></i>
   {/if}

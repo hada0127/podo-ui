@@ -19,6 +19,7 @@ interface Props {
     /** Close callback */
     onclose: (id: string) => void;
 }
-declare const Toast: import("svelte").Component<Props, {}, "">;
+type $$ComponentProps = Props & Record<string, unknown>;
+declare const Toast: import("svelte").Component<$$ComponentProps, {}, "">;
 type Toast = ReturnType<typeof Toast>;
 export default Toast;
