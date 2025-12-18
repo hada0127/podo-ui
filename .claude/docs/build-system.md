@@ -5,9 +5,10 @@
 | 명령어 | 용도 | 출력 |
 |--------|------|------|
 | `npm run build:lib` | React 라이브러리 | `dist/` |
+| `npm run build:svelte` | Svelte 라이브러리 | `dist/svelte/` |
 | `npm run build:cdn` | CDN CSS | `cdn/podo-ui.css` |
 | `npm run build:cdn-js` | Vanilla JS | `cdn/podo-datepicker.js` |
-| `npm run build:all` | 전체 빌드 | 위 3개 모두 |
+| `npm run build:all` | 전체 빌드 | 위 4개 모두 |
 
 ---
 
@@ -45,6 +46,49 @@ dist/
 ```typescript
 import { Input, DatePicker } from 'podo-ui';
 import { Avatar } from 'podo-ui/react/atom/avatar';
+```
+
+---
+
+## build:svelte (Svelte 라이브러리)
+
+### 실행
+```bash
+npm run build:svelte
+```
+
+### 스크립트
+`cli/build-svelte.js`
+
+### 프로세스
+1. `dist/svelte/` 폴더 클린
+2. Svelte 컴파일 (svelte-package 또는 커스텀 빌드)
+3. 타입 선언 파일 생성 (`.d.ts`)
+4. index.js 엔트리 생성
+
+### 출력 구조
+```
+dist/svelte/
+├── index.js           # 메인 엔트리
+├── index.d.ts         # 타입 선언
+├── atom/
+│   ├── Input.svelte
+│   ├── Input.js
+│   └── Input.d.ts
+└── molecule/
+    ├── Field.svelte
+    ├── Field.js
+    └── Field.d.ts
+```
+
+### 사용
+```typescript
+// 전체 import
+import { Input, Button, Field } from 'podo-ui/svelte';
+
+// 개별 import
+import Input from 'podo-ui/svelte/atom/Input';
+import Field from 'podo-ui/svelte/molecule/Field';
 ```
 
 ---
@@ -120,8 +164,9 @@ npm run build:all
 ### 프로세스
 순차 실행:
 1. `npm run build:lib`
-2. `npm run build:cdn`
-3. `npm run build:cdn-js`
+2. `npm run build:svelte`
+3. `npm run build:cdn`
+4. `npm run build:cdn-js`
 
 ### 사용 시점
 - npm 배포 전 (`prepublishOnly`에서 자동 실행)
@@ -168,7 +213,7 @@ npm run dev
 - URL: http://localhost:5432
 
 ### 기능
-- Next.js 개발 서버
+- Vike 개발 서버
 - Hot Reload
 - 문서 사이트 확인
 
@@ -197,6 +242,13 @@ npm publish          # 배포 (build:all 자동 실행)
 # 캐시 삭제 후 재빌드
 rm -rf dist .tsbuildinfo
 npm run build:lib
+```
+
+### Svelte 빌드 에러
+```bash
+# dist/svelte 삭제 후 재빌드
+rm -rf dist/svelte
+npm run build:svelte
 ```
 
 ### 아이콘 누락

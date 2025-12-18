@@ -15,9 +15,10 @@ npm run deploy       # Cloudflare Pages 배포 (빌드 후 dist/client 배포)
 ## 라이브러리 빌드
 ```bash
 npm run build:lib    # React 라이브러리 빌드 → dist/
+npm run build:svelte # Svelte 라이브러리 빌드 → dist/svelte/
 npm run build:cdn    # CDN용 CSS 빌드 → cdn/podo-ui.css
 npm run build:cdn-js # Vanilla JS 빌드 → cdn/podo-datepicker.js
-npm run build:all    # 전체 빌드 (위 3개 모두)
+npm run build:all    # 전체 빌드 (위 4개 모두)
 ```
 
 ## 아이콘
@@ -40,3 +41,4 @@ npm run lint         # ESLint 실행
 - 아이콘 추가 시 `npm run icon` 필수
 - CDN 배포 시 icon.woff 포함 확인
 - 문서 사이트 빌드 시 `vike prerender`로 정적 HTML 생성
+- Svelte 컴포넌트 수정 후 `npm run build:svelte` 실행 필요

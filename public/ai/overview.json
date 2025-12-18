@@ -1,16 +1,19 @@
 {
   "name": "podo-ui",
-  "tagline": "SCSS-first design system with React components",
+  "tagline": "SCSS-first design system with React & Svelte 5 components",
   "documentation": "https://podoui.com",
   "repository": "https://github.com/hada0127/podo-ui",
   "philosophy": {
-    "core": "SCSS 97% + React 3%",
+    "core": "SCSS 97% + Components 3%",
     "principle": "Maximum flexibility with minimal JS dependency",
-    "approach": "Style everything with SCSS, use React only when JS is essential"
+    "approach": "Style everything with SCSS, use React/Svelte only when JS is essential"
   },
   "techStack": {
     "styling": "SCSS (Sass)",
-    "components": "React 18+ with TypeScript",
+    "components": {
+      "react": "React 18/19 with TypeScript",
+      "svelte": "Svelte 5 with TypeScript"
+    },
     "validation": "Zod",
     "build": "Vite",
     "docs": "Vike (SSG)",
@@ -27,6 +30,10 @@
       "individual": "import Input from 'podo-ui/react/atom/input'",
       "form": "import Form from 'podo-ui' // Form.Input, Form.Textarea"
     },
+    "svelte": {
+      "all": "import { Input, Avatar, Button } from 'podo-ui/svelte'",
+      "individual": "import Input from 'podo-ui/svelte/atom/Input'"
+    },
     "scss": {
       "global": "@use 'podo-ui/global.scss'",
       "mixin": "@use 'podo-ui/mixin' as *",
@@ -41,6 +48,10 @@
     "react": {
       "atom": ["avatar", "input", "textarea", "editor", "editor-view", "chip", "tooltip"],
       "molecule": ["datepicker", "field", "pagination", "toast", "toast-provider"]
+    },
+    "svelte": {
+      "atom": ["avatar", "button", "checkbox", "chip", "editor-view", "file", "input", "label", "radio", "radio-group", "select", "textarea", "toggle", "tooltip"],
+      "molecule": ["field", "pagination", "tab", "tab-panel", "table", "toast", "toast-provider"]
     },
     "scss": {
       "color": "Theme colors (light/dark/warm)",

@@ -104,7 +104,8 @@ docs-writer → i18n-manager (번역 필요시)
 | 폴더 구조 | `.claude/docs/structure.md` | 전체 디렉토리 구조 상세 |
 | 빌드 시스템 | `.claude/docs/build-system.md` | 빌드 명령어, 출력, 프로세스 |
 | NPM 스크립트 | `.claude/docs/scripts.md` | 빌드, 배포 명령어 요약 |
-| React 컴포넌트 | `.claude/docs/react-components.md` | 컴포넌트 사용법, Props |
+| React 컴포넌트 | `.claude/docs/react-components.md` | React 컴포넌트 사용법, Props |
+| Svelte 컴포넌트 | `.claude/docs/svelte-components.md` | Svelte 5 컴포넌트 사용법, Props |
 | SCSS 시스템 | `.claude/docs/scss-system.md` | 색상, 간격, 그리드 |
 | Vanilla JS | `.claude/docs/vanilla-js.md` | CDN 컴포넌트 |
 | 국제화 | `.claude/docs/i18n.md` | i18next 번역 파일 관리 |
@@ -124,6 +125,7 @@ docs-writer → i18n-manager (번역 필요시)
 | /icon | `.claude/commands/icon.md` | 아이콘 빌드 |
 | /publish | `.claude/commands/publish.md` | NPM 배포 |
 | /scss | `.claude/commands/scss.md` | 스타일 작업 |
+| /svelte | `.claude/commands/svelte.md` | Svelte 컴포넌트 작업 |
 | /vanilla | `.claude/commands/vanilla.md` | Vanilla JS 작업 |
 
 ### agents/ - 서브 에이전트
