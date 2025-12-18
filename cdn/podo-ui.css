@@ -1,5 +1,5 @@
 /*!
- * Podo UI CSS v1.0.0
+ * Podo UI CSS v1.0.2
  * https://podoui.com
  * MIT License
  */
@@ -17226,7 +17226,7 @@ body h3:not(button) {
 :root .icon-horizontalLine::before {
   content: "\e985";
 }
-:root .icon-gap::before {
+:root .icon-spacing::before {
   content: "\e986";
 }
 :root .icon-clipboard::before {
@@ -17304,7 +17304,31 @@ body h3:not(button) {
 :root .icon-mobile::before {
   content: "\e9a1";
 }
+:root .icon-align-bottom::before {
+  content: "\e9a2";
+}
+:root .icon-align-middle::before {
+  content: "\e9a3";
+}
+:root .icon-align-top::before {
+  content: "\e9a4";
+}
+:root .icon-gap::before {
+  content: "\e9a5";
+}
+:root .icon-layout-horizontal::before {
+  content: "\e9a6";
+}
+:root .icon-layout-vertical::before {
+  content: "\e9a7";
+}
+:root .icon-section::before {
+  content: "\e9a8";
+}
 
+/*
+  Icon
+*/
 /*
   Button
 */
