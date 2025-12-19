@@ -401,6 +401,37 @@
     handleInput();
   };
 
+  // Drag and drop handlers
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const files = e.dataTransfer?.files;
+    if (!files || files.length === 0) return;
+
+    // Process image files only
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target?.result as string;
+          if (dataUrl) {
+            // Focus editor at drop position
+            editorRef?.focus();
+            insertImageAtCursor(dataUrl, file.name || 'dropped-image');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
   // Paste handler
   const handlePaste = (e: ClipboardEvent) => {
     const clipboardData = e.clipboardData;
@@ -970,29 +1001,27 @@
     <!-- Paragraph format -->
     {#if isToolbarItemEnabled('paragraph')}
       <div class={styles.toolbarGroup}>
-        <div class={styles.paragraphButton}>
-          <button
-            type="button"
-            class={styles.toolbarButton}
-            onclick={() => isParagraphDropdownOpen = !isParagraphDropdownOpen}
-          >
-            {getCurrentStyleLabel()}
-            <i class={styles.dropdownArrow}></i>
-          </button>
-          {#if isParagraphDropdownOpen}
-            <div class={styles.paragraphDropdown}>
-              {#each paragraphOptions as option}
-                <button
-                  type="button"
-                  class="{styles.paragraphOption} {option.className || ''}"
-                  onclick={() => setParagraphFormat(option.value)}
-                >
-                  {option.label}
-                </button>
-              {/each}
-            </div>
-          {/if}
-        </div>
+        <button
+          type="button"
+          class={styles.paragraphButton}
+          onclick={() => isParagraphDropdownOpen = !isParagraphDropdownOpen}
+        >
+          <span>{getCurrentStyleLabel()}</span>
+          <i class={styles.dropdownArrow}></i>
+        </button>
+        {#if isParagraphDropdownOpen}
+          <div class={styles.paragraphDropdown}>
+            {#each paragraphOptions as option}
+              <button
+                type="button"
+                class="{styles.paragraphOption} {option.className || ''}"
+                onclick={() => setParagraphFormat(option.value)}
+              >
+                {option.label}
+              </button>
+            {/each}
+          </div>
+        {/if}
       </div>
     {/if}
 
@@ -1251,6 +1280,8 @@
         oncompositionstart={handleCompositionStart}
         oncompositionend={handleCompositionEnd}
         onpaste={handlePaste}
+        ondragover={handleDragOver}
+        ondrop={handleDrop}
         onkeydown={handleKeyDown}
         role="textbox"
         aria-multiline="true"

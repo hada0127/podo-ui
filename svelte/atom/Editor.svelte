@@ -68,6 +68,12 @@
   let isBgColorOpen = $state(false);
   let isAlignDropdownOpen = $state(false);
   let currentAlign = $state('left');
+
+  // Text style states
+  let isBold = $state(false);
+  let isItalic = $state(false);
+  let isUnderline = $state(false);
+  let isStrikethrough = $state(false);
   let isLinkDropdownOpen = $state(false);
   let linkUrl = $state('');
   let linkTarget = $state('_blank');
@@ -138,6 +144,20 @@
   let fileInputRef = $state<HTMLInputElement | null>(null);
   let imageFileInputRef = $state<HTMLInputElement | null>(null);
   let tableContextMenuRef = $state<HTMLDivElement | null>(null);
+  let imageButtonRef = $state<HTMLDivElement | null>(null);
+  let youtubeButtonRef = $state<HTMLDivElement | null>(null);
+  let textColorButtonRef = $state<HTMLDivElement | null>(null);
+  let bgColorButtonRef = $state<HTMLDivElement | null>(null);
+  let alignButtonRef = $state<HTMLDivElement | null>(null);
+  let paragraphButtonRef = $state<HTMLDivElement | null>(null);
+
+  // Dropdown position state
+  let imageDropdownPos = $state({ top: 0, left: 0 });
+  let youtubeDropdownPos = $state({ top: 0, left: 0 });
+  let textColorDropdownPos = $state({ top: 0, left: 0 });
+  let bgColorDropdownPos = $state({ top: 0, left: 0 });
+  let alignDropdownPos = $state({ top: 0, left: 0 });
+  let paragraphDropdownPos = $state({ top: 0, left: 0 });
 
   let editorID = $state(`podo-editor-${Math.random().toString(36).slice(2, 9)}`);
 
@@ -214,6 +234,13 @@
     } else {
       currentAlign = 'left';
     }
+  };
+
+  const detectTextStyles = () => {
+    isBold = document.queryCommandState('bold');
+    isItalic = document.queryCommandState('italic');
+    isUnderline = document.queryCommandState('underline');
+    isStrikethrough = document.queryCommandState('strikeThrough');
   };
 
   const detectCurrentParagraphStyle = () => {
@@ -306,6 +333,7 @@
         onchange?.(content);
         detectCurrentParagraphStyle();
         detectCurrentAlign();
+        detectTextStyles();
         setTimeout(() => {
           isUndoRedo = false;
         }, 0);
@@ -332,6 +360,7 @@
         onchange?.(content);
         detectCurrentParagraphStyle();
         detectCurrentAlign();
+        detectTextStyles();
         setTimeout(() => {
           isUndoRedo = false;
         }, 0);
@@ -354,6 +383,7 @@
       validateHandler(content);
       detectCurrentParagraphStyle();
       detectCurrentAlign();
+      detectTextStyles();
       addToHistory(content);
     }
   };
@@ -373,11 +403,12 @@
       validateHandler(content);
       detectCurrentParagraphStyle();
       detectCurrentAlign();
+      detectTextStyles();
       addToHistory(content);
     }
   };
 
-  // Insert image into editor
+  // Insert image into editor (simple version for drag/drop/paste)
   const insertImageAtCursor = (src: string, alt = '') => {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) return;
@@ -397,6 +428,295 @@
     newRange.collapse(true);
     selection.removeAllRanges();
     selection.addRange(newRange);
+
+    handleInput();
+  };
+
+  // Handle image file selection
+  const handleImageFileSelect = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    imageFile = file;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      imagePreview = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Insert image with options (from toolbar)
+  const insertImage = async () => {
+    let imageSrc = '';
+
+    // 파일이 업로드된 경우
+    if (imageFile && imagePreview) {
+      imageSrc = imagePreview;
+    }
+    // URL이 입력된 경우
+    else if (imageUrl) {
+      // URL 유효성 검사
+      try {
+        const testImg = new Image();
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Timeout'));
+          }, 5000);
+
+          testImg.onload = () => {
+            clearTimeout(timeout);
+            resolve(true);
+          };
+
+          testImg.onerror = () => {
+            clearTimeout(timeout);
+            reject(new Error('Load failed'));
+          };
+
+          testImg.src = imageUrl;
+        });
+
+        imageSrc = imageUrl;
+      } catch {
+        alert(`이미지를 불러올 수 없습니다.\n\n가능한 원인:\n1. 잘못된 이미지 URL\n2. CORS 정책으로 인한 차단\n3. 네트워크 연결 문제\n\nURL: ${imageUrl}`);
+        return;
+      }
+    }
+
+    if (!imageSrc) return;
+
+    // 이미지 엘리먼트 생성
+    const img = document.createElement('img');
+    img.src = imageSrc;
+    img.alt = imageAlt || '';
+    img.style.display = 'inline-block';
+    img.style.verticalAlign = 'middle';
+
+    // 크기 설정
+    if (imageWidth === '100%') {
+      img.style.width = '100%';
+      img.style.height = 'auto';
+    } else if (imageWidth === '75%') {
+      img.style.width = '75%';
+      img.style.height = 'auto';
+    } else if (imageWidth === '50%') {
+      img.style.width = '50%';
+      img.style.height = 'auto';
+    }
+
+    // 컨테이너 div 생성 (정렬용)
+    const container = document.createElement('div');
+    container.style.textAlign = imageAlign;
+    container.appendChild(img);
+
+    // 에디터에 포커스 설정
+    if (editorRef) {
+      editorRef.focus();
+
+      const selection = window.getSelection();
+
+      // 저장된 선택 영역 복원
+      if (savedImageSelection && selection) {
+        try {
+          selection.removeAllRanges();
+          selection.addRange(savedImageSelection);
+        } catch {
+          // ignore
+        }
+      }
+
+      // 선택 영역 재확인
+      if (!selection || selection.rangeCount === 0 || !editorRef.contains(selection.anchorNode)) {
+        if (!editorRef.innerHTML || editorRef.innerHTML === '<br>') {
+          const p = document.createElement('p');
+          p.innerHTML = '<br>';
+          editorRef.appendChild(p);
+        }
+
+        const range = document.createRange();
+        range.selectNodeContents(editorRef);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+
+      // 이미지 삽입
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(container);
+
+        // 이미지 다음에 새 문단 추가
+        const newP = document.createElement('p');
+        newP.innerHTML = '<br>';
+        container.after(newP);
+
+        // 커서를 새 문단으로 이동
+        const newRange = document.createRange();
+        newRange.selectNodeContents(newP);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      } else {
+        editorRef.appendChild(container);
+      }
+    }
+
+    // 상태 초기화
+    isImageDropdownOpen = false;
+    imageTabMode = 'file';
+    imageUrl = '';
+    imageFile = null;
+    imagePreview = '';
+    imageWidth = 'original';
+    imageAlign = 'left';
+    imageAlt = '';
+    savedImageSelection = null;
+
+    handleInput();
+  };
+
+  // Extract YouTube video ID from URL
+  const extractYoutubeVideoId = (url: string): string | null => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    return null;
+  };
+
+  // Insert YouTube video
+  const insertYoutube = () => {
+    if (!youtubeUrl) return;
+
+    const videoId = extractYoutubeVideoId(youtubeUrl);
+    if (!videoId) {
+      alert('올바른 유튜브 URL을 입력해주세요.\n\n지원 형식:\n• https://www.youtube.com/watch?v=VIDEO_ID\n• https://youtu.be/VIDEO_ID');
+      return;
+    }
+
+    // YouTube 정렬 컨테이너 생성
+    const alignContainer = document.createElement('div');
+    alignContainer.style.textAlign = youtubeAlign;
+    alignContainer.style.margin = '20px 0';
+
+    // YouTube iframe 컨테이너 생성
+    const container = document.createElement('div');
+    container.className = 'youtube-container';
+    container.style.position = 'relative';
+    container.style.display = 'inline-block';
+    container.style.maxWidth = '100%';
+
+    // 크기 설정
+    if (youtubeWidth === 'original') {
+      container.style.width = '560px';
+      container.style.height = '315px';
+    } else if (youtubeWidth === '100%' || youtubeWidth === '75%' || youtubeWidth === '50%') {
+      container.style.width = youtubeWidth;
+      container.style.aspectRatio = '16 / 9';
+    } else {
+      container.style.width = youtubeWidth;
+      container.style.aspectRatio = '16 / 9';
+    }
+
+    // iframe 생성
+    const iframe = document.createElement('iframe');
+    iframe.width = '100%';
+    iframe.height = '100%';
+    iframe.src = `https://www.youtube.com/embed/${videoId}`;
+    iframe.title = 'YouTube video player';
+    iframe.frameBorder = '0';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.allowFullscreen = true;
+    iframe.style.width = '100%';
+    iframe.style.height = 'auto';
+    iframe.style.aspectRatio = '16 / 9';
+    iframe.style.display = 'block';
+
+    // 투명 오버레이 추가 (편집 모드에서 클릭 방지)
+    const overlay = document.createElement('div');
+    overlay.className = 'youtube-overlay';
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'transparent';
+    overlay.style.cursor = 'pointer';
+    overlay.style.zIndex = '1';
+
+    container.appendChild(iframe);
+    container.appendChild(overlay);
+    alignContainer.appendChild(container);
+
+    // 에디터에 포커스 설정
+    if (editorRef) {
+      editorRef.focus();
+
+      const selection = window.getSelection();
+
+      // 저장된 선택 영역 복원
+      if (savedYoutubeSelection && selection) {
+        try {
+          selection.removeAllRanges();
+          selection.addRange(savedYoutubeSelection);
+        } catch {
+          // ignore
+        }
+      }
+
+      // 선택 영역 재확인
+      if (!selection || selection.rangeCount === 0 || !editorRef.contains(selection.anchorNode)) {
+        if (!editorRef.innerHTML || editorRef.innerHTML === '<br>') {
+          const p = document.createElement('p');
+          p.innerHTML = '<br>';
+          editorRef.appendChild(p);
+        }
+
+        const range = document.createRange();
+        range.selectNodeContents(editorRef);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+
+      // YouTube 삽입
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(alignContainer);
+
+        // 다음에 새 문단 추가
+        const newP = document.createElement('p');
+        newP.innerHTML = '<br>';
+        alignContainer.after(newP);
+
+        // 커서를 새 문단으로 이동
+        const newRange = document.createRange();
+        newRange.selectNodeContents(newP);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      } else {
+        editorRef.appendChild(alignContainer);
+      }
+    }
+
+    // 상태 초기화
+    isYoutubeDropdownOpen = false;
+    youtubeUrl = '';
+    youtubeWidth = '100%';
+    youtubeAlign = 'center';
+    savedYoutubeSelection = null;
 
     handleInput();
   };
@@ -589,20 +909,105 @@
     handleInput();
   };
 
-  const formatBold = () => execCommand('bold');
-  const formatItalic = () => execCommand('italic');
-  const formatUnderline = () => execCommand('underline');
-  const formatStrikethrough = () => execCommand('strikethrough');
-  const removeFormat = () => execCommand('removeFormat');
+  const formatBold = () => {
+    execCommand('bold');
+    detectTextStyles();
+  };
+  const formatItalic = () => {
+    execCommand('italic');
+    detectTextStyles();
+  };
+  const formatUnderline = () => {
+    execCommand('underline');
+    detectTextStyles();
+  };
+  const formatStrikethrough = () => {
+    execCommand('strikethrough');
+    detectTextStyles();
+  };
+  const removeFormat = () => {
+    execCommand('removeFormat');
+    detectTextStyles();
+  };
 
   const setTextColor = (color: string) => {
-    execCommand('foreColor', color);
+    // 에디터에 포커스
+    editorRef?.focus();
+
+    // 저장된 선택 영역 복원
+    if (savedSelection) {
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(savedSelection);
+      }
+    }
+
+    // 색상 적용 - span 태그에 !important 스타일 사용
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed) {
+      try {
+        const range = selection.getRangeAt(0);
+        const contents = range.extractContents();
+        const span = document.createElement('span');
+        span.setAttribute('style', `color: ${color} !important;`);
+        span.appendChild(contents);
+        range.insertNode(span);
+
+        // 커서 위치 조정
+        range.selectNodeContents(span);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      } catch {
+        // fallback
+        document.execCommand('foreColor', false, color);
+      }
+    }
+
     isTextColorOpen = false;
+    savedSelection = null;
+    handleInput();
   };
 
   const setBackgroundColor = (color: string) => {
-    execCommand('hiliteColor', color);
+    // 에디터에 포커스
+    editorRef?.focus();
+
+    // 저장된 선택 영역 복원
+    if (savedSelection) {
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(savedSelection);
+      }
+    }
+
+    // 배경색 적용 - span 태그에 !important 스타일 사용
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed) {
+      try {
+        const range = selection.getRangeAt(0);
+        const contents = range.extractContents();
+        const span = document.createElement('span');
+        span.setAttribute('style', `background-color: ${color} !important;`);
+        span.appendChild(contents);
+        range.insertNode(span);
+
+        // 커서 위치 조정
+        range.selectNodeContents(span);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      } catch {
+        // fallback
+        document.execCommand('hiliteColor', false, color);
+      }
+    }
+
     isBgColorOpen = false;
+    savedSelection = null;
+    handleInput();
   };
 
   const setAlignment = (align: string) => {
@@ -915,10 +1320,8 @@
     if (!target.closest(`.${styles.tableDropdown}`) && !target.closest(`.${styles.tableButton}`)) {
       isTableDropdownOpen = false;
     }
-    if (!target.closest(`.${styles.imageDropdown}`) && !target.closest(`.${styles.imageButton}`)) {
+    if (!target.closest(`.${styles.imageDropdown}`) && !target.closest(`.${styles.imageButton}`) && !target.closest(`.${styles.youtubeButton}`)) {
       isImageDropdownOpen = false;
-    }
-    if (!target.closest(`.${styles.youtubeDropdown}`) && !target.closest(`.${styles.youtubeButton}`)) {
       isYoutubeDropdownOpen = false;
     }
   };
@@ -980,6 +1383,7 @@
         <button
           type="button"
           class={styles.toolbarButton}
+          onmousedown={(e) => e.preventDefault()}
           onclick={performUndo}
           disabled={historyIndex <= 0}
           title="실행 취소 (Ctrl+Z)"
@@ -989,6 +1393,7 @@
         <button
           type="button"
           class={styles.toolbarButton}
+          onmousedown={(e) => e.preventDefault()}
           onclick={performRedo}
           disabled={historyIndex >= history.length - 1}
           title="다시 실행 (Ctrl+Y)"
@@ -1001,43 +1406,67 @@
     <!-- Paragraph format -->
     {#if isToolbarItemEnabled('paragraph')}
       <div class={styles.toolbarGroup}>
-        <button
-          type="button"
-          class={styles.paragraphButton}
-          onclick={() => isParagraphDropdownOpen = !isParagraphDropdownOpen}
-        >
-          <span>{getCurrentStyleLabel()}</span>
-          <i class={styles.dropdownArrow}></i>
-        </button>
-        {#if isParagraphDropdownOpen}
-          <div class={styles.paragraphDropdown}>
-            {#each paragraphOptions as option}
-              <button
-                type="button"
-                class="{styles.paragraphOption} {option.className || ''}"
-                onclick={() => setParagraphFormat(option.value)}
-              >
-                {option.label}
-              </button>
-            {/each}
-          </div>
-        {/if}
+        <div bind:this={paragraphButtonRef} style="position: relative;">
+          <button
+            type="button"
+            class={styles.paragraphButton}
+            onmousedown={(e) => e.preventDefault()}
+            onclick={() => {
+              if (paragraphButtonRef) {
+                const rect = paragraphButtonRef.getBoundingClientRect();
+                paragraphDropdownPos = { top: rect.bottom, left: rect.left };
+              }
+              isParagraphDropdownOpen = !isParagraphDropdownOpen;
+              isTextColorOpen = false;
+              isBgColorOpen = false;
+              isAlignDropdownOpen = false;
+            }}
+          >
+            <span>{getCurrentStyleLabel()}</span>
+            <i class={styles.dropdownArrow}></i>
+          </button>
+          {#if isParagraphDropdownOpen}
+            <div
+              class={styles.paragraphDropdown}
+              style="top: {paragraphDropdownPos.top}px; left: {paragraphDropdownPos.left}px;"
+            >
+              {#each paragraphOptions as option}
+                <button
+                  type="button"
+                  class="{styles.paragraphOption} {currentParagraphStyle === option.value ? styles.active : ''}"
+                  onmousedown={(e) => e.preventDefault()}
+                  onclick={() => setParagraphFormat(option.value)}
+                >
+                  {#if option.value === 'h1'}
+                    <h1>{option.label}</h1>
+                  {:else if option.value === 'h2'}
+                    <h2>{option.label}</h2>
+                  {:else if option.value === 'h3'}
+                    <h3>{option.label}</h3>
+                  {:else}
+                    <span class={option.className || ''}>{option.label}</span>
+                  {/if}
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
       </div>
     {/if}
 
     <!-- Text style -->
     {#if isToolbarItemEnabled('text-style')}
       <div class={styles.toolbarGroup}>
-        <button type="button" class={styles.toolbarButton} onclick={formatBold} title="굵게 (Ctrl+B)">
+        <button type="button" class="{styles.toolbarButton} {isBold ? styles.active : ''}" onmousedown={(e) => e.preventDefault()} onclick={formatBold} title="굵게 (Ctrl+B)">
           <i class={styles.bold}></i>
         </button>
-        <button type="button" class={styles.toolbarButton} onclick={formatItalic} title="기울임 (Ctrl+I)">
+        <button type="button" class="{styles.toolbarButton} {isItalic ? styles.active : ''}" onmousedown={(e) => e.preventDefault()} onclick={formatItalic} title="기울임 (Ctrl+I)">
           <i class={styles.italic}></i>
         </button>
-        <button type="button" class={styles.toolbarButton} onclick={formatUnderline} title="밑줄 (Ctrl+U)">
+        <button type="button" class="{styles.toolbarButton} {isUnderline ? styles.active : ''}" onmousedown={(e) => e.preventDefault()} onclick={formatUnderline} title="밑줄 (Ctrl+U)">
           <i class={styles.underline}></i>
         </button>
-        <button type="button" class={styles.toolbarButton} onclick={formatStrikethrough} title="취소선">
+        <button type="button" class="{styles.toolbarButton} {isStrikethrough ? styles.active : ''}" onmousedown={(e) => e.preventDefault()} onclick={formatStrikethrough} title="취소선">
           <i class={styles.strikethrough}></i>
         </button>
       </div>
@@ -1046,59 +1475,93 @@
     <!-- Color -->
     {#if isToolbarItemEnabled('color')}
       <div class={styles.toolbarGroup}>
-        <div class={styles.colorButton}>
+        <div bind:this={textColorButtonRef} style="position: relative;">
           <button
             type="button"
             class={styles.toolbarButton}
-            onclick={() => { isTextColorOpen = !isTextColorOpen; isBgColorOpen = false; }}
+            onmousedown={(e) => e.preventDefault()}
+            onclick={() => {
+              const selection = window.getSelection();
+              if (selection && !selection.isCollapsed) {
+                savedSelection = selection.getRangeAt(0).cloneRange();
+                if (textColorButtonRef) {
+                  const rect = textColorButtonRef.getBoundingClientRect();
+                  textColorDropdownPos = { top: rect.bottom, left: rect.left };
+                }
+                isTextColorOpen = !isTextColorOpen;
+                isBgColorOpen = false;
+              }
+            }}
             title="글꼴 색상"
           >
             <i class={styles.fontColor}></i>
           </button>
           {#if isTextColorOpen}
-            <div class={styles.colorDropdown}>
-              <div class={styles.colorPalette}>
-                {#each colorPalette as row}
-                  <div class={styles.colorRow}>
-                    {#each row as color}
-                      <button
-                        type="button"
-                        class={styles.colorCell}
-                        style="background-color: {color};"
-                        onclick={() => setTextColor(color)}
-                      ></button>
-                    {/each}
-                  </div>
-                {/each}
-              </div>
+            <div
+              class={styles.colorPalette}
+              style="top: {textColorDropdownPos.top}px; left: {textColorDropdownPos.left}px;"
+            >
+              {#each colorPalette as row}
+                <div class={styles.colorRow}>
+                  {#each row as color}
+                    <button
+                      type="button"
+                      class={styles.colorButton}
+                      style="background-color: {color};"
+                      onmousedown={(e) => e.preventDefault()}
+                      onclick={() => {
+                        setTextColor(color);
+                        isTextColorOpen = false;
+                      }}
+                    ></button>
+                  {/each}
+                </div>
+              {/each}
             </div>
           {/if}
         </div>
-        <div class={styles.colorButton}>
+        <div bind:this={bgColorButtonRef} style="position: relative;">
           <button
             type="button"
             class={styles.toolbarButton}
-            onclick={() => { isBgColorOpen = !isBgColorOpen; isTextColorOpen = false; }}
+            onmousedown={(e) => e.preventDefault()}
+            onclick={() => {
+              const selection = window.getSelection();
+              if (selection && !selection.isCollapsed) {
+                savedSelection = selection.getRangeAt(0).cloneRange();
+                if (bgColorButtonRef) {
+                  const rect = bgColorButtonRef.getBoundingClientRect();
+                  bgColorDropdownPos = { top: rect.bottom, left: rect.left };
+                }
+                isBgColorOpen = !isBgColorOpen;
+                isTextColorOpen = false;
+              }
+            }}
             title="배경 색상"
           >
             <i class={styles.highlight}></i>
           </button>
           {#if isBgColorOpen}
-            <div class={styles.colorDropdown}>
-              <div class={styles.colorPalette}>
-                {#each colorPalette as row}
-                  <div class={styles.colorRow}>
-                    {#each row as color}
-                      <button
-                        type="button"
-                        class={styles.colorCell}
-                        style="background-color: {color};"
-                        onclick={() => setBackgroundColor(color)}
-                      ></button>
-                    {/each}
-                  </div>
-                {/each}
-              </div>
+            <div
+              class={styles.colorPalette}
+              style="top: {bgColorDropdownPos.top}px; left: {bgColorDropdownPos.left}px;"
+            >
+              {#each colorPalette as row}
+                <div class={styles.colorRow}>
+                  {#each row as color}
+                    <button
+                      type="button"
+                      class={styles.colorButton}
+                      style="background-color: {color};"
+                      onmousedown={(e) => e.preventDefault()}
+                      onclick={() => {
+                        setBackgroundColor(color);
+                        isBgColorOpen = false;
+                      }}
+                    ></button>
+                  {/each}
+                </div>
+              {/each}
             </div>
           {/if}
         </div>
@@ -1108,26 +1571,39 @@
     <!-- Align -->
     {#if isToolbarItemEnabled('align')}
       <div class={styles.toolbarGroup}>
-        <div class={styles.alignButton}>
+        <div bind:this={alignButtonRef} style="position: relative;">
           <button
             type="button"
             class={styles.toolbarButton}
-            onclick={() => isAlignDropdownOpen = !isAlignDropdownOpen}
+            onmousedown={(e) => e.preventDefault()}
+            onclick={() => {
+              if (alignButtonRef) {
+                const rect = alignButtonRef.getBoundingClientRect();
+                alignDropdownPos = { top: rect.bottom, left: rect.left };
+              }
+              isAlignDropdownOpen = !isAlignDropdownOpen;
+              isParagraphDropdownOpen = false;
+              isTextColorOpen = false;
+              isBgColorOpen = false;
+            }}
             title={getCurrentAlignLabel()}
           >
-            <span class={getCurrentAlignIcon()}></span>
-            <i class={styles.dropdownArrow}></i>
+            <i class={getCurrentAlignIcon()}></i>
           </button>
           {#if isAlignDropdownOpen}
-            <div class={styles.alignDropdown}>
+            <div
+              class={styles.alignDropdown}
+              style="top: {alignDropdownPos.top}px; left: {alignDropdownPos.left}px;"
+            >
               {#each alignOptions as option}
                 <button
                   type="button"
-                  class={styles.alignOption}
+                  class="{styles.alignOption} {currentAlign === option.value ? styles.active : ''}"
+                  onmousedown={(e) => e.preventDefault()}
                   onclick={() => setAlignment(option.value)}
+                  title={option.label}
                 >
-                  <span class={styles[option.icon]}></span>
-                  {option.label}
+                  <i class={styles[option.icon]}></i>
                 </button>
               {/each}
             </div>
@@ -1139,10 +1615,10 @@
     <!-- List -->
     {#if isToolbarItemEnabled('list')}
       <div class={styles.toolbarGroup}>
-        <button type="button" class={styles.toolbarButton} onclick={() => insertList(false)} title="목록">
+        <button type="button" class={styles.toolbarButton} onmousedown={(e) => e.preventDefault()} onclick={() => insertList(false)} title="목록">
           <i class={styles.listUl}></i>
         </button>
-        <button type="button" class={styles.toolbarButton} onclick={() => insertList(true)} title="번호 목록">
+        <button type="button" class={styles.toolbarButton} onmousedown={(e) => e.preventDefault()} onclick={() => insertList(true)} title="번호 목록">
           <i class={styles.listOl}></i>
         </button>
       </div>
@@ -1155,6 +1631,7 @@
           <button
             type="button"
             class={styles.toolbarButton}
+            onmousedown={(e) => e.preventDefault()}
             onclick={() => {
               const selection = window.getSelection();
               if (selection && selection.rangeCount > 0) {
@@ -1196,6 +1673,7 @@
           <button
             type="button"
             class={styles.toolbarButton}
+            onmousedown={(e) => e.preventDefault()}
             onclick={() => {
               const selection = window.getSelection();
               if (selection && selection.rangeCount > 0) {
@@ -1234,10 +1712,347 @@
       </div>
     {/if}
 
+    <!-- Image -->
+    {#if isToolbarItemEnabled('image')}
+      <div class={styles.toolbarGroup}>
+        <div class={styles.imageButton} bind:this={imageButtonRef} style="position: relative;">
+          <button
+            type="button"
+            class={styles.toolbarButton}
+            onmousedown={(e) => e.preventDefault()}
+            onclick={() => {
+              const selection = window.getSelection();
+              if (selection && selection.rangeCount > 0) {
+                savedImageSelection = selection.getRangeAt(0).cloneRange();
+              }
+              if (imageButtonRef) {
+                const rect = imageButtonRef.getBoundingClientRect();
+                imageDropdownPos = { top: rect.bottom, left: rect.left };
+              }
+              isImageDropdownOpen = !isImageDropdownOpen;
+              isYoutubeDropdownOpen = false;
+            }}
+            title="이미지"
+          >
+            <i class={styles.image}></i>
+          </button>
+          {#if isImageDropdownOpen}
+            <div class={styles.imageDropdown} style="top: {imageDropdownPos.top}px; left: {imageDropdownPos.left}px;">
+              <div class={styles.imageTabSection}>
+                <div class={styles.imageTabButtons}>
+                  <button
+                    type="button"
+                    class={imageTabMode === 'file' ? styles.active : ''}
+                    onclick={() => {
+                      imageTabMode = 'file';
+                      imageUrl = '';
+                    }}
+                  >
+                    파일 업로드
+                  </button>
+                  <button
+                    type="button"
+                    class={imageTabMode === 'url' ? styles.active : ''}
+                    onclick={() => {
+                      imageTabMode = 'url';
+                      imageFile = null;
+                      imagePreview = '';
+                    }}
+                  >
+                    URL 입력
+                  </button>
+                </div>
+
+                <!-- 파일 업로드 탭 -->
+                {#if imageTabMode === 'file'}
+                  <div class={styles.imageFileSection}>
+                    <input
+                      bind:this={imageFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onchange={handleImageFileSelect}
+                      style="display: none;"
+                    />
+                    <button
+                      type="button"
+                      onclick={() => imageFileInputRef?.click()}
+                      class={styles.fileSelectButton}
+                    >
+                      {imageFile ? imageFile.name : '파일 선택'}
+                    </button>
+                    {#if imagePreview}
+                      <div class={styles.imagePreviewBox}>
+                        <img src={imagePreview} alt="Preview" />
+                      </div>
+                    {/if}
+                  </div>
+                {/if}
+
+                <!-- URL 입력 탭 -->
+                {#if imageTabMode === 'url'}
+                  <div class={styles.imageUrlSection}>
+                    <input
+                      type="text"
+                      bind:value={imageUrl}
+                      placeholder="https://..."
+                    />
+                  </div>
+                {/if}
+              </div>
+
+              <div class={styles.imageOptions}>
+                <div class={styles.imageOptionRow}>
+                  <label>크기</label>
+                  <div class={styles.imageSizeButtons}>
+                    <button
+                      type="button"
+                      class={imageWidth === '100%' ? styles.active : ''}
+                      onclick={() => imageWidth = '100%'}
+                    >
+                      100%
+                    </button>
+                    <button
+                      type="button"
+                      class={imageWidth === '75%' ? styles.active : ''}
+                      onclick={() => imageWidth = '75%'}
+                    >
+                      75%
+                    </button>
+                    <button
+                      type="button"
+                      class={imageWidth === '50%' ? styles.active : ''}
+                      onclick={() => imageWidth = '50%'}
+                    >
+                      50%
+                    </button>
+                    <button
+                      type="button"
+                      class={imageWidth === 'original' ? styles.active : ''}
+                      onclick={() => imageWidth = 'original'}
+                    >
+                      원본
+                    </button>
+                  </div>
+                </div>
+
+                <div class={styles.imageOptionRow}>
+                  <label>정렬</label>
+                  <div class={styles.imageAlignButtons}>
+                    <button
+                      type="button"
+                      class={imageAlign === 'left' ? styles.active : ''}
+                      onclick={() => imageAlign = 'left'}
+                      title="왼쪽 정렬"
+                    >
+                      <i class={styles.alignLeft}></i>
+                    </button>
+                    <button
+                      type="button"
+                      class={imageAlign === 'center' ? styles.active : ''}
+                      onclick={() => imageAlign = 'center'}
+                      title="가운데 정렬"
+                    >
+                      <i class={styles.alignCenter}></i>
+                    </button>
+                    <button
+                      type="button"
+                      class={imageAlign === 'right' ? styles.active : ''}
+                      onclick={() => imageAlign = 'right'}
+                      title="오른쪽 정렬"
+                    >
+                      <i class={styles.alignRight}></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class={styles.imageOptionRow}>
+                  <label>대체 텍스트</label>
+                  <input
+                    type="text"
+                    bind:value={imageAlt}
+                    placeholder="이미지 설명..."
+                  />
+                </div>
+              </div>
+
+              <div class={styles.imageActions}>
+                <button
+                  type="button"
+                  onclick={() => {
+                    isImageDropdownOpen = false;
+                    imageTabMode = 'file';
+                    imageUrl = '';
+                    imageFile = null;
+                    imagePreview = '';
+                    imageWidth = 'original';
+                    imageAlign = 'left';
+                    imageAlt = '';
+                    savedImageSelection = null;
+                  }}
+                  class={styles.default}
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  onclick={insertImage}
+                  disabled={!imageUrl && !imageFile}
+                  class={styles.primary}
+                >
+                  삽입
+                </button>
+              </div>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
+
+    <!-- YouTube -->
+    {#if isToolbarItemEnabled('youtube')}
+      <div class={styles.toolbarGroup}>
+        <div class={styles.youtubeButton} bind:this={youtubeButtonRef} style="position: relative;">
+          <button
+            type="button"
+            class={styles.toolbarButton}
+            onmousedown={(e) => e.preventDefault()}
+            onclick={() => {
+              const selection = window.getSelection();
+              if (selection && selection.rangeCount > 0) {
+                savedYoutubeSelection = selection.getRangeAt(0).cloneRange();
+              }
+              if (youtubeButtonRef) {
+                const rect = youtubeButtonRef.getBoundingClientRect();
+                youtubeDropdownPos = { top: rect.bottom, left: rect.left };
+              }
+              isYoutubeDropdownOpen = !isYoutubeDropdownOpen;
+              isImageDropdownOpen = false;
+            }}
+            title="유튜브"
+          >
+            <i class={styles.youtube}></i>
+          </button>
+          {#if isYoutubeDropdownOpen}
+            <div class={styles.imageDropdown} style="top: {youtubeDropdownPos.top}px; left: {youtubeDropdownPos.left}px;">
+              <div class={styles.imageTabSection}>
+                <div class={styles.imageTabButtons}>
+                  <button
+                    type="button"
+                    class={styles.active}
+                    style="width: 100%"
+                  >
+                    유튜브 URL
+                  </button>
+                </div>
+
+                <div class={styles.imageUrlSection}>
+                  <input
+                    type="text"
+                    bind:value={youtubeUrl}
+                    placeholder="https://www.youtube.com/watch?v=... 또는 https://youtu.be/..."
+                  />
+                </div>
+              </div>
+
+              <div class={styles.imageOptions}>
+                <div class={styles.imageOptionRow}>
+                  <label>크기</label>
+                  <div class={styles.imageSizeButtons}>
+                    <button
+                      type="button"
+                      class={youtubeWidth === '100%' ? styles.active : ''}
+                      onclick={() => youtubeWidth = '100%'}
+                    >
+                      100%
+                    </button>
+                    <button
+                      type="button"
+                      class={youtubeWidth === '75%' ? styles.active : ''}
+                      onclick={() => youtubeWidth = '75%'}
+                    >
+                      75%
+                    </button>
+                    <button
+                      type="button"
+                      class={youtubeWidth === '50%' ? styles.active : ''}
+                      onclick={() => youtubeWidth = '50%'}
+                    >
+                      50%
+                    </button>
+                    <button
+                      type="button"
+                      class={youtubeWidth === 'original' ? styles.active : ''}
+                      onclick={() => youtubeWidth = 'original'}
+                    >
+                      원본
+                    </button>
+                  </div>
+                </div>
+
+                <div class={styles.imageOptionRow}>
+                  <label>정렬</label>
+                  <div class={styles.imageAlignButtons}>
+                    <button
+                      type="button"
+                      class={youtubeAlign === 'left' ? styles.active : ''}
+                      onclick={() => youtubeAlign = 'left'}
+                      title="왼쪽 정렬"
+                    >
+                      <i class={styles.alignLeft}></i>
+                    </button>
+                    <button
+                      type="button"
+                      class={youtubeAlign === 'center' ? styles.active : ''}
+                      onclick={() => youtubeAlign = 'center'}
+                      title="가운데 정렬"
+                    >
+                      <i class={styles.alignCenter}></i>
+                    </button>
+                    <button
+                      type="button"
+                      class={youtubeAlign === 'right' ? styles.active : ''}
+                      onclick={() => youtubeAlign = 'right'}
+                      title="오른쪽 정렬"
+                    >
+                      <i class={styles.alignRight}></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class={styles.imageActions}>
+                <button
+                  type="button"
+                  class={styles.default}
+                  onclick={() => {
+                    isYoutubeDropdownOpen = false;
+                    youtubeUrl = '';
+                    youtubeWidth = '100%';
+                    youtubeAlign = 'center';
+                    savedYoutubeSelection = null;
+                  }}
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  class={styles.primary}
+                  onclick={insertYoutube}
+                  disabled={!youtubeUrl}
+                >
+                  삽입
+                </button>
+              </div>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
+
     <!-- HR -->
     {#if isToolbarItemEnabled('hr')}
       <div class={styles.toolbarGroup}>
-        <button type="button" class={styles.toolbarButton} onclick={insertHR} title="구분선">
+        <button type="button" class={styles.toolbarButton} onmousedown={(e) => e.preventDefault()} onclick={insertHR} title="구분선">
           <i class={styles.hr}></i>
         </button>
       </div>
@@ -1246,7 +2061,7 @@
     <!-- Format clear -->
     {#if isToolbarItemEnabled('format')}
       <div class={styles.toolbarGroup}>
-        <button type="button" class={styles.toolbarButton} onclick={removeFormat} title="서식 지우기">
+        <button type="button" class={styles.toolbarButton} onmousedown={(e) => e.preventDefault()} onclick={removeFormat} title="서식 지우기">
           <i class={styles.eraser}></i>
         </button>
       </div>
@@ -1258,6 +2073,7 @@
         <button
           type="button"
           class="{styles.toolbarButton} {isCodeView ? styles.active : ''}"
+          onmousedown={(e) => e.preventDefault()}
           onclick={toggleCodeView}
           title="코드 보기"
         >
@@ -1268,7 +2084,7 @@
   </div>
 
   <!-- Editor content -->
-  <div class={styles.editorWrapper} style={editorStyle}>
+  <div class="{styles.editorContainer} {resizable ? styles.resizable : ''}" style="{editorStyle}; display: flex; flex-direction: column;">
     {#if !isCodeView}
       <div
         bind:this={editorRef}
@@ -1283,9 +2099,19 @@
         ondragover={handleDragOver}
         ondrop={handleDrop}
         onkeydown={handleKeyDown}
+        onkeyup={() => {
+          detectCurrentParagraphStyle();
+          detectCurrentAlign();
+          detectTextStyles();
+        }}
+        onclick={() => {
+          detectCurrentParagraphStyle();
+          detectCurrentAlign();
+          detectTextStyles();
+        }}
         role="textbox"
         aria-multiline="true"
-        style={resizable ? 'resize: vertical;' : ''}
+        style="flex: 1; overflow-y: auto;"
       ></div>
     {:else}
       <textarea
