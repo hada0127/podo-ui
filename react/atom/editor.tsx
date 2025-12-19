@@ -1933,9 +1933,6 @@ const Editor = ({
       }
     }
 
-    // dataset의 originalWidth도 업데이트 (선택 해제 시 이 크기로 복원)
-    selectedYoutube.dataset.originalWidth = selectedYoutube.style.width;
-
     // 정렬 적용
     // youtube-wrapper의 부모를 찾음
     const targetElement = selectedYoutube.parentElement?.classList.contains('youtube-wrapper')
@@ -2375,6 +2372,7 @@ const Editor = ({
     iframe.style.height = 'auto';
     iframe.style.aspectRatio = '16 / 9';
     iframe.style.display = 'block';
+    iframe.style.pointerEvents = 'none'; // 편집 모드에서 iframe 클릭 방지 (overlay가 클릭 캡처)
 
     // 투명 오버레이 추가 (편집 모드에서 클릭 방지)
     const overlay = document.createElement('div');
