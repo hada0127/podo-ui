@@ -135,6 +135,7 @@
     "instantDate": "단일 날짜",
     "periodDate": "기간 선택",
     "datetime": "날짜+시간",
+    "periodDatetime": "기간 날짜+시간",
     "basicUsage": "기본 사용법",
     "jsDelivrNote": "jsDelivr CDN에서 최신 버전을 자동으로 가져옵니다.",
     "optionsTitle": "옵션",

@@ -135,6 +135,7 @@
     "instantDate": "Instant Date",
     "periodDate": "Period Selection",
     "datetime": "Date + Time",
+    "periodDatetime": "Period Date+Time",
     "basicUsage": "Basic Usage",
     "jsDelivrNote": "Automatically fetches the latest version from jsDelivr CDN.",
     "optionsTitle": "Options",

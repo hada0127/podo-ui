@@ -1056,16 +1056,24 @@
       }
 
       if (isEnd) {
-        this.tempValue = { ...this.tempValue, endTime: newTime };
+        // Auto-set end date to today if not selected when changing end time
+        if (!this.tempValue.endDate) {
+          this.tempValue = { ...this.tempValue, endDate: new Date(), endTime: newTime };
+        } else {
+          this.tempValue = { ...this.tempValue, endTime: newTime };
+        }
       } else {
-        this.tempValue = { ...this.tempValue, time: newTime };
+        // Auto-set start date to today if not selected when changing start time
+        if (!this.tempValue.date) {
+          this.tempValue = { ...this.tempValue, date: new Date(), time: newTime };
+        } else {
+          this.tempValue = { ...this.tempValue, time: newTime };
+        }
       }
 
-      if (!this.showActions) {
-        this.value = { ...this.tempValue };
-        this.emitChange();
-      }
-
+      // Always apply time changes immediately
+      this.value = { ...this.tempValue };
+      this.emitChange();
       this.renderInputContent();
     }
 

@@ -62,10 +62,12 @@ export default function DatePickerPage() {
   const vanillaInstantRef = useRef<HTMLDivElement>(null);
   const vanillaPeriodRef = useRef<HTMLDivElement>(null);
   const vanillaDatetimeRef = useRef<HTMLDivElement>(null);
+  const vanillaPeriodDatetimeRef = useRef<HTMLDivElement>(null);
   const [vanillaLoaded, setVanillaLoaded] = useState(false);
   const [vanillaInstantValue, setVanillaInstantValue] = useState<string>('-');
   const [vanillaPeriodValue, setVanillaPeriodValue] = useState<string>('-');
   const [vanillaDatetimeValue, setVanillaDatetimeValue] = useState<string>('-');
+  const [vanillaPeriodDatetimeValue, setVanillaPeriodDatetimeValue] = useState<string>('-');
 
   // Vanilla JS DatePicker load and initialization
   useEffect(() => {
@@ -219,12 +221,15 @@ export default function DatePickerPage() {
                 vanillaInstantRef={vanillaInstantRef}
                 vanillaPeriodRef={vanillaPeriodRef}
                 vanillaDatetimeRef={vanillaDatetimeRef}
+                vanillaPeriodDatetimeRef={vanillaPeriodDatetimeRef}
                 vanillaInstantValue={vanillaInstantValue}
                 vanillaPeriodValue={vanillaPeriodValue}
                 vanillaDatetimeValue={vanillaDatetimeValue}
+                vanillaPeriodDatetimeValue={vanillaPeriodDatetimeValue}
                 onInstantChange={setVanillaInstantValue}
                 onPeriodChange={setVanillaPeriodValue}
                 onDatetimeChange={setVanillaDatetimeValue}
+                onPeriodDatetimeChange={setVanillaPeriodDatetimeValue}
               />
             ),
           },
@@ -1476,12 +1481,15 @@ interface CdnContentProps {
   vanillaInstantRef: React.RefObject<HTMLDivElement>;
   vanillaPeriodRef: React.RefObject<HTMLDivElement>;
   vanillaDatetimeRef: React.RefObject<HTMLDivElement>;
+  vanillaPeriodDatetimeRef: React.RefObject<HTMLDivElement>;
   vanillaInstantValue: string;
   vanillaPeriodValue: string;
   vanillaDatetimeValue: string;
+  vanillaPeriodDatetimeValue: string;
   onInstantChange: (value: string) => void;
   onPeriodChange: (value: string) => void;
   onDatetimeChange: (value: string) => void;
+  onPeriodDatetimeChange: (value: string) => void;
 }
 
 function CdnContent({
@@ -1489,17 +1497,18 @@ function CdnContent({
   vanillaInstantRef,
   vanillaPeriodRef,
   vanillaDatetimeRef,
+  vanillaPeriodDatetimeRef,
   vanillaInstantValue,
   vanillaPeriodValue,
   vanillaDatetimeValue,
+  vanillaPeriodDatetimeValue,
   onInstantChange,
   onPeriodChange,
   onDatetimeChange,
+  onPeriodDatetimeChange,
 }: CdnContentProps) {
   // Initialize Vanilla DatePickers when CDN tab is mounted
   useEffect(() => {
-    if (!window.PodoDatePicker) return;
-
     const formatValue = (value: VanillaDatePickerValue): string => {
       if (!value.date) return '-';
       const formatDate = (d: Date) => d.toLocaleDateString('ko-KR');
@@ -1515,32 +1524,78 @@ function CdnContent({
       return result;
     };
 
-    // Only initialize if containers are empty
-    if (vanillaInstantRef.current && !vanillaInstantRef.current.hasChildNodes()) {
-      new window.PodoDatePicker(vanillaInstantRef.current, {
-        mode: 'instant',
-        type: 'date',
-        onChange: (value: VanillaDatePickerValue) => onInstantChange(formatValue(value)),
-      });
-    }
+    // Format value for datetime types - always show time even if 00:00
+    const formatDatetimeValue = (value: VanillaDatePickerValue): string => {
+      if (!value.date) return '-';
+      const formatDate = (d: Date) => d.toLocaleDateString('ko-KR');
+      const formatTime = (time?: { hour: number; minute: number }) =>
+        time ? `${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}` : '00:00';
 
-    if (vanillaPeriodRef.current && !vanillaPeriodRef.current.hasChildNodes()) {
-      new window.PodoDatePicker(vanillaPeriodRef.current, {
-        mode: 'period',
-        type: 'date',
-        onChange: (value: VanillaDatePickerValue) => onPeriodChange(formatValue(value)),
-      });
-    }
+      let result = formatDate(value.date);
+      result += ` ${formatTime(value.time)}`;
+      if (value.endDate) {
+        result += ` ~ ${formatDate(value.endDate)}`;
+        result += ` ${formatTime(value.endTime)}`;
+      }
+      return result;
+    };
 
-    if (vanillaDatetimeRef.current && !vanillaDatetimeRef.current.hasChildNodes()) {
-      new window.PodoDatePicker(vanillaDatetimeRef.current, {
-        mode: 'instant',
-        type: 'datetime',
-        minuteStep: 15,
-        onChange: (value: VanillaDatePickerValue) => onDatetimeChange(formatValue(value)),
-      });
+    // Wait for PodoDatePicker script to load before initializing
+    const initializePickers = () => {
+      if (!window.PodoDatePicker) return false;
+
+      // Only initialize if containers are empty
+      if (vanillaInstantRef.current && !vanillaInstantRef.current.hasChildNodes()) {
+        new window.PodoDatePicker(vanillaInstantRef.current, {
+          mode: 'instant',
+          type: 'date',
+          onChange: (value: VanillaDatePickerValue) => onInstantChange(formatValue(value)),
+        });
+      }
+
+      if (vanillaPeriodRef.current && !vanillaPeriodRef.current.hasChildNodes()) {
+        new window.PodoDatePicker(vanillaPeriodRef.current, {
+          mode: 'period',
+          type: 'date',
+          onChange: (value: VanillaDatePickerValue) => onPeriodChange(formatValue(value)),
+        });
+      }
+
+      if (vanillaDatetimeRef.current && !vanillaDatetimeRef.current.hasChildNodes()) {
+        new window.PodoDatePicker(vanillaDatetimeRef.current, {
+          mode: 'instant',
+          type: 'datetime',
+          minuteStep: 15,
+          onChange: (value: VanillaDatePickerValue) => onDatetimeChange(formatDatetimeValue(value)),
+        });
+      }
+
+      if (vanillaPeriodDatetimeRef.current && !vanillaPeriodDatetimeRef.current.hasChildNodes()) {
+        new window.PodoDatePicker(vanillaPeriodDatetimeRef.current, {
+          mode: 'period',
+          type: 'datetime',
+          minuteStep: 15,
+          onChange: (value: VanillaDatePickerValue) => {
+            console.log('Period DateTime onChange:', value);
+            onPeriodDatetimeChange(formatDatetimeValue(value));
+          },
+        });
+      }
+
+      return true;
+    };
+
+    // Try to initialize immediately, or wait for script to load
+    if (!initializePickers()) {
+      const interval = setInterval(() => {
+        if (initializePickers()) {
+          clearInterval(interval);
+        }
+      }, 100);
+
+      return () => clearInterval(interval);
     }
-  }, [vanillaInstantRef, vanillaPeriodRef, vanillaDatetimeRef, onInstantChange, onPeriodChange, onDatetimeChange]); // Run when component mounts
+  }, [vanillaInstantRef, vanillaPeriodRef, vanillaDatetimeRef, vanillaPeriodDatetimeRef, onInstantChange, onPeriodChange, onDatetimeChange, onPeriodDatetimeChange]);
 
   return (
     <>
@@ -1604,6 +1659,14 @@ function CdnContent({
               <div ref={vanillaDatetimeRef}></div>
               <div className={styles.selectedValue}>
                 {vanillaDatetimeValue}
+              </div>
+            </div>
+
+            <div className={styles.typeCard}>
+              <h4>{t('cdn.periodDatetime')}</h4>
+              <div ref={vanillaPeriodDatetimeRef}></div>
+              <div className={styles.selectedValue}>
+                {vanillaPeriodDatetimeValue}
               </div>
             </div>
           </div>
