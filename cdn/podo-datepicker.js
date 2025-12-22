@@ -1,5 +1,5 @@
 /*!
- * Podo UI DatePicker v1.0.5
+ * Podo UI DatePicker v1.0.6
  * https://podoui.com
  * MIT License
  */
@@ -1076,11 +1076,9 @@
         }
       }
 
-      if (!this.showActions) {
-        this.value = { ...this.tempValue };
-        this.emitChange();
-      }
-
+      // Always apply time changes immediately
+      this.value = { ...this.tempValue };
+      this.emitChange();
       this.renderInputContent();
     }
 
