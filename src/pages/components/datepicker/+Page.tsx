@@ -88,49 +88,7 @@ export default function DatePickerPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!vanillaLoaded || !window.PodoDatePicker) return;
-
-    const formatValue = (value: VanillaDatePickerValue): string => {
-      if (!value.date) return '-';
-      const formatDate = (d: Date) => d.toLocaleDateString('ko-KR');
-      const formatTime = (time?: { hour: number; minute: number }) =>
-        time ? `${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}` : '';
-
-      let result = formatDate(value.date);
-      if (value.time) result += ` ${formatTime(value.time)}`;
-      if (value.endDate) {
-        result += ` ~ ${formatDate(value.endDate)}`;
-        if (value.endTime) result += ` ${formatTime(value.endTime)}`;
-      }
-      return result;
-    };
-
-    if (vanillaInstantRef.current && !vanillaInstantRef.current.hasChildNodes()) {
-      new window.PodoDatePicker(vanillaInstantRef.current, {
-        mode: 'instant',
-        type: 'date',
-        onChange: (value: VanillaDatePickerValue) => setVanillaInstantValue(formatValue(value)),
-      });
-    }
-
-    if (vanillaPeriodRef.current && !vanillaPeriodRef.current.hasChildNodes()) {
-      new window.PodoDatePicker(vanillaPeriodRef.current, {
-        mode: 'period',
-        type: 'date',
-        onChange: (value: VanillaDatePickerValue) => setVanillaPeriodValue(formatValue(value)),
-      });
-    }
-
-    if (vanillaDatetimeRef.current && !vanillaDatetimeRef.current.hasChildNodes()) {
-      new window.PodoDatePicker(vanillaDatetimeRef.current, {
-        mode: 'instant',
-        type: 'datetime',
-        minuteStep: 15,
-        onChange: (value: VanillaDatePickerValue) => setVanillaDatetimeValue(formatValue(value)),
-      });
-    }
-  }, [vanillaLoaded]);
+  // Removed: Vanilla DatePicker initialization moved to CdnContent component
 
   const formatDateDisplay = (value: DatePickerValue): string => {
     if (!value.date) return '-';
@@ -264,6 +222,9 @@ export default function DatePickerPage() {
                 vanillaInstantValue={vanillaInstantValue}
                 vanillaPeriodValue={vanillaPeriodValue}
                 vanillaDatetimeValue={vanillaDatetimeValue}
+                onInstantChange={setVanillaInstantValue}
+                onPeriodChange={setVanillaPeriodValue}
+                onDatetimeChange={setVanillaDatetimeValue}
               />
             ),
           },
@@ -1518,6 +1479,9 @@ interface CdnContentProps {
   vanillaInstantValue: string;
   vanillaPeriodValue: string;
   vanillaDatetimeValue: string;
+  onInstantChange: (value: string) => void;
+  onPeriodChange: (value: string) => void;
+  onDatetimeChange: (value: string) => void;
 }
 
 function CdnContent({
@@ -1528,7 +1492,56 @@ function CdnContent({
   vanillaInstantValue,
   vanillaPeriodValue,
   vanillaDatetimeValue,
+  onInstantChange,
+  onPeriodChange,
+  onDatetimeChange,
 }: CdnContentProps) {
+  // Initialize Vanilla DatePickers when CDN tab is mounted
+  useEffect(() => {
+    if (!window.PodoDatePicker) return;
+
+    const formatValue = (value: VanillaDatePickerValue): string => {
+      if (!value.date) return '-';
+      const formatDate = (d: Date) => d.toLocaleDateString('ko-KR');
+      const formatTime = (time?: { hour: number; minute: number }) =>
+        time ? `${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}` : '';
+
+      let result = formatDate(value.date);
+      if (value.time) result += ` ${formatTime(value.time)}`;
+      if (value.endDate) {
+        result += ` ~ ${formatDate(value.endDate)}`;
+        if (value.endTime) result += ` ${formatTime(value.endTime)}`;
+      }
+      return result;
+    };
+
+    // Only initialize if containers are empty
+    if (vanillaInstantRef.current && !vanillaInstantRef.current.hasChildNodes()) {
+      new window.PodoDatePicker(vanillaInstantRef.current, {
+        mode: 'instant',
+        type: 'date',
+        onChange: (value: VanillaDatePickerValue) => onInstantChange(formatValue(value)),
+      });
+    }
+
+    if (vanillaPeriodRef.current && !vanillaPeriodRef.current.hasChildNodes()) {
+      new window.PodoDatePicker(vanillaPeriodRef.current, {
+        mode: 'period',
+        type: 'date',
+        onChange: (value: VanillaDatePickerValue) => onPeriodChange(formatValue(value)),
+      });
+    }
+
+    if (vanillaDatetimeRef.current && !vanillaDatetimeRef.current.hasChildNodes()) {
+      new window.PodoDatePicker(vanillaDatetimeRef.current, {
+        mode: 'instant',
+        type: 'datetime',
+        minuteStep: 15,
+        onChange: (value: VanillaDatePickerValue) => onDatetimeChange(formatValue(value)),
+      });
+    }
+  }, [vanillaInstantRef, vanillaPeriodRef, vanillaDatetimeRef, onInstantChange, onPeriodChange, onDatetimeChange]); // Run when component mounts
+
   return (
     <>
       <section>
