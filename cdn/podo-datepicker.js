@@ -156,13 +156,13 @@
 
   function isDateDisabled(date, disable, enable) {
     // If enable is specified: disable if not matching any condition
-    if (enable && enable.length > 0) {
+    if (Array.isArray(enable) && enable.length > 0) {
       const isEnabled = enable.some((condition) => matchesCondition(date, condition));
       return !isEnabled;
     }
 
     // If disable is specified: disable if matching any condition
-    if (disable && disable.length > 0) {
+    if (Array.isArray(disable) && disable.length > 0) {
       return disable.some((condition) => matchesCondition(date, condition));
     }
 
@@ -243,6 +243,11 @@
         throw new Error('PodoDatePicker: Container element not found');
       }
 
+      // Prevent duplicate initialization
+      if (this.container._podoDatePicker) {
+        return this.container._podoDatePicker;
+      }
+
       // Options
       this.mode = options.mode || 'instant';
       this.type = options.type || 'date';
@@ -253,8 +258,9 @@
       this.disabled = options.disabled || false;
       this.showActions = options.showActions ?? this.mode === 'period';
       this.align = options.align || 'left';
-      this.disable = options.disable || [];
-      this.enable = options.enable || [];
+      // Ensure disable and enable are always arrays
+      this.disable = Array.isArray(options.disable) ? options.disable : [];
+      this.enable = Array.isArray(options.enable) ? options.enable : [];
       this.minDate = options.minDate;
       this.maxDate = options.maxDate;
       this.minuteStep = options.minuteStep || 1;
@@ -295,6 +301,9 @@
       // Build UI
       this.render();
       this.bindEvents();
+
+      // Store instance on container for tracking
+      this.container._podoDatePicker = this;
     }
 
     // ============================================
@@ -1162,6 +1171,10 @@
      * Destroy the datepicker instance
      */
     destroy() {
+      // Remove instance tracking
+      if (this.container._podoDatePicker) {
+        delete this.container._podoDatePicker;
+      }
       this.container.innerHTML = '';
     }
   }
