@@ -1,5 +1,5 @@
 /*!
- * Podo UI DatePicker v1.0.6
+ * Podo UI DatePicker v1.0.8
  * https://podoui.com
  * MIT License
  */
