@@ -228,6 +228,36 @@
     }
   };
 
+  // 리사이즈 핸들과 wrapper를 제거한 깨끗한 HTML 반환
+  const getCleanHTML = (html: string): string => {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    // image-wrapper 제거 (이미지만 남기고)
+    const imageWrappers = temp.querySelectorAll('.image-wrapper');
+    imageWrappers.forEach(wrapper => {
+      const img = wrapper.querySelector('img');
+      if (img && wrapper.parentNode) {
+        // img를 wrapper 밖으로 이동
+        wrapper.parentNode.insertBefore(img, wrapper);
+        wrapper.remove();
+      }
+    });
+
+    // resize-handle 제거
+    const resizeHandles = temp.querySelectorAll('.resize-handle');
+    resizeHandles.forEach(handle => handle.remove());
+
+    // youtube-wrapper의 resize-handle만 제거 (wrapper는 유지)
+    const youtubeWrappers = temp.querySelectorAll('.youtube-wrapper');
+    youtubeWrappers.forEach(wrapper => {
+      const handles = wrapper.querySelectorAll('.resize-handle');
+      handles.forEach(handle => handle.remove());
+    });
+
+    return temp.innerHTML;
+  };
+
   const detectCurrentAlign = () => {
     if (document.queryCommandState('justifyLeft')) {
       currentAlign = 'left';
@@ -334,7 +364,7 @@
         isUndoRedo = true;
         editorRef.innerHTML = content;
         value = content;
-        onchange?.(content);
+        onchange?.(getCleanHTML(content));
         detectCurrentParagraphStyle();
         detectCurrentAlign();
         detectTextStyles();
@@ -361,7 +391,7 @@
         isUndoRedo = true;
         editorRef.innerHTML = content;
         value = content;
-        onchange?.(content);
+        onchange?.(getCleanHTML(content));
         detectCurrentParagraphStyle();
         detectCurrentAlign();
         detectTextStyles();
@@ -382,9 +412,10 @@
 
     if (editorRef) {
       const content = editorRef.innerHTML;
+      const cleanContent = getCleanHTML(content);
       value = content;
-      onchange?.(content);
-      validateHandler(content);
+      onchange?.(cleanContent);
+      validateHandler(cleanContent);
       detectCurrentParagraphStyle();
       detectCurrentAlign();
       detectTextStyles();
@@ -402,9 +433,10 @@
 
     if (editorRef) {
       const content = editorRef.innerHTML;
+      const cleanContent = getCleanHTML(content);
       value = content;
-      onchange?.(content);
-      validateHandler(content);
+      onchange?.(cleanContent);
+      validateHandler(cleanContent);
       detectCurrentParagraphStyle();
       detectCurrentAlign();
       detectTextStyles();

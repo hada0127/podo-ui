@@ -231,6 +231,36 @@ const Editor = ({
     }
   };
 
+  // 리사이즈 핸들과 wrapper를 제거한 깨끗한 HTML 반환
+  const getCleanHTML = (html: string): string => {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    // image-wrapper 제거 (이미지만 남기고)
+    const imageWrappers = temp.querySelectorAll('.image-wrapper');
+    imageWrappers.forEach(wrapper => {
+      const img = wrapper.querySelector('img');
+      if (img && wrapper.parentNode) {
+        // img를 wrapper 밖으로 이동
+        wrapper.parentNode.insertBefore(img, wrapper);
+        wrapper.remove();
+      }
+    });
+
+    // resize-handle 제거
+    const resizeHandles = temp.querySelectorAll('.resize-handle');
+    resizeHandles.forEach(handle => handle.remove());
+
+    // youtube-wrapper의 resize-handle만 제거 (wrapper는 유지)
+    const youtubeWrappers = temp.querySelectorAll('.youtube-wrapper');
+    youtubeWrappers.forEach(wrapper => {
+      const handles = wrapper.querySelectorAll('.resize-handle');
+      handles.forEach(handle => handle.remove());
+    });
+
+    return temp.innerHTML;
+  };
+
 
   const detectCurrentAlign = () => {
     // 정렬 상태 감지
@@ -361,7 +391,7 @@ const Editor = ({
       if (editorRef.current) {
         isUndoRedoRef.current = true; // undo 실행 중 플래그 설정
         editorRef.current.innerHTML = content;
-        onChange(content);
+        onChange(getCleanHTML(content));
         detectCurrentParagraphStyle();
         detectCurrentAlign();
         // 다음 틱에서 플래그 해제
@@ -391,7 +421,7 @@ const Editor = ({
       if (editorRef.current) {
         isUndoRedoRef.current = true; // redo 실행 중 플래그 설정
         editorRef.current.innerHTML = content;
-        onChange(content);
+        onChange(getCleanHTML(content));
         detectCurrentParagraphStyle();
         detectCurrentAlign();
         // 다음 틱에서 플래그 해제
@@ -414,9 +444,10 @@ const Editor = ({
 
     if (editorRef.current) {
       const content = editorRef.current.innerHTML;
+      const cleanContent = getCleanHTML(content);
 
-      onChange(content);
-      validateHandler(content);
+      onChange(cleanContent);
+      validateHandler(cleanContent);
       detectCurrentParagraphStyle();
       detectCurrentAlign();
 
@@ -439,8 +470,9 @@ const Editor = ({
     // composition 종료 시 직접 업데이트 처리
     if (editorRef.current) {
       const content = editorRef.current.innerHTML;
-      onChange(content);
-      validateHandler(content);
+      const cleanContent = getCleanHTML(content);
+      onChange(cleanContent);
+      validateHandler(cleanContent);
       detectCurrentParagraphStyle();
       detectCurrentAlign();
       addToHistory(content);

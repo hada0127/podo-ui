@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Editor from '../../../../react/atom/editor';
+import Editor from '../../../../react/atom/editor/index';
 import EditorView from '../../../../react/atom/editor-view';
 import { useTranslation } from 'react-i18next';
 import CodeBlock from '../../../components/CodeBlock';

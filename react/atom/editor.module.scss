@@ -10,7 +10,7 @@
   border: 1px solid color(border);
   border-radius: r(3);
   background: color(bg-modal);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 
@@ -273,7 +273,9 @@
 }
 
 .paragraphDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   min-width: 200px;
   max-height: 400px;
@@ -326,7 +328,9 @@
 
 // 정렬 드롭다운
 .alignDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 4px;
   background: color(bg-modal);
@@ -402,7 +406,9 @@
 
 // 링크 드롭다운
 .linkDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 12px;
   background: color(bg-modal);
@@ -511,7 +517,9 @@
 
 // 표 드롭다운
 .tableDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 12px;
   background: color(bg-modal);
@@ -632,7 +640,9 @@
 
 // 색상 팔레트 드롭다운
 .colorPalette {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 8px;
   background: color(bg-modal);
@@ -954,7 +964,9 @@
 
 // 이미지 드롭다운
 .imageDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 16px;
   background: color(bg-modal);
