@@ -1230,22 +1230,40 @@ const Editor = ({
   const deleteImage = () => {
     if (!selectedImage) return;
 
-    // 먼저 선택 해제 (상태 초기화)
     const imageToDelete = selectedImage;
-    deselectImage();
 
-    // wrapper가 있는 경우 wrapper를 찾아서 제거
+    // 상태 먼저 초기화 (deselect 대신)
+    setSelectedImage(null);
+    setIsImageEditPopupOpen(false);
+
+    // wrapper가 있는지 확인
+    const wrapper = imageToDelete.parentElement;
     let elementToRemove: HTMLElement = imageToDelete;
-    let parent = imageToDelete.parentElement;
 
-    // wrapper를 거슬러 올라가며 정렬 컨테이너까지 찾기
-    while (parent && parent !== editorRef.current) {
-      if (parent.classList.contains('image-wrapper') ||
-          (parent.tagName === 'DIV' && parent.style.textAlign)) {
-        elementToRemove = parent;
-        parent = parent.parentElement;
-      } else {
-        break;
+    // wrapper부터 시작해서 상위로 거슬러 올라가기
+    if (wrapper && wrapper.classList.contains('image-wrapper')) {
+      elementToRemove = wrapper;
+      let parent = wrapper.parentElement;
+
+      while (parent && parent !== editorRef.current) {
+        if (parent.tagName === 'DIV' && parent.style.textAlign) {
+          elementToRemove = parent;
+          parent = parent.parentElement;
+        } else {
+          break;
+        }
+      }
+    } else {
+      // wrapper가 없으면 이미지부터 시작
+      let parent = imageToDelete.parentElement;
+
+      while (parent && parent !== editorRef.current) {
+        if (parent.tagName === 'DIV' && parent.style.textAlign) {
+          elementToRemove = parent;
+          parent = parent.parentElement;
+        } else {
+          break;
+        }
       }
     }
 
@@ -1954,6 +1972,10 @@ const Editor = ({
       }
     }
 
+    // 변경된 크기를 적용했으므로, 선택 해제 시 복원되지 않도록 dataset 제거
+    delete selectedYoutube.dataset.originalWidth;
+    delete selectedYoutube.dataset.originalDisplay;
+
     // 선택 해제
     deselectYoutube();
     handleInput();
@@ -1964,19 +1986,41 @@ const Editor = ({
     if (!selectedYoutube) return;
 
     const youtubeToDelete = selectedYoutube;
-    deselectYoutube();
 
+    // 상태 먼저 초기화 (deselect 대신)
+    setSelectedYoutube(null);
+    setIsYoutubeEditPopupOpen(false);
+
+    // wrapper가 있는지 확인
+    const wrapper = youtubeToDelete.parentElement;
     let elementToRemove: HTMLElement = youtubeToDelete;
-    let parent = youtubeToDelete.parentElement;
 
-    while (parent && parent !== editorRef.current) {
-      if (parent.classList.contains('youtube-wrapper') ||
-          parent.classList.contains('youtube-container') ||
-          (parent.tagName === 'DIV' && parent.style.textAlign)) {
-        elementToRemove = parent;
-        parent = parent.parentElement;
-      } else {
-        break;
+    // wrapper부터 시작해서 상위로 거슬러 올라가기
+    if (wrapper && wrapper.classList.contains('youtube-wrapper')) {
+      elementToRemove = wrapper;
+      let parent = wrapper.parentElement;
+
+      while (parent && parent !== editorRef.current) {
+        if (parent.classList.contains('youtube-container') ||
+            (parent.tagName === 'DIV' && parent.style.textAlign)) {
+          elementToRemove = parent;
+          parent = parent.parentElement;
+        } else {
+          break;
+        }
+      }
+    } else {
+      // wrapper가 없으면 유튜브 컨테이너부터 시작
+      let parent = youtubeToDelete.parentElement;
+
+      while (parent && parent !== editorRef.current) {
+        if (parent.classList.contains('youtube-container') ||
+            (parent.tagName === 'DIV' && parent.style.textAlign)) {
+          elementToRemove = parent;
+          parent = parent.parentElement;
+        } else {
+          break;
+        }
       }
     }
 
