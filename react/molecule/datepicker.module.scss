@@ -155,6 +155,13 @@
     left: auto;
     right: 0;
   }
+
+  // Portal 모드 스타일 (document.body에 렌더링될 때)
+  &.portalDropdown {
+    top: auto; // inline style로 설정됨
+    left: auto; // inline style로 설정됨
+    margin-top: s(2);
+  }
 }
 
 // Calendar

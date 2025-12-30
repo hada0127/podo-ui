@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './datepicker.module.scss';
 
 // Types
@@ -107,6 +108,12 @@ export interface DatePickerProps {
    * 예시: { min: 2020, max: 2030 }
    */
   yearRange?: YearRange;
+  /**
+   * 드롭다운을 document.body에 Portal로 렌더링
+   * overflow: hidden 컨테이너 내부에서 드롭다운이 잘리는 문제 해결
+   * 기본값: false
+   */
+  portal?: boolean;
 }
 
 // Helper functions
@@ -706,6 +713,13 @@ const PeriodCalendar: React.FC<PeriodCalendarProps> = ({
 // Selecting part types
 type SelectingPart = 'date' | 'hour' | 'minute' | 'endDate' | 'endHour' | 'endMinute' | null;
 
+// Portal 드롭다운 위치 타입
+interface PortalPosition {
+  top: number;
+  left: number;
+  width: number;
+}
+
 // Main DatePicker Component
 const DatePicker: React.FC<DatePickerProps> = ({
   mode = 'instant',
@@ -725,6 +739,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   format,
   initialCalendar,
   yearRange,
+  portal = false,
 }) => {
   const [selectingPart, setSelectingPart] = useState<SelectingPart>(null);
   const [tempValue, setTempValue] = useState<DatePickerValue>(value || {});
@@ -751,22 +766,78 @@ const DatePicker: React.FC<DatePickerProps> = ({
   });
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
+
+  // Portal 모드 위치 상태
+  const [portalPosition, setPortalPosition] = useState<PortalPosition | null>(null);
 
   const shouldShowActions = showActions ?? mode === 'period';
   // 날짜 선택 시에만 드롭다운 표시 (시/분은 native select 사용)
   const isOpen = selectingPart === 'date' || selectingPart === 'endDate';
 
+  // Portal 위치 계산 함수
+  const updatePortalPosition = useCallback(() => {
+    if (!portal || !inputRef.current) return;
+
+    const rect = inputRef.current.getBoundingClientRect();
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
+
+    setPortalPosition({
+      top: rect.bottom + scrollY,
+      left: align === 'right' ? rect.right + scrollX : rect.left + scrollX,
+      width: rect.width,
+    });
+  }, [portal, align]);
+
+  // Portal 열릴 때 위치 계산
+  useEffect(() => {
+    if (isOpen && portal) {
+      updatePortalPosition();
+    }
+  }, [isOpen, portal, updatePortalPosition]);
+
+  // Portal 모드에서 스크롤/리사이즈 시 위치 재계산
+  useEffect(() => {
+    if (!portal || !isOpen) return;
+
+    const handleScrollResize = () => {
+      updatePortalPosition();
+    };
+
+    window.addEventListener('scroll', handleScrollResize, true);
+    window.addEventListener('resize', handleScrollResize);
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollResize, true);
+      window.removeEventListener('resize', handleScrollResize);
+    };
+  }, [portal, isOpen, updatePortalPosition]);
+
   // Close on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setSelectingPart(null);
+      const target = event.target as Node;
+
+      // containerRef 체크
+      if (containerRef.current && containerRef.current.contains(target)) {
+        return;
       }
+
+      // Portal 모드일 때 드롭다운 영역도 체크
+      if (portal && isOpen) {
+        const portalDropdown = document.querySelector(`.${styles.portalDropdown}`);
+        if (portalDropdown && portalDropdown.contains(target)) {
+          return;
+        }
+      }
+
+      setSelectingPart(null);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [portal, isOpen]);
 
   // Sync temp value with prop value
   useEffect(() => {
@@ -1263,45 +1334,80 @@ const DatePicker: React.FC<DatePickerProps> = ({
   // 아이콘 결정 (time 타입은 icon-time, 나머지는 icon-calendar)
   const inputIcon = type === 'time' ? 'icon-time' : 'icon-calendar';
 
+  // 드롭다운 콘텐츠 렌더링
+  const renderDropdown = () => {
+    const dropdownContent = (
+      <>
+        {renderDropdownContent()}
+
+        {shouldShowActions && (
+          <div className={styles.bottomActions}>
+            <span className={styles.periodText}>
+              {mode === 'period' && tempValue.date ? formatPeriodText() : ''}
+            </span>
+            <div className={styles.actionButtons}>
+              <button
+                type="button"
+                className={`${styles.actionButton} ${styles.reset}`}
+                onClick={handleReset}
+              >
+                <i className="icon-refresh" />
+                초기화
+              </button>
+              <button
+                type="button"
+                className={`${styles.actionButton} ${styles.apply}`}
+                onClick={handleApply}
+              >
+                적용
+              </button>
+            </div>
+          </div>
+        )}
+      </>
+    );
+
+    // Portal 모드
+    if (portal && portalPosition) {
+      const portalStyle: React.CSSProperties = {
+        position: 'absolute',
+        top: portalPosition.top,
+        ...(align === 'right'
+          ? { right: document.documentElement.clientWidth - portalPosition.left }
+          : { left: portalPosition.left }),
+        zIndex: 9999,
+      };
+
+      return createPortal(
+        <div
+          className={`${styles.dropdown} ${styles.portalDropdown} ${align === 'right' ? styles.right : ''}`}
+          style={portalStyle}
+        >
+          {dropdownContent}
+        </div>,
+        document.body
+      );
+    }
+
+    // 기본 모드
+    return (
+      <div className={`${styles.dropdown} ${align === 'right' ? styles.right : ''}`}>
+        {dropdownContent}
+      </div>
+    );
+  };
+
   return (
     <div ref={containerRef} className={`${styles.datepicker} ${className || ''}`}>
       <div
+        ref={inputRef}
         className={`${styles.input} ${isOpen ? styles.active : ''} ${disabled ? styles.disabled : ''}`}
       >
         {renderInputContent()}
         <i className={`${styles.inputIcon} ${inputIcon}`} />
       </div>
 
-      {isOpen && (
-        <div className={`${styles.dropdown} ${align === 'right' ? styles.right : ''}`}>
-          {renderDropdownContent()}
-
-          {shouldShowActions && (
-            <div className={styles.bottomActions}>
-              <span className={styles.periodText}>
-                {mode === 'period' && tempValue.date ? formatPeriodText() : ''}
-              </span>
-              <div className={styles.actionButtons}>
-                <button
-                  type="button"
-                  className={`${styles.actionButton} ${styles.reset}`}
-                  onClick={handleReset}
-                >
-                  <i className="icon-refresh" />
-                  초기화
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.actionButton} ${styles.apply}`}
-                  onClick={handleApply}
-                >
-                  적용
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {isOpen && renderDropdown()}
     </div>
   );
 };
