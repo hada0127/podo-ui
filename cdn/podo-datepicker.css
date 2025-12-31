@@ -1,5 +1,5 @@
 /*!
- * Podo UI DatePicker CSS v1.0.8
+ * Podo UI DatePicker CSS v1.0.9
  * https://podoui.com
  * MIT License
  */
@@ -34,11 +34,12 @@
   --podo-default-reverse: var(--color-default-reverse, #212121);
   --podo-radius-sm: var(--radius-2, 4px);
   --podo-radius-md: var(--radius-3, 8px);
-  --podo-spacing-1: var(--spacing-1, 4px);
-  --podo-spacing-2: var(--spacing-2, 8px);
-  --podo-spacing-3: var(--spacing-3, 12px);
-  --podo-spacing-4: var(--spacing-4, 16px);
-  --podo-spacing-5: var(--spacing-5, 20px);
+  /* Spacing values aligned with SCSS system: s(1)=2px, s(2)=4px, s(3)=8px, s(4)=12px, s(5)=16px */
+  --podo-spacing-1: var(--spacing-1, 2px);
+  --podo-spacing-2: var(--spacing-2, 4px);
+  --podo-spacing-3: var(--spacing-3, 8px);
+  --podo-spacing-4: var(--spacing-4, 12px);
+  --podo-spacing-5: var(--spacing-5, 16px);
   --podo-font-size-sm: 13px;
   --podo-font-size-md: 14px;
   --podo-font-size-lg: 16px;
