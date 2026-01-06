@@ -1,5 +1,5 @@
 /*!
- * Podo UI CSS v1.0.8
+ * Podo UI CSS v1.0.9
  * https://podoui.com
  * MIT License
  */
@@ -17324,6 +17324,9 @@ body h3:not(button) {
 }
 :root .icon-section::before {
   content: "\e9a8";
+}
+:root .icon-twinkle::before {
+  content: "\e9a9";
 }
 
 /*

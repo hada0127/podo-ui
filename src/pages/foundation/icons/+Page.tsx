@@ -53,6 +53,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
     'button', 'desktop', 'mobile',
     'spacing', 'align-bottom', 'align-middle', 'align-top',
     'layout-horizontal', 'layout-vertical', 'section',
+    'twinkle',
   ];
 
   return (
@@ -251,7 +252,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.etc')}</h2>
           <div className={styles.iconList}>
-            {['unlink-alt', 'horizontalLine', 'gap', 'spacing', 'inputForm', 'detailView', 'company', 'landing', 'footer', 'click', 'align-left', 'align-center', 'align-right', 'align-top', 'align-middle', 'align-bottom', 'input', 'margin-right', 'margin-top', 'margin-left', 'margin-bottom', 'login', 'margin-horizontal', 'margin-vertical', 'button', 'desktop', 'mobile', 'layout-horizontal', 'layout-vertical', 'section'].map(icon => (
+            {['unlink-alt', 'horizontalLine', 'gap', 'spacing', 'inputForm', 'detailView', 'company', 'landing', 'footer', 'click', 'align-left', 'align-center', 'align-right', 'align-top', 'align-middle', 'align-bottom', 'input', 'margin-right', 'margin-top', 'margin-left', 'margin-bottom', 'login', 'margin-horizontal', 'margin-vertical', 'button', 'desktop', 'mobile', 'layout-horizontal', 'layout-vertical', 'section', 'twinkle'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
