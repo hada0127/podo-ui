@@ -222,6 +222,7 @@
   flex-direction: column;
   gap: 10px;
   min-width: 280px;
+  max-width: 100%;
 }
 
 /* Navigation */
@@ -324,10 +325,12 @@
 .podo-datepicker__calendar-row {
   display: flex;
   width: 100%;
+  min-width: 0;
 }
 
 .podo-datepicker__calendar-cell {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -478,4 +481,92 @@
 
 .podo-datepicker__action-button--apply:hover {
   background: var(--podo-primary-hover);
+}
+
+/* ==============================================
+   Responsive Styles (min 360px support)
+   ============================================== */
+
+/* 600px 이하: Period 모드 단일 캘린더 (우측 캘린더 숨김) */
+@media screen and (max-width: 600px) {
+  .podo-datepicker__period-calendar-right {
+    display: none;
+  }
+}
+
+/* 480px 이하: padding/gap 축소 */
+@media screen and (max-width: 480px) {
+  .podo-datepicker__dropdown {
+    padding: var(--podo-spacing-4);
+    gap: var(--podo-spacing-3);
+  }
+
+  .podo-datepicker__calendar {
+    min-width: 260px;
+    gap: var(--podo-spacing-3);
+  }
+
+  .podo-datepicker__calendar-nav {
+    height: 36px;
+    gap: var(--podo-spacing-3);
+  }
+
+  .podo-datepicker__nav-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .podo-datepicker__calendar-cell {
+    height: 36px;
+  }
+}
+
+/* 400px 이하: 최소 크기 적용 (터치 영역 32px 유지) */
+@media screen and (max-width: 400px) {
+  .podo-datepicker__dropdown {
+    padding: var(--podo-spacing-3);
+    gap: var(--podo-spacing-2);
+    /* 화면 벗어나지 않도록 제한 */
+    max-width: calc(100vw - var(--podo-spacing-4));
+    box-sizing: border-box;
+  }
+
+  .podo-datepicker__calendar {
+    min-width: 0;
+    width: 100%;
+    gap: var(--podo-spacing-2);
+  }
+
+  .podo-datepicker__calendar-nav {
+    height: 32px;
+    gap: var(--podo-spacing-2);
+  }
+
+  .podo-datepicker__nav-button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .podo-datepicker__nav-button i {
+    font-size: 18px;
+  }
+
+  .podo-datepicker__calendar-cell {
+    height: 32px;
+  }
+
+  .podo-datepicker__actions {
+    flex-wrap: wrap;
+    gap: var(--podo-spacing-2);
+  }
+
+  .podo-datepicker__action-button {
+    padding: var(--podo-spacing-2) var(--podo-spacing-3);
+  }
+
+  .podo-datepicker__action-button i {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
 }

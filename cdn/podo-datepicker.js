@@ -1,5 +1,5 @@
 /*!
- * Podo UI DatePicker v1.0.8
+ * Podo UI DatePicker v1.0.10
  * https://podoui.com
  * MIT License
  */
@@ -302,6 +302,22 @@
       this.render();
       this.bindEvents();
 
+      // 반응형: 화면 크기 변경 시 드롭다운 다시 렌더링 (Period 모드) + maxWidth 업데이트
+      this._lastMobileState = this.isMobileView();
+      this._resizeHandler = () => {
+        const isMobile = this.isMobileView();
+        if (this.isOpen) {
+          // maxWidth 항상 업데이트
+          this.updateDropdownMaxWidth();
+          // Period 모드에서 모바일 상태 변경 시 드롭다운 다시 렌더링
+          if (this.mode === 'period' && isMobile !== this._lastMobileState) {
+            this._lastMobileState = isMobile;
+            this.renderDropdown();
+          }
+        }
+      };
+      window.addEventListener('resize', this._resizeHandler);
+
       // Store instance on container for tracking
       this.container._podoDatePicker = this;
     }
@@ -560,20 +576,30 @@
       return calendar;
     }
 
+    /**
+     * 모바일 화면 여부 확인 (반응형 breakpoint: 600px)
+     * @returns {boolean}
+     */
+    isMobileView() {
+      return window.innerWidth <= 600;
+    }
+
     renderPeriodCalendars() {
       const wrapper = createElement('div', `${PREFIX}__period-calendars`);
+      const isMobile = this.isMobileView();
 
       // Left calendar
+      // 모바일에서는 maxViewDate 제한 해제하여 자유롭게 이동 가능
       const leftCal = createElement('div', `${PREFIX}__period-calendar-left`);
       const leftCalendar = this.createCalendarElement(
         this.viewDate,
         (date) => this.handleViewDateChange(date),
-        { maxViewDate: this.endViewDate }
+        { maxViewDate: isMobile ? undefined : this.endViewDate }
       );
       leftCal.appendChild(leftCalendar);
       wrapper.appendChild(leftCal);
 
-      // Right calendar
+      // Right calendar (모바일에서는 CSS로 숨김)
       const rightCal = createElement('div', `${PREFIX}__period-calendar-right`);
       const rightCalendar = this.createCalendarElement(
         this.endViewDate,
@@ -935,6 +961,20 @@
       this.inputEl.classList.add(`${PREFIX}__input--active`);
       this.dropdownEl.style.display = 'flex';
       this.renderDropdown();
+      this.updateDropdownMaxWidth();
+    }
+
+    updateDropdownMaxWidth() {
+      if (!this.dropdownEl) return;
+      const rect = this.dropdownEl.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const padding = 8;
+      const availableWidth = viewportWidth - rect.left - padding;
+      if (availableWidth > 0) {
+        this.dropdownEl.style.maxWidth = `${availableWidth}px`;
+      } else {
+        this.dropdownEl.style.maxWidth = '';
+      }
     }
 
     close() {
@@ -1171,6 +1211,10 @@
      * Destroy the datepicker instance
      */
     destroy() {
+      // Remove resize event listener
+      if (this._resizeHandler) {
+        window.removeEventListener('resize', this._resizeHandler);
+      }
       // Remove instance tracking
       if (this.container._podoDatePicker) {
         delete this.container._podoDatePicker;

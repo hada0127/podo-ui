@@ -170,6 +170,7 @@
   flex-direction: column;
   gap: 10px;
   min-width: 280px;
+  max-width: 100%;
 }
 
 .calendarNav {
@@ -295,10 +296,12 @@
 .calendarRow {
   display: flex;
   width: 100%;
+  min-width: 0;
 }
 
 .calendarCell {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -622,14 +625,20 @@
 .periodCalendars {
   display: flex;
   gap: s(4);
+  min-width: 0; // flex 자식이 부모 max-width 존중하도록
+  overflow: hidden;
 }
 
 .periodCalendarLeft {
   flex: 1;
+  min-width: 0; // flex 자식이 축소될 수 있도록
+  overflow: hidden;
 }
 
 .periodCalendarRight {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .periodCalendar {
@@ -638,5 +647,158 @@
   &:not(:last-child) {
     border-right: 1px solid color('border');
     padding-right: s(4);
+  }
+}
+
+// ==============================================
+// Responsive Styles (min 360px support)
+// ==============================================
+
+// 600px 이하: Period 모드 단일 캘린더 (우측 캘린더 숨김)
+@media screen and (max-width: 600px) {
+  .periodCalendars {
+    .periodCalendarRight {
+      display: none;
+    }
+  }
+
+  .periodCalendar {
+    &:not(:last-child) {
+      border-right: none;
+      padding-right: 0;
+    }
+  }
+
+  .periodCalendarBody {
+    flex-direction: column;
+  }
+
+  .periodCalendarNav {
+    .periodCalendarNavSection:last-child {
+      display: none;
+    }
+  }
+}
+
+// 480px 이하: padding/gap 축소, datetime 세로 스택
+@media screen and (max-width: 480px) {
+  .dropdown {
+    padding: s(4);
+    gap: s(3);
+  }
+
+  .calendar {
+    min-width: 260px;
+    gap: s(3);
+  }
+
+  .calendarNav {
+    height: 36px;
+    gap: s(3);
+  }
+
+  .navButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .navButtonPlaceholder {
+    width: 36px;
+    height: 36px;
+  }
+
+  .calendarCell {
+    height: 36px;
+  }
+
+  .yearMonthCell {
+    height: 36px;
+  }
+
+  .combinedDropdown {
+    flex-direction: column;
+    gap: s(4);
+  }
+
+  .timeWrapper {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid color('border');
+    padding-top: s(4);
+  }
+
+  .timeSelector {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .periodCalendarNav {
+    height: 36px;
+  }
+}
+
+// 400px 이하: 최소 크기 적용 (터치 영역 32px 유지)
+@media screen and (max-width: 400px) {
+  .dropdown {
+    padding: s(3);
+    gap: s(2);
+  }
+
+  .calendar {
+    min-width: 0;
+    width: 100%;
+    gap: s(2);
+  }
+
+  .calendarNav {
+    height: 32px;
+    gap: s(2);
+  }
+
+  .navButton {
+    width: 32px;
+    height: 32px;
+
+    i {
+      font-size: 18px;
+    }
+  }
+
+  .navButtonPlaceholder {
+    width: 32px;
+    height: 32px;
+  }
+
+  .calendarCell {
+    height: 32px;
+  }
+
+  .yearMonthCell {
+    height: 32px;
+  }
+
+  .timeDisplayItem {
+    min-width: 40px;
+    padding: s(2);
+  }
+
+  .bottomActions {
+    flex-wrap: wrap;
+    gap: s(2);
+  }
+
+  .actionButton {
+    padding: s(2) s(3);
+
+    i {
+      width: 20px;
+      height: 20px;
+      font-size: 16px;
+    }
+  }
+
+  .periodCalendarNav {
+    height: 32px;
+    gap: s(2);
   }
 }
