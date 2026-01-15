@@ -225,3 +225,165 @@
     }
   }
 }
+
+// Portal 모드 스타일
+.portalTooltip {
+  position: absolute;
+  padding: s(2) s(4);
+  border-radius: r(3);
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22.4px;
+  white-space: nowrap;
+  z-index: 1000;
+
+  // Default variant
+  &.variantDefault {
+    background-color: color(default-deep);
+    color: color(text-action-reverse) !important;
+  }
+
+  // Info variant
+  &.variantInfo {
+    background-color: color(info);
+    color: color(text-action-reverse) !important;
+  }
+
+  // Arrow styles for portal mode
+  &::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    transform-origin: center;
+  }
+
+  // Portal Top positions
+  &.portalTop,
+  &.portalTopLeft,
+  &.portalTopRight {
+    &::before {
+      bottom: -6px;
+      border-radius: 0 0 2px 0;
+      transform: rotate(45deg);
+    }
+
+    &.variantDefault::before {
+      background-color: color(default-deep);
+    }
+
+    &.variantInfo::before {
+      background-color: color(info);
+    }
+  }
+
+  &.portalTop::before {
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  &.portalTopLeft::before {
+    left: 8px;
+  }
+
+  &.portalTopRight::before {
+    right: 8px;
+  }
+
+  // Portal Bottom positions
+  &.portalBottom,
+  &.portalBottomLeft,
+  &.portalBottomRight {
+    &::before {
+      top: -6px;
+      border-radius: 2px 0 0 0;
+      transform: rotate(45deg);
+    }
+
+    &.variantDefault::before {
+      background-color: color(default-deep);
+    }
+
+    &.variantInfo::before {
+      background-color: color(info);
+    }
+  }
+
+  &.portalBottom::before {
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  &.portalBottomLeft::before {
+    left: 8px;
+  }
+
+  &.portalBottomRight::before {
+    right: 8px;
+  }
+
+  // Portal Left positions
+  &.portalLeft,
+  &.portalLeftTop,
+  &.portalLeftBottom {
+    &::before {
+      right: -6px;
+      border-radius: 0 2px 0 0;
+      transform: rotate(45deg);
+    }
+
+    &.variantDefault::before {
+      background-color: color(default-deep);
+    }
+
+    &.variantInfo::before {
+      background-color: color(info);
+    }
+  }
+
+  &.portalLeft::before {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  &.portalLeftTop::before {
+    top: 8px;
+  }
+
+  &.portalLeftBottom::before {
+    bottom: 8px;
+  }
+
+  // Portal Right positions
+  &.portalRight,
+  &.portalRightTop,
+  &.portalRightBottom {
+    &::before {
+      left: -6px;
+      border-radius: 0 0 0 2px;
+      transform: rotate(45deg);
+    }
+
+    &.variantDefault::before {
+      background-color: color(default-deep);
+    }
+
+    &.variantInfo::before {
+      background-color: color(info);
+    }
+  }
+
+  &.portalRight::before {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  &.portalRightTop::before {
+    top: 8px;
+  }
+
+  &.portalRightBottom::before {
+    bottom: 8px;
+  }
+}

@@ -13,7 +13,8 @@
     { "name": "position", "type": "TooltipPosition", "default": "'top'", "description": "Arrow position" },
     { "name": "offset", "type": "number", "default": "8", "description": "Distance from trigger in pixels" },
     { "name": "isVisible", "type": "boolean", "required": false, "description": "Control visibility externally" },
-    { "name": "className", "type": "string", "required": false }
+    { "name": "className", "type": "string", "required": false },
+    { "name": "portal", "type": "boolean", "default": "false", "description": "Render tooltip in document.body via Portal (fixes overflow: hidden clipping)" }
   ],
   "positionOptions": [
     "top", "topLeft", "topRight",
@@ -37,6 +38,10 @@
     {
       "title": "Rich content",
       "code": "<Tooltip content={<><strong>Title</strong><p>Description</p></>}><button>Details</button></Tooltip>"
+    },
+    {
+      "title": "Portal mode (overflow safe)",
+      "code": "<div style={{ overflow: 'hidden' }}><Tooltip portal content=\"Won't be clipped\"><button>Hover</button></Tooltip></div>"
     }
   ],
   "related": ["chip"]
