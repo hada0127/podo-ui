@@ -756,13 +756,13 @@
       if (this.minDate) {
         const min = this.minDate instanceof Date ? this.minDate : this.minDate.date;
         const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
-        if (start < minDay) return true;
+        if (end < minDay) return true;
       }
 
       if (this.maxDate) {
         const max = this.maxDate instanceof Date ? this.maxDate : this.maxDate.date;
         const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
-        if (end > maxDay) return true;
+        if (start > maxDay) return true;
       }
 
       return false;
@@ -775,7 +775,18 @@
     }
 
     handleQuickSelect(key) {
-      const { start, end } = getPresetRange(key);
+      let { start, end } = getPresetRange(key);
+      // minDate/maxDate로 클램핑
+      if (this.minDate) {
+        const min = this.minDate instanceof Date ? this.minDate : this.minDate.date;
+        const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+        if (start < minDay) start = minDay;
+      }
+      if (this.maxDate) {
+        const max = this.maxDate instanceof Date ? this.maxDate : this.maxDate.date;
+        const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+        if (end > maxDay) end = maxDay;
+      }
       this.tempValue = { date: start, endDate: end, time: this.tempValue.time, endTime: this.tempValue.endTime };
       this.viewDate = new Date(start.getFullYear(), start.getMonth(), 1);
       this.endViewDate = new Date(end.getFullYear(), end.getMonth(), 1);

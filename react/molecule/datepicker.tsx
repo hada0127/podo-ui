@@ -317,13 +317,15 @@ const isPresetDisabled = (
   if (minDate) {
     const min = minDate instanceof Date ? minDate : minDate.date;
     const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
-    if (start < minDay) return true;
+    // start가 minDate 이전이고, end도 minDate 이전이면 완전히 범위 밖
+    if (end < minDay) return true;
   }
 
   if (maxDate) {
     const max = maxDate instanceof Date ? maxDate : maxDate.date;
     const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
-    if (end > maxDay) return true;
+    // start가 maxDate 이후면 완전히 범위 밖
+    if (start > maxDay) return true;
   }
 
   return false;
@@ -1206,7 +1208,18 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const handleQuickSelect = (key: QuickSelectKey) => {
-    const { start, end } = getPresetRange(key);
+    let { start, end } = getPresetRange(key);
+    // minDate/maxDate로 클램핑
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (start < minDay) start = minDay;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (end > maxDay) end = maxDay;
+    }
     const newValue: DatePickerValue = { date: start, endDate: end, time: tempValue.time, endTime: tempValue.endTime };
     setTempValue(newValue);
     setViewDate(new Date(start.getFullYear(), start.getMonth(), 1));
