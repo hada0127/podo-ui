@@ -1,6 +1,6 @@
 {
   "name": "podo-ui",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Design system: SCSS + React + Svelte 5",
   "philosophy": "Maximum flexibility with minimal JS dependency",
   "install": "npm install podo-ui",
