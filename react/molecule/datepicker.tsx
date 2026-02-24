@@ -25,6 +25,17 @@ export interface DatePickerValue {
   endTime?: TimeValue;
 }
 
+/** Quick Select 프리셋 키 */
+export type QuickSelectKey =
+  | 'today'
+  | 'yesterday'
+  | 'thisWeek'
+  | 'lastWeek'
+  | 'last7Days'
+  | 'last30Days'
+  | 'thisMonth'
+  | 'lastMonth';
+
 /** 날짜 범위 정의 */
 export interface DateRange {
   from: Date;
@@ -114,6 +125,12 @@ export interface DatePickerProps {
    * 기본값: false
    */
   portal?: boolean;
+  /**
+   * Quick Select 프리셋 패널 표시
+   * mode='period'일 때만 동작, instant 모드에서는 무시됨
+   * 기본값: false
+   */
+  quickSelect?: boolean;
 }
 
 // Helper functions
@@ -186,6 +203,147 @@ const isSameDay = (date1: Date, date2: Date): boolean => {
     date1.getMonth() === date2.getMonth() &&
     date1.getDate() === date2.getDate()
   );
+};
+
+// Navigation helpers
+type NavigationStep = { type: 'days'; count: number } | { type: 'month'; count: number };
+
+const getNavigationStepForPreset = (key: QuickSelectKey): NavigationStep => {
+  switch (key) {
+    case 'today': case 'yesterday': return { type: 'days', count: 1 };
+    case 'thisWeek': case 'lastWeek': case 'last7Days': return { type: 'days', count: 7 };
+    case 'last30Days': return { type: 'days', count: 30 };
+    case 'thisMonth': case 'lastMonth': return { type: 'month', count: 1 };
+  }
+};
+
+const calculateNavigationStep = (start: Date, end: Date): NavigationStep => {
+  const diffMs = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime()
+    - new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
+  return { type: 'days', count: Math.round(diffMs / 86400000) + 1 };
+};
+
+const shiftDateRange = (start: Date, end: Date, step: NavigationStep, dir: 1 | -1) => {
+  if (step.type === 'month') {
+    const shift = step.count * dir;
+    const newStart = new Date(start.getFullYear(), start.getMonth() + shift, 1);
+    const newEnd = new Date(newStart.getFullYear(), newStart.getMonth() + 1, 0);
+    return { start: newStart, end: newEnd };
+  }
+  const shift = step.count * dir;
+  const s = new Date(start); s.setDate(s.getDate() + shift);
+  const e = new Date(end); e.setDate(e.getDate() + shift);
+  return { start: s, end: e };
+};
+
+// Quick Select helpers
+
+interface QuickSelectPreset {
+  key: QuickSelectKey;
+  label: string;
+}
+
+const QUICK_SELECT_PRESETS: QuickSelectPreset[] = [
+  { key: 'today', label: '오늘' },
+  { key: 'yesterday', label: '어제' },
+  { key: 'thisWeek', label: '이번 주' },
+  { key: 'lastWeek', label: '지난 주' },
+  { key: 'last7Days', label: '최근 7일' },
+  { key: 'last30Days', label: '최근 30일' },
+  { key: 'thisMonth', label: '이번 달' },
+  { key: 'lastMonth', label: '지난 달' },
+];
+
+const getPresetRange = (key: QuickSelectKey): { start: Date; end: Date } => {
+  const today = new Date();
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  switch (key) {
+    case 'today':
+      return { start: new Date(todayStart), end: new Date(todayStart) };
+    case 'yesterday': {
+      const d = new Date(todayStart);
+      d.setDate(d.getDate() - 1);
+      return { start: d, end: new Date(d) };
+    }
+    case 'thisWeek': {
+      const dayOfWeek = todayStart.getDay();
+      const start = new Date(todayStart);
+      start.setDate(start.getDate() - dayOfWeek);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      return { start, end };
+    }
+    case 'lastWeek': {
+      const dayOfWeek = todayStart.getDay();
+      const thisWeekStart = new Date(todayStart);
+      thisWeekStart.setDate(thisWeekStart.getDate() - dayOfWeek);
+      const start = new Date(thisWeekStart);
+      start.setDate(start.getDate() - 7);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      return { start, end };
+    }
+    case 'last7Days': {
+      const start = new Date(todayStart);
+      start.setDate(start.getDate() - 6);
+      return { start, end: new Date(todayStart) };
+    }
+    case 'last30Days': {
+      const start = new Date(todayStart);
+      start.setDate(start.getDate() - 29);
+      return { start, end: new Date(todayStart) };
+    }
+    case 'thisMonth': {
+      const start = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+      const end = new Date(todayStart.getFullYear(), todayStart.getMonth() + 1, 0);
+      return { start, end };
+    }
+    case 'lastMonth': {
+      const start = new Date(todayStart.getFullYear(), todayStart.getMonth() - 1, 1);
+      const end = new Date(todayStart.getFullYear(), todayStart.getMonth(), 0);
+      return { start, end };
+    }
+  }
+};
+
+const isPresetDisabled = (
+  key: QuickSelectKey,
+  minDate?: Date | DateTimeLimit,
+  maxDate?: Date | DateTimeLimit
+): boolean => {
+  const { start, end } = getPresetRange(key);
+
+  if (minDate) {
+    const min = minDate instanceof Date ? minDate : minDate.date;
+    const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+    if (start < minDay) return true;
+  }
+
+  if (maxDate) {
+    const max = maxDate instanceof Date ? maxDate : maxDate.date;
+    const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+    if (end > maxDay) return true;
+  }
+
+  return false;
+};
+
+const isPresetActive = (
+  key: QuickSelectKey,
+  value?: DatePickerValue
+): boolean => {
+  if (!value?.date || !value?.endDate) return false;
+  const { start, end } = getPresetRange(key);
+  return isSameDay(value.date, start) && isSameDay(value.endDate, end);
+};
+
+const getActivePresetLabel = (value?: DatePickerValue): string | null => {
+  if (!value?.date || !value?.endDate) return null;
+  for (const preset of QUICK_SELECT_PRESETS) {
+    if (isPresetActive(preset.key, value)) return preset.label;
+  }
+  return null;
 };
 
 const isInRange = (date: Date, start: Date, end: Date): boolean => {
@@ -631,6 +789,20 @@ const Calendar: React.FC<CalendarProps> = ({
   );
 };
 
+// 반응형 breakpoint 감지 hook
+const useIsMobile = (breakpoint = 600) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= breakpoint);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [breakpoint]);
+
+  return isMobile;
+};
+
 // Period Calendar Component (두 개의 달력을 나란히 표시)
 interface PeriodCalendarProps {
   value?: Date;
@@ -666,8 +838,12 @@ const PeriodCalendar: React.FC<PeriodCalendarProps> = ({
   maxDate,
   yearRange,
 }) => {
+  // 모바일에서는 단일 캘린더로 표시 (CSS로 우측 숨김 + 좌측 제한 해제)
+  const isMobile = useIsMobile(600);
+
   // 왼쪽 달력: 오른쪽 달력(endViewDate)보다 이후로 이동 불가
   // 오른쪽 달력: 왼쪽 달력(viewDate)보다 이전으로 이동 불가
+  // 모바일에서는 제한 해제하여 자유롭게 이동 가능
   return (
     <div className={styles.periodCalendars}>
       <div className={styles.periodCalendarLeft}>
@@ -680,7 +856,7 @@ const PeriodCalendar: React.FC<PeriodCalendarProps> = ({
           onViewDateChange={onViewDateChange}
           showPrevNav={true}
           showNextNav={true}
-          maxViewDate={endViewDate}
+          maxViewDate={isMobile ? undefined : endViewDate}
           disable={disable}
           enable={enable}
           minDate={minDate}
@@ -720,6 +896,11 @@ interface PortalPosition {
   width: number;
 }
 
+// 드롭다운 max-width 계산 (뷰포트 기준)
+interface DropdownMaxWidth {
+  maxWidth: number;
+}
+
 // Main DatePicker Component
 const DatePicker: React.FC<DatePickerProps> = ({
   mode = 'instant',
@@ -740,9 +921,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
   initialCalendar,
   yearRange,
   portal = false,
+  quickSelect = false,
 }) => {
   const [selectingPart, setSelectingPart] = useState<SelectingPart>(null);
   const [tempValue, setTempValue] = useState<DatePickerValue>(value || {});
+  const [navigationStep, setNavigationStep] = useState<NavigationStep | null>(null);
 
   // 초기 달력 표시 월 계산
   const [viewDate, setViewDate] = useState(() => {
@@ -767,13 +950,41 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Portal 모드 위치 상태
   const [portalPosition, setPortalPosition] = useState<PortalPosition | null>(null);
+  // 드롭다운 max-width (뷰포트 기준 동적 계산)
+  const [dropdownMaxWidth, setDropdownMaxWidth] = useState<number | null>(null);
 
   const shouldShowActions = showActions ?? mode === 'period';
   // 날짜 선택 시에만 드롭다운 표시 (시/분은 native select 사용)
   const isOpen = selectingPart === 'date' || selectingPart === 'endDate';
+
+  // 드롭다운 max-width 계산 (드롭다운 위치 기준으로 남은 뷰포트 너비)
+  const updateDropdownMaxWidth = useCallback(() => {
+    if (!dropdownRef.current) return;
+
+    const rect = dropdownRef.current.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const padding = 8; // 여백
+
+    // 드롭다운 시작 위치에서 뷰포트 끝까지 남은 너비
+    const availableWidth = viewportWidth - rect.left - padding;
+    setDropdownMaxWidth(availableWidth > 0 ? availableWidth : null);
+  }, []);
+
+  // 드롭다운 열릴 때 max-width 계산
+  useEffect(() => {
+    if (isOpen) {
+      // 다음 프레임에 계산 (드롭다운이 렌더링된 후)
+      requestAnimationFrame(() => {
+        updateDropdownMaxWidth();
+      });
+    } else {
+      setDropdownMaxWidth(null);
+    }
+  }, [isOpen, updateDropdownMaxWidth]);
 
   // Portal 위치 계산 함수
   const updatePortalPosition = useCallback(() => {
@@ -968,10 +1179,12 @@ const DatePicker: React.FC<DatePickerProps> = ({
           endDate: existingStartDate,
           endTime: adjustedEndTime,
         });
+        setNavigationStep(calculateNavigationStep(newDate, existingStartDate));
       } else {
         // 선택한 날짜가 시작일 이후/같음 → 종료일로 설정
         const adjustedEndTime = adjustTimeForDate(newDate, tempValue.endTime);
         setTempValue({ ...tempValue, endDate: newDate, endTime: adjustedEndTime });
+        setNavigationStep(calculateNavigationStep(existingStartDate, newDate));
       }
       // 드롭다운 유지 - 적용 버튼으로 닫음
       return;
@@ -990,6 +1203,57 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const handleApply = () => {
     onChange?.(tempValue);
     setSelectingPart(null);
+  };
+
+  const handleQuickSelect = (key: QuickSelectKey) => {
+    const { start, end } = getPresetRange(key);
+    const newValue: DatePickerValue = { date: start, endDate: end, time: tempValue.time, endTime: tempValue.endTime };
+    setTempValue(newValue);
+    setViewDate(new Date(start.getFullYear(), start.getMonth(), 1));
+    setEndViewDate(new Date(end.getFullYear(), end.getMonth(), 1));
+    setNavigationStep(getNavigationStepForPreset(key));
+
+    if (!shouldShowActions) {
+      onChange?.(newValue);
+      setSelectingPart(null);
+    }
+  };
+
+  const handleNavigate = (direction: 1 | -1) => {
+    const dv = displayValue;
+    if (!dv?.date || !dv?.endDate || !navigationStep) return;
+
+    const { start, end } = shiftDateRange(dv.date, dv.endDate, navigationStep, direction);
+
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      if (start < new Date(min.getFullYear(), min.getMonth(), min.getDate())) return;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      if (end > new Date(max.getFullYear(), max.getMonth(), max.getDate())) return;
+    }
+
+    const newValue: DatePickerValue = { date: start, endDate: end, time: dv.time, endTime: dv.endTime };
+    setTempValue(newValue);
+    setViewDate(new Date(start.getFullYear(), start.getMonth(), 1));
+    setEndViewDate(new Date(end.getFullYear(), end.getMonth(), 1));
+    onChange?.(newValue);
+  };
+
+  const isNavDisabled = (direction: 1 | -1): boolean => {
+    const dv = displayValue;
+    if (!dv?.date || !dv?.endDate || !navigationStep) return true;
+    const { start, end } = shiftDateRange(dv.date, dv.endDate, navigationStep, direction);
+    if (direction === -1 && minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      return start < new Date(min.getFullYear(), min.getMonth(), min.getDate());
+    }
+    if (direction === 1 && maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      return end > new Date(max.getFullYear(), max.getMonth(), max.getDate());
+    }
+    return false;
   };
 
   const handlePartClick = (part: SelectingPart) => {
@@ -1291,9 +1555,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const renderDropdownContent = () => {
     // 날짜 선택만 드롭다운으로 표시 (시/분은 native select 사용)
     if (selectingPart === 'date' || selectingPart === 'endDate') {
+      const showQuickSelect = quickSelect && mode === 'period';
+
       // period 모드: 두 개의 달력을 나란히 표시
       if (mode === 'period') {
-        return (
+        const calendarContent = (
           <PeriodCalendar
             value={tempValue.date}
             endValue={tempValue.endDate}
@@ -1309,6 +1575,33 @@ const DatePicker: React.FC<DatePickerProps> = ({
             yearRange={yearRange}
           />
         );
+
+        if (showQuickSelect) {
+          return (
+            <div className={styles.dropdownBody}>
+              <div className={styles.quickSelectPanel}>
+                {QUICK_SELECT_PRESETS.map((preset) => {
+                  const presetDisabled = isPresetDisabled(preset.key, minDate, maxDate);
+                  const active = isPresetActive(preset.key, tempValue);
+                  return (
+                    <button
+                      key={preset.key}
+                      type="button"
+                      className={`${styles.quickSelectItem}${active ? ` ${styles.active}` : ''}${presetDisabled ? ` ${styles.disabled}` : ''}`}
+                      onClick={() => !presetDisabled && handleQuickSelect(preset.key)}
+                      disabled={presetDisabled}
+                    >
+                      {preset.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {calendarContent}
+            </div>
+          );
+        }
+
+        return calendarContent;
       }
       // instant 모드: 단일 달력
       return (
@@ -1367,6 +1660,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
       </>
     );
 
+    // max-width 스타일 (동적 계산)
+    const maxWidthStyle: React.CSSProperties = dropdownMaxWidth
+      ? { maxWidth: dropdownMaxWidth, boxSizing: 'border-box' }
+      : {};
+
     // Portal 모드
     if (portal && portalPosition) {
       const portalStyle: React.CSSProperties = {
@@ -1376,10 +1674,12 @@ const DatePicker: React.FC<DatePickerProps> = ({
           ? { right: document.documentElement.clientWidth - portalPosition.left }
           : { left: portalPosition.left }),
         zIndex: 9999,
+        ...maxWidthStyle,
       };
 
       return createPortal(
         <div
+          ref={dropdownRef}
           className={`${styles.dropdown} ${styles.portalDropdown} ${align === 'right' ? styles.right : ''}`}
           style={portalStyle}
         >
@@ -1391,20 +1691,50 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
     // 기본 모드
     return (
-      <div className={`${styles.dropdown} ${align === 'right' ? styles.right : ''}`}>
+      <div
+        ref={dropdownRef}
+        className={`${styles.dropdown} ${align === 'right' ? styles.right : ''}`}
+        style={maxWidthStyle}
+      >
         {dropdownContent}
       </div>
     );
   };
 
+  const showNavigation = quickSelect && mode === 'period';
+  const activePresetLabel = showNavigation ? getActivePresetLabel(displayValue) : null;
+
   return (
     <div ref={containerRef} className={`${styles.datepicker} ${className || ''}`}>
       <div
         ref={inputRef}
-        className={`${styles.input} ${isOpen ? styles.active : ''} ${disabled ? styles.disabled : ''}`}
+        className={`${styles.input} ${showNavigation ? styles.withNav : ''} ${isOpen ? styles.active : ''} ${disabled ? styles.disabled : ''}`}
       >
+        {showNavigation && (
+          <button
+            type="button"
+            className={`${styles.navArrow} ${styles.navArrowLeft}`}
+            onClick={(e) => { e.stopPropagation(); handleNavigate(-1); }}
+            disabled={disabled || isNavDisabled(-1)}
+          >
+            <i className="icon-expand-left" />
+          </button>
+        )}
+        {showNavigation && activePresetLabel && (
+          <span className={styles.presetLabel}>{activePresetLabel} :</span>
+        )}
         {renderInputContent()}
-        <i className={`${styles.inputIcon} ${inputIcon}`} />
+        {!showNavigation && <i className={`${styles.inputIcon} ${inputIcon}`} />}
+        {showNavigation && (
+          <button
+            type="button"
+            className={`${styles.navArrow} ${styles.navArrowRight}`}
+            onClick={(e) => { e.stopPropagation(); handleNavigate(1); }}
+            disabled={disabled || isNavDisabled(1)}
+          >
+            <i className="icon-expand-right" />
+          </button>
+        )}
       </div>
 
       {isOpen && renderDropdown()}

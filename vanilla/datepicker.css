@@ -193,6 +193,59 @@
 }
 
 /* ============================================
+   Navigation (quickSelect + period mode, integrated in input)
+   ============================================ */
+.podo-datepicker__input--with-nav {
+  padding: 0;
+}
+
+.podo-datepicker__nav-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  min-height: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.podo-datepicker__nav-arrow:hover:not(:disabled) {
+  background: var(--podo-default-hover);
+}
+
+.podo-datepicker__nav-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.podo-datepicker__nav-arrow i {
+  font-size: 16px;
+  color: var(--podo-text-body);
+}
+
+.podo-datepicker__nav-arrow--left {
+  border-right: 1px solid var(--podo-border);
+  border-radius: var(--podo-radius-md) 0 0 var(--podo-radius-md);
+}
+
+.podo-datepicker__nav-arrow--right {
+  border-left: 1px solid var(--podo-border);
+  border-radius: 0 var(--podo-radius-md) var(--podo-radius-md) 0;
+}
+
+.podo-datepicker__preset-label {
+  font-size: var(--podo-font-size-md);
+  color: var(--podo-text-body);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-left: var(--podo-spacing-3);
+  font-weight: 600;
+}
+
+/* ============================================
    Dropdown
    ============================================ */
 .podo-datepicker__dropdown {
@@ -484,6 +537,57 @@
 }
 
 /* ==============================================
+   Quick Select Panel
+   ============================================== */
+
+.podo-datepicker__dropdown-body {
+  display: flex;
+  gap: var(--podo-spacing-4);
+  min-width: 0;
+}
+
+.podo-datepicker__quick-select-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--podo-spacing-1);
+  min-width: 100px;
+  padding-right: var(--podo-spacing-4);
+  border-right: 1px solid var(--podo-border);
+  flex-shrink: 0;
+}
+
+.podo-datepicker__quick-select-item {
+  display: flex;
+  align-items: center;
+  padding: var(--podo-spacing-2) var(--podo-spacing-3);
+  background: none;
+  border: none;
+  border-radius: var(--podo-radius-sm);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  color: var(--podo-text-body);
+  white-space: nowrap;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.podo-datepicker__quick-select-item:hover:not(.podo-datepicker__quick-select-item--disabled):not(.podo-datepicker__quick-select-item--active) {
+  background: var(--podo-default-hover);
+}
+
+.podo-datepicker__quick-select-item--active {
+  color: var(--podo-primary);
+  background: var(--podo-primary-fill, rgba(124, 58, 237, 0.08));
+  font-weight: 600;
+}
+
+.podo-datepicker__quick-select-item--disabled {
+  color: var(--podo-text-disabled, #adb5bd);
+  cursor: not-allowed;
+}
+
+/* ==============================================
    Responsive Styles (min 360px support)
    ============================================== */
 
@@ -491,6 +595,16 @@
 @media screen and (max-width: 600px) {
   .podo-datepicker__period-calendar-right {
     display: none;
+  }
+
+  .podo-datepicker__quick-select-panel {
+    min-width: 80px;
+    padding-right: var(--podo-spacing-3);
+  }
+
+  .podo-datepicker__quick-select-item {
+    font-size: 13px;
+    padding: var(--podo-spacing-2);
   }
 }
 
@@ -568,5 +682,21 @@
     width: 16px;
     height: 16px;
     font-size: 16px;
+  }
+
+  .podo-datepicker__quick-select-panel {
+    display: none;
+  }
+
+  .podo-datepicker__nav-arrow {
+    width: 32px;
+  }
+
+  .podo-datepicker__nav-arrow i {
+    font-size: 14px;
+  }
+
+  .podo-datepicker__preset-label {
+    display: none;
   }
 }

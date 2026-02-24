@@ -23,7 +23,8 @@
     { "name": "minuteStep", "type": "1 | 5 | 10 | 15 | 20 | 30", "default": "1" },
     { "name": "format", "type": "string", "required": false, "description": "Custom format: y-m-d h:i" },
     { "name": "initialCalendar", "type": "{ start?: CalendarInitial, end?: CalendarInitial }", "required": false },
-    { "name": "yearRange", "type": "YearRange", "required": false, "description": "Year selection range (default: ±100 years from current year, takes priority over minDate/maxDate)" }
+    { "name": "yearRange", "type": "YearRange", "required": false, "description": "Year selection range (default: ±100 years from current year, takes priority over minDate/maxDate)" },
+    { "name": "quickSelect", "type": "boolean", "default": "false", "required": false, "description": "Show quick select preset panel with common date ranges (period mode only). Presets: today, yesterday, this week, last week, last 7/30 days, this/last month. Disabled presets based on minDate/maxDate. When quickSelect=true and mode='period', left/right arrow navigation buttons appear around the input. Arrows shift the selected range by the preset unit (e.g., 7 days for weekly) or by the manually selected range size. Arrows are disabled when no range is selected or when shifting would exceed minDate/maxDate." }
   ],
   "types": {
     "DatePickerValue": "{ date?: Date, time?: TimeValue, endDate?: Date, endTime?: TimeValue }",
@@ -57,6 +58,10 @@
     {
       "title": "Year range",
       "code": "<DatePicker yearRange={{ min: 2020, max: 2030 }} />"
+    },
+    {
+      "title": "Quick Select with arrow navigation",
+      "code": "<DatePicker mode=\"period\" quickSelect />"
     }
   ],
   "related": ["field", "input"]

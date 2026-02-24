@@ -33,6 +33,57 @@
   }
 }
 
+// Navigation 통합 Input (quickSelect + period 모드)
+.withNav {
+  padding: 0;
+}
+
+.navArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  min-height: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    background: color('default-hover');
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 16px;
+    color: color('text-action');
+  }
+}
+
+.navArrowLeft {
+  border-right: 1px solid color('border');
+  border-radius: r(3) 0 0 r(3);
+}
+
+.navArrowRight {
+  border-left: 1px solid color('border');
+  border-radius: 0 r(3) r(3) 0;
+}
+
+.presetLabel {
+  @include p4;
+  color: color('text-body');
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-left: s(3);
+  font-weight: 600;
+}
+
 // Input Content (피그마 디자인에 맞춘 구조)
 .inputContent {
   flex: 1;
@@ -650,6 +701,55 @@
   }
 }
 
+// Quick Select + Calendar 가로 배치 래퍼
+.dropdownBody {
+  display: flex;
+  gap: s(4);
+  min-width: 0;
+}
+
+// Quick Select 패널
+.quickSelectPanel {
+  display: flex;
+  flex-direction: column;
+  gap: s(1);
+  min-width: 100px;
+  padding-right: s(4);
+  border-right: 1px solid color('border');
+  flex-shrink: 0;
+}
+
+// Quick Select 항목
+.quickSelectItem {
+  @include p3;
+  display: flex;
+  align-items: center;
+  padding: s(2) s(3);
+  background: none;
+  border: none;
+  border-radius: r(3);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  color: color('text-body');
+  white-space: nowrap;
+  text-align: left;
+
+  &:hover:not(.disabled):not(.active) {
+    background: color('default-hover');
+  }
+
+  &.active {
+    color: color('primary');
+    background: color('primary-fill');
+    font-weight: 600;
+  }
+
+  &.disabled {
+    color: color('text-action-disabled');
+    cursor: not-allowed;
+  }
+}
+
 // ==============================================
 // Responsive Styles (min 360px support)
 // ==============================================
@@ -677,6 +777,16 @@
     .periodCalendarNavSection:last-child {
       display: none;
     }
+  }
+
+  .quickSelectPanel {
+    min-width: 80px;
+    padding-right: s(3);
+  }
+
+  .quickSelectItem {
+    @include p4;
+    padding: s(2);
   }
 }
 
@@ -800,5 +910,21 @@
   .periodCalendarNav {
     height: 32px;
     gap: s(2);
+  }
+
+  .quickSelectPanel {
+    display: none;
+  }
+
+  .navArrow {
+    width: 32px;
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  .presetLabel {
+    display: none;
   }
 }

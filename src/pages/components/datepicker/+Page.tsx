@@ -57,6 +57,7 @@ export default function DatePickerPage() {
   const [yearRangeOnly, setYearRangeOnly] = useState<DatePickerValue>({});
   const [yearRangeWithMinMax, setYearRangeWithMinMax] = useState<DatePickerValue>({});
   const [yearRangePartial, setYearRangePartial] = useState<DatePickerValue>({});
+  const [quickSelectDate, setQuickSelectDate] = useState<DatePickerValue>({});
 
   // Vanilla JS DatePicker refs
   const vanillaInstantRef = useRef<HTMLDivElement>(null);
@@ -201,6 +202,8 @@ export default function DatePickerPage() {
                 setYearRangeWithMinMax={setYearRangeWithMinMax}
                 yearRangePartial={yearRangePartial}
                 setYearRangePartial={setYearRangePartial}
+                quickSelectDate={quickSelectDate}
+                setQuickSelectDate={setQuickSelectDate}
                 formatDateDisplay={formatDateDisplay}
                 formatTimeDisplay={formatTimeDisplay}
                 formatDateTimeDisplay={formatDateTimeDisplay}
@@ -340,6 +343,12 @@ function SvelteContent({ t }: { t: (key: string) => string }) {
               <td><code>string</code></td>
               <td>-</td>
               <td>{t('props.format')}</td>
+            </tr>
+            <tr>
+              <td><code>quickSelect</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.quickSelect')}</td>
             </tr>
           </tbody>
         </table>
@@ -601,6 +610,29 @@ function SvelteContent({ t }: { t: (key: string) => string }) {
       </section>
 
       <section>
+        <h2>{t('quickSelect.title')}</h2>
+        <p>{t('quickSelect.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let value = $state<DatePickerValue>({});
+</script>
+
+<DatePicker
+  mode="period"
+  type="date"
+  quickSelect
+  bind:value
+/>`}
+        />
+      </section>
+
+      <section>
         <h2>{t('valueInterface.title')}</h2>
         <p>{t('valueInterface.description')}</p>
 
@@ -686,6 +718,8 @@ interface ReactContentProps {
   setYearRangeWithMinMax: (v: DatePickerValue) => void;
   yearRangePartial: DatePickerValue;
   setYearRangePartial: (v: DatePickerValue) => void;
+  quickSelectDate: DatePickerValue;
+  setQuickSelectDate: (v: DatePickerValue) => void;
   formatDateDisplay: (v: DatePickerValue) => string;
   formatTimeDisplay: (v: DatePickerValue) => string;
   formatDateTimeDisplay: (v: DatePickerValue) => string;
@@ -753,6 +787,8 @@ function ReactContent({
   setYearRangeWithMinMax,
   yearRangePartial,
   setYearRangePartial,
+  quickSelectDate,
+  setQuickSelectDate,
   formatDateDisplay,
   formatTimeDisplay,
   formatDateTimeDisplay,
@@ -853,6 +889,12 @@ function ReactContent({
               <td><code>string</code></td>
               <td>-</td>
               <td>{t('props.format')}</td>
+            </tr>
+            <tr>
+              <td><code>quickSelect</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.quickSelect')}</td>
             </tr>
           </tbody>
         </table>
@@ -1453,6 +1495,41 @@ function ReactContent({
       </section>
 
       <section>
+        <h2>{t('quickSelect.title')}</h2>
+        <p>{t('quickSelect.description')}</p>
+
+        <CodeBlock
+          language="tsx"
+          code={`<DatePicker
+  mode="period"
+  type="date"
+  quickSelect
+  value={value}
+  onChange={setValue}
+/>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('quickSelect.demoTitle')}</div>
+          <div className={styles.pickerRow}>
+            <div className={styles.pickerItem}>
+              <label>{t('quickSelect.title')}</label>
+              <DatePicker
+                mode="period"
+                type="date"
+                quickSelect
+                value={quickSelectDate}
+                onChange={setQuickSelectDate}
+              />
+              <div className={styles.selectedValue}>
+                {formatDateDisplay(quickSelectDate)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
         <h2>{t('valueInterface.title')}</h2>
         <p>{t('valueInterface.description')}</p>
 
@@ -1714,7 +1791,9 @@ function CdnContent({
   initialCalendar: {
     start: 'prevMonth',
     end: 'now'
-  }
+  },
+
+  quickSelect: true,       // Quick select presets (period mode only)
 });`}
         />
       </section>

@@ -51,7 +51,8 @@
     "yearRange": "년도 선택 범위 (min/max). minDate/maxDate보다 우선 적용",
     "minuteStep": "분 단위 선택 간격 (1, 5, 10, 15, 20, 30)",
     "format": "날짜/시간 표시 포맷 (y: 년, m: 월, d: 일, h: 시, i: 분)",
-    "initialCalendar": "기간 선택 모드에서 초기 달력 표시 월 설정"
+    "initialCalendar": "기간 선택 모드에서 초기 달력 표시 월 설정",
+    "quickSelect": "Quick Select 프리셋 패널 표시 (period 모드 전용)"
   },
   "format": {
     "title": "날짜 포맷",
@@ -229,5 +230,18 @@
     "leftCalendarComment": "왼쪽 달력: 이전 달",
     "rightCalendarComment": "오른쪽 달력: 현재 달",
     "startEndValues": "start/end 값: 'now', 'prevMonth', 'nextMonth', 또는 Date 객체"
+  },
+  "quickSelect": {
+    "title": "빠른 선택",
+    "description": "quickSelect prop을 사용하면 자주 사용하는 날짜 범위 프리셋을 표시합니다. period 모드에서만 동작합니다.",
+    "demoTitle": "빠른 선택 예제:",
+    "today": "오늘",
+    "yesterday": "어제",
+    "thisWeek": "이번 주",
+    "lastWeek": "지난 주",
+    "last7Days": "최근 7일",
+    "last30Days": "최근 30일",
+    "thisMonth": "이번 달",
+    "lastMonth": "지난 달"
   }
 }

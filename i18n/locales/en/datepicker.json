@@ -51,7 +51,8 @@
     "yearRange": "Year selection range (min/max). Takes priority over minDate/maxDate",
     "minuteStep": "Minute selection interval (1, 5, 10, 15, 20, 30)",
     "format": "Date/time display format (y: year, m: month, d: day, h: hour, i: minute)",
-    "initialCalendar": "Initial calendar display month in period mode"
+    "initialCalendar": "Initial calendar display month in period mode",
+    "quickSelect": "Show quick select preset panel (period mode only)"
   },
   "format": {
     "title": "Date Format",
@@ -229,5 +230,18 @@
     "leftCalendarComment": "Left calendar: previous month",
     "rightCalendarComment": "Right calendar: current month",
     "startEndValues": "start/end values: 'now', 'prevMonth', 'nextMonth', or Date object"
+  },
+  "quickSelect": {
+    "title": "Quick Select",
+    "description": "Use the quickSelect prop to display frequently used date range presets. Works only in period mode.",
+    "demoTitle": "Quick Select Example:",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "lastWeek": "Last Week",
+    "last7Days": "Last 7 Days",
+    "last30Days": "Last 30 Days",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month"
   }
 }
