@@ -927,7 +927,12 @@ const DatePicker: React.FC<DatePickerProps> = ({
 }) => {
   const [selectingPart, setSelectingPart] = useState<SelectingPart>(null);
   const [tempValue, setTempValue] = useState<DatePickerValue>(value || {});
-  const [navigationStep, setNavigationStep] = useState<NavigationStep | null>(null);
+  const [navigationStep, setNavigationStep] = useState<NavigationStep | null>(() => {
+    if (value?.date && value?.endDate) {
+      return calculateNavigationStep(value.date, value.endDate);
+    }
+    return null;
+  });
 
   // 초기 달력 표시 월 계산
   const [viewDate, setViewDate] = useState(() => {
