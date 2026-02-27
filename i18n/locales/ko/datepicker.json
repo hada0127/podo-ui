@@ -242,6 +242,9 @@
     "last7Days": "최근 7일",
     "last30Days": "최근 30일",
     "thisMonth": "이번 달",
-    "lastMonth": "지난 달"
+    "lastMonth": "지난 달",
+    "withMinMaxTitle": "빠른 선택 + 날짜 제한",
+    "withMinMaxDescription": "minDate와 maxDate를 함께 사용하면 프리셋 범위가 자동으로 클램핑됩니다. 범위를 벗어나는 프리셋은 비활성화됩니다.",
+    "withMinMaxDemoTitle": "빠른 선택 + minDate/maxDate 예제:"
   }
 }

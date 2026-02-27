@@ -242,6 +242,9 @@
     "last7Days": "Last 7 Days",
     "last30Days": "Last 30 Days",
     "thisMonth": "This Month",
-    "lastMonth": "Last Month"
+    "lastMonth": "Last Month",
+    "withMinMaxTitle": "Quick Select + Date Limits",
+    "withMinMaxDescription": "When used with minDate and maxDate, preset ranges are automatically clamped. Presets outside the range are disabled.",
+    "withMinMaxDemoTitle": "Quick Select + minDate/maxDate Example:"
   }
 }

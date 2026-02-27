@@ -232,7 +232,7 @@ const shiftDateRange = (start: Date, end: Date, step: NavigationStep, dir: 1 | -
   }
   const shift = step.count * dir;
   const s = new Date(start); s.setDate(s.getDate() + shift);
-  const e = new Date(end); e.setDate(e.getDate() + shift);
+  const e = new Date(s); e.setDate(e.getDate() + step.count - 1);
   return { start: s, end: e };
 };
 
@@ -333,17 +333,34 @@ const isPresetDisabled = (
 
 const isPresetActive = (
   key: QuickSelectKey,
-  value?: DatePickerValue
+  value?: DatePickerValue,
+  minDate?: Date | DateTimeLimit,
+  maxDate?: Date | DateTimeLimit
 ): boolean => {
   if (!value?.date || !value?.endDate) return false;
-  const { start, end } = getPresetRange(key);
+  let { start, end } = getPresetRange(key);
+  // handleQuickSelect과 동일한 클램핑 적용
+  if (minDate) {
+    const min = minDate instanceof Date ? minDate : minDate.date;
+    const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+    if (start < minDay) start = minDay;
+  }
+  if (maxDate) {
+    const max = maxDate instanceof Date ? maxDate : maxDate.date;
+    const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+    if (end > maxDay) end = maxDay;
+  }
   return isSameDay(value.date, start) && isSameDay(value.endDate, end);
 };
 
-const getActivePresetLabel = (value?: DatePickerValue): string | null => {
+const getActivePresetLabel = (
+  value?: DatePickerValue,
+  minDate?: Date | DateTimeLimit,
+  maxDate?: Date | DateTimeLimit
+): string | null => {
   if (!value?.date || !value?.endDate) return null;
   for (const preset of QUICK_SELECT_PRESETS) {
-    if (isPresetActive(preset.key, value)) return preset.label;
+    if (isPresetActive(preset.key, value, minDate, maxDate)) return preset.label;
   }
   return null;
 };
@@ -933,6 +950,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
     }
     return null;
   });
+  // 클램핑 전 원래 범위의 시작점 (navArrow 이동 시 기준점)
+  const [navigationAnchor, setNavigationAnchor] = useState<Date | null>(() => {
+    if (value?.date) return value.date;
+    return null;
+  });
 
   // 초기 달력 표시 월 계산
   const [viewDate, setViewDate] = useState(() => {
@@ -1187,11 +1209,13 @@ const DatePicker: React.FC<DatePickerProps> = ({
           endTime: adjustedEndTime,
         });
         setNavigationStep(calculateNavigationStep(newDate, existingStartDate));
+        setNavigationAnchor(newDate);
       } else {
         // 선택한 날짜가 시작일 이후/같음 → 종료일로 설정
         const adjustedEndTime = adjustTimeForDate(newDate, tempValue.endTime);
         setTempValue({ ...tempValue, endDate: newDate, endTime: adjustedEndTime });
         setNavigationStep(calculateNavigationStep(existingStartDate, newDate));
+        setNavigationAnchor(existingStartDate);
       }
       // 드롭다운 유지 - 적용 버튼으로 닫음
       return;
@@ -1213,7 +1237,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const handleQuickSelect = (key: QuickSelectKey) => {
-    let { start, end } = getPresetRange(key);
+    const { start: originalStart, end: originalEnd } = getPresetRange(key);
+    let start = originalStart;
+    let end = originalEnd;
     // minDate/maxDate로 클램핑
     if (minDate) {
       const min = minDate instanceof Date ? minDate : minDate.date;
@@ -1230,6 +1256,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     setViewDate(new Date(start.getFullYear(), start.getMonth(), 1));
     setEndViewDate(new Date(end.getFullYear(), end.getMonth(), 1));
     setNavigationStep(getNavigationStepForPreset(key));
+    setNavigationAnchor(originalStart);
 
     if (!shouldShowActions) {
       onChange?.(newValue);
@@ -1237,39 +1264,77 @@ const DatePicker: React.FC<DatePickerProps> = ({
     }
   };
 
+  // anchor 기준으로 이동 후 범위를 계산하는 헬퍼
+  const getShiftedRange = (direction: 1 | -1) => {
+    const dv = displayValue;
+    if (!dv?.date || !dv?.endDate || !navigationStep) return null;
+    // anchor가 있으면 anchor 기준, 없으면 현재 값 기준
+    const anchorStart = navigationAnchor || dv.date;
+    return shiftDateRange(anchorStart, anchorStart, navigationStep, direction);
+  };
+
   const handleNavigate = (direction: 1 | -1) => {
     const dv = displayValue;
     if (!dv?.date || !dv?.endDate || !navigationStep) return;
 
-    const { start, end } = shiftDateRange(dv.date, dv.endDate, navigationStep, direction);
+    const range = getShiftedRange(direction);
+    if (!range) return;
+    const { start, end } = range;
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
 
+    // 이동 후 범위가 minDate~maxDate와 전혀 겹치지 않으면 차단
     if (minDate) {
       const min = minDate instanceof Date ? minDate : minDate.date;
-      if (start < new Date(min.getFullYear(), min.getMonth(), min.getDate())) return;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (endDay < minDay) return;
     }
     if (maxDate) {
       const max = maxDate instanceof Date ? maxDate : maxDate.date;
-      if (end > new Date(max.getFullYear(), max.getMonth(), max.getDate())) return;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (startDay > maxDay) return;
     }
 
-    const newValue: DatePickerValue = { date: start, endDate: end, time: dv.time, endTime: dv.endTime };
+    // minDate/maxDate 클램핑
+    let finalStart: Date = start;
+    let finalEnd: Date = end;
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (startDay < minDay) finalStart = minDay;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (endDay > maxDay) finalEnd = maxDay;
+    }
+
+    // anchor를 이동된 원래 start로 갱신
+    setNavigationAnchor(start);
+
+    const newValue: DatePickerValue = { date: finalStart, endDate: finalEnd, time: dv.time, endTime: dv.endTime };
     setTempValue(newValue);
-    setViewDate(new Date(start.getFullYear(), start.getMonth(), 1));
-    setEndViewDate(new Date(end.getFullYear(), end.getMonth(), 1));
+    setViewDate(new Date(finalStart.getFullYear(), finalStart.getMonth(), 1));
+    setEndViewDate(new Date(finalEnd.getFullYear(), finalEnd.getMonth(), 1));
     onChange?.(newValue);
   };
 
   const isNavDisabled = (direction: 1 | -1): boolean => {
-    const dv = displayValue;
-    if (!dv?.date || !dv?.endDate || !navigationStep) return true;
-    const { start, end } = shiftDateRange(dv.date, dv.endDate, navigationStep, direction);
+    const range = getShiftedRange(direction);
+    if (!range) return true;
+    const { start, end } = range;
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    // 이동 후 범위가 minDate~maxDate와 전혀 겹치지 않을 때만 비활성화
     if (direction === -1 && minDate) {
       const min = minDate instanceof Date ? minDate : minDate.date;
-      return start < new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      return endDay < minDay;
     }
     if (direction === 1 && maxDate) {
       const max = maxDate instanceof Date ? maxDate : maxDate.date;
-      return end > new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      return startDay > maxDay;
     }
     return false;
   };
@@ -1600,7 +1665,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
               <div className={styles.quickSelectPanel}>
                 {QUICK_SELECT_PRESETS.map((preset) => {
                   const presetDisabled = isPresetDisabled(preset.key, minDate, maxDate);
-                  const active = isPresetActive(preset.key, tempValue);
+                  const active = isPresetActive(preset.key, tempValue, minDate, maxDate);
                   return (
                     <button
                       key={preset.key}
@@ -1720,7 +1785,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const showNavigation = quickSelect && mode === 'period';
-  const activePresetLabel = showNavigation ? getActivePresetLabel(displayValue) : null;
+  const activePresetLabel = showNavigation ? getActivePresetLabel(displayValue, minDate, maxDate) : null;
 
   return (
     <div ref={containerRef} className={`${styles.datepicker} ${className || ''}`}>
