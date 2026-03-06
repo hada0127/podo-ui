@@ -955,6 +955,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
     if (value?.date) return value.date;
     return null;
   });
+  // 동적 라벨용 상태
+  const [activePresetKey, setActivePresetKey] = useState<QuickSelectKey | null>(null);
+  const [navOffset, setNavOffset] = useState(0);
 
   // 초기 달력 표시 월 계산
   const [viewDate, setViewDate] = useState(() => {
@@ -1210,12 +1213,16 @@ const DatePicker: React.FC<DatePickerProps> = ({
         });
         setNavigationStep(calculateNavigationStep(newDate, existingStartDate));
         setNavigationAnchor(newDate);
+        setActivePresetKey(null);
+        setNavOffset(0);
       } else {
         // 선택한 날짜가 시작일 이후/같음 → 종료일로 설정
         const adjustedEndTime = adjustTimeForDate(newDate, tempValue.endTime);
         setTempValue({ ...tempValue, endDate: newDate, endTime: adjustedEndTime });
         setNavigationStep(calculateNavigationStep(existingStartDate, newDate));
         setNavigationAnchor(existingStartDate);
+        setActivePresetKey(null);
+        setNavOffset(0);
       }
       // 드롭다운 유지 - 적용 버튼으로 닫음
       return;
@@ -1224,6 +1231,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
     // 이미 둘 다 선택된 경우 → 새로운 시작일로 리셋
     const adjustedTime = adjustTimeForDate(newDate, tempValue.time);
     setTempValue({ date: newDate, time: adjustedTime, endDate: undefined, endTime: undefined });
+    setActivePresetKey(null);
+    setNavOffset(0);
   };
 
   const handleReset = () => {
@@ -1257,6 +1266,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
     setEndViewDate(new Date(end.getFullYear(), end.getMonth(), 1));
     setNavigationStep(getNavigationStepForPreset(key));
     setNavigationAnchor(originalStart);
+    setActivePresetKey(key);
+    setNavOffset(0);
 
     if (!shouldShowActions) {
       onChange?.(newValue);
@@ -1294,6 +1305,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
       const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
       if (startDay > maxDay) return;
     }
+
+    setNavOffset((prev) => prev + direction);
 
     // minDate/maxDate 클램핑
     let finalStart: Date = start;
@@ -1785,7 +1798,30 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const showNavigation = quickSelect && mode === 'period';
-  const activePresetLabel = showNavigation ? getActivePresetLabel(displayValue, minDate, maxDate) : null;
+
+  const getNavOffsetLabel = (): string | null => {
+    const offset = Math.abs(navOffset);
+    const isFuture = navOffset > 0;
+    if (!navigationStep) return null;
+    if (navigationStep.type === 'month') {
+      return isFuture ? `${offset}개월 후` : `${offset}개월 전`;
+    }
+    if (navigationStep.count === 1) {
+      return isFuture ? `${offset}일 후` : `${offset}일 전`;
+    }
+    if (navigationStep.count === 7) {
+      return isFuture ? `${offset}주 후` : `${offset}주 전`;
+    }
+    if (navigationStep.count === 30) {
+      return isFuture ? `${offset * 30}일 후` : `${offset * 30}일 전`;
+    }
+    return isFuture ? `${offset * navigationStep.count}일 후` : `${offset * navigationStep.count}일 전`;
+  };
+
+  const activePresetLabel = showNavigation
+    ? (getActivePresetLabel(displayValue, minDate, maxDate)
+      || (activePresetKey && navOffset !== 0 ? getNavOffsetLabel() : null))
+    : null;
 
   return (
     <div ref={containerRef} className={`${styles.datepicker} ${className || ''}`}>

@@ -44,6 +44,129 @@
     end?: CalendarInitial;
   }
 
+  /** Quick Select 프리셋 키 */
+  export type QuickSelectKey =
+    | 'today'
+    | 'yesterday'
+    | 'thisWeek'
+    | 'lastWeek'
+    | 'last7Days'
+    | 'last30Days'
+    | 'thisMonth'
+    | 'lastMonth';
+
+  // Navigation helpers
+  type NavigationStep = { type: 'days'; count: number } | { type: 'month'; count: number };
+
+  const getNavigationStepForPreset = (key: QuickSelectKey): NavigationStep => {
+    switch (key) {
+      case 'today': case 'yesterday': return { type: 'days', count: 1 };
+      case 'thisWeek': case 'lastWeek': case 'last7Days': return { type: 'days', count: 7 };
+      case 'last30Days': return { type: 'days', count: 30 };
+      case 'thisMonth': case 'lastMonth': return { type: 'month', count: 1 };
+    }
+  };
+
+  const calculateNavigationStep = (start: Date, end: Date): NavigationStep => {
+    const diffMs = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime()
+      - new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
+    return { type: 'days', count: Math.round(diffMs / 86400000) + 1 };
+  };
+
+  const shiftDateRange = (start: Date, _end: Date, step: NavigationStep, dir: 1 | -1) => {
+    if (step.type === 'month') {
+      const shift = step.count * dir;
+      const newStart = new Date(start.getFullYear(), start.getMonth() + shift, 1);
+      const newEnd = new Date(newStart.getFullYear(), newStart.getMonth() + 1, 0);
+      return { start: newStart, end: newEnd };
+    }
+    const shift = step.count * dir;
+    const s = new Date(start); s.setDate(s.getDate() + shift);
+    const e = new Date(s); e.setDate(e.getDate() + step.count - 1);
+    return { start: s, end: e };
+  };
+
+  // Quick Select helpers
+  interface QuickSelectPreset {
+    key: QuickSelectKey;
+    label: string;
+  }
+
+  const QUICK_SELECT_PRESETS: QuickSelectPreset[] = [
+    { key: 'today', label: '오늘' },
+    { key: 'yesterday', label: '어제' },
+    { key: 'thisWeek', label: '이번 주' },
+    { key: 'lastWeek', label: '지난 주' },
+    { key: 'last7Days', label: '최근 7일' },
+    { key: 'last30Days', label: '최근 30일' },
+    { key: 'thisMonth', label: '이번 달' },
+    { key: 'lastMonth', label: '지난 달' },
+  ];
+
+  const getPresetRange = (key: QuickSelectKey): { start: Date; end: Date } => {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    switch (key) {
+      case 'today':
+        return { start: new Date(todayStart), end: new Date(todayStart) };
+      case 'yesterday': {
+        const d = new Date(todayStart); d.setDate(d.getDate() - 1);
+        return { start: d, end: new Date(d) };
+      }
+      case 'thisWeek': {
+        const dow = todayStart.getDay();
+        const start = new Date(todayStart); start.setDate(start.getDate() - dow);
+        const end = new Date(start); end.setDate(end.getDate() + 6);
+        return { start, end };
+      }
+      case 'lastWeek': {
+        const dow = todayStart.getDay();
+        const thisWeekStart = new Date(todayStart); thisWeekStart.setDate(thisWeekStart.getDate() - dow);
+        const start = new Date(thisWeekStart); start.setDate(start.getDate() - 7);
+        const end = new Date(start); end.setDate(end.getDate() + 6);
+        return { start, end };
+      }
+      case 'last7Days': {
+        const start = new Date(todayStart); start.setDate(start.getDate() - 6);
+        return { start, end: new Date(todayStart) };
+      }
+      case 'last30Days': {
+        const start = new Date(todayStart); start.setDate(start.getDate() - 29);
+        return { start, end: new Date(todayStart) };
+      }
+      case 'thisMonth': {
+        const start = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+        const end = new Date(todayStart.getFullYear(), todayStart.getMonth() + 1, 0);
+        return { start, end };
+      }
+      case 'lastMonth': {
+        const start = new Date(todayStart.getFullYear(), todayStart.getMonth() - 1, 1);
+        const end = new Date(todayStart.getFullYear(), todayStart.getMonth(), 0);
+        return { start, end };
+      }
+    }
+  };
+
+  const checkPresetDisabled = (
+    key: QuickSelectKey,
+    minD?: Date | DateTimeLimit,
+    maxD?: Date | DateTimeLimit
+  ): boolean => {
+    const { start, end } = getPresetRange(key);
+    if (minD) {
+      const min = minD instanceof Date ? minD : minD.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (end < minDay) return true;
+    }
+    if (maxD) {
+      const max = maxD instanceof Date ? maxD : maxD.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (start > maxDay) return true;
+    }
+    return false;
+  };
+
   interface Props {
     /** Selection mode: instant | period */
     mode?: DatePickerMode;
@@ -79,6 +202,8 @@
     initialCalendar?: InitialCalendar;
     /** Year selection range */
     yearRange?: YearRange;
+    /** Show quick select presets (period mode only) */
+    quickSelect?: boolean;
   }
 
   let {
@@ -99,6 +224,7 @@
     format,
     initialCalendar,
     yearRange,
+    quickSelect = false,
     ...rest
   }: Props & Record<string, unknown> = $props();
 
@@ -110,6 +236,12 @@
   let viewDate = $state(new Date());
   let endViewDate = $state(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1));
   let containerRef = $state<HTMLDivElement | null>(null);
+  let navigationStep = $state<NavigationStep | null>(
+    value?.date && value?.endDate ? calculateNavigationStep(value.date, value.endDate) : null
+  );
+  let navigationAnchor = $state<Date | null>(value?.date ?? null);
+  let activePresetKeyState = $state<QuickSelectKey | null>(null);
+  let navOffset = $state(0);
 
   const today = new Date();
 
@@ -120,6 +252,57 @@
   const hasStartValue = $derived(!!displayValue?.date);
   const hasEndValue = $derived(!!displayValue?.endDate);
   const inputIcon = $derived(type === 'time' ? 'icon-time' : 'icon-calendar');
+  const showNavigation = $derived(quickSelect && mode === 'period');
+
+  const isPresetActiveCheck = (key: QuickSelectKey): boolean => {
+    const dv = displayValue;
+    if (!dv?.date || !dv?.endDate) return false;
+    let { start, end } = getPresetRange(key);
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (start < minDay) start = minDay;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (end > maxDay) end = maxDay;
+    }
+    return isSameDay(dv.date, start) && isSameDay(dv.endDate, end);
+  };
+
+  const getNavOffsetLabel = (): string | null => {
+    const offset = Math.abs(navOffset);
+    const isFuture = navOffset > 0;
+    if (!navigationStep) return null;
+    if (navigationStep.type === 'month') {
+      return isFuture ? `${offset}개월 후` : `${offset}개월 전`;
+    }
+    if (navigationStep.count === 1) {
+      return isFuture ? `${offset}일 후` : `${offset}일 전`;
+    }
+    if (navigationStep.count === 7) {
+      return isFuture ? `${offset}주 후` : `${offset}주 전`;
+    }
+    if (navigationStep.count === 30) {
+      return isFuture ? `${offset * 30}일 후` : `${offset * 30}일 전`;
+    }
+    return isFuture ? `${offset * navigationStep.count}일 후` : `${offset * navigationStep.count}일 전`;
+  };
+
+  const getActivePresetLabel = (): string | null => {
+    const dv = displayValue;
+    if (!dv?.date || !dv?.endDate) return null;
+    for (const preset of QUICK_SELECT_PRESETS) {
+      if (isPresetActiveCheck(preset.key)) return preset.label;
+    }
+    if (activePresetKeyState && navOffset !== 0) {
+      return getNavOffsetLabel();
+    }
+    return null;
+  };
+
+  const activePresetLabel = $derived(showNavigation ? getActivePresetLabel() : null);
 
   // Helper functions
   const resolveCalendarInitial = (initial: CalendarInitial | undefined, fallback: Date): Date => {
@@ -417,6 +600,108 @@
     return time;
   };
 
+  const handleQuickSelect = (key: QuickSelectKey) => {
+    const { start: originalStart, end: originalEnd } = getPresetRange(key);
+    let start = originalStart;
+    let end = originalEnd;
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (start < minDay) start = minDay;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (end > maxDay) end = maxDay;
+    }
+    const newValue: DatePickerValue = { date: start, endDate: end, time: tempValue.time, endTime: tempValue.endTime };
+    tempValue = newValue;
+    viewDate = new Date(start.getFullYear(), start.getMonth(), 1);
+    endViewDate = new Date(end.getFullYear(), end.getMonth(), 1);
+    navigationStep = getNavigationStepForPreset(key);
+    navigationAnchor = originalStart;
+    activePresetKeyState = key;
+    navOffset = 0;
+
+    if (!shouldShowActions) {
+      value = newValue;
+      onchange?.(newValue);
+      selectingPart = null;
+    }
+  };
+
+  const getShiftedRange = (direction: 1 | -1) => {
+    const dv = displayValue;
+    if (!dv?.date || !dv?.endDate || !navigationStep) return null;
+    const anchorStart = navigationAnchor || dv.date;
+    return shiftDateRange(anchorStart, anchorStart, navigationStep, direction);
+  };
+
+  const handleNavigate = (direction: 1 | -1) => {
+    const dv = displayValue;
+    if (!dv?.date || !dv?.endDate || !navigationStep) return;
+
+    const range = getShiftedRange(direction);
+    if (!range) return;
+    const { start, end } = range;
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (endDay < minDay) return;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (startDay > maxDay) return;
+    }
+
+    navOffset = navOffset + direction;
+
+    let finalStart: Date = start;
+    let finalEnd: Date = end;
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (startDay < minDay) finalStart = minDay;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (endDay > maxDay) finalEnd = maxDay;
+    }
+
+    navigationAnchor = start;
+
+    const newValue: DatePickerValue = { date: finalStart, endDate: finalEnd, time: dv.time, endTime: dv.endTime };
+    tempValue = newValue;
+    viewDate = new Date(finalStart.getFullYear(), finalStart.getMonth(), 1);
+    endViewDate = new Date(finalEnd.getFullYear(), finalEnd.getMonth(), 1);
+    value = newValue;
+    onchange?.(newValue);
+  };
+
+  const isNavDisabled = (direction: 1 | -1): boolean => {
+    const range = getShiftedRange(direction);
+    if (!range) return true;
+    const { start, end } = range;
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    if (direction === -1 && minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      return endDay < minDay;
+    }
+    if (direction === 1 && maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      return startDay > maxDay;
+    }
+    return false;
+  };
+
   const handleDateSelect = (date: Date) => {
     const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
@@ -455,16 +740,24 @@
           endDate: existingStartDate,
           endTime: adjustedEndTime,
         };
+        navigationStep = calculateNavigationStep(newDate, existingStartDate);
+        navigationAnchor = newDate;
       } else {
         const adjustedEndTime = adjustTimeForDate(newDate, tempValue.endTime);
         tempValue = { ...tempValue, endDate: newDate, endTime: adjustedEndTime };
+        navigationStep = calculateNavigationStep(existingStartDate, newDate);
+        navigationAnchor = existingStartDate;
       }
+      activePresetKeyState = null;
+      navOffset = 0;
       return;
     }
 
     // Reset when both are selected
     const adjustedTime = adjustTimeForDate(newDate, tempValue.time);
     tempValue = { date: newDate, time: adjustedTime, endDate: undefined, endTime: undefined };
+    activePresetKeyState = null;
+    navOffset = 0;
   };
 
   const handleReset = () => {
@@ -607,7 +900,20 @@
 </script>
 
 <div bind:this={containerRef} class="{styles.datepicker} {className}" {...rest}>
-  <div class="{styles.input} {isOpen ? styles.active : ''} {disabled ? styles.disabled : ''}">
+  <div class="{styles.input} {showNavigation ? styles.withNav : ''} {isOpen ? styles.active : ''} {disabled ? styles.disabled : ''}">
+    {#if showNavigation}
+      <button
+        type="button"
+        class="{styles.navArrow} {styles.navArrowLeft}"
+        onclick={(e) => { e.stopPropagation(); handleNavigate(-1); }}
+        disabled={disabled || isNavDisabled(-1)}
+      >
+        <i class="icon-expand-left"></i>
+      </button>
+    {/if}
+    {#if showNavigation && activePresetLabel}
+      <span class={styles.presetLabel}>{activePresetLabel} :</span>
+    {/if}
     <div class={styles.inputContent}>
       {#if type === 'date'}
         {#if mode === 'period'}
@@ -807,12 +1113,24 @@
         {/if}
       {/if}
     </div>
-    <i class="{styles.inputIcon} {inputIcon}"></i>
+    {#if !showNavigation}
+      <i class="{styles.inputIcon} {inputIcon}"></i>
+    {/if}
+    {#if showNavigation}
+      <button
+        type="button"
+        class="{styles.navArrow} {styles.navArrowRight}"
+        onclick={(e) => { e.stopPropagation(); handleNavigate(1); }}
+        disabled={disabled || isNavDisabled(1)}
+      >
+        <i class="icon-expand-right"></i>
+      </button>
+    {/if}
   </div>
 
   {#if isOpen}
     <div class="{styles.dropdown} {align === 'right' ? styles.right : ''}">
-      {#if mode === 'period'}
+      {#snippet periodCalendars()}
         <!-- Period mode: two calendars -->
         <div class={styles.periodCalendars}>
           <div class={styles.periodCalendarLeft}>
@@ -914,6 +1232,30 @@
             </div>
           </div>
         </div>
+      {/snippet}
+
+      {#if mode === 'period'}
+        {#if quickSelect}
+          <div class={styles.dropdownBody}>
+            <div class={styles.quickSelectPanel}>
+              {#each QUICK_SELECT_PRESETS as preset}
+                {@const presetDisabled = checkPresetDisabled(preset.key, minDate, maxDate)}
+                {@const active = isPresetActiveCheck(preset.key)}
+                <button
+                  type="button"
+                  class="{styles.quickSelectItem}{active ? ` ${styles.active}` : ''}{presetDisabled ? ` ${styles.disabled}` : ''}"
+                  onclick={() => !presetDisabled && handleQuickSelect(preset.key)}
+                  disabled={presetDisabled}
+                >
+                  {preset.label}
+                </button>
+              {/each}
+            </div>
+            {@render periodCalendars()}
+          </div>
+        {:else}
+          {@render periodCalendars()}
+        {/if}
       {:else}
         <!-- Instant mode: single calendar -->
         <div class={styles.calendar}>

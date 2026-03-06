@@ -382,6 +382,8 @@
       this.isOpen = false;
       this.selectingPart = null;
       this.navigationStep = null;
+      this._activePresetKey = null;
+      this._navOffset = 0;
 
       // 초기 달력 표시 월 계산
       if (this.value.date) {
@@ -791,6 +793,8 @@
       this.viewDate = new Date(start.getFullYear(), start.getMonth(), 1);
       this.endViewDate = new Date(end.getFullYear(), end.getMonth(), 1);
       this.navigationStep = getNavigationStepForPreset(key);
+      this._activePresetKey = key;
+      this._navOffset = 0;
 
       if (!this.showActions) {
         this.value = { ...this.tempValue };
@@ -1304,10 +1308,14 @@
             endTime: adjustedEndTime,
           };
           this.navigationStep = calculateNavigationStep(newDate, existingStartDate);
+          this._activePresetKey = null;
+          this._navOffset = 0;
         } else {
           const adjustedEndTime = this.adjustTimeForDate(newDate, this.tempValue.endTime);
           this.tempValue = { ...this.tempValue, endDate: newDate, endTime: adjustedEndTime };
           this.navigationStep = calculateNavigationStep(existingStartDate, newDate);
+          this._activePresetKey = null;
+          this._navOffset = 0;
         }
       } else {
         const adjustedTime = this.adjustTimeForDate(newDate, this.tempValue.time);
@@ -1418,6 +1426,8 @@
         if (end > new Date(max.getFullYear(), max.getMonth(), max.getDate())) return;
       }
 
+      this._navOffset = (this._navOffset || 0) + direction;
+
       const newValue = { date: start, endDate: end, time: dv.time, endTime: dv.endTime };
       this.tempValue = newValue;
       this.value = { ...newValue };
@@ -1457,13 +1467,40 @@
     getActivePresetLabel() {
       const dv = this.showActions ? this.tempValue : this.value;
       if (!dv?.date || !dv?.endDate) return null;
+      // 프리셋과 정확히 일치하면 프리셋 라벨 반환
       for (const key of QUICK_SELECT_KEYS) {
         const { start, end } = getPresetRange(key);
         if (isSameDay(dv.date, start) && isSameDay(dv.endDate, end)) {
           return this.texts.quickSelect?.[key] || key;
         }
       }
+      // navArrow로 이동한 상태면 offset 기반 동적 라벨 생성
+      if (this._activePresetKey && this._navOffset !== 0) {
+        return this._getNavOffsetLabel();
+      }
       return null;
+    }
+
+    _getNavOffsetLabel() {
+      const offset = Math.abs(this._navOffset);
+      const isFuture = this._navOffset > 0;
+      const step = this.navigationStep;
+      if (!step) return null;
+
+      if (step.type === 'month') {
+        return isFuture ? `${offset}개월 후` : `${offset}개월 전`;
+      }
+      // days
+      if (step.count === 1) {
+        return isFuture ? `${offset}일 후` : `${offset}일 전`;
+      }
+      if (step.count === 7) {
+        return isFuture ? `${offset}주 후` : `${offset}주 전`;
+      }
+      if (step.count === 30) {
+        return isFuture ? `${offset * 30}일 후` : `${offset * 30}일 전`;
+      }
+      return isFuture ? `${offset * step.count}일 후` : `${offset * step.count}일 전`;
     }
 
     updatePresetLabel() {

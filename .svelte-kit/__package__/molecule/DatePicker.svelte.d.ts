@@ -29,6 +29,8 @@ export interface InitialCalendar {
     start?: CalendarInitial;
     end?: CalendarInitial;
 }
+/** Quick Select 프리셋 키 */
+export type QuickSelectKey = 'today' | 'yesterday' | 'thisWeek' | 'lastWeek' | 'last7Days' | 'last30Days' | 'thisMonth' | 'lastMonth';
 interface Props {
     /** Selection mode: instant | period */
     mode?: DatePickerMode;
@@ -64,6 +66,8 @@ interface Props {
     initialCalendar?: InitialCalendar;
     /** Year selection range */
     yearRange?: YearRange;
+    /** Show quick select presets (period mode only) */
+    quickSelect?: boolean;
 }
 type $$ComponentProps = Props & Record<string, unknown>;
 declare const DatePicker: import("svelte").Component<$$ComponentProps, {}, "value">;
