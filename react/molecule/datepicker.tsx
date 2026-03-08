@@ -1087,6 +1087,21 @@ const DatePicker: React.FC<DatePickerProps> = ({
     setTempValue(value || {});
   }, [value]);
 
+  // 초기 value 또는 외부에서 value 변경 시 프리셋 자동 매칭
+  useEffect(() => {
+    if (!quickSelect || mode !== 'period') return;
+    if (!value?.date || !value?.endDate) return;
+
+    for (const preset of QUICK_SELECT_PRESETS) {
+      const { start, end } = getPresetRange(preset.key);
+      if (isSameDay(value.date, start) && isSameDay(value.endDate, end)) {
+        setActivePresetKey(preset.key);
+        setNavOffset(0);
+        setNavigationStep(getNavigationStepForPreset(preset.key));
+        return;
+      }
+    }
+  }, [value?.date, value?.endDate, quickSelect, mode]);
 
   const formatPeriodText = () => {
     if (!tempValue.date) return '';

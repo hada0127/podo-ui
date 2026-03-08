@@ -872,6 +872,22 @@
     tempValue = value || {};
   });
 
+  // 초기 value 또는 외부에서 value 변경 시 프리셋 자동 매칭
+  $effect(() => {
+    if (!quickSelect || mode !== 'period') return;
+    if (!value?.date || !value?.endDate) return;
+
+    for (const preset of QUICK_SELECT_PRESETS) {
+      const { start, end } = getPresetRange(preset.key);
+      if (isSameDay(value.date, start) && isSameDay(value.endDate, end)) {
+        activePresetKeyState = preset.key;
+        navOffset = 0;
+        navigationStep = getNavigationStepForPreset(preset.key);
+        return;
+      }
+    }
+  });
+
   $effect(() => {
     if (value?.date) {
       viewDate = value.date;

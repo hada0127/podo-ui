@@ -385,6 +385,19 @@
       this._activePresetKey = null;
       this._navOffset = 0;
 
+      // 초기 value가 프리셋과 일치하면 자동 세팅
+      if (this.quickSelect && this.mode === 'period' && this.value.date && this.value.endDate) {
+        for (const key of QUICK_SELECT_KEYS) {
+          const { start, end } = getPresetRange(key);
+          if (isSameDay(this.value.date, start) && isSameDay(this.value.endDate, end)) {
+            this._activePresetKey = key;
+            this._navOffset = 0;
+            this.navigationStep = getNavigationStepForPreset(key);
+            break;
+          }
+        }
+      }
+
       // 초기 달력 표시 월 계산
       if (this.value.date) {
         this.viewDate = new Date(this.value.date);
@@ -1559,7 +1572,28 @@
       if (value?.endDate) {
         this.endViewDate = new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, 1);
       }
+
+      // value가 프리셋과 일치하면 자동 세팅
+      if (this.quickSelect && this.mode === 'period' && value?.date && value?.endDate) {
+        let matched = false;
+        for (const key of QUICK_SELECT_KEYS) {
+          const { start, end } = getPresetRange(key);
+          if (isSameDay(value.date, start) && isSameDay(value.endDate, end)) {
+            this._activePresetKey = key;
+            this._navOffset = 0;
+            this.navigationStep = getNavigationStepForPreset(key);
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          this._activePresetKey = null;
+          this._navOffset = 0;
+        }
+      }
+
       this.renderInputContent();
+      this.updatePresetLabel();
     }
 
     /**
