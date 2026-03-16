@@ -18,6 +18,12 @@
     display: flex !important;
   }
 
+  .mobileControls {
+    display: flex;
+    align-items: center;
+    gap: s(1);
+  }
+
   .logo {
     display: flex;
     align-items: center;

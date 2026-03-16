@@ -32,3 +32,35 @@
     color: color(default-deep-base);
   }
 }
+
+.compactToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s;
+  border-radius: r(2);
+
+  i {
+    font-size: 20px;
+    color: color(default-deep-base);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover {
+    background: color(default-hover);
+
+    i {
+      color: color(primary-base);
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}

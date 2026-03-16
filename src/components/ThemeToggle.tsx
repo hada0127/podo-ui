@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import styles from './ThemeToggle.module.scss';
 
-export default function ThemeToggle() {
+interface ThemeToggleProps {
+  compact?: boolean;
+}
+
+export default function ThemeToggle({ compact = false }: ThemeToggleProps) {
   const [mode, setMode] = useState<'' | 'light' | 'dark'>('');
 
   useEffect(() => {
@@ -41,6 +45,25 @@ export default function ThemeToggle() {
     if (mode === 'dark') return 'Dark Mode';
     return 'Auto Mode';
   };
+
+  const getModeIcon = () => {
+    if (mode === 'light') return 'icon-show';
+    if (mode === 'dark') return 'icon-hidden';
+    return 'icon-setting-stroke';
+  };
+
+  if (compact) {
+    return (
+      <button
+        className={styles.compactToggle}
+        onClick={handleToggleMode}
+        aria-label={getModeLabel()}
+        title={getModeLabel()}
+      >
+        <i className={getModeIcon()}></i>
+      </button>
+    );
+  }
 
   return (
     <div className={styles.toggle}>

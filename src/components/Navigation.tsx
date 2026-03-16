@@ -81,7 +81,10 @@ export default function Navigation() {
           <img src="/logo.svg" alt="Podo UI" width={32} height={32} />
           <h1>Podo UI</h1>
         </a>
-        <MobileMenuButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+        <div className={styles.mobileControls}>
+          <ThemeToggle compact />
+          <MobileMenuButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+        </div>
       </div>
 
       {isOpen && <div className={styles.overlay} onClick={() => setIsOpen(false)} />}
