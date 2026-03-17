@@ -33,7 +33,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
     'notification', 'notification-stroke', 'mail', 'global', 'trash', 'dm', 'currency', 'print',
     'gps', 'ellipse', 'ellipse-stroke', 'facebook', 'naver', 'insta', 'tiktok', 'apple', 'google',
     'youtube', 'kakao', 'x', 'arrow-dropdown', 'arrow-dropdown-up', 'check-small', 'check', 'show',
-    'hidden', 'fordid', 'upload-cloud', 'share', 'excel', 'cancel', 'arrow-left', 'arrow-right',
+    'hidden', 'fordid', 'upload-cloud', 'share', 'excel', 'close-circle-fill', 'arrow-left', 'arrow-right',
     'arrow-up', 'arrow-down', 'download', 'upload', 'link-alt', 'link', 'edit', 'pin', 'flag',
     'hand', 'zoom-in', 'zoom-out', 'chart', 'temperature', 'turbine', 'layers', 'compass',
     'flag-finish', 'pressure', 'pyramid-chart', 'ruler', 'contour', 'plus', 'minus', 'warning',
@@ -53,7 +53,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
     'button', 'desktop', 'mobile',
     'spacing', 'align-bottom', 'align-middle', 'align-top',
     'layout-horizontal', 'layout-vertical', 'section',
-    'twinkle',
+    'twinkle', 'close-circle-stroke', 'grid', 'grid-list',
   ];
 
   return (
@@ -192,7 +192,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.generalUI')}</h2>
           <div className={styles.iconList}>
-            {['search', 'close', 'check', 'plus', 'minus', 'menu', 'more', 'more-horizontal', 'undo', 'redo', 'copy', 'clipboard', 'text', 'logout'].map(icon => (
+            {['search', 'close', 'check', 'plus', 'minus', 'menu', 'more', 'more-horizontal', 'undo', 'redo', 'copy', 'clipboard', 'text', 'logout', 'grid', 'grid-list'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
@@ -240,7 +240,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.status')}</h2>
           <div className={styles.iconList}>
-            {['info', 'warning', 'danger', 'danger-fill', 'check-circle-stroke', 'check-circle-fill'].map(icon => (
+            {['info', 'warning', 'danger', 'danger-fill', 'check-circle-stroke', 'check-circle-fill', 'close-circle-stroke'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
