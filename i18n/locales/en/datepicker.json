@@ -52,7 +52,8 @@
     "minuteStep": "Minute selection interval (1, 5, 10, 15, 20, 30)",
     "format": "Date/time display format (y: year, m: month, d: day, h: hour, i: minute)",
     "initialCalendar": "Initial calendar display month in period mode",
-    "quickSelect": "Show quick select preset panel (period mode only)"
+    "quickSelect": "Show quick select preset panel (period mode only)",
+    "onReset": "Callback function called when the reset button is clicked"
   },
   "format": {
     "title": "Date Format",
@@ -213,6 +214,7 @@
     "valueType": "Value type: 'date', 'time', 'datetime'",
     "initialValueComment": "Initial value",
     "onChangeCallback": "Value change callback",
+    "onResetCallback": "Reset button click callback",
     "disabledComment": "Disabled",
     "dropdownAlign": "Dropdown alignment: 'left' or 'right'",
     "showActionsComment": "Show bottom buttons (default true for period mode)",
@@ -230,6 +232,12 @@
     "leftCalendarComment": "Left calendar: previous month",
     "rightCalendarComment": "Right calendar: current month",
     "startEndValues": "start/end values: 'now', 'prevMonth', 'nextMonth', or Date object"
+  },
+  "onReset": {
+    "title": "Reset Callback",
+    "description": "Use the onReset (Svelte: onreset) prop to receive a callback when the reset button is clicked. It is called when the reset button at the bottom is pressed in period mode.",
+    "demoTitle": "Reset Callback Example:",
+    "resetCount": "Reset count"
   },
   "quickSelect": {
     "title": "Quick Select",

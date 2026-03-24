@@ -52,7 +52,8 @@
     "minuteStep": "분 단위 선택 간격 (1, 5, 10, 15, 20, 30)",
     "format": "날짜/시간 표시 포맷 (y: 년, m: 월, d: 일, h: 시, i: 분)",
     "initialCalendar": "기간 선택 모드에서 초기 달력 표시 월 설정",
-    "quickSelect": "Quick Select 프리셋 패널 표시 (period 모드 전용)"
+    "quickSelect": "Quick Select 프리셋 패널 표시 (period 모드 전용)",
+    "onReset": "초기화 버튼 클릭 시 호출되는 콜백 함수"
   },
   "format": {
     "title": "날짜 포맷",
@@ -213,6 +214,7 @@
     "valueType": "값 타입: 'date', 'time', 'datetime'",
     "initialValueComment": "초기값",
     "onChangeCallback": "값 변경 콜백",
+    "onResetCallback": "초기화 버튼 클릭 콜백",
     "disabledComment": "비활성화",
     "dropdownAlign": "드롭다운 정렬: 'left' 또는 'right'",
     "showActionsComment": "하단 버튼 표시 (period 모드에서 기본 true)",
@@ -230,6 +232,12 @@
     "leftCalendarComment": "왼쪽 달력: 이전 달",
     "rightCalendarComment": "오른쪽 달력: 현재 달",
     "startEndValues": "start/end 값: 'now', 'prevMonth', 'nextMonth', 또는 Date 객체"
+  },
+  "onReset": {
+    "title": "초기화 콜백",
+    "description": "onReset(Svelte: onreset) prop을 사용하면 초기화 버튼 클릭 시 콜백을 받을 수 있습니다. period 모드에서 하단 초기화 버튼을 눌렀을 때 호출됩니다.",
+    "demoTitle": "초기화 콜백 예제:",
+    "resetCount": "초기화 횟수"
   },
   "quickSelect": {
     "title": "빠른 선택",

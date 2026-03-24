@@ -1532,6 +1532,9 @@
       this.tempValue = {};
       this.close();
       this.renderInputContent();
+      if (typeof this.options.onReset === 'function') {
+        this.options.onReset();
+      }
     }
 
     handleApply() {

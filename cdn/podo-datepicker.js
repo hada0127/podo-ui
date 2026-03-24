@@ -1,5 +1,5 @@
 /*!
- * Podo UI DatePicker v1.0.19
+ * Podo UI DatePicker v1.0.21
  * https://podoui.com
  * MIT License
  */
@@ -1537,6 +1537,9 @@
       this.tempValue = {};
       this.close();
       this.renderInputContent();
+      if (typeof this.options.onReset === 'function') {
+        this.options.onReset();
+      }
     }
 
     handleApply() {

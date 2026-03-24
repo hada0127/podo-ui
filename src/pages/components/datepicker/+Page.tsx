@@ -59,6 +59,8 @@ export default function DatePickerPage() {
   const [yearRangePartial, setYearRangePartial] = useState<DatePickerValue>({});
   const [quickSelectDate, setQuickSelectDate] = useState<DatePickerValue>({});
   const [quickSelectMinMaxDate, setQuickSelectMinMaxDate] = useState<DatePickerValue>({});
+  const [onResetDate, setOnResetDate] = useState<DatePickerValue>({});
+  const [resetCount, setResetCount] = useState(0);
 
   // Vanilla JS DatePicker refs
   const vanillaInstantRef = useRef<HTMLDivElement>(null);
@@ -207,6 +209,10 @@ export default function DatePickerPage() {
                 setQuickSelectDate={setQuickSelectDate}
                 quickSelectMinMaxDate={quickSelectMinMaxDate}
                 setQuickSelectMinMaxDate={setQuickSelectMinMaxDate}
+                onResetDate={onResetDate}
+                setOnResetDate={setOnResetDate}
+                resetCount={resetCount}
+                onResetCallback={() => setResetCount((c) => c + 1)}
                 formatDateDisplay={formatDateDisplay}
                 formatTimeDisplay={formatTimeDisplay}
                 formatDateTimeDisplay={formatDateTimeDisplay}
@@ -292,6 +298,12 @@ function SvelteContent({ t }: { t: (key: string) => string }) {
               <td><code>(value) =&gt; void</code></td>
               <td>-</td>
               <td>{t('props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>onreset</code></td>
+              <td><code>() =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('props.onReset')}</td>
             </tr>
             <tr>
               <td><code>placeholder</code></td>
@@ -636,6 +648,33 @@ function SvelteContent({ t }: { t: (key: string) => string }) {
       </section>
 
       <section>
+        <h2>{t('onReset.title')}</h2>
+        <p>{t('onReset.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { DatePicker } from 'podo-ui/svelte';
+  import type { DatePickerValue } from 'podo-ui/svelte';
+
+  let value = $state<DatePickerValue>({});
+
+  function handleReset() {
+    console.log('DatePicker reset');
+  }
+</script>
+
+<DatePicker
+  mode="period"
+  type="date"
+  bind:value
+  onreset={handleReset}
+/>`}
+        />
+      </section>
+
+      <section>
         <h2>{t('valueInterface.title')}</h2>
         <p>{t('valueInterface.description')}</p>
 
@@ -725,6 +764,10 @@ interface ReactContentProps {
   setQuickSelectDate: (v: DatePickerValue) => void;
   quickSelectMinMaxDate: DatePickerValue;
   setQuickSelectMinMaxDate: (v: DatePickerValue) => void;
+  onResetDate: DatePickerValue;
+  setOnResetDate: (v: DatePickerValue) => void;
+  resetCount: number;
+  onResetCallback: () => void;
   formatDateDisplay: (v: DatePickerValue) => string;
   formatTimeDisplay: (v: DatePickerValue) => string;
   formatDateTimeDisplay: (v: DatePickerValue) => string;
@@ -796,6 +839,10 @@ function ReactContent({
   setQuickSelectDate,
   quickSelectMinMaxDate,
   setQuickSelectMinMaxDate,
+  onResetDate,
+  setOnResetDate,
+  resetCount,
+  onResetCallback,
   formatDateDisplay,
   formatTimeDisplay,
   formatDateTimeDisplay,
@@ -842,6 +889,12 @@ function ReactContent({
               <td><code>(value) =&gt; void</code></td>
               <td>-</td>
               <td>{t('props.onChange')}</td>
+            </tr>
+            <tr>
+              <td><code>onReset</code></td>
+              <td><code>() =&gt; void</code></td>
+              <td>-</td>
+              <td>{t('props.onReset')}</td>
             </tr>
             <tr>
               <td><code>placeholder</code></td>
@@ -1578,6 +1631,52 @@ thirtyDaysAgo.setDate(today.getDate() - 29); // 오늘 포함 30일
       </section>
 
       <section>
+        <h2>{t('onReset.title')}</h2>
+        <p>{t('onReset.description')}</p>
+
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`import { useState } from 'react';
+import { DatePicker, DatePickerValue } from 'podo-ui';
+
+function App() {
+  const [value, setValue] = useState<DatePickerValue>({});
+  const [resetCount, setResetCount] = useState(0);
+
+  return (
+    <DatePicker
+      mode="period"
+      type="date"
+      value={value}
+      onChange={setValue}
+      onReset={() => setResetCount((c) => c + 1)}
+    />
+  );
+}`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('onReset.demoTitle')}</div>
+          <div className={styles.pickerRow}>
+            <div className={styles.pickerItem}>
+              <label>{t('onReset.title')}</label>
+              <DatePicker
+                mode="period"
+                type="date"
+                value={onResetDate}
+                onChange={setOnResetDate}
+                onReset={onResetCallback}
+              />
+              <div className={styles.selectedValue}>
+                {t('onReset.resetCount')}: {resetCount}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
         <h2>{t('valueInterface.title')}</h2>
         <p>{t('valueInterface.description')}</p>
 
@@ -1814,6 +1913,10 @@ function CdnContent({
 
   onChange: function(value) {
     console.log(value);
+  },
+
+  onReset: function() {
+    console.log('reset');
   },
 
   disabled: false,

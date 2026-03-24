@@ -131,6 +131,8 @@ export interface DatePickerProps {
    * 기본값: false
    */
   quickSelect?: boolean;
+  /** 초기화 버튼 클릭 시 콜백 */
+  onReset?: () => void;
 }
 
 // Helper functions
@@ -941,6 +943,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   yearRange,
   portal = false,
   quickSelect = false,
+  onReset,
 }) => {
   const [selectingPart, setSelectingPart] = useState<SelectingPart>(null);
   const [tempValue, setTempValue] = useState<DatePickerValue>(value || {});
@@ -1253,6 +1256,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const handleReset = () => {
     setTempValue({});
     setSelectingPart(null);
+    onReset?.();
   };
 
   const handleApply = () => {

@@ -204,6 +204,8 @@
     yearRange?: YearRange;
     /** Show quick select presets (period mode only) */
     quickSelect?: boolean;
+    /** Reset button click callback */
+    onreset?: () => void;
   }
 
   let {
@@ -225,6 +227,7 @@
     initialCalendar,
     yearRange,
     quickSelect = false,
+    onreset,
     ...rest
   }: Props & Record<string, unknown> = $props();
 
@@ -763,6 +766,7 @@
   const handleReset = () => {
     tempValue = {};
     selectingPart = null;
+    onreset?.();
   };
 
   const handleApply = () => {
