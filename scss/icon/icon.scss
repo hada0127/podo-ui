@@ -6,17 +6,10 @@
   src: url('./font/icon.woff') format('woff');
   font-display: swap;
 }
-:root {
-  [class^='icon-'],
-  [class*=' icon-'] {
-    &:only-child,
-    &:not(:last-child) {
-      margin-right: s(2);
-    }
-  }
 
-  [class^='icon-']::before,
-  [class*=' icon-']::before {
+[class^='icon-'],
+[class*=' icon-'] {
+  &::before {
     font-family: 'podo-ui-icon' !important;
     font-style: normal;
     font-weight: normal;
@@ -27,12 +20,11 @@
     vertical-align: inherit;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    // margin-top: -0.1rem;
   }
+}
 
-  @each $key, $value in $icon-name {
-    .icon-#{$key}::before {
-      content: '#{$value}';
-    }
+@each $key, $value in $icon-name {
+  .icon-#{$key}::before {
+    content: '#{$value}';
   }
 }

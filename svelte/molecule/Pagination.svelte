@@ -10,6 +10,10 @@
     onpagechange: (page: number) => void;
     /** Maximum visible page numbers */
     maxVisiblePages?: number;
+    /** Previous button icon class name */
+    prevIcon?: string;
+    /** Next button icon class name */
+    nextIcon?: string;
   }
 
   let {
@@ -17,6 +21,8 @@
     totalPages,
     onpagechange,
     maxVisiblePages = 5,
+    prevIcon = 'icon-arrow-left',
+    nextIcon = 'icon-arrow-right',
     ...rest
   }: Props & Record<string, unknown> = $props();
 
@@ -63,7 +69,7 @@
         class={styles.pageButton}
         aria-label="이전 페이지"
       >
-        <i class="icon-arrow-left"></i>
+        <i class={prevIcon}></i>
       </button>
     {:else}
       <div class={styles.pageButtonPlaceholder}></div>
@@ -86,7 +92,7 @@
         class={styles.pageButton}
         aria-label="다음 페이지"
       >
-        <i class="icon-arrow-right"></i>
+        <i class={nextIcon}></i>
       </button>
     {:else}
       <div class={styles.pageButtonPlaceholder}></div>

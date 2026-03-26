@@ -39,6 +39,8 @@ export interface TooltipProps {
    * 기본값: false
    */
   portal?: boolean;
+  /** 툴팁 최대 너비 (설정 시 자동 줄바꿈 활성화) */
+  maxWidth?: number | string;
 }
 
 // Portal 위치 타입
@@ -58,6 +60,7 @@ export default function Tooltip({
   isVisible: controlledIsVisible,
   className = '',
   portal = false,
+  maxWidth,
 }: TooltipProps) {
   const [hoverIsVisible, setHoverIsVisible] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -205,6 +208,10 @@ export default function Tooltip({
     .filter(Boolean)
     .join(' ');
 
+  const maxWidthStyle: React.CSSProperties = maxWidth
+    ? { maxWidth: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth, whiteSpace: 'normal', wordBreak: 'break-word' }
+    : {};
+
   // 툴팁 콘텐츠 렌더링
   const renderTooltipContent = () => {
     if (!shouldShowTooltip) return null;
@@ -212,7 +219,7 @@ export default function Tooltip({
     // Portal 모드
     if (portal && typeof document !== 'undefined' && portalPosition) {
       return createPortal(
-        <div className={portalTooltipClassNames} style={getPortalStyle()}>
+        <div className={portalTooltipClassNames} style={{ ...getPortalStyle(), ...maxWidthStyle }}>
           {content}
         </div>,
         document.body
@@ -223,7 +230,7 @@ export default function Tooltip({
     return (
       <div
         className={tooltipClassNames}
-        style={{ '--tooltip-offset': `${offset}px` } as React.CSSProperties}
+        style={{ '--tooltip-offset': `${offset}px`, ...maxWidthStyle } as React.CSSProperties}
       >
         {content}
       </div>

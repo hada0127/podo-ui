@@ -23,7 +23,10 @@ textarea {
     border: 1px solid color('primary');
   }
   &:read-only {
+    background-color: transparent;
     border: none;
+    color: inherit;
+    cursor: default;
     resize: none;
   }
   &:focus-visible:not(:disabled) {

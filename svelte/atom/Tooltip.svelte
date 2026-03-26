@@ -33,6 +33,8 @@
     isVisible?: boolean;
     /** Additional CSS class */
     class?: string;
+    /** Tooltip max width (enables word wrap when set) */
+    maxWidth?: number | string;
   }
 
   let {
@@ -43,6 +45,7 @@
     offset = 8,
     isVisible: controlledIsVisible,
     class: className = '',
+    maxWidth,
     ...rest
   }: Props & Record<string, unknown> = $props();
 
@@ -71,7 +74,7 @@
 >
   {@render children()}
   {#if shouldShowTooltip}
-    <div class={tooltipClassNames} style="--tooltip-offset: {offset}px;">
+    <div class={tooltipClassNames} style="--tooltip-offset: {offset}px;{maxWidth ? ` max-width: ${typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth}; white-space: normal; word-break: break-word;` : ''}">
       {@render content()}
     </div>
   {/if}

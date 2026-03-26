@@ -1,5 +1,5 @@
 /*!
- * Podo UI CSS v1.0.21
+ * Podo UI CSS v1.0.22
  * https://podoui.com
  * MIT License
  */
@@ -16588,8 +16588,6 @@ body {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-body:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16601,8 +16599,6 @@ body h1 {
   font-size: 54px;
   line-height: 1.2;
   font-weight: 600;
-}
-body h1:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16614,8 +16610,6 @@ body h2 {
   font-size: 42px;
   line-height: 1.2;
   font-weight: 600;
-}
-body h2:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16627,8 +16621,6 @@ body h3 {
   font-size: 36px;
   line-height: 1.2;
   font-weight: 600;
-}
-body h3:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16644,8 +16636,6 @@ body h3:not(button) {
   font-size: 60px;
   line-height: 1.2;
   font-weight: 600;
-}
-:root .display1:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16657,8 +16647,6 @@ body h3:not(button) {
   font-size: 54px;
   line-height: 1.2;
   font-weight: 600;
-}
-:root .display2:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16670,8 +16658,6 @@ body h3:not(button) {
   font-size: 48px;
   line-height: 1.2;
   font-weight: 600;
-}
-:root .display3:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16683,8 +16669,6 @@ body h3:not(button) {
   font-size: 42px;
   line-height: 1.2;
   font-weight: 600;
-}
-:root .display4:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16696,8 +16680,6 @@ body h3:not(button) {
   font-size: 36px;
   line-height: 1.2;
   font-weight: 600;
-}
-:root .display5:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16709,8 +16691,6 @@ body h3:not(button) {
   font-size: 24px;
   line-height: 1.4;
   font-weight: 600;
-}
-:root .display6:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16722,8 +16702,6 @@ body h3:not(button) {
   font-size: 20px;
   line-height: 1.6;
   font-weight: 600;
-}
-:root .display7:not(button) {
   color: var(--color-text-header);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16740,8 +16718,6 @@ body h3:not(button) {
   font-size: 24px;
   line-height: 1.4;
   font-weight: 400;
-}
-:root .p1:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16753,8 +16729,6 @@ body h3:not(button) {
   font-size: 20px;
   line-height: 1.6;
   font-weight: 400;
-}
-:root .p2:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16766,8 +16740,6 @@ body h3:not(button) {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-:root .p3:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16779,8 +16751,6 @@ body h3:not(button) {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 600;
-}
-:root .p3-semibold:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16792,8 +16762,6 @@ body h3:not(button) {
   font-size: 14px;
   line-height: 1.6;
   font-weight: 400;
-}
-:root .p4:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16805,8 +16773,6 @@ body h3:not(button) {
   font-size: 14px;
   line-height: 1.6;
   font-weight: 600;
-}
-:root .p4-semibold:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -16818,16 +16784,12 @@ body h3:not(button) {
   font-size: 12px;
   line-height: 1.6;
   font-weight: 400;
-}
-:root .p5:not(button) {
   color: var(--color-text-body);
 }
 :root .p5-semibold {
   font-size: 12px;
   line-height: 1.6;
   font-weight: 600;
-}
-:root .p5-semibold:not(button) {
   color: var(--color-text-body);
 }
 
@@ -16839,13 +16801,8 @@ body h3:not(button) {
   src: url("./font/icon.woff") format("woff");
   font-display: swap;
 }
-:root [class^=icon-]:only-child, :root [class^=icon-]:not(:last-child),
-:root [class*=" icon-"]:only-child,
-:root [class*=" icon-"]:not(:last-child) {
-  margin-right: 4px;
-}
-:root [class^=icon-]::before,
-:root [class*=" icon-"]::before {
+[class^=icon-]::before,
+[class*=" icon-"]::before {
   font-family: "podo-ui-icon" !important;
   font-style: normal;
   font-weight: normal;
@@ -16857,484 +16814,644 @@ body h3:not(button) {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-:root .icon-star::before {
+
+.icon-star::before {
   content: "\e900";
 }
-:root .icon-star-fill::before {
+
+.icon-star-fill::before {
   content: "\e901";
 }
-:root .icon-exchange-horizontally::before {
+
+.icon-exchange-horizontally::before {
   content: "\e902";
 }
-:root .icon-exchange-vertical::before {
+
+.icon-exchange-vertical::before {
   content: "\e903";
 }
-:root .icon-new-window::before {
+
+.icon-new-window::before {
   content: "\e904";
 }
-:root .icon-tag::before {
+
+.icon-tag::before {
   content: "\e905";
 }
-:root .icon-notification::before {
+
+.icon-notification::before {
   content: "\e906";
 }
-:root .icon-notification-stroke::before {
+
+.icon-notification-stroke::before {
   content: "\e907";
 }
-:root .icon-mail::before {
+
+.icon-mail::before {
   content: "\e908";
 }
-:root .icon-global::before {
+
+.icon-global::before {
   content: "\e909";
 }
-:root .icon-trash::before {
+
+.icon-trash::before {
   content: "\e90a";
 }
-:root .icon-dm::before {
+
+.icon-dm::before {
   content: "\e90b";
 }
-:root .icon-currency::before {
+
+.icon-currency::before {
   content: "\e90c";
 }
-:root .icon-print::before {
+
+.icon-print::before {
   content: "\e90d";
 }
-:root .icon-gps::before {
+
+.icon-gps::before {
   content: "\e90e";
 }
-:root .icon-ellipse::before {
+
+.icon-ellipse::before {
   content: "\e90f";
 }
-:root .icon-ellipse-stroke::before {
+
+.icon-ellipse-stroke::before {
   content: "\e910";
 }
-:root .icon-facebook::before {
+
+.icon-facebook::before {
   content: "\e912";
 }
-:root .icon-naver::before {
+
+.icon-naver::before {
   content: "\e913";
 }
-:root .icon-insta::before {
+
+.icon-insta::before {
   content: "\e914";
 }
-:root .icon-tiktok::before {
+
+.icon-tiktok::before {
   content: "\e915";
 }
-:root .icon-apple::before {
+
+.icon-apple::before {
   content: "\e916";
 }
-:root .icon-google::before {
+
+.icon-google::before {
   content: "\e917";
 }
-:root .icon-youtube::before {
+
+.icon-youtube::before {
   content: "\e918";
 }
-:root .icon-kakao::before {
+
+.icon-kakao::before {
   content: "\e919";
 }
-:root .icon-x::before {
+
+.icon-x::before {
   content: "\e91a";
 }
-:root .icon-arrow-dropdown::before {
+
+.icon-arrow-dropdown::before {
   content: "\e91c";
 }
-:root .icon-arrow-dropdown-up::before {
+
+.icon-arrow-dropdown-up::before {
   content: "\e91d";
 }
-:root .icon-check-small::before {
+
+.icon-check-small::before {
   content: "\e91e";
 }
-:root .icon-check::before {
+
+.icon-check::before {
   content: "\e91f";
 }
-:root .icon-show::before {
+
+.icon-show::before {
   content: "\e920";
 }
-:root .icon-hidden::before {
+
+.icon-hidden::before {
   content: "\e921";
 }
-:root .icon-fordid::before {
+
+.icon-fordid::before {
   content: "\e922";
 }
-:root .icon-upload-cloud::before {
+
+.icon-upload-cloud::before {
   content: "\e923";
 }
-:root .icon-share::before {
+
+.icon-share::before {
   content: "\e924";
 }
-:root .icon-excel::before {
+
+.icon-excel::before {
   content: "\e925";
 }
-:root .icon-close-circle-fill::before {
+
+.icon-close-circle-fill::before {
   content: "\e926";
 }
-:root .icon-arrow-left::before {
+
+.icon-arrow-left::before {
   content: "\e927";
 }
-:root .icon-arrow-right::before {
+
+.icon-arrow-right::before {
   content: "\e928";
 }
-:root .icon-arrow-up::before {
+
+.icon-arrow-up::before {
   content: "\e929";
 }
-:root .icon-arrow-down::before {
+
+.icon-arrow-down::before {
   content: "\e92a";
 }
-:root .icon-download::before {
+
+.icon-download::before {
   content: "\e92b";
 }
-:root .icon-upload::before {
+
+.icon-upload::before {
   content: "\e92c";
 }
-:root .icon-link-alt::before {
+
+.icon-link-alt::before {
   content: "\e92d";
 }
-:root .icon-link::before {
+
+.icon-link::before {
   content: "\e92e";
 }
-:root .icon-edit::before {
+
+.icon-edit::before {
   content: "\e92f";
 }
-:root .icon-pin::before {
+
+.icon-pin::before {
   content: "\e930";
 }
-:root .icon-flag::before {
+
+.icon-flag::before {
   content: "\e931";
 }
-:root .icon-hand::before {
+
+.icon-hand::before {
   content: "\e932";
 }
-:root .icon-zoom-in::before {
+
+.icon-zoom-in::before {
   content: "\e933";
 }
-:root .icon-zoom-out::before {
+
+.icon-zoom-out::before {
   content: "\e934";
 }
-:root .icon-chart::before {
+
+.icon-chart::before {
   content: "\e935";
 }
-:root .icon-temperature::before {
+
+.icon-temperature::before {
   content: "\e936";
 }
-:root .icon-turbine::before {
+
+.icon-turbine::before {
   content: "\e937";
 }
-:root .icon-layers::before {
+
+.icon-layers::before {
   content: "\e938";
 }
-:root .icon-compass::before {
+
+.icon-compass::before {
   content: "\e939";
 }
-:root .icon-flag-finish::before {
+
+.icon-flag-finish::before {
   content: "\e93a";
 }
-:root .icon-pressure::before {
+
+.icon-pressure::before {
   content: "\e93b";
 }
-:root .icon-pyramid-chart::before {
+
+.icon-pyramid-chart::before {
   content: "\e93c";
 }
-:root .icon-ruler::before {
+
+.icon-ruler::before {
   content: "\e93d";
 }
-:root .icon-contour::before {
+
+.icon-contour::before {
   content: "\e93e";
 }
-:root .icon-plus::before {
+
+.icon-plus::before {
   content: "\e93f";
 }
-:root .icon-minus::before {
+
+.icon-minus::before {
   content: "\e940";
 }
-:root .icon-warning::before {
+
+.icon-warning::before {
   content: "\e941";
 }
-:root .icon-user-stroke::before {
+
+.icon-user-stroke::before {
   content: "\e942";
 }
-:root .icon-user::before {
+
+.icon-user::before {
   content: "\e943";
 }
-:root .icon-menu::before {
+
+.icon-menu::before {
   content: "\e944";
 }
-:root .icon-time::before {
+
+.icon-time::before {
   content: "\e945";
 }
-:root .icon-search::before {
+
+.icon-search::before {
   content: "\e949";
 }
-:root .icon-close::before {
+
+.icon-close::before {
   content: "\e94a";
 }
-:root .icon-info::before {
+
+.icon-info::before {
   content: "\e94b";
 }
-:root .icon-danger::before {
+
+.icon-danger::before {
   content: "\e94c";
 }
-:root .icon-danger-fill::before {
+
+.icon-danger-fill::before {
   content: "\e94d";
 }
-:root .icon-expand-left::before {
+
+.icon-expand-left::before {
   content: "\e94e";
 }
-:root .icon-expand-right::before {
+
+.icon-expand-right::before {
   content: "\e94f";
 }
-:root .icon-expand-up::before {
+
+.icon-expand-up::before {
   content: "\e950";
 }
-:root .icon-expand-down::before {
+
+.icon-expand-down::before {
   content: "\e951";
 }
-:root .icon-calendar::before {
+
+.icon-calendar::before {
   content: "\e952";
 }
-:root .icon-paper::before {
+
+.icon-paper::before {
   content: "\e953";
 }
-:root .icon-import::before {
+
+.icon-import::before {
   content: "\e954";
 }
-:root .icon-export::before {
+
+.icon-export::before {
   content: "\e955";
 }
-:root .icon-img::before {
+
+.icon-img::before {
   content: "\e956";
 }
-:root .icon-favorite::before {
+
+.icon-favorite::before {
   content: "\e957";
 }
-:root .icon-favorite-fill::before {
+
+.icon-favorite-fill::before {
   content: "\e958";
 }
-:root .icon-phone::before {
+
+.icon-phone::before {
   content: "\e959";
 }
-:root .icon-phone-stroke::before {
+
+.icon-phone-stroke::before {
   content: "\e95a";
 }
-:root .icon-home::before {
+
+.icon-home::before {
   content: "\e95b";
 }
-:root .icon-expand-up-double::before {
+
+.icon-expand-up-double::before {
   content: "\e95c";
 }
-:root .icon-expand-down-double::before {
+
+.icon-expand-down-double::before {
   content: "\e95d";
 }
-:root .icon-expand-left-double::before {
+
+.icon-expand-left-double::before {
   content: "\e95e";
 }
-:root .icon-expand-right-double::before {
+
+.icon-expand-right-double::before {
   content: "\e95f";
 }
-:root .icon-setting-stroke::before {
+
+.icon-setting-stroke::before {
   content: "\e960";
 }
-:root .icon-setting::before {
+
+.icon-setting::before {
   content: "\e961";
 }
-:root .icon-email::before {
+
+.icon-email::before {
   content: "\e962";
 }
-:root .icon-more-horizontal::before {
+
+.icon-more-horizontal::before {
   content: "\e963";
 }
-:root .icon-more::before {
+
+.icon-more::before {
   content: "\e964";
 }
-:root .icon-help::before {
+
+.icon-help::before {
   content: "\e965";
 }
-:root .icon-check-circle-stroke::before {
+
+.icon-check-circle-stroke::before {
   content: "\e966";
 }
-:root .icon-check-circle-fill::before {
+
+.icon-check-circle-fill::before {
   content: "\e967";
 }
-:root .icon-map::before {
+
+.icon-map::before {
   content: "\e968";
 }
-:root .icon-refresh::before {
+
+.icon-refresh::before {
   content: "\e969";
 }
-:root .icon-drag::before {
+
+.icon-drag::before {
   content: "\e96a";
 }
-:root .icon-clip::before {
+
+.icon-clip::before {
   content: "\e96b";
 }
-:root .icon-file::before {
+
+.icon-file::before {
   content: "\e96c";
 }
-:root .icon-card::before {
+
+.icon-card::before {
   content: "\e96d";
 }
-:root .icon-car::before {
+
+.icon-car::before {
   content: "\e96e";
 }
-:root .icon-handle::before {
+
+.icon-handle::before {
   content: "\e96f";
 }
-:root .icon-counselor::before {
+
+.icon-counselor::before {
   content: "\e970";
 }
-:root .icon-chart-bar::before {
+
+.icon-chart-bar::before {
   content: "\e971";
 }
-:root .icon-coin::before {
+
+.icon-coin::before {
   content: "\e972";
 }
-:root .icon-receipt::before {
+
+.icon-receipt::before {
   content: "\e973";
 }
-:root .icon-briefcase::before {
+
+.icon-briefcase::before {
   content: "\e974";
 }
-:root .icon-arrow-dropdown-left::before {
+
+.icon-arrow-dropdown-left::before {
   content: "\e975";
 }
-:root .icon-arrow-dropdown-right::before {
+
+.icon-arrow-dropdown-right::before {
   content: "\e976";
 }
-:root .icon-lock::before {
+
+.icon-lock::before {
   content: "\e977";
 }
-:root .icon-unlock::before {
+
+.icon-unlock::before {
   content: "\e978";
 }
-:root .icon-save::before {
+
+.icon-save::before {
   content: "\e979";
 }
-:root .icon-database::before {
+
+.icon-database::before {
   content: "\e980";
 }
-:root .icon-undo::before {
+
+.icon-undo::before {
   content: "\e981";
 }
-:root .icon-redo::before {
+
+.icon-redo::before {
   content: "\e982";
 }
-:root .icon-unlink-alt::before {
+
+.icon-unlink-alt::before {
   content: "\e983";
 }
-:root .icon-youtube-stroke::before {
+
+.icon-youtube-stroke::before {
   content: "\e984";
 }
-:root .icon-horizontalLine::before {
+
+.icon-horizontalLine::before {
   content: "\e985";
 }
-:root .icon-spacing::before {
+
+.icon-spacing::before {
   content: "\e986";
 }
-:root .icon-clipboard::before {
+
+.icon-clipboard::before {
   content: "\e987";
 }
-:root .icon-inputForm::before {
+
+.icon-inputForm::before {
   content: "\e988";
 }
-:root .icon-copy::before {
+
+.icon-copy::before {
   content: "\e989";
 }
-:root .icon-text::before {
+
+.icon-text::before {
   content: "\e990";
 }
-:root .icon-logout::before {
+
+.icon-logout::before {
   content: "\e991";
 }
-:root .icon-detailView::before {
+
+.icon-detailView::before {
   content: "\e992";
 }
-:root .icon-company::before {
+
+.icon-company::before {
   content: "\e993";
 }
-:root .icon-landing::before {
+
+.icon-landing::before {
   content: "\e994";
 }
-:root .icon-code::before {
+
+.icon-code::before {
   content: "\e995";
 }
-:root .icon-footer::before {
+
+.icon-footer::before {
   content: "\e996";
 }
-:root .icon-click::before {
+
+.icon-click::before {
   content: "\e997";
 }
-:root .icon-align-left::before {
+
+.icon-align-left::before {
   content: "\e998";
 }
-:root .icon-align-center::before {
+
+.icon-align-center::before {
   content: "\e999";
 }
-:root .icon-align-right::before {
+
+.icon-align-right::before {
   content: "\e99a";
 }
-:root .icon-input::before {
+
+.icon-input::before {
   content: "\e99b";
 }
-:root .icon-margin-right::before {
+
+.icon-margin-right::before {
   content: "\e99c";
 }
-:root .icon-margin-top::before {
+
+.icon-margin-top::before {
   content: "\e99d";
 }
-:root .icon-margin-left::before {
+
+.icon-margin-left::before {
   content: "\e99e";
 }
-:root .icon-margin-bottom::before {
+
+.icon-margin-bottom::before {
   content: "\e99f";
 }
-:root .icon-login::before {
+
+.icon-login::before {
   content: "\e97a";
 }
-:root .icon-margin-horizontal::before {
+
+.icon-margin-horizontal::before {
   content: "\e97b";
 }
-:root .icon-margin-vertical::before {
+
+.icon-margin-vertical::before {
   content: "\e97c";
 }
-:root .icon-button::before {
+
+.icon-button::before {
   content: "\e97d";
 }
-:root .icon-desktop::before {
+
+.icon-desktop::before {
   content: "\e9a0";
 }
-:root .icon-mobile::before {
+
+.icon-mobile::before {
   content: "\e9a1";
 }
-:root .icon-align-bottom::before {
+
+.icon-align-bottom::before {
   content: "\e9a2";
 }
-:root .icon-align-middle::before {
+
+.icon-align-middle::before {
   content: "\e9a3";
 }
-:root .icon-align-top::before {
+
+.icon-align-top::before {
   content: "\e9a4";
 }
-:root .icon-gap::before {
+
+.icon-gap::before {
   content: "\e9a5";
 }
-:root .icon-layout-horizontal::before {
+
+.icon-layout-horizontal::before {
   content: "\e9a6";
 }
-:root .icon-layout-vertical::before {
+
+.icon-layout-vertical::before {
   content: "\e9a7";
 }
-:root .icon-section::before {
+
+.icon-section::before {
   content: "\e9a8";
 }
-:root .icon-twinkle::before {
+
+.icon-twinkle::before {
   content: "\e9a9";
 }
-:root .icon-close-circle-stroke::before {
+
+.icon-close-circle-stroke::before {
   content: "\e98a";
 }
-:root .icon-grid::before {
+
+.icon-grid::before {
   content: "\e98b";
 }
-:root .icon-grid-list::before {
+
+.icon-grid-list::before {
   content: "\e98c";
 }
 
@@ -17348,8 +17465,6 @@ button {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-button:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -17367,8 +17482,6 @@ button.xxs {
   font-size: 12px;
   line-height: 1.6;
   font-weight: 400;
-}
-button.xxs:not(button) {
   color: var(--color-text-body);
 }
 button.xxs {
@@ -17382,8 +17495,6 @@ button.xs {
   font-size: 14px;
   line-height: 1.6;
   font-weight: 400;
-}
-button.xs:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -17402,8 +17513,6 @@ button.md {
   font-size: 20px;
   line-height: 1.6;
   font-weight: 400;
-}
-button.md:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -17419,8 +17528,6 @@ button.lg {
   font-size: 24px;
   line-height: 1.4;
   font-weight: 400;
-}
-button.lg:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -18433,8 +18540,6 @@ input[type=file] {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-input[type=file]:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -18467,8 +18572,6 @@ input[type=file]::file-selector-button {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-input[type=file]::file-selector-button:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -18524,20 +18627,6 @@ input[type=datetime] {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-input[type=text]:not(button),
-input[type=date]:not(button),
-input[type=datetime-local]:not(button),
-input[type=email]:not(button),
-input[type=month]:not(button),
-input[type=number]:not(button),
-input[type=password]:not(button),
-input[type=search]:not(button),
-input[type=tel]:not(button),
-input[type=time]:not(button),
-input[type=url]:not(button),
-input[type=week]:not(button),
-input[type=datetime]:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -18685,7 +18774,10 @@ input[type=time]:read-only,
 input[type=url]:read-only,
 input[type=week]:read-only,
 input[type=datetime]:read-only {
+  background-color: transparent;
   border: none;
+  color: inherit;
+  cursor: default;
 }
 input[type=text].success:not(:disabled):not(:read-only),
 input[type=date].success:not(:disabled):not(:read-only),
@@ -18856,20 +18948,6 @@ input[type=datetime].md {
   font-size: 20px;
   line-height: 1.6;
   font-weight: 400;
-}
-input[type=text].md:not(button),
-input[type=date].md:not(button),
-input[type=datetime-local].md:not(button),
-input[type=email].md:not(button),
-input[type=month].md:not(button),
-input[type=number].md:not(button),
-input[type=password].md:not(button),
-input[type=search].md:not(button),
-input[type=tel].md:not(button),
-input[type=time].md:not(button),
-input[type=url].md:not(button),
-input[type=week].md:not(button),
-input[type=datetime].md:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -18921,20 +18999,6 @@ input[type=datetime].lg {
   font-size: 20px;
   line-height: 1.6;
   font-weight: 400;
-}
-input[type=text].lg:not(button),
-input[type=date].lg:not(button),
-input[type=datetime-local].lg:not(button),
-input[type=email].lg:not(button),
-input[type=month].lg:not(button),
-input[type=number].lg:not(button),
-input[type=password].lg:not(button),
-input[type=search].lg:not(button),
-input[type=tel].lg:not(button),
-input[type=time].lg:not(button),
-input[type=url].lg:not(button),
-input[type=week].lg:not(button),
-input[type=datetime].lg:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -19423,8 +19487,6 @@ textarea {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-textarea:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -19449,7 +19511,10 @@ textarea:focus-visible:not(:disabled):not(:read-only), textarea:focus:not(:disab
   border: 1px solid var(--color-primary);
 }
 textarea:read-only {
+  background-color: transparent;
   border: none;
+  color: inherit;
+  cursor: default;
   resize: none;
 }
 textarea:focus-visible:not(:disabled) {
@@ -19476,8 +19541,6 @@ select {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-select:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -19612,8 +19675,6 @@ label {
   font-size: 14px;
   line-height: 1.6;
   font-weight: 400;
-}
-label:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -19625,8 +19686,6 @@ label.lg {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-label.lg:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -19638,8 +19697,6 @@ label.sm {
   font-size: 12px;
   line-height: 1.6;
   font-weight: 400;
-}
-label.sm:not(button) {
   color: var(--color-text-body);
 }
 label.semibold {
@@ -19679,8 +19736,6 @@ ul.tabs > li > a {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 400;
-}
-ul.tabs > li > a:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {
@@ -19703,8 +19758,6 @@ ul.tabs > li.on > a {
   font-size: 16px;
   line-height: 1.6;
   font-weight: 600;
-}
-ul.tabs > li.on > a:not(button) {
   color: var(--color-text-body);
 }
 @media screen and (max-width: calc(768px - 1px)) {

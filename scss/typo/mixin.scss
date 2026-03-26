@@ -9,9 +9,7 @@
   font-size: $font-size-54;
   line-height: 1.2;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-24;
   }
@@ -21,9 +19,7 @@
   font-size: $font-size-42;
   line-height: 1.2;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-18;
   }
@@ -33,9 +29,7 @@
   font-size: $font-size-36;
   line-height: 1.2;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-16;
   }
@@ -48,9 +42,7 @@
   font-size: $font-size-60;
   line-height: 1.2;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-36;
   }
@@ -59,9 +51,7 @@
   font-size: $font-size-54;
   line-height: 1.2;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-32;
   }
@@ -70,9 +60,7 @@
   font-size: $font-size-48;
   line-height: 1.2;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-28;
   }
@@ -81,9 +69,7 @@
   font-size: $font-size-42;
   line-height: 1.2;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-24;
   }
@@ -93,9 +79,7 @@
   font-size: $font-size-36;
   line-height: 1.2;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-20;
   }
@@ -105,9 +89,7 @@
   font-size: $font-size-24;
   line-height: 1.4;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-18;
   }
@@ -117,9 +99,7 @@
   font-size: $font-size-20;
   line-height: 1.6;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-header);
-  }
+  color: var(--color-text-header);
   @include mo {
     font-size: $font-size-16;
   }
@@ -131,9 +111,7 @@
   font-size: $font-size-24;
   line-height: 1.4;
   font-weight: $font-weight-regular;
-  &:not(button) {
-    color: var(--color-text-body);
-  }
+  color: var(--color-text-body);
   @include mo {
     font-size: $font-size-20;
   }
@@ -142,9 +120,7 @@
   font-size: $font-size-20;
   line-height: 1.6;
   font-weight: $font-weight-regular;
-  &:not(button) {
-    color: var(--color-text-body);
-  }
+  color: var(--color-text-body);
   @include mo {
     font-size: $font-size-16;
   }
@@ -153,9 +129,7 @@
   font-size: $font-size-16;
   line-height: 1.6;
   font-weight: $font-weight-regular;
-  &:not(button) {
-    color: var(--color-text-body);
-  }
+  color: var(--color-text-body);
   @include mo {
     font-size: $font-size-14;
   }
@@ -165,9 +139,7 @@
   font-size: $font-size-16;
   line-height: 1.6;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-body);
-  }
+  color: var(--color-text-body);
   @include mo {
     font-size: $font-size-14;
   }
@@ -176,9 +148,7 @@
   font-size: $font-size-14;
   line-height: 1.6;
   font-weight: $font-weight-regular;
-  &:not(button) {
-    color: var(--color-text-body);
-  }
+  color: var(--color-text-body);
   @include mo {
     font-size: $font-size-12;
   }
@@ -187,9 +157,7 @@
   font-size: $font-size-14;
   line-height: 1.6;
   font-weight: $font-weight-semibold;
-  &:not(button) {
-    color: var(--color-text-body);
-  }
+  color: var(--color-text-body);
   @include mo {
     font-size: $font-size-12;
   }
@@ -198,15 +166,11 @@
   font-size: $font-size-12;
   line-height: 1.6;
   font-weight: $font-weight-regular;
-  &:not(button) {
-    color: var(--color-text-body);
-  }
+  color: var(--color-text-body);
 }
 @mixin p5-semibold {
   font-size: $font-size-12;
   line-height: 1.6;
   font-weight: 600;
-  &:not(button) {
-    color: var(--color-text-body);
-  }
+  color: var(--color-text-body);
 }

@@ -42,7 +42,10 @@ input[type='datetime'] {
     }
   }
   &:read-only {
+    background-color: transparent;
     border: none;
+    color: inherit;
+    cursor: default;
   }
   &.success {
     &:not(:disabled):not(:read-only) {

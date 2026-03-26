@@ -5,6 +5,10 @@ interface PaginationProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   maxVisiblePages?: number;
+  /** Previous button icon class name */
+  prevIcon?: string;
+  /** Next button icon class name */
+  nextIcon?: string;
 }
 
 export default function Pagination({
@@ -12,6 +16,8 @@ export default function Pagination({
   totalPages,
   onPageChange,
   maxVisiblePages = 5,
+  prevIcon = 'icon-arrow-left',
+  nextIcon = 'icon-arrow-right',
 }: PaginationProps) {
   const getPageNumbers = () => {
     const pages: number[] = [];
@@ -51,7 +57,7 @@ export default function Pagination({
           className={styles.pageButton}
           aria-label="이전 페이지"
         >
-          <i className="icon-arrow-left"></i>
+          <i className={prevIcon}></i>
         </button>
       ) : (
         <div className={styles.pageButtonPlaceholder} />
@@ -77,7 +83,7 @@ export default function Pagination({
           className={styles.pageButton}
           aria-label="다음 페이지"
         >
-          <i className="icon-arrow-right"></i>
+          <i className={nextIcon}></i>
         </button>
       ) : (
         <div className={styles.pageButtonPlaceholder} />
