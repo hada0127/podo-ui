@@ -33,3 +33,4 @@ dist-ssr
 mcp/dist
 mcp/node_modules
 svelte/stores/*.d.ts
+docs/
