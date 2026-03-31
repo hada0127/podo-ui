@@ -28,3 +28,7 @@ dist-ssr
 .next
 .npmrc
 .playwright-mcp/*
+.svelte-kit
+.bkit
+mcp/dist
+mcp/node_modules
