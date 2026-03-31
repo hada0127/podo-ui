@@ -10,13 +10,21 @@
     { "name": "label", "type": "string", "required": false, "description": "Field label" },
     { "name": "labelClass", "type": "string", "required": false },
     { "name": "required", "type": "boolean", "required": false, "description": "Show required asterisk" },
-    { "name": "helper", "type": "string", "required": false, "description": "Helper text below input" },
+    { "name": "helper", "type": "React.ReactNode", "required": false, "description": "Helper text or custom element (icon, etc.) below input" },
     { "name": "helperClass", "type": "string", "required": false },
+    { "name": "error", "type": "string", "required": false, "description": "Error message. Displays in danger color and applies danger border to child inputs." },
     { "name": "children", "type": "React.ReactNode", "required": false, "description": "Form control (Input, Select, etc.)" },
     { "name": "validator", "type": "z.ZodType", "required": false, "description": "Zod validation schema" },
     { "name": "value", "type": "string", "required": false, "description": "Value for validation" },
     { "name": "setClassName", "type": "React.Dispatch<React.SetStateAction<string>>", "required": false, "description": "Callback to set input class" },
     { "name": "className", "type": "string", "required": false }
+  ],
+  "cssClasses": [
+    { "class": "field", "description": "Root wrapper" },
+    { "class": "field has-error", "description": "Root wrapper when error prop is set" },
+    { "class": "field__label", "description": "Label element" },
+    { "class": "field__helper", "description": "Helper text below input" },
+    { "class": "field__helper error", "description": "Error message text in danger color" }
   ],
   "examples": [
     {
@@ -30,6 +38,10 @@
     {
       "title": "With validation",
       "code": "<Field label=\"Username\" validator={z.string().min(3)} value={username}>\n  <Input value={username} onChange={setUsername} />\n</Field>"
+    },
+    {
+      "title": "With error message",
+      "code": "<Field label=\"Email\" error=\"Invalid email address\">\n  <Input value={email} onChange={setEmail} />\n</Field>"
     }
   ],
   "related": ["input", "textarea", "select"]

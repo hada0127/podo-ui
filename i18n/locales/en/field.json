@@ -34,9 +34,16 @@
     },
     "props": {
       "label": "Field label",
-      "helper": "Helper text",
+      "helper": "Helper text or custom element (icon, etc.)",
+      "error": "Error message (displayed in danger color, input border also changes to danger)",
       "children": "Input element"
     }
+  },
+  "error": {
+    "title": "Error State",
+    "description": "Using the error prop displays an error message in danger color and changes the inner input's border to danger. The same style is applied when validator validation fails.",
+    "demo": "Error Example:",
+    "sampleError": "Please enter a valid email address"
   },
   "structure": {
     "title": "Structure",

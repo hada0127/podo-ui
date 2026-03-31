@@ -7,15 +7,25 @@
   &:global {
     > div.child {
       width: 100%;
-      > :not(:last-child) {
+      > :not(:last-child):not(.helper) {
         display: inline-block;
         margin-right: s(5);
       }
-    }
-    > div.helper {
-      @include p4;
-      & {
+      > div.helper {
+        @include p4;
         color: color('text-sub');
+        &.error {
+          color: color('danger');
+        }
+      }
+    }
+    &.has-error {
+      > div.child {
+        input,
+        select,
+        textarea {
+          border-color: color('danger');
+        }
       }
     }
   }

@@ -69,9 +69,15 @@ function SvelteContent({ t }: { t: (key: string) => string }) {
             </tr>
             <tr>
               <td><code>helper</code></td>
-              <td><code>string</code></td>
+              <td><code>string | Snippet</code></td>
               <td>-</td>
               <td>{t('react.props.helper')}</td>
+            </tr>
+            <tr>
+              <td><code>error</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.error')}</td>
             </tr>
             <tr>
               <td><code>children</code></td>
@@ -111,6 +117,23 @@ function SvelteContent({ t }: { t: (key: string) => string }) {
 </Field>`}
         />
       </section>
+
+      <section>
+        <h2>{t('error.title')}</h2>
+        <p>{t('error.description')}</p>
+
+        <CodeBlock
+          title="Svelte"
+          language="svelte"
+          code={`<script lang="ts">
+  import { Field, Input } from 'podo-ui/svelte';
+</script>
+
+<Field label="Email" error="Please enter a valid email address">
+  <Input type="email" />
+</Field>`}
+        />
+      </section>
     </>
   );
 }
@@ -134,16 +157,16 @@ function ScssContent({ t }: { t: (key: string) => string }) {
   <label>${t('overview.email.label')}</label>
   <div class="child">
     <input type="email" placeholder="${t('overview.email.placeholder')}" />
+    <div class="helper">${t('overview.email.helper')}</div>
   </div>
-  <div class="helper">${t('overview.email.helper')}</div>
 </div>
 
 <div class="field">
   <label>${t('overview.password.label')}</label>
   <div class="child">
     <input type="password" placeholder="${t('overview.password.placeholder')}" />
+    <div class="helper">${t('overview.password.helper')}</div>
   </div>
-  <div class="helper">${t('overview.password.helper')}</div>
 </div>`}
         />
 
@@ -154,15 +177,15 @@ function ScssContent({ t }: { t: (key: string) => string }) {
               <label>{t('overview.email.label')}</label>
               <div className="child">
                 <input type="email" placeholder={t('overview.email.placeholder')} />
+                <div className="helper">{t('overview.email.helper')}</div>
               </div>
-              <div className="helper">{t('overview.email.helper')}</div>
             </div>
             <div className="field">
               <label>{t('overview.password.label')}</label>
               <div className="child">
                 <input type="password" placeholder={t('overview.password.placeholder')} />
+                <div className="helper">{t('overview.password.helper')}</div>
               </div>
-              <div className="helper">{t('overview.password.helper')}</div>
             </div>
             <div className="field">
               <label>{t('overview.category.label')}</label>
@@ -201,10 +224,22 @@ function ScssContent({ t }: { t: (key: string) => string }) {
     }
   }
 
-  // Helper text
+  // Helper text (inside .child)
   > div.helper {
     @include p4;
     color: color(text-sub);
+
+    &.error {
+      color: color(danger);
+    }
+  }
+}
+
+&.has-error {
+  > div.child {
+    input, select, textarea {
+      border-color: color(danger);
+    }
   }
 }`}
         />
@@ -241,9 +276,15 @@ function ReactContent({ t }: { t: (key: string) => string }) {
             </tr>
             <tr>
               <td><code>helper</code></td>
-              <td><code>string</code></td>
+              <td><code>ReactNode</code></td>
               <td>-</td>
               <td>{t('react.props.helper')}</td>
+            </tr>
+            <tr>
+              <td><code>error</code></td>
+              <td><code>string</code></td>
+              <td>-</td>
+              <td>{t('react.props.error')}</td>
             </tr>
             <tr>
               <td><code>children</code></td>
@@ -296,6 +337,39 @@ function ReactContent({ t }: { t: (key: string) => string }) {
                 <option value="1">{t('overview.category.option')} 1</option>
                 <option value="2">{t('overview.category.option')} 2</option>
               </select>
+            </Field>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>{t('error.title')}</h2>
+        <p>{t('error.description')}</p>
+
+        <CodeBlock
+          title="React"
+          language="tsx"
+          code={`import { Field } from 'podo-ui';
+
+// Manual error
+<Field label="Email" error="Please enter a valid email address">
+  <input type="email" />
+</Field>
+
+// Validator error (automatically shown in danger color)
+<Field label="Email" validator={z.string().email("Invalid email")} value={email}>
+  <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
+</Field>`}
+        />
+
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>{t('error.demo')}</div>
+          <div className={styles.fieldGroup}>
+            <Field label={t('overview.email.label')} error={t('error.sampleError')}>
+              <input type="email" placeholder={t('overview.email.placeholder')} />
+            </Field>
+            <Field label={t('overview.password.label')} helper={t('overview.password.helper')}>
+              <input type="password" placeholder={t('overview.password.placeholder')} />
             </Field>
           </div>
         </div>

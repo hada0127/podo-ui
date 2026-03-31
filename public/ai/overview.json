@@ -46,8 +46,8 @@
   },
   "structure": {
     "react": {
-      "atom": ["avatar", "input", "textarea", "editor", "editor-view", "chip", "tooltip"],
-      "molecule": ["datepicker", "field", "pagination", "toast", "toast-provider"]
+      "atom": ["avatar", "button", "checkbox", "chip", "editor", "editor-view", "file", "input", "label", "radio", "select", "textarea", "toggle", "tooltip"],
+      "molecule": ["datepicker", "field", "pagination", "tab", "table", "toast", "toast-provider"]
     },
     "svelte": {
       "atom": ["avatar", "button", "checkbox", "chip", "editor-view", "file", "input", "label", "radio", "radio-group", "select", "textarea", "toggle", "tooltip"],

@@ -1,0 +1,13 @@
+{
+  "name": "podo-ui-mcp-internal",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc && node -e \"const fs=require('fs');const f='dist/index.js';const c=fs.readFileSync(f,'utf8');if(!c.startsWith('#!'))fs.writeFileSync(f,'#!/usr/bin/env node\\n'+c)\""
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "@types/node": "^22.0.0"
+  }
+}

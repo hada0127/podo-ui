@@ -14,7 +14,8 @@
     { "name": "offset", "type": "number", "default": "8", "description": "Distance from trigger in pixels" },
     { "name": "isVisible", "type": "boolean", "required": false, "description": "Control visibility externally" },
     { "name": "className", "type": "string", "required": false },
-    { "name": "portal", "type": "boolean", "default": "false", "description": "Render tooltip in document.body via Portal (fixes overflow: hidden clipping)" }
+    { "name": "portal", "type": "boolean", "default": "false", "description": "Render tooltip in document.body via Portal (fixes overflow: hidden clipping)" },
+    { "name": "maxWidth", "type": "number | string", "required": false, "description": "Max width of tooltip (enables word wrap). Number = px, string = CSS value." }
   ],
   "positionOptions": [
     "top", "topLeft", "topRight",

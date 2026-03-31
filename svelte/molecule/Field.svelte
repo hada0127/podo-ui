@@ -11,10 +11,12 @@
     labelClass?: string;
     /** Show required indicator (*) */
     required?: boolean;
-    /** Helper text */
-    helper?: string;
+    /** Helper text or snippet */
+    helper?: string | Snippet;
     /** Helper additional class */
     helperClass?: string;
+    /** Error message (displays in danger color with danger border) */
+    error?: string;
     /** Field children (input, select, etc.) */
     children?: Snippet;
     /** Zod validator */
@@ -31,6 +33,7 @@
     required = false,
     helper,
     helperClass = '',
+    error,
     children,
     validator,
     value = '',
@@ -57,9 +60,14 @@
       }
     }
   });
+
+  let hasError = $derived(!!error || (!!validator && message !== ''));
+  let errorOrMessage = $derived(error || message);
+  let isHelperSnippet = $derived(typeof helper === 'function');
+  let showHelper = $derived(!!errorOrMessage || !!helper);
 </script>
 
-<div class="{styles.style} {className}" {...rest}>
+<div class="{styles.style} {hasError ? 'has-error' : ''} {className}" {...rest}>
   {#if label}
     <label class={labelClass}>
       {label}
@@ -72,10 +80,16 @@
     {#if children}
       {@render children()}
     {/if}
+    {#if showHelper}
+      <div class="helper {hasError ? 'error' : ''} {helperClass}">
+        {#if errorOrMessage}
+          {errorOrMessage}
+        {:else if isHelperSnippet}
+          {@render helper()}
+        {:else}
+          {helper}
+        {/if}
+      </div>
+    {/if}
   </div>
-  {#if helper || (validator && message !== '')}
-    <div class="helper {helperClass}">
-      {message || helper}
-    </div>
-  {/if}
 </div>

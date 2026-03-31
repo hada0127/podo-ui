@@ -6,8 +6,9 @@ export interface FieldProps {
   label?: string;
   labelClass?: string;
   required?: boolean;
-  helper?: string;
+  helper?: React.ReactNode;
   helperClass?: string;
+  error?: string;
   children?: React.ReactNode;
   validator?: z.ZodType<unknown>;
   value?: string;
@@ -21,6 +22,7 @@ const Field = ({
   required,
   helper,
   helperClass,
+  error,
   children,
   validator,
   value,
@@ -55,8 +57,20 @@ const Field = ({
     validateHandler();
   }, [validateHandler]);
 
+  const hasError = !!error || (validator && message !== '');
+  const helperText = error || message || helper;
+  const helperCls = [
+    'helper',
+    helperClass || '',
+    hasError ? 'error' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div className={`${styles.style} ${className || ''}`}>
+    <div
+      className={`${styles.style} ${hasError ? 'has-error' : ''} ${className || ''}`}
+    >
       {label && (
         <label className={labelClass}>
           {label}
@@ -64,13 +78,10 @@ const Field = ({
           {required && <span className="required">*</span>}
         </label>
       )}
-      <div className="child">{children}</div>
-      {helper ||
-        (validator && message !== '' && (
-          <div className={`helper ${helperClass || ''}`}>
-            {message || helper}
-          </div>
-        ))}
+      <div className="child">
+        {children}
+        {helperText && <div className={helperCls}>{helperText}</div>}
+      </div>
     </div>
   );
 };

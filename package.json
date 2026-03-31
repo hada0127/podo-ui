@@ -1,6 +1,6 @@
 {
   "name": "podo-ui",
-  "version": "1.0.23",
+  "version": "1.1.0",
   "type": "module",
   "author": "hada0127 <work@tarucy.net>",
   "license": "MIT",
@@ -15,6 +15,9 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "podo-ui-mcp": "./mcp/dist/index.js"
+  },
   "files": [
     "dist",
     "cdn",
@@ -24,6 +27,9 @@
     "global.d.ts",
     "mixin.scss",
     "vite-fonts.scss",
+    "public/ai.json",
+    "public/ai",
+    "mcp/dist",
     "README.md",
     "README.ko.md"
   ],
@@ -97,7 +103,8 @@
     "build:cdn": "node ./cli/build-cdn.js",
     "build:cdn-js": "node ./cli/build-cdn-js.js",
     "build:svelte": "node ./cli/build-svelte.js",
-    "build:all": "npm run build:lib && npm run build:svelte && npm run build:cdn && npm run build:cdn-js",
+    "build:mcp": "cd mcp && npx tsc",
+    "build:all": "npm run build:lib && npm run build:svelte && npm run build:cdn && npm run build:cdn-js && npm run build:mcp",
     "prepublishOnly": "npm run build:all",
     "lint": "eslint .",
     "icon": "node ./cli/icon-scss.js",
@@ -127,6 +134,7 @@
     }
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "shiki": "^3.19.0",
     "uuid": "^11.0.3",
     "zod": "^3.23.8"

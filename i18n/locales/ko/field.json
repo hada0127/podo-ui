@@ -34,9 +34,16 @@
     },
     "props": {
       "label": "필드 레이블",
-      "helper": "도움말 텍스트",
+      "helper": "도움말 텍스트 또는 커스텀 요소 (아이콘 등)",
+      "error": "에러 메시지 (danger 색상으로 표시, 인풋 border도 danger로 변경)",
       "children": "입력 요소"
     }
+  },
+  "error": {
+    "title": "에러 상태",
+    "description": "error prop을 사용하면 danger 색상으로 에러 메시지를 표시하고, 내부 인풋의 border도 danger로 변경됩니다. validator 검증 실패 시에도 동일한 스타일이 적용됩니다.",
+    "demo": "에러 예제:",
+    "sampleError": "올바른 이메일 주소를 입력하세요"
   },
   "structure": {
     "title": "구조",

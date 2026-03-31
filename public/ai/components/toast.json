@@ -7,11 +7,28 @@
     "react": "import { ToastProvider, useToast } from 'podo-ui'",
     "scss": "@use 'podo-ui/scss/molecule/toast'"
   },
-  "setup": "Wrap app with <ToastProvider position=\"top-right\">",
+  "setup": "Wrap app with <ToastProvider>. Use useToast() hook to show toasts.",
+  "hooks": {
+    "useToast": {
+      "returns": {
+        "showToast": "(options: ToastOptions) => string (returns toast id)",
+        "hideToast": "(id: string) => void"
+      },
+      "ToastOptions": {
+        "message": "string (required)",
+        "header": "string (optional)",
+        "theme": "ToastTheme (optional, default: 'default')",
+        "border": "boolean (optional)",
+        "long": "boolean (optional)",
+        "duration": "number (optional, default: 3000, 0 = no auto-close)",
+        "width": "string | number (optional)",
+        "position": "ToastPosition (optional, default: 'top-right')"
+      }
+    }
+  },
   "props": {
     "ToastProvider": [
-      { "name": "position", "type": "ToastPosition", "default": "'top-right'" },
-      { "name": "children", "type": "React.ReactNode", "required": true }
+      { "name": "children", "type": "React.ReactNode", "required": true, "description": "App content to wrap" }
     ],
     "Toast": [
       { "name": "id", "type": "string", "required": true },

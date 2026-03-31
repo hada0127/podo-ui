@@ -22,12 +22,12 @@
     "danger": { "hex": "#f04646", "description": "Error/danger red" }
   },
   "variants": [
-    { "suffix": "(base)", "description": "Default color" },
+    { "suffix": "(base)", "description": "Default color", "example": "var(--color-primary)" },
     { "suffix": "-hover", "description": "Hover state" },
     { "suffix": "-pressed", "description": "Active/pressed state" },
     { "suffix": "-focus", "description": "Focus state" },
     { "suffix": "-fill", "description": "Light background fill" },
-    { "suffix": "-reverse", "description": "Contrasting text color" },
+    { "suffix": "-reverse", "description": "Contrasting text color (white on colored)" },
     { "suffix": "-outline", "description": "Focus ring color (30% opacity)" }
   ],
   "systemColors": {
@@ -35,20 +35,33 @@
       { "var": "--color-bg-modal", "description": "Modal background" },
       { "var": "--color-bg-block", "description": "Card/block background" },
       { "var": "--color-bg-elevation", "description": "Page background" },
+      { "var": "--color-bg-elevation-1", "description": "Elevation level 1" },
+      { "var": "--color-bg-elevation-2", "description": "Elevation level 2" },
+      { "var": "--color-bg-elevation-3", "description": "Elevation level 3" },
       { "var": "--color-bg-disabled", "description": "Disabled state" },
-      { "var": "--color-bg-toggle", "description": "Toggle off state" }
+      { "var": "--color-bg-toggle", "description": "Toggle off state" },
+      { "var": "--color-bg-indicator", "description": "Indicator overlay" },
+      { "var": "--color-bg-reverse-wb", "description": "Reverse white/black" },
+      { "var": "--color-bg-reverse-bw", "description": "Reverse black/white" }
     ],
     "text": [
       { "var": "--color-text-header", "description": "Heading text" },
       { "var": "--color-text-body", "description": "Body text" },
       { "var": "--color-text-sub", "description": "Secondary/muted text" },
       { "var": "--color-text-action", "description": "Interactive text" },
-      { "var": "--color-text-action-disabled", "description": "Disabled text" }
+      { "var": "--color-text-action-hover", "description": "Interactive text hover" },
+      { "var": "--color-text-action-pressed", "description": "Interactive text pressed" },
+      { "var": "--color-text-action-focus", "description": "Interactive text focus" },
+      { "var": "--color-text-action-disabled", "description": "Disabled text" },
+      { "var": "--color-text-action-reverse", "description": "Reverse interactive text" }
     ],
     "border": [
       { "var": "--color-border", "description": "Default border" },
       { "var": "--color-border-hover", "description": "Hover border" },
-      { "var": "--color-border-disabled", "description": "Disabled border" }
+      { "var": "--color-border-pressed", "description": "Pressed border" },
+      { "var": "--color-border-focus", "description": "Focus border" },
+      { "var": "--color-border-disabled", "description": "Disabled border" },
+      { "var": "--color-border-alpha", "description": "Semi-transparent border" }
     ]
   },
   "usage": {
