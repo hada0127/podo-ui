@@ -32,3 +32,4 @@ dist-ssr
 .bkit
 mcp/dist
 mcp/node_modules
+svelte/stores/*.d.ts
