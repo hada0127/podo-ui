@@ -1,0 +1,78 @@
+@use '../../../../mixin' as *;
+@use '../../common-page' as *;
+
+.section {
+  @include section-responsive;
+}
+
+.note {
+  @include note-style;
+}
+
+.toolGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: s(4);
+  margin-top: s(5);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: s(3);
+    margin-top: s(4);
+  }
+}
+
+.toolCard {
+  padding: s(5);
+  background: color(bg-modal);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+
+  @media (max-width: 768px) {
+    padding: s(4);
+    border-radius: r(2);
+  }
+
+  code {
+    @include p3;
+    font-weight: 600;
+    color: color(primary-base);
+    background: color(primary-fill);
+    padding: s(1) s(2);
+    border-radius: r(1);
+  }
+
+  p {
+    @include p4;
+    margin: s(2) 0 0;
+    color: color(default-base);
+  }
+}
+
+.promptBox {
+  padding: s(5);
+  background: color(bg-elevation);
+  border: 1px solid color(default-outline);
+  border-radius: r(3);
+  margin-bottom: s(4);
+
+  @media (max-width: 768px) {
+    padding: s(4);
+    border-radius: r(2);
+  }
+
+  p {
+    @include p3;
+    margin: 0;
+    color: color(default-deep-base);
+  }
+}
+
+.promptLabel {
+  @include p5;
+  font-weight: 600;
+  color: color(primary-base);
+  margin-bottom: s(2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

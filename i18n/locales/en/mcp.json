@@ -1,0 +1,32 @@
+{
+  "title": "MCP Server",
+  "description": "The Podo UI MCP server allows AI coding tools to directly query components, style systems, and usage examples.",
+  "setup": {
+    "title": "Setup",
+    "description": "Register the Podo UI MCP server with your AI coding tool. Replace the path with your actual podo-ui installation path.",
+    "note": {
+      "title": "Build Required",
+      "content": "Before using the MCP server, run npm run build in the mcp folder to generate dist/index.js."
+    }
+  },
+  "toolList": {
+    "title": "Available Tools",
+    "description": "The MCP server provides 6 tools for AI tools to query podo-ui information."
+  },
+  "tools": {
+    "getOverview": "Get Podo UI overview including version, component list, installation methods, themes, and tech stack.",
+    "searchComponent": "Search components by name or keyword. Returns matching components with name, category, and description.",
+    "getComponent": "Get detailed component info including props, CSS classes, usage examples, and related components.",
+    "getSystem": "Get SCSS system details. Supports color tokens, spacing scale, typography, grid, icons, and button styles.",
+    "searchCssClass": "Search by CSS class name to find which component or system defines it.",
+    "getExample": "Search usage examples by keyword. Can be filtered by framework: React, Svelte, SCSS, or HTML."
+  },
+  "example": {
+    "title": "Usage Examples",
+    "description": "With the MCP server connected, you can ask AI tools about Podo UI in natural language.",
+    "promptLabel": "Prompt",
+    "prompt1": "Show me the props and usage of the Podo UI Input component",
+    "prompt2": "Show me a form validation example using Podo UI",
+    "prompt3": "List the primary color tokens in the Podo UI color system"
+  }
+}
