@@ -81,17 +81,28 @@ jobs:
                 {
                   "type": "section",
                   "fields": [
-                    { "type": "mrkdwn", "text": "*Package:*\npodo-ui" },
-                    { "type": "mrkdwn", "text": "*Version:*\nv'"$VERSION"'" }
+                    { "type": "mrkdwn", "text": "*Package:*\n`podo-ui`" },
+                    { "type": "mrkdwn", "text": "*Version:*\n`v'"$VERSION"'`" }
                   ]
                 },
                 {
                   "type": "section",
-                  "text": { "type": "mrkdwn", "text": "*Changes:*\n'"$CHANGES"'" }
+                  "text": { "type": "mrkdwn", "text": "```'"$CHANGES"'```" }
                 },
                 {
-                  "type": "section",
-                  "text": { "type": "mrkdwn", "text": "<https://www.npmjs.com/package/podo-ui|npm에서 보기>" }
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "📋 npm에서 보기", "emoji": true },
+                      "url": "https://www.npmjs.com/package/podo-ui"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "🔗 GitHub Actions", "emoji": true },
+                      "url": "https://github.com/hada0127/podo-ui/actions"
+                    }
+                  ]
                 }
               ]
             }'
@@ -112,7 +123,24 @@ jobs:
                 },
                 {
                   "type": "section",
-                  "text": { "type": "mrkdwn", "text": "GitHub Actions 로그를 확인하세요.\n<https://github.com/hada0127/podo-ui/actions|Actions 바로가기>" }
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Package:*\n`podo-ui`" },
+                    { "type": "mrkdwn", "text": "*Version:*\n`v'"$VERSION"'`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": "npm publish에 실패했습니다. Actions 로그를 확인하세요." }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "📋 배포 상세 보기", "emoji": true },
+                      "url": "https://github.com/hada0127/podo-ui/actions"
+                    }
+                  ]
                 }
               ]
             }'
