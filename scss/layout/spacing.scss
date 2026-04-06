@@ -1,4 +1,5 @@
 @use 'sass:map';
+@use 'sass:math';
 /*
   Spacing
 */
@@ -20,6 +21,9 @@ $spacing: (
 );
 
 @function s($key) {
+  @if $key < 0 {
+    @return map.get($spacing, math.abs($key)) * -1;
+  }
   @return map.get($spacing, $key);
 }
 
