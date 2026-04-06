@@ -53,9 +53,11 @@ jobs:
         if: steps.version.outputs.changed == 'true'
         run: npm ci
 
-      - name: Publish to npm (Trusted Publishing)
+      - name: Publish to npm
         if: steps.version.outputs.changed == 'true'
-        run: npm publish --provenance --access public
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Tag version
         if: steps.version.outputs.changed == 'true' && success()
