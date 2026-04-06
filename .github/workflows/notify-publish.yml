@@ -1,0 +1,117 @@
+name: Publish & Notify
+
+on:
+  push:
+    branches: [main]
+    paths: ['package.json']
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Check version change
+        id: version
+        run: |
+          LOCAL=$(node -p "require('./package.json').version")
+          REMOTE=$(npm view podo-ui version 2>/dev/null || echo "0.0.0")
+          echo "local=$LOCAL" >> $GITHUB_OUTPUT
+          echo "remote=$REMOTE" >> $GITHUB_OUTPUT
+          if [ "$LOCAL" != "$REMOTE" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get changelog
+        if: steps.version.outputs.changed == 'true'
+        id: changelog
+        run: |
+          PREV_TAG=$(git tag --sort=-v:refname | head -1)
+          if [ -z "$PREV_TAG" ]; then
+            LOGS=$(git log --oneline -10 | grep -v "^.\{8\} chore:" | head -5)
+          else
+            LOGS=$(git log --oneline "$PREV_TAG"..HEAD | grep -v "^.\{8\} chore:" | head -5)
+          fi
+          # 커밋 해시 제거, 한 줄씩 bullet으로
+          CHANGES=$(echo "$LOGS" | sed 's/^[a-f0-9]* /• /' | tr '\n' '|' | sed 's/|/\\n/g')
+          echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        if: steps.version.outputs.changed == 'true'
+        run: npm ci
+
+      - name: Publish to npm
+        if: steps.version.outputs.changed == 'true'
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Tag version
+        if: steps.version.outputs.changed == 'true' && success()
+        run: |
+          git tag "v${{ steps.version.outputs.local }}"
+          git push origin "v${{ steps.version.outputs.local }}"
+
+      - name: Notify Slack (success)
+        if: steps.version.outputs.changed == 'true' && success()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          VERSION: ${{ steps.version.outputs.local }}
+          CHANGES: ${{ steps.changelog.outputs.changes }}
+        run: |
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "📦 Podo UI v'"$VERSION"' 배포 완료", "emoji": true }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Package:*\npodo-ui" },
+                    { "type": "mrkdwn", "text": "*Version:*\nv'"$VERSION"'" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": "*Changes:*\n'"$CHANGES"'" }
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": "<https://www.npmjs.com/package/podo-ui|npm에서 보기>" }
+                }
+              ]
+            }'
+
+      - name: Notify Slack (failure)
+        if: steps.version.outputs.changed == 'true' && failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          VERSION: ${{ steps.version.outputs.local }}
+        run: |
+          curl -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🚨 Podo UI v'"$VERSION"' 배포 실패", "emoji": true }
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": "GitHub Actions 로그를 확인하세요.\n<https://github.com/hada0127/podo-ui/actions|Actions 바로가기>" }
+                }
+              ]
+            }'

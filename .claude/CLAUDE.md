@@ -124,6 +124,7 @@ docs-writer → i18n-manager (번역 필요시)
 | /docs | `.claude/commands/docs.md` | 문서 페이지 작업 |
 | /i18n | `.claude/commands/i18n.md` | 번역 관리 |
 | /icon | `.claude/commands/icon.md` | 아이콘 빌드 |
+| /commit-push | `.claude/commands/commit-push.md` | 버전 업 + 커밋 + 푸시 |
 | /publish | `.claude/commands/publish.md` | NPM 배포 |
 | /scss | `.claude/commands/scss.md` | 스타일 작업 |
 | /svelte | `.claude/commands/svelte.md` | Svelte 컴포넌트 작업 |
