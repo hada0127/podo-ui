@@ -6,6 +6,10 @@ on:
     paths: ['package.json']
   workflow_dispatch:
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -42,7 +46,6 @@ jobs:
           else
             LOGS=$(git log --oneline "$PREV_TAG"..HEAD | grep -v "^.\{8\} chore:" | head -5)
           fi
-          # 커밋 해시 제거, 한 줄씩 bullet으로
           CHANGES=$(echo "$LOGS" | sed 's/^[a-f0-9]* /• /' | tr '\n' '|' | sed 's/|/\\n/g')
           echo "changes=$CHANGES" >> $GITHUB_OUTPUT
 
@@ -50,9 +53,9 @@ jobs:
         if: steps.version.outputs.changed == 'true'
         run: npm ci
 
-      - name: Publish to npm
+      - name: Publish to npm (Trusted Publishing)
         if: steps.version.outputs.changed == 'true'
-        run: npm publish
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
