@@ -108,7 +108,7 @@
 
 .typeSpecs {
   @include p4;
-  color: color(default);
+  color: color(text-action);
 
   > div {
     margin-bottom: s(2);

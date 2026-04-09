@@ -50,7 +50,7 @@
     @include p3;
     margin: 0 0 s(4) 0;
     padding: 0 s(4);
-    color: color(default);
+    color: color(text-action);
 
 
     @media (max-width: 768px) {

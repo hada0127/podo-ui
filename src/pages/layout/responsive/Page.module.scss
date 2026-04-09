@@ -193,7 +193,7 @@
   p {
     @include p3;
     margin: 0;
-    color: color(default);
+    color: color(text-action);
 
 
     @media (max-width: 768px) {

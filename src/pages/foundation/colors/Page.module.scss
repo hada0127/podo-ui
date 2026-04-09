@@ -112,13 +112,13 @@
 
 .colorName {
   @include p4;
-  color: color(default);
+  color: color(text-action);
   margin: 0 0 s(2) 0;
 }
 
 .colorDesc {
   @include p4;
-  color: color(default);
+  color: color(text-action);
   margin: 0;
 }
 
@@ -181,7 +181,7 @@
   p {
     @include p5;
     margin: 0 0 s(2) 0;
-    color: color(default);
+    color: color(text-action);
 
 
     @media (max-width: 768px) {
@@ -343,7 +343,7 @@
 
   code {
     @include p5;
-    color: color(default);
+    color: color(text-action);
     display: block;
   }
 }

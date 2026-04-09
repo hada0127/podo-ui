@@ -6,14 +6,17 @@ button {
   @include p3;
   & {
     display: inline-flex;
+    align-items: center;
     gap: s(2);
     border-radius: r(3);
-    padding: s(3) s(5);
+    padding: 0 s(3);
+    height: 42px;
     &.xxs {
       @include p5;
       & {
         border-radius: r(2);
-        padding: s(2);
+        padding: 0 s(2);
+        height: 27px;
         > i::before {
           font-size: 16px;
         }
@@ -23,7 +26,8 @@ button {
       @include p4;
       & {
         border-radius: r(2);
-        padding: s(2) s(3);
+        padding: 0 s(3);
+        height: 30px;
         > i::before {
           font-size: 20px;
         }
@@ -33,14 +37,16 @@ button {
       @include p2;
       & {
         border-radius: r(5);
-        padding: s(4) s(6);
+        padding: 0 s(4);
+        height: 56px;
       }
     }
     &.lg {
       @include p1;
       & {
         border-radius: r(6);
-        padding: s(5) s(6);
+        padding: 0 s(5);
+        height: 66px;
       }
     }
   }

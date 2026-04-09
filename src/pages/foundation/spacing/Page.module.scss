@@ -120,7 +120,7 @@
 
 .spacingValue {
   @include p4;
-  color: color(default);
+  color: color(text-action);
 }
 
 .spacingPreview {
@@ -172,7 +172,7 @@
 
 .radiusValue {
   @include p4;
-  color: color(default);
+  color: color(text-action);
 }
 
 .radiusPreview {
@@ -224,7 +224,7 @@
 .cardContent {
   @include p3;
   line-height: 1.6;
-  color: color(default);
+  color: color(text-action);
 }
 
 .cardFooter {

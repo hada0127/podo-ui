@@ -22,7 +22,8 @@ input[type='week'],
 input[type='datetime'] {
   @include p3;
   & {
-    padding: s(3) s(4);
+    height: 42px;
+    padding: 0 s(4);
     background-color: color('bg-block');
     border-radius: r(3);
     border: 1px solid color('border-disabled');
@@ -87,14 +88,16 @@ input[type='datetime'] {
   &.md {
     @include p2;
     & {
-      padding: s(4) s(4);
+      height: 56px;
+      padding: 0 s(4);
       border-radius: r(5);
     }
   }
   &.lg {
     @include p2;
     & {
-      padding: s(5) s(4);
+      height: 66px;
+      padding: 0 s(4);
       border-radius: r(6);
     }
   }
