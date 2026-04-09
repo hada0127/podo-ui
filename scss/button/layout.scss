@@ -8,9 +8,6 @@ button {
     display: inline-flex;
     align-items: center;
     gap: s(2);
-    border-radius: r(3);
-    padding: 0 s(3);
-    height: 42px;
     &.xxs {
       @include p5;
       & {
@@ -32,6 +29,11 @@ button {
           font-size: 20px;
         }
       }
+    }
+    &.sm {
+      border-radius: r(3);
+      padding: 0 s(3);
+      height: 42px;
     }
     &.md {
       @include p2;
