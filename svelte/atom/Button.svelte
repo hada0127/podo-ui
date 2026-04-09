@@ -53,7 +53,7 @@
     [
       theme !== 'default' && theme,
       variant !== 'solid' && variant,
-      size,
+      size !== 'sm' && size,
       textAlign === 'left' && 'text-left',
       textAlign === 'right' && 'text-right',
       className,
