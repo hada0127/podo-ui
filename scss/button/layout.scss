@@ -9,8 +9,7 @@ button {
     align-items: center;
     gap: s(2);
     border-radius: r(3);
-    padding: 0 s(3);
-    height: 42px;
+    padding: s(3) s(5);
     &.xxs {
       @include p5;
       & {
@@ -32,6 +31,10 @@ button {
           font-size: 20px;
         }
       }
+    }
+    &.sm {
+      padding: 0 s(3);
+      height: 42px;
     }
     &.md {
       @include p2;
