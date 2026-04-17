@@ -204,6 +204,10 @@
     yearRange?: YearRange;
     /** Show quick select presets (period mode only) */
     quickSelect?: boolean;
+    /** Hide left/right navigation arrows on input (even when quickSelect+period) */
+    hideNavArrow?: boolean;
+    /** Dropdown open direction: 'down' (default), 'up', or 'auto' (flips up when space below is insufficient) */
+    direction?: 'down' | 'up' | 'auto';
     /** Reset button click callback */
     onreset?: () => void;
   }
@@ -227,6 +231,8 @@
     initialCalendar,
     yearRange,
     quickSelect = false,
+    hideNavArrow = false,
+    direction = 'down',
     onreset,
     ...rest
   }: Props & Record<string, unknown> = $props();
@@ -255,7 +261,27 @@
   const hasStartValue = $derived(!!displayValue?.date);
   const hasEndValue = $derived(!!displayValue?.endDate);
   const inputIcon = $derived(type === 'time' ? 'icon-time' : 'icon-calendar');
-  const showNavigation = $derived(quickSelect && mode === 'period');
+  const showNavigation = $derived(quickSelect && mode === 'period' && !hideNavArrow);
+
+  // 드롭다운 방향 결정 (direction='auto'일 때 공간 측정)
+  let resolvedDirection = $state<'up' | 'down'>(direction === 'up' ? 'up' : 'down');
+  $effect(() => {
+    if (!isOpen) return;
+    if (direction !== 'auto') {
+      resolvedDirection = direction === 'up' ? 'up' : 'down';
+      return;
+    }
+    if (!containerRef) return;
+    requestAnimationFrame(() => {
+      if (!containerRef) return;
+      const rect = containerRef.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = 360;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      resolvedDirection = spaceBelow < dropdownHeight && spaceAbove > spaceBelow ? 'up' : 'down';
+    });
+  });
 
   const isPresetActiveCheck = (key: QuickSelectKey): boolean => {
     const dv = displayValue;
@@ -1149,7 +1175,7 @@
   </div>
 
   {#if isOpen}
-    <div class="{styles.dropdown} {align === 'right' ? styles.right : ''}">
+    <div class="{styles.dropdown} {align === 'right' ? styles.right : ''} {resolvedDirection === 'up' ? styles.dropdownUp : ''}">
       {#snippet periodCalendars()}
         <!-- Period mode: two calendars -->
         <div class={styles.periodCalendars}>

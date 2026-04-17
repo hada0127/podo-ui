@@ -131,6 +131,20 @@ export interface DatePickerProps {
    * 기본값: false
    */
   quickSelect?: boolean;
+  /**
+   * 인풋 좌우 네비게이션 화살표 숨김
+   * quickSelect + mode='period' 조합일 때 표시되는 navArrow만 제거
+   * 기본값: false
+   */
+  hideNavArrow?: boolean;
+  /**
+   * 드롭다운(캘린더) 열림 방향
+   * 'down': 인풋 아래로 (기본)
+   * 'up': 인풋 위로
+   * 'auto': 인풋 아래 공간 부족 시 자동으로 위로 전환
+   * 기본값: 'down'
+   */
+  direction?: 'down' | 'up' | 'auto';
   /** 초기화 버튼 클릭 시 콜백 */
   onReset?: () => void;
 }
@@ -943,6 +957,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
   yearRange,
   portal = false,
   quickSelect = false,
+  hideNavArrow = false,
+  direction = 'down',
   onReset,
 }) => {
   const [selectingPart, setSelectingPart] = useState<SelectingPart>(null);
@@ -991,6 +1007,10 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const [portalPosition, setPortalPosition] = useState<PortalPosition | null>(null);
   // 드롭다운 max-width (뷰포트 기준 동적 계산)
   const [dropdownMaxWidth, setDropdownMaxWidth] = useState<number | null>(null);
+  // 실제 드롭다운 열림 방향 ('up' | 'down'), direction='auto'일 때만 동적으로 변경
+  const [resolvedDirection, setResolvedDirection] = useState<'up' | 'down'>(
+    direction === 'up' ? 'up' : 'down'
+  );
 
   const shouldShowActions = showActions ?? mode === 'period';
   // 날짜 선택 시에만 드롭다운 표시 (시/분은 native select 사용)
@@ -1021,20 +1041,63 @@ const DatePicker: React.FC<DatePickerProps> = ({
     }
   }, [isOpen, updateDropdownMaxWidth]);
 
-  // Portal 위치 계산 함수
+  // 드롭다운 열릴 때 방향 결정 (non-portal 포함)
+  useEffect(() => {
+    if (!isOpen) return;
+    if (direction !== 'auto') {
+      setResolvedDirection(direction === 'up' ? 'up' : 'down');
+      return;
+    }
+    // auto: 렌더링 후 실제 높이로 다시 판정
+    requestAnimationFrame(() => {
+      if (!inputRef.current) return;
+      const inputRect = inputRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = dropdownRef.current?.offsetHeight ?? 360;
+      const spaceBelow = viewportHeight - inputRect.bottom;
+      const spaceAbove = inputRect.top;
+      if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+        setResolvedDirection('up');
+      } else {
+        setResolvedDirection('down');
+      }
+    });
+  }, [isOpen, direction]);
+
+  // direction='auto'일 때 드롭다운 방향 자동 결정
+  const resolveDirection = useCallback((): 'up' | 'down' => {
+    if (direction !== 'auto') return direction === 'up' ? 'up' : 'down';
+    if (!inputRef.current) return 'down';
+
+    const inputRect = inputRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const dropdownHeight = dropdownRef.current?.offsetHeight ?? 360;
+    const spaceBelow = viewportHeight - inputRect.bottom;
+    const spaceAbove = inputRect.top;
+
+    // 아래 공간이 드롭다운 높이보다 작고, 위쪽이 더 넓으면 위로
+    if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) return 'up';
+    return 'down';
+  }, [direction]);
+
+  // Portal 위치 계산 함수 (direction 반영)
   const updatePortalPosition = useCallback(() => {
     if (!portal || !inputRef.current) return;
 
     const rect = inputRef.current.getBoundingClientRect();
     const scrollY = window.scrollY;
     const scrollX = window.scrollX;
+    const dir = resolveDirection();
+    setResolvedDirection(dir);
 
     setPortalPosition({
-      top: rect.bottom + scrollY,
+      top: dir === 'up'
+        ? rect.top + scrollY // 위로 열릴 때는 인풋 top 기준 (transform으로 올림)
+        : rect.bottom + scrollY,
       left: align === 'right' ? rect.right + scrollX : rect.left + scrollX,
       width: rect.width,
     });
-  }, [portal, align]);
+  }, [portal, align, resolveDirection]);
 
   // Portal 열릴 때 위치 계산
   useEffect(() => {
@@ -1780,11 +1843,15 @@ const DatePicker: React.FC<DatePickerProps> = ({
       ? { maxWidth: dropdownMaxWidth, boxSizing: 'border-box' }
       : {};
 
+    const upClass = resolvedDirection === 'up' ? styles.dropdownUp : '';
+
     // Portal 모드
     if (portal && portalPosition) {
       const portalStyle: React.CSSProperties = {
         position: 'absolute',
-        top: portalPosition.top,
+        ...(resolvedDirection === 'up'
+          ? { top: portalPosition.top, transform: 'translateY(-100%)' }
+          : { top: portalPosition.top }),
         ...(align === 'right'
           ? { right: document.documentElement.clientWidth - portalPosition.left }
           : { left: portalPosition.left }),
@@ -1795,7 +1862,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       return createPortal(
         <div
           ref={dropdownRef}
-          className={`${styles.dropdown} ${styles.portalDropdown} ${align === 'right' ? styles.right : ''}`}
+          className={`${styles.dropdown} ${styles.portalDropdown} ${align === 'right' ? styles.right : ''} ${upClass}`}
           style={portalStyle}
         >
           {dropdownContent}
@@ -1808,7 +1875,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     return (
       <div
         ref={dropdownRef}
-        className={`${styles.dropdown} ${align === 'right' ? styles.right : ''}`}
+        className={`${styles.dropdown} ${align === 'right' ? styles.right : ''} ${upClass}`}
         style={maxWidthStyle}
       >
         {dropdownContent}
@@ -1816,7 +1883,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     );
   };
 
-  const showNavigation = quickSelect && mode === 'period';
+  const showNavigation = quickSelect && mode === 'period' && !hideNavArrow;
 
   const getNavOffsetLabel = (): string | null => {
     const offset = Math.abs(navOffset);

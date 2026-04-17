@@ -53,6 +53,8 @@
     "format": "날짜/시간 표시 포맷 (y: 년, m: 월, d: 일, h: 시, i: 분)",
     "initialCalendar": "기간 선택 모드에서 초기 달력 표시 월 설정",
     "quickSelect": "Quick Select 프리셋 패널 표시 (period 모드 전용)",
+    "hideNavArrow": "인풋 좌우 네비게이션 화살표 숨김 (quickSelect + period 조합에서도 화살표만 제거)",
+    "direction": "드롭다운 열림 방향. 'down'(기본), 'up'(위로), 'auto'(아래 공간 부족 시 자동으로 위로 전환)",
     "onReset": "초기화 버튼 클릭 시 호출되는 콜백 함수"
   },
   "format": {

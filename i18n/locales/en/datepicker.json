@@ -53,6 +53,8 @@
     "format": "Date/time display format (y: year, m: month, d: day, h: hour, i: minute)",
     "initialCalendar": "Initial calendar display month in period mode",
     "quickSelect": "Show quick select preset panel (period mode only)",
+    "hideNavArrow": "Hide left/right navigation arrows on input (removes arrows even with quickSelect + period)",
+    "direction": "Dropdown open direction: 'down' (default), 'up' (above input), or 'auto' (flips up when space below is insufficient)",
     "onReset": "Callback function called when the reset button is clicked"
   },
   "format": {

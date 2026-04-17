@@ -365,6 +365,18 @@ function SvelteContent({ t }: { t: (key: string) => string }) {
               <td><code>false</code></td>
               <td>{t('props.quickSelect')}</td>
             </tr>
+            <tr>
+              <td><code>hideNavArrow</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.hideNavArrow')}</td>
+            </tr>
+            <tr>
+              <td><code>direction</code></td>
+              <td><code>'down' | 'up' | 'auto'</code></td>
+              <td><code>'down'</code></td>
+              <td>{t('props.direction')}</td>
+            </tr>
           </tbody>
         </table>
       </section>
@@ -955,6 +967,18 @@ function ReactContent({
               <td><code>boolean</code></td>
               <td><code>false</code></td>
               <td>{t('props.quickSelect')}</td>
+            </tr>
+            <tr>
+              <td><code>hideNavArrow</code></td>
+              <td><code>boolean</code></td>
+              <td><code>false</code></td>
+              <td>{t('props.hideNavArrow')}</td>
+            </tr>
+            <tr>
+              <td><code>direction</code></td>
+              <td><code>'down' | 'up' | 'auto'</code></td>
+              <td><code>'down'</code></td>
+              <td>{t('props.direction')}</td>
             </tr>
           </tbody>
         </table>
