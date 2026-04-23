@@ -54,6 +54,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
     'spacing', 'align-bottom', 'align-middle', 'align-top',
     'layout-horizontal', 'layout-vertical', 'section',
     'twinkle', 'close-circle-stroke', 'grid', 'grid-list',
+    'cart', 'minus-circle-stroke', 'plus-circle-stroke', 'show-stroke',
   ];
 
   return (
@@ -192,7 +193,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.generalUI')}</h2>
           <div className={styles.iconList}>
-            {['search', 'close', 'check', 'plus', 'minus', 'menu', 'more', 'more-horizontal', 'undo', 'redo', 'copy', 'clipboard', 'text', 'logout', 'grid', 'grid-list'].map(icon => (
+            {['search', 'close', 'check', 'plus', 'minus', 'menu', 'more', 'more-horizontal', 'undo', 'redo', 'copy', 'clipboard', 'text', 'logout', 'grid', 'grid-list', 'cart', 'show-stroke'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
@@ -240,7 +241,7 @@ function ScssContent({ t }: { t: (key: string) => string }) {
         <div className={styles.categorySection}>
           <h2>{t('sections.categories.status')}</h2>
           <div className={styles.iconList}>
-            {['info', 'warning', 'danger', 'danger-fill', 'check-circle-stroke', 'check-circle-fill', 'close-circle-stroke'].map(icon => (
+            {['info', 'warning', 'danger', 'danger-fill', 'check-circle-stroke', 'check-circle-fill', 'close-circle-stroke', 'plus-circle-stroke', 'minus-circle-stroke'].map(icon => (
               <div key={icon} className={styles.iconItem}>
                 <i className={`icon-${icon}`}></i>
                 <span>icon-{icon}</span>
