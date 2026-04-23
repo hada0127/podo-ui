@@ -32,7 +32,7 @@
     "icon-upload-cloud", "icon-download",
     "icon-menu", "icon-more-horizontal", "icon-more-vertical",
     "icon-refresh", "icon-settings",
-    "icon-cart", "icon-plus-circle-stroke", "icon-minus-circle-stroke", "icon-show-stroke"
+    "icon-cart", "icon-plus-circle-stroke", "icon-minus-circle-stroke", "icon-show-stroke", "icon-bell"
   ],
   "styling": {
     "size": "font-size: 24px;",
