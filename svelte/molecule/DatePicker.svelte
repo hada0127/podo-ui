@@ -919,16 +919,20 @@
   });
 
   $effect(() => {
-    if (value?.date) {
+    // initialCalendar prop이 명시되면 value보다 우선 적용
+    if (initialCalendar?.start) {
+      viewDate = resolveCalendarInitial(initialCalendar.start, value?.date ?? new Date());
+    } else if (value?.date) {
       viewDate = value.date;
-    } else if (initialCalendar?.start) {
-      viewDate = resolveCalendarInitial(initialCalendar.start, new Date());
     }
 
-    if (value?.endDate) {
+    if (initialCalendar?.end) {
+      const fallback = value?.endDate
+        ? new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, 1)
+        : new Date();
+      endViewDate = resolveCalendarInitial(initialCalendar.end, fallback);
+    } else if (value?.endDate) {
       endViewDate = new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, 1);
-    } else if (initialCalendar?.end) {
-      endViewDate = resolveCalendarInitial(initialCalendar.end, new Date());
     }
   });
 

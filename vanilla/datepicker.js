@@ -399,22 +399,31 @@
       }
 
       // 초기 달력 표시 월 계산
-      if (this.value.date) {
+      // initialCalendar prop이 명시되면 value보다 우선 적용
+      if (this.initialCalendar.start) {
+        const fallback = this.value.date ? new Date(this.value.date) : new Date();
+        this.viewDate = resolveCalendarInitial(this.initialCalendar.start, fallback);
+      } else if (this.value.date) {
         this.viewDate = new Date(this.value.date);
-      } else if (this.initialCalendar.start) {
-        this.viewDate = resolveCalendarInitial(this.initialCalendar.start, new Date());
       } else {
         this.viewDate = new Date();
       }
 
-      if (this.value.endDate) {
+      if (this.initialCalendar.end) {
+        const fallback = this.value.endDate
+          ? new Date(
+              this.value.endDate.getFullYear(),
+              this.value.endDate.getMonth() + 1,
+              1
+            )
+          : new Date();
+        this.endViewDate = resolveCalendarInitial(this.initialCalendar.end, fallback);
+      } else if (this.value.endDate) {
         this.endViewDate = new Date(
           this.value.endDate.getFullYear(),
           this.value.endDate.getMonth() + 1,
           1
         );
-      } else if (this.initialCalendar.end) {
-        this.endViewDate = resolveCalendarInitial(this.initialCalendar.end, new Date());
       } else {
         this.endViewDate = new Date(
           this.viewDate.getFullYear(),

@@ -979,20 +979,24 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const [navOffset, setNavOffset] = useState(0);
 
   // 초기 달력 표시 월 계산
+  // initialCalendar prop이 명시되면 value보다 우선 적용 (사용자가 지정한 시작 화면을 보장)
   const [viewDate, setViewDate] = useState(() => {
-    if (value?.date) return value.date;
     if (initialCalendar?.start) {
-      return resolveCalendarInitial(initialCalendar.start, new Date());
+      return resolveCalendarInitial(initialCalendar.start, value?.date ?? new Date());
     }
+    if (value?.date) return value.date;
     return new Date();
   });
 
   const [endViewDate, setEndViewDate] = useState(() => {
+    if (initialCalendar?.end) {
+      const fallback = value?.endDate
+        ? new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, 1)
+        : new Date();
+      return resolveCalendarInitial(initialCalendar.end, fallback);
+    }
     if (value?.endDate) {
       return new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, 1);
-    }
-    if (initialCalendar?.end) {
-      return resolveCalendarInitial(initialCalendar.end, new Date());
     }
     // 기본값: 현재 달의 다음 달
     const d = new Date();
