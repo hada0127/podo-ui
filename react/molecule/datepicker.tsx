@@ -1321,8 +1321,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const handleReset = () => {
+    // 선택값만 비우고 팝오버는 열린 상태 유지
+    // selectingPart을 null로 두면 isOpen이 false가 되어 팝오버가 닫힘 → 'date'로 되돌려 시작일 입력 대기 상태 유지
     setTempValue({});
-    setSelectingPart(null);
+    setSelectingPart('date');
+    setActivePresetKey(null);
+    setNavigationStep(null);
+    setNavigationAnchor(null);
+    setNavOffset(0);
     onReset?.();
   };
 

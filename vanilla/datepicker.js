@@ -1538,8 +1538,16 @@
     }
 
     handleReset() {
+      // 선택값만 비우고 팝오버는 열린 상태 유지
+      // close()를 호출하면 사용자가 "적용"을 누를 기회 없이 닫혀버리는 문제 수정
       this.tempValue = {};
-      this.close();
+      this._activePresetKey = null;
+      this.navigationStep = null;
+      this._navOffset = 0;
+      // 캘린더 그리드/액션 영역을 다시 그려서 비워진 선택 상태를 반영
+      if (this.isOpen) {
+        this.renderDropdown();
+      }
       this.renderInputContent();
       if (typeof this.options.onReset === 'function') {
         this.options.onReset();
