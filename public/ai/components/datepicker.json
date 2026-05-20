@@ -5,11 +5,12 @@
   "documentation": "https://podoui.com/components/datepicker",
   "import": {
     "react": "import { DatePicker } from 'podo-ui'",
+    "svelte": "import { DatePicker } from 'podo-ui/svelte'",
     "vanilla": "import 'podo-ui/vanilla/datepicker'"
   },
   "props": [
     { "name": "mode", "type": "'instant' | 'period'", "default": "'instant'", "description": "Single date or date range" },
-    { "name": "type", "type": "'date' | 'time' | 'datetime'", "default": "'date'" },
+    { "name": "type", "type": "'date' | 'time' | 'datetime' | 'hour'", "default": "'date'", "description": "Value type. 'hour' renders only an hour selector (no minutes)." },
     { "name": "value", "type": "DatePickerValue", "required": false },
     { "name": "onChange", "type": "(value: DatePickerValue) => void", "required": false },
     { "name": "placeholder", "type": "string", "required": false },
@@ -20,8 +21,11 @@
     { "name": "enable", "type": "DateCondition[]", "required": false, "description": "Only enable specific dates" },
     { "name": "minDate", "type": "Date | DateTimeLimit", "required": false },
     { "name": "maxDate", "type": "Date | DateTimeLimit", "required": false },
-    { "name": "minuteStep", "type": "1 | 5 | 10 | 15 | 20 | 30", "default": "1" },
-    { "name": "format", "type": "string", "required": false, "description": "Custom format: y-m-d h:i" },
+    { "name": "minuteStep", "type": "1 | 5 | 10 | 15 | 20 | 30", "default": "1", "description": "Ignored when type='hour' (no minute column rendered)." },
+    { "name": "hourFormat", "type": "'24' | '12'", "default": "'24'", "required": false, "description": "Hour display format (type='hour' only). '24' shows 0시~23시, '12' shows 오전/오후 1~12시." },
+    { "name": "disabledHours", "type": "number[]", "required": false, "description": "Hours (0-23) that cannot be selected (type='hour' only). Always uses 24h reference values regardless of hourFormat." },
+    { "name": "hourStep", "type": "1 | 2 | 3 | 4 | 6 | 12", "default": "1", "required": false, "description": "Step interval for hour options (type='hour' only). e.g., hourStep=2 → 0,2,4,...,22." },
+    { "name": "format", "type": "string", "required": false, "description": "Custom format: y-m-d h:i. Ignored when type='hour' (use hourFormat instead)." },
     { "name": "initialCalendar", "type": "{ start?: CalendarInitial, end?: CalendarInitial }", "required": false, "description": "Initial calendar display month for left/right calendars. When specified, takes priority over value.date/value.endDate so the calendar opens at the explicitly requested month. CalendarInitial: 'now' | 'prevMonth' | 'nextMonth' | Date" },
     { "name": "yearRange", "type": "YearRange", "required": false, "description": "Year selection range (default: ±100 years from current year, takes priority over minDate/maxDate)" },
     { "name": "quickSelect", "type": "boolean", "default": "false", "required": false, "description": "Show quick select preset panel with common date ranges (period mode only). Presets: today, yesterday, this week, last week, last 7/30 days, this/last month. Disabled presets based on minDate/maxDate. When quickSelect=true and mode='period', left/right arrow navigation buttons appear around the input. Arrows shift the selected range by the preset unit (e.g., 7 days for weekly) or by the manually selected range size. Arrows are disabled when no range is selected or when shifting would exceed minDate/maxDate." },
@@ -67,6 +71,26 @@
     {
       "title": "Quick Select with arrow navigation",
       "code": "<DatePicker mode=\"period\" quickSelect />"
+    },
+    {
+      "title": "Hour-only (24h)",
+      "code": "<DatePicker type=\"hour\" value={{ time: { hour: 9, minute: 0 } }} onChange={(v) => setHour(v.time?.hour ?? null)} />"
+    },
+    {
+      "title": "Hour-only (12h)",
+      "code": "<DatePicker type=\"hour\" hourFormat=\"12\" value={value} onChange={setValue} />"
+    },
+    {
+      "title": "Hour-only with disabled hours (no midnight/early morning)",
+      "code": "<DatePicker type=\"hour\" disabledHours={[0, 1, 2, 3, 4, 5, 22, 23]} value={value} onChange={setValue} />"
+    },
+    {
+      "title": "Hour-only with step (every 2 hours)",
+      "code": "<DatePicker type=\"hour\" hourStep={2} value={value} onChange={setValue} />"
+    },
+    {
+      "title": "Hour range (period)",
+      "code": "<DatePicker type=\"hour\" mode=\"period\" value={value} onChange={setValue} />"
     }
   ],
   "related": ["field", "input"]

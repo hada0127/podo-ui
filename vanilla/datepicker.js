@@ -2,7 +2,7 @@
  * Podo UI DatePicker - Vanilla JS
  * A pure JavaScript date picker component without dependencies
  *
- * @version 0.8.0
+ * @version 1.2.0
  * @license MIT
  */
 
@@ -320,7 +320,10 @@
      * @param {HTMLElement|string} container - Container element or selector
      * @param {Object} options - DatePicker options
      * @param {string} [options.mode='instant'] - 'instant' or 'period'
-     * @param {string} [options.type='date'] - 'date', 'time', or 'datetime'
+     * @param {string} [options.type='date'] - 'date', 'time', 'datetime', or 'hour'
+     * @param {string} [options.hourFormat='24'] - Hour display format ('24' | '12') when type='hour'
+     * @param {number[]} [options.disabledHours] - Hours (0-23) that cannot be selected when type='hour'
+     * @param {number} [options.hourStep=1] - Hour step interval (1,2,3,4,6,12) when type='hour'
      * @param {Object} [options.value] - Initial value { date, time, endDate, endTime }
      * @param {Function} [options.onChange] - Change callback
      * @param {string} [options.placeholder] - Placeholder text
@@ -359,7 +362,8 @@
       this.onChange = options.onChange;
       this.placeholder = options.placeholder;
       this.disabled = options.disabled || false;
-      this.showActions = options.showActions ?? this.mode === 'period';
+      // hour-only는 native select 단일 입력이라 적용/초기화 액션 불필요 → 즉시 commit
+      this.showActions = options.showActions ?? (this.mode === 'period' && this.type !== 'hour');
       this.align = options.align || 'left';
       // Ensure disable and enable are always arrays
       this.disable = Array.isArray(options.disable) ? options.disable : [];
@@ -367,6 +371,9 @@
       this.minDate = options.minDate;
       this.maxDate = options.maxDate;
       this.minuteStep = options.minuteStep || 1;
+      this.hourFormat = options.hourFormat || '24';
+      this.disabledHours = Array.isArray(options.disabledHours) ? options.disabledHours : null;
+      this.hourStep = options.hourStep || 1;
       this.texts = { ...DEFAULT_TEXTS, ...options.texts };
       this.format = options.format;
       this.initialCalendar = options.initialCalendar || {};
@@ -474,8 +481,8 @@
       this.renderInputContent();
       this.inputEl.appendChild(this.inputContentEl);
 
-      // Icon
-      const iconClass = this.type === 'time' ? 'icon-time' : 'icon-calendar';
+      // Icon (time/hour 모두 icon-time)
+      const iconClass = this.type === 'time' || this.type === 'hour' ? 'icon-time' : 'icon-calendar';
       this.iconEl = createElement('i', `${PREFIX}__icon ${iconClass}`);
       this.inputEl.appendChild(this.iconEl);
 
@@ -528,10 +535,71 @@
         this.renderDateInput(displayValue);
       } else if (this.type === 'time') {
         this.renderTimeInput(displayValue);
+      } else if (this.type === 'hour') {
+        this.renderHourInput(displayValue);
       } else {
         // datetime
         this.renderDateTimeInput(displayValue);
       }
+    }
+
+    // hour-only: 분 컬럼/구분자 없이 시 select만 렌더
+    renderHourInput(displayValue) {
+      const startSection = this.createHourSection(displayValue.time, 'hour');
+      this.inputContentEl.appendChild(startSection);
+
+      if (this.mode === 'period') {
+        const sep = createElement('span', `${PREFIX}__separator`, '~');
+        this.inputContentEl.appendChild(sep);
+
+        const endSection = this.createHourSection(displayValue.endTime, 'endHour');
+        this.inputContentEl.appendChild(endSection);
+      }
+    }
+
+    createHourSection(time, part) {
+      const section = createElement('div', `${PREFIX}__time-section ${PREFIX}__hour-section`);
+      const select = this.createHourOnlySelect(time, part);
+      section.appendChild(select);
+      return section;
+    }
+
+    // hour-only 라벨 포맷
+    formatHourLabel(h) {
+      if (this.hourFormat === '12') {
+        const period = h < 12 ? '오전' : '오후';
+        const h12 = h % 12 === 0 ? 12 : h % 12;
+        return `${period} ${h12}시`;
+      }
+      return `${h}시`;
+    }
+
+    createHourOnlySelect(time, part) {
+      const select = createElement('select', `${PREFIX}__time-select ${PREFIX}__hour-select`);
+      if (!time) select.classList.add(`${PREFIX}__time-select--placeholder`);
+      if (this.disabled) select.disabled = true;
+      select.setAttribute('aria-label', part === 'endHour' ? '종료 시간 선택' : '시간 선택');
+
+      const isEnd = part === 'endHour';
+      const currentDate = isEnd ? this.tempValue.endDate : this.tempValue.date;
+
+      for (let h = 0; h < 24; h += this.hourStep) {
+        const opt = createElement('option', null, this.formatHourLabel(h));
+        opt.value = h;
+
+        // disabledHours 우선
+        if (this.disabledHours && this.disabledHours.includes(h)) {
+          opt.disabled = true;
+        } else if (this.isHourDisabled(h, currentDate)) {
+          opt.disabled = true;
+        }
+
+        select.appendChild(opt);
+      }
+
+      select.value = time?.hour ?? 0;
+      select.dataset.part = part;
+      return select;
     }
 
     renderDateInput(displayValue) {
@@ -1390,8 +1458,12 @@
 
       if (isHour) {
         newTime.hour = value;
+        // hour-only: 분을 0으로 정규화하고 min/max time 보정 건너뜀
+        if (this.type === 'hour') {
+          newTime.minute = 0;
+        }
         // Auto-adjust minute if needed
-        const currentDate = isEnd ? this.tempValue.endDate : this.tempValue.date;
+        const currentDate = this.type === 'hour' ? null : (isEnd ? this.tempValue.endDate : this.tempValue.date);
         if (currentDate) {
           const minLimit = this.minDate ? extractDateTimeLimit(this.minDate) : null;
           const maxLimit = this.maxDate ? extractDateTimeLimit(this.maxDate) : null;
@@ -1412,15 +1484,14 @@
       }
 
       if (isEnd) {
-        // Auto-set end date to today if not selected when changing end time
-        if (!this.tempValue.endDate) {
+        // hour-only는 date 자동 채움을 건너뜀 (value는 time만 가져야 함)
+        if (this.type !== 'hour' && !this.tempValue.endDate) {
           this.tempValue = { ...this.tempValue, endDate: new Date(), endTime: newTime };
         } else {
           this.tempValue = { ...this.tempValue, endTime: newTime };
         }
       } else {
-        // Auto-set start date to today if not selected when changing start time
-        if (!this.tempValue.date) {
+        if (this.type !== 'hour' && !this.tempValue.date) {
           this.tempValue = { ...this.tempValue, date: new Date(), time: newTime };
         } else {
           this.tempValue = { ...this.tempValue, time: newTime };

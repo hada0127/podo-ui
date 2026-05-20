@@ -26,7 +26,114 @@
     yearSuffix: '년',
     reset: '초기화',
     apply: '적용',
+    quickSelect: {
+      today: '오늘',
+      yesterday: '어제',
+      thisWeek: '이번 주',
+      lastWeek: '지난 주',
+      last7Days: '최근 7일',
+      last30Days: '최근 30일',
+      thisMonth: '이번 달',
+      lastMonth: '지난 달',
+    },
   };
+
+  // ============================================
+  // Quick Select Presets
+  // ============================================
+
+  const QUICK_SELECT_KEYS = [
+    'today', 'yesterday', 'thisWeek', 'lastWeek',
+    'last7Days', 'last30Days', 'thisMonth', 'lastMonth',
+  ];
+
+  function getPresetRange(key) {
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    switch (key) {
+      case 'today':
+        return { start: new Date(todayStart), end: new Date(todayStart) };
+      case 'yesterday': {
+        const d = new Date(todayStart);
+        d.setDate(d.getDate() - 1);
+        return { start: d, end: new Date(d) };
+      }
+      case 'thisWeek': {
+        const dayOfWeek = todayStart.getDay();
+        const start = new Date(todayStart);
+        start.setDate(start.getDate() - dayOfWeek);
+        const end = new Date(start);
+        end.setDate(end.getDate() + 6);
+        return { start, end };
+      }
+      case 'lastWeek': {
+        const dayOfWeek = todayStart.getDay();
+        const thisWeekStart = new Date(todayStart);
+        thisWeekStart.setDate(thisWeekStart.getDate() - dayOfWeek);
+        const start = new Date(thisWeekStart);
+        start.setDate(start.getDate() - 7);
+        const end = new Date(start);
+        end.setDate(end.getDate() + 6);
+        return { start, end };
+      }
+      case 'last7Days': {
+        const start = new Date(todayStart);
+        start.setDate(start.getDate() - 6);
+        return { start, end: new Date(todayStart) };
+      }
+      case 'last30Days': {
+        const start = new Date(todayStart);
+        start.setDate(start.getDate() - 29);
+        return { start, end: new Date(todayStart) };
+      }
+      case 'thisMonth': {
+        const start = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+        const end = new Date(todayStart.getFullYear(), todayStart.getMonth() + 1, 0);
+        return { start, end };
+      }
+      case 'lastMonth': {
+        const start = new Date(todayStart.getFullYear(), todayStart.getMonth() - 1, 1);
+        const end = new Date(todayStart.getFullYear(), todayStart.getMonth(), 0);
+        return { start, end };
+      }
+      default:
+        return { start: todayStart, end: todayStart };
+    }
+  }
+
+  // ============================================
+  // Navigation Helpers
+  // ============================================
+
+  function getNavigationStepForPreset(key) {
+    switch (key) {
+      case 'today': case 'yesterday': return { type: 'days', count: 1 };
+      case 'thisWeek': case 'lastWeek': case 'last7Days': return { type: 'days', count: 7 };
+      case 'last30Days': return { type: 'days', count: 30 };
+      case 'thisMonth': case 'lastMonth': return { type: 'month', count: 1 };
+      default: return { type: 'days', count: 1 };
+    }
+  }
+
+  function calculateNavigationStep(start, end) {
+    const diffMs = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime()
+      - new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
+    return { type: 'days', count: Math.round(diffMs / 86400000) + 1 };
+  }
+
+  function shiftDateRange(start, end, step, dir) {
+    if (step.type === 'month') {
+      const shift = step.count * dir;
+      const newStart = new Date(start.getFullYear(), start.getMonth() + shift, 1);
+      const newEnd = new Date(newStart.getFullYear(), newStart.getMonth() + 1, 0);
+      return { start: newStart, end: newEnd };
+    }
+    const shift = step.count * dir;
+    const s = new Date(start); s.setDate(s.getDate() + shift);
+    const e = new Date(end); e.setDate(e.getDate() + shift);
+    return { start: s, end: e };
+  }
 
   // ============================================
   // Helper Functions
@@ -213,7 +320,10 @@
      * @param {HTMLElement|string} container - Container element or selector
      * @param {Object} options - DatePicker options
      * @param {string} [options.mode='instant'] - 'instant' or 'period'
-     * @param {string} [options.type='date'] - 'date', 'time', or 'datetime'
+     * @param {string} [options.type='date'] - 'date', 'time', 'datetime', or 'hour'
+     * @param {string} [options.hourFormat='24'] - Hour display format ('24' | '12') when type='hour'
+     * @param {number[]} [options.disabledHours] - Hours (0-23) that cannot be selected when type='hour'
+     * @param {number} [options.hourStep=1] - Hour step interval (1,2,3,4,6,12) when type='hour'
      * @param {Object} [options.value] - Initial value { date, time, endDate, endTime }
      * @param {Function} [options.onChange] - Change callback
      * @param {string} [options.placeholder] - Placeholder text
@@ -229,6 +339,7 @@
      * @param {string} [options.format] - Date/time format (y: year, m: month, d: day, h: hour, i: minute)
      * @param {Object} [options.initialCalendar] - Initial calendar display month { start, end }
      * @param {Object} [options.yearRange] - Year range for year selector { min, max }
+     * @param {boolean} [options.quickSelect=false] - Show quick select preset panel (period mode only)
      */
     constructor(container, options = {}) {
       this.container =
@@ -251,7 +362,8 @@
       this.onChange = options.onChange;
       this.placeholder = options.placeholder;
       this.disabled = options.disabled || false;
-      this.showActions = options.showActions ?? this.mode === 'period';
+      // hour-only는 native select 단일 입력이라 적용/초기화 액션 불필요 → 즉시 commit
+      this.showActions = options.showActions ?? (this.mode === 'period' && this.type !== 'hour');
       this.align = options.align || 'left';
       // Ensure disable and enable are always arrays
       this.disable = Array.isArray(options.disable) ? options.disable : [];
@@ -259,32 +371,66 @@
       this.minDate = options.minDate;
       this.maxDate = options.maxDate;
       this.minuteStep = options.minuteStep || 1;
+      this.hourFormat = options.hourFormat || '24';
+      this.disabledHours = Array.isArray(options.disabledHours) ? options.disabledHours : null;
+      this.hourStep = options.hourStep || 1;
       this.texts = { ...DEFAULT_TEXTS, ...options.texts };
       this.format = options.format;
       this.initialCalendar = options.initialCalendar || {};
       this.yearRange = options.yearRange;
+      this.quickSelect = options.quickSelect || false;
+
+      // Merge quickSelect texts
+      if (options.texts?.quickSelect) {
+        this.texts.quickSelect = { ...DEFAULT_TEXTS.quickSelect, ...options.texts.quickSelect };
+      }
 
       // State
       this.isOpen = false;
       this.selectingPart = null;
+      this.navigationStep = null;
+      this._activePresetKey = null;
+      this._navOffset = 0;
+
+      // 초기 value가 프리셋과 일치하면 자동 세팅
+      if (this.quickSelect && this.mode === 'period' && this.value.date && this.value.endDate) {
+        for (const key of QUICK_SELECT_KEYS) {
+          const { start, end } = getPresetRange(key);
+          if (isSameDay(this.value.date, start) && isSameDay(this.value.endDate, end)) {
+            this._activePresetKey = key;
+            this._navOffset = 0;
+            this.navigationStep = getNavigationStepForPreset(key);
+            break;
+          }
+        }
+      }
 
       // 초기 달력 표시 월 계산
-      if (this.value.date) {
+      // initialCalendar prop이 명시되면 value보다 우선 적용
+      if (this.initialCalendar.start) {
+        const fallback = this.value.date ? new Date(this.value.date) : new Date();
+        this.viewDate = resolveCalendarInitial(this.initialCalendar.start, fallback);
+      } else if (this.value.date) {
         this.viewDate = new Date(this.value.date);
-      } else if (this.initialCalendar.start) {
-        this.viewDate = resolveCalendarInitial(this.initialCalendar.start, new Date());
       } else {
         this.viewDate = new Date();
       }
 
-      if (this.value.endDate) {
+      if (this.initialCalendar.end) {
+        const fallback = this.value.endDate
+          ? new Date(
+              this.value.endDate.getFullYear(),
+              this.value.endDate.getMonth() + 1,
+              1
+            )
+          : new Date();
+        this.endViewDate = resolveCalendarInitial(this.initialCalendar.end, fallback);
+      } else if (this.value.endDate) {
         this.endViewDate = new Date(
           this.value.endDate.getFullYear(),
           this.value.endDate.getMonth() + 1,
           1
         );
-      } else if (this.initialCalendar.end) {
-        this.endViewDate = resolveCalendarInitial(this.initialCalendar.end, new Date());
       } else {
         this.endViewDate = new Date(
           this.viewDate.getFullYear(),
@@ -296,6 +442,22 @@
       // Build UI
       this.render();
       this.bindEvents();
+
+      // 반응형: 화면 크기 변경 시 드롭다운 다시 렌더링 (Period 모드) + maxWidth 업데이트
+      this._lastMobileState = this.isMobileView();
+      this._resizeHandler = () => {
+        const isMobile = this.isMobileView();
+        if (this.isOpen) {
+          // maxWidth 항상 업데이트
+          this.updateDropdownMaxWidth();
+          // Period 모드에서 모바일 상태 변경 시 드롭다운 다시 렌더링
+          if (this.mode === 'period' && isMobile !== this._lastMobileState) {
+            this._lastMobileState = isMobile;
+            this.renderDropdown();
+          }
+        }
+      };
+      window.addEventListener('resize', this._resizeHandler);
 
       // Store instance on container for tracking
       this.container._podoDatePicker = this;
@@ -309,6 +471,8 @@
       this.container.innerHTML = '';
       this.container.className = PREFIX;
 
+      const showNavigation = this.quickSelect && this.mode === 'period';
+
       // Input wrapper
       this.inputEl = createElement('div', `${PREFIX}__input`);
       if (this.disabled) this.inputEl.classList.add(`${PREFIX}__input--disabled`);
@@ -317,10 +481,40 @@
       this.renderInputContent();
       this.inputEl.appendChild(this.inputContentEl);
 
-      // Icon
-      const iconClass = this.type === 'time' ? 'icon-time' : 'icon-calendar';
+      // Icon (time/hour 모두 icon-time)
+      const iconClass = this.type === 'time' || this.type === 'hour' ? 'icon-time' : 'icon-calendar';
       this.iconEl = createElement('i', `${PREFIX}__icon ${iconClass}`);
       this.inputEl.appendChild(this.iconEl);
+
+      if (showNavigation) {
+        this.inputEl.classList.add(`${PREFIX}__input--with-nav`);
+
+        // Left arrow (prepend before inputContent)
+        this._prevArrowBtn = createElement('button', `${PREFIX}__nav-arrow ${PREFIX}__nav-arrow--left`);
+        this._prevArrowBtn.type = 'button';
+        this._prevArrowBtn.innerHTML = '<i class="icon-expand-left"></i>';
+        this._prevArrowBtn.disabled = this.disabled || this.isNavDisabled(-1);
+        this._prevArrowBtn.addEventListener('click', (e) => { e.stopPropagation(); this.handleNavigate(-1); });
+        this.inputEl.insertBefore(this._prevArrowBtn, this.inputContentEl);
+
+        // Preset label
+        this._presetLabelEl = createElement('span', `${PREFIX}__preset-label`);
+        this.updatePresetLabel();
+        this.inputEl.insertBefore(this._presetLabelEl, this.inputContentEl);
+
+        // Remove calendar icon
+        if (this.iconEl && this.iconEl.parentNode) {
+          this.iconEl.parentNode.removeChild(this.iconEl);
+        }
+
+        // Right arrow (append after content)
+        this._nextArrowBtn = createElement('button', `${PREFIX}__nav-arrow ${PREFIX}__nav-arrow--right`);
+        this._nextArrowBtn.type = 'button';
+        this._nextArrowBtn.innerHTML = '<i class="icon-expand-right"></i>';
+        this._nextArrowBtn.disabled = this.disabled || this.isNavDisabled(1);
+        this._nextArrowBtn.addEventListener('click', (e) => { e.stopPropagation(); this.handleNavigate(1); });
+        this.inputEl.appendChild(this._nextArrowBtn);
+      }
 
       this.container.appendChild(this.inputEl);
 
@@ -341,10 +535,71 @@
         this.renderDateInput(displayValue);
       } else if (this.type === 'time') {
         this.renderTimeInput(displayValue);
+      } else if (this.type === 'hour') {
+        this.renderHourInput(displayValue);
       } else {
         // datetime
         this.renderDateTimeInput(displayValue);
       }
+    }
+
+    // hour-only: 분 컬럼/구분자 없이 시 select만 렌더
+    renderHourInput(displayValue) {
+      const startSection = this.createHourSection(displayValue.time, 'hour');
+      this.inputContentEl.appendChild(startSection);
+
+      if (this.mode === 'period') {
+        const sep = createElement('span', `${PREFIX}__separator`, '~');
+        this.inputContentEl.appendChild(sep);
+
+        const endSection = this.createHourSection(displayValue.endTime, 'endHour');
+        this.inputContentEl.appendChild(endSection);
+      }
+    }
+
+    createHourSection(time, part) {
+      const section = createElement('div', `${PREFIX}__time-section ${PREFIX}__hour-section`);
+      const select = this.createHourOnlySelect(time, part);
+      section.appendChild(select);
+      return section;
+    }
+
+    // hour-only 라벨 포맷
+    formatHourLabel(h) {
+      if (this.hourFormat === '12') {
+        const period = h < 12 ? '오전' : '오후';
+        const h12 = h % 12 === 0 ? 12 : h % 12;
+        return `${period} ${h12}시`;
+      }
+      return `${h}시`;
+    }
+
+    createHourOnlySelect(time, part) {
+      const select = createElement('select', `${PREFIX}__time-select ${PREFIX}__hour-select`);
+      if (!time) select.classList.add(`${PREFIX}__time-select--placeholder`);
+      if (this.disabled) select.disabled = true;
+      select.setAttribute('aria-label', part === 'endHour' ? '종료 시간 선택' : '시간 선택');
+
+      const isEnd = part === 'endHour';
+      const currentDate = isEnd ? this.tempValue.endDate : this.tempValue.date;
+
+      for (let h = 0; h < 24; h += this.hourStep) {
+        const opt = createElement('option', null, this.formatHourLabel(h));
+        opt.value = h;
+
+        // disabledHours 우선
+        if (this.disabledHours && this.disabledHours.includes(h)) {
+          opt.disabled = true;
+        } else if (this.isHourDisabled(h, currentDate)) {
+          opt.disabled = true;
+        }
+
+        select.appendChild(opt);
+      }
+
+      select.value = time?.hour ?? 0;
+      select.dataset.part = part;
+      return select;
     }
 
     renderDateInput(displayValue) {
@@ -529,7 +784,18 @@
 
       // Calendar(s)
       if (this.mode === 'period') {
-        this.renderPeriodCalendars();
+        const showQS = this.quickSelect && this.mode === 'period';
+
+        if (showQS) {
+          const body = createElement('div', `${PREFIX}__dropdown-body`);
+          body.appendChild(this.renderQuickSelectPanel());
+          const calWrapper = createElement('div', `${PREFIX}__period-calendars-wrapper`);
+          this.renderPeriodCalendarsInto(calWrapper);
+          body.appendChild(calWrapper);
+          this.dropdownEl.appendChild(body);
+        } else {
+          this.renderPeriodCalendars();
+        }
       } else {
         this.renderCalendar(this.viewDate, (date) => this.handleViewDateChange(date));
       }
@@ -538,6 +804,125 @@
       if (this.showActions) {
         this.renderActions();
       }
+    }
+
+    /**
+     * Quick Select 패널 렌더링
+     * @returns {HTMLElement}
+     */
+    renderQuickSelectPanel() {
+      const panel = createElement('div', `${PREFIX}__quick-select-panel`);
+
+      QUICK_SELECT_KEYS.forEach((key) => {
+        const label = this.texts.quickSelect?.[key] || key;
+        const disabled = this.isQSPresetDisabled(key);
+        const active = this.isQSPresetActive(key);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = label;
+        btn.className = `${PREFIX}__quick-select-item`;
+        if (active) btn.classList.add(`${PREFIX}__quick-select-item--active`);
+        if (disabled) {
+          btn.classList.add(`${PREFIX}__quick-select-item--disabled`);
+          btn.disabled = true;
+        }
+
+        if (!disabled) {
+          btn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleQuickSelect(key);
+          });
+        }
+
+        panel.appendChild(btn);
+      });
+
+      return panel;
+    }
+
+    isQSPresetDisabled(key) {
+      const { start, end } = getPresetRange(key);
+
+      if (this.minDate) {
+        const min = this.minDate instanceof Date ? this.minDate : this.minDate.date;
+        const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+        if (end < minDay) return true;
+      }
+
+      if (this.maxDate) {
+        const max = this.maxDate instanceof Date ? this.maxDate : this.maxDate.date;
+        const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+        if (start > maxDay) return true;
+      }
+
+      return false;
+    }
+
+    isQSPresetActive(key) {
+      if (!this.tempValue.date || !this.tempValue.endDate) return false;
+      const { start, end } = getPresetRange(key);
+      return isSameDay(this.tempValue.date, start) && isSameDay(this.tempValue.endDate, end);
+    }
+
+    handleQuickSelect(key) {
+      let { start, end } = getPresetRange(key);
+      // minDate/maxDate로 클램핑
+      if (this.minDate) {
+        const min = this.minDate instanceof Date ? this.minDate : this.minDate.date;
+        const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+        if (start < minDay) start = minDay;
+      }
+      if (this.maxDate) {
+        const max = this.maxDate instanceof Date ? this.maxDate : this.maxDate.date;
+        const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+        if (end > maxDay) end = maxDay;
+      }
+      this.tempValue = { date: start, endDate: end, time: this.tempValue.time, endTime: this.tempValue.endTime };
+      this.viewDate = new Date(start.getFullYear(), start.getMonth(), 1);
+      this.endViewDate = new Date(end.getFullYear(), end.getMonth(), 1);
+      this.navigationStep = getNavigationStepForPreset(key);
+      this._activePresetKey = key;
+      this._navOffset = 0;
+
+      if (!this.showActions) {
+        this.value = { ...this.tempValue };
+        this.onChange?.(this.value);
+        this.close();
+      }
+      this.renderInputContent();
+      this.updateNavArrows();
+      this.renderDropdown();
+    }
+
+    /**
+     * PeriodCalendars를 지정된 컨테이너에 렌더링
+     * @param {HTMLElement} container
+     */
+    renderPeriodCalendarsInto(container) {
+      const wrapper = createElement('div', `${PREFIX}__period-calendars`);
+      const isMobile = this.isMobileView();
+
+      const leftCal = createElement('div', `${PREFIX}__period-calendar-left`);
+      const leftCalendar = this.createCalendarElement(
+        this.viewDate,
+        (date) => this.handleViewDateChange(date),
+        { maxViewDate: isMobile ? undefined : this.endViewDate }
+      );
+      leftCal.appendChild(leftCalendar);
+      wrapper.appendChild(leftCal);
+
+      const rightCal = createElement('div', `${PREFIX}__period-calendar-right`);
+      const rightCalendar = this.createCalendarElement(
+        this.endViewDate,
+        (date) => this.handleEndViewDateChange(date),
+        { minViewDate: this.viewDate }
+      );
+      rightCal.appendChild(rightCalendar);
+      wrapper.appendChild(rightCal);
+
+      container.appendChild(wrapper);
     }
 
     renderCalendar(viewDate, onViewDateChange, opts = {}) {
@@ -555,20 +940,30 @@
       return calendar;
     }
 
+    /**
+     * 모바일 화면 여부 확인 (반응형 breakpoint: 600px)
+     * @returns {boolean}
+     */
+    isMobileView() {
+      return window.innerWidth <= 600;
+    }
+
     renderPeriodCalendars() {
       const wrapper = createElement('div', `${PREFIX}__period-calendars`);
+      const isMobile = this.isMobileView();
 
       // Left calendar
+      // 모바일에서는 maxViewDate 제한 해제하여 자유롭게 이동 가능
       const leftCal = createElement('div', `${PREFIX}__period-calendar-left`);
       const leftCalendar = this.createCalendarElement(
         this.viewDate,
         (date) => this.handleViewDateChange(date),
-        { maxViewDate: this.endViewDate }
+        { maxViewDate: isMobile ? undefined : this.endViewDate }
       );
       leftCal.appendChild(leftCalendar);
       wrapper.appendChild(leftCal);
 
-      // Right calendar
+      // Right calendar (모바일에서는 CSS로 숨김)
       const rightCal = createElement('div', `${PREFIX}__period-calendar-right`);
       const rightCalendar = this.createCalendarElement(
         this.endViewDate,
@@ -930,6 +1325,20 @@
       this.inputEl.classList.add(`${PREFIX}__input--active`);
       this.dropdownEl.style.display = 'flex';
       this.renderDropdown();
+      this.updateDropdownMaxWidth();
+    }
+
+    updateDropdownMaxWidth() {
+      if (!this.dropdownEl) return;
+      const rect = this.dropdownEl.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const padding = 8;
+      const availableWidth = viewportWidth - rect.left - padding;
+      if (availableWidth > 0) {
+        this.dropdownEl.style.maxWidth = `${availableWidth}px`;
+      } else {
+        this.dropdownEl.style.maxWidth = '';
+      }
     }
 
     close() {
@@ -988,9 +1397,15 @@
             endDate: existingStartDate,
             endTime: adjustedEndTime,
           };
+          this.navigationStep = calculateNavigationStep(newDate, existingStartDate);
+          this._activePresetKey = null;
+          this._navOffset = 0;
         } else {
           const adjustedEndTime = this.adjustTimeForDate(newDate, this.tempValue.endTime);
           this.tempValue = { ...this.tempValue, endDate: newDate, endTime: adjustedEndTime };
+          this.navigationStep = calculateNavigationStep(existingStartDate, newDate);
+          this._activePresetKey = null;
+          this._navOffset = 0;
         }
       } else {
         const adjustedTime = this.adjustTimeForDate(newDate, this.tempValue.time);
@@ -1043,8 +1458,12 @@
 
       if (isHour) {
         newTime.hour = value;
+        // hour-only: 분을 0으로 정규화하고 min/max time 보정 건너뜀
+        if (this.type === 'hour') {
+          newTime.minute = 0;
+        }
         // Auto-adjust minute if needed
-        const currentDate = isEnd ? this.tempValue.endDate : this.tempValue.date;
+        const currentDate = this.type === 'hour' ? null : (isEnd ? this.tempValue.endDate : this.tempValue.date);
         if (currentDate) {
           const minLimit = this.minDate ? extractDateTimeLimit(this.minDate) : null;
           const maxLimit = this.maxDate ? extractDateTimeLimit(this.maxDate) : null;
@@ -1065,15 +1484,14 @@
       }
 
       if (isEnd) {
-        // Auto-set end date to today if not selected when changing end time
-        if (!this.tempValue.endDate) {
+        // hour-only는 date 자동 채움을 건너뜀 (value는 time만 가져야 함)
+        if (this.type !== 'hour' && !this.tempValue.endDate) {
           this.tempValue = { ...this.tempValue, endDate: new Date(), endTime: newTime };
         } else {
           this.tempValue = { ...this.tempValue, endTime: newTime };
         }
       } else {
-        // Auto-set start date to today if not selected when changing start time
-        if (!this.tempValue.date) {
+        if (this.type !== 'hour' && !this.tempValue.date) {
           this.tempValue = { ...this.tempValue, date: new Date(), time: newTime };
         } else {
           this.tempValue = { ...this.tempValue, time: newTime };
@@ -1086,10 +1504,125 @@
       this.renderInputContent();
     }
 
-    handleReset() {
-      this.tempValue = {};
-      this.close();
+    handleNavigate(direction) {
+      const dv = this.showActions ? this.tempValue : this.value;
+      if (!dv?.date || !dv?.endDate || !this.navigationStep) return;
+
+      const { start, end } = shiftDateRange(dv.date, dv.endDate, this.navigationStep, direction);
+
+      if (this.minDate) {
+        const min = this.minDate instanceof Date ? this.minDate : this.minDate.date;
+        if (start < new Date(min.getFullYear(), min.getMonth(), min.getDate())) return;
+      }
+      if (this.maxDate) {
+        const max = this.maxDate instanceof Date ? this.maxDate : this.maxDate.date;
+        if (end > new Date(max.getFullYear(), max.getMonth(), max.getDate())) return;
+      }
+
+      this._navOffset = (this._navOffset || 0) + direction;
+
+      const newValue = { date: start, endDate: end, time: dv.time, endTime: dv.endTime };
+      this.tempValue = newValue;
+      this.value = { ...newValue };
+      this.viewDate = new Date(start.getFullYear(), start.getMonth(), 1);
+      this.endViewDate = new Date(end.getFullYear(), end.getMonth(), 1);
+      this.emitChange();
       this.renderInputContent();
+      this.updateNavArrows();
+      if (this.isOpen) this.renderDropdown();
+    }
+
+    isNavDisabled(direction) {
+      const dv = this.showActions ? this.tempValue : this.value;
+      if (!dv?.date || !dv?.endDate || !this.navigationStep) return true;
+      const { start, end } = shiftDateRange(dv.date, dv.endDate, this.navigationStep, direction);
+      if (direction === -1 && this.minDate) {
+        const min = this.minDate instanceof Date ? this.minDate : this.minDate.date;
+        return start < new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      }
+      if (direction === 1 && this.maxDate) {
+        const max = this.maxDate instanceof Date ? this.maxDate : this.maxDate.date;
+        return end > new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      }
+      return false;
+    }
+
+    updateNavArrows() {
+      if (this._prevArrowBtn) {
+        this._prevArrowBtn.disabled = this.disabled || this.isNavDisabled(-1);
+      }
+      if (this._nextArrowBtn) {
+        this._nextArrowBtn.disabled = this.disabled || this.isNavDisabled(1);
+      }
+      this.updatePresetLabel();
+    }
+
+    getActivePresetLabel() {
+      const dv = this.showActions ? this.tempValue : this.value;
+      if (!dv?.date || !dv?.endDate) return null;
+      // 프리셋과 정확히 일치하면 프리셋 라벨 반환
+      for (const key of QUICK_SELECT_KEYS) {
+        const { start, end } = getPresetRange(key);
+        if (isSameDay(dv.date, start) && isSameDay(dv.endDate, end)) {
+          return this.texts.quickSelect?.[key] || key;
+        }
+      }
+      // navArrow로 이동한 상태면 offset 기반 동적 라벨 생성
+      if (this._activePresetKey && this._navOffset !== 0) {
+        return this._getNavOffsetLabel();
+      }
+      return null;
+    }
+
+    _getNavOffsetLabel() {
+      const offset = Math.abs(this._navOffset);
+      const isFuture = this._navOffset > 0;
+      const step = this.navigationStep;
+      if (!step) return null;
+
+      if (step.type === 'month') {
+        return isFuture ? `${offset}개월 후` : `${offset}개월 전`;
+      }
+      // days
+      if (step.count === 1) {
+        return isFuture ? `${offset}일 후` : `${offset}일 전`;
+      }
+      if (step.count === 7) {
+        return isFuture ? `${offset}주 후` : `${offset}주 전`;
+      }
+      if (step.count === 30) {
+        return isFuture ? `${offset * 30}일 후` : `${offset * 30}일 전`;
+      }
+      return isFuture ? `${offset * step.count}일 후` : `${offset * step.count}일 전`;
+    }
+
+    updatePresetLabel() {
+      if (!this._presetLabelEl) return;
+      const label = this.getActivePresetLabel();
+      if (label) {
+        this._presetLabelEl.textContent = `${label} :`;
+        this._presetLabelEl.style.display = '';
+      } else {
+        this._presetLabelEl.textContent = '';
+        this._presetLabelEl.style.display = 'none';
+      }
+    }
+
+    handleReset() {
+      // 선택값만 비우고 팝오버는 열린 상태 유지
+      // close()를 호출하면 사용자가 "적용"을 누를 기회 없이 닫혀버리는 문제 수정
+      this.tempValue = {};
+      this._activePresetKey = null;
+      this.navigationStep = null;
+      this._navOffset = 0;
+      // 캘린더 그리드/액션 영역을 다시 그려서 비워진 선택 상태를 반영
+      if (this.isOpen) {
+        this.renderDropdown();
+      }
+      this.renderInputContent();
+      if (typeof this.options.onReset === 'function') {
+        this.options.onReset();
+      }
     }
 
     handleApply() {
@@ -1130,7 +1663,28 @@
       if (value?.endDate) {
         this.endViewDate = new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, 1);
       }
+
+      // value가 프리셋과 일치하면 자동 세팅
+      if (this.quickSelect && this.mode === 'period' && value?.date && value?.endDate) {
+        let matched = false;
+        for (const key of QUICK_SELECT_KEYS) {
+          const { start, end } = getPresetRange(key);
+          if (isSameDay(value.date, start) && isSameDay(value.endDate, end)) {
+            this._activePresetKey = key;
+            this._navOffset = 0;
+            this.navigationStep = getNavigationStepForPreset(key);
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          this._activePresetKey = null;
+          this._navOffset = 0;
+        }
+      }
+
       this.renderInputContent();
+      this.updatePresetLabel();
     }
 
     /**
@@ -1166,6 +1720,10 @@
      * Destroy the datepicker instance
      */
     destroy() {
+      // Remove resize event listener
+      if (this._resizeHandler) {
+        window.removeEventListener('resize', this._resizeHandler);
+      }
       // Remove instance tracking
       if (this.container._podoDatePicker) {
         delete this.container._podoDatePicker;

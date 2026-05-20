@@ -6,7 +6,13 @@ import styles from './datepicker.module.scss';
 
 // Types
 export type DatePickerMode = 'instant' | 'period';
-export type DatePickerType = 'date' | 'time' | 'datetime';
+export type DatePickerType = 'date' | 'time' | 'datetime' | 'hour';
+
+/** 시(hour) 표시 포맷: 24시간제 | 12시간제(오전/오후) */
+export type HourFormat = '24' | '12';
+
+/** 시(hour) 선택 간격 */
+export type HourStep = 1 | 2 | 3 | 4 | 6 | 12;
 
 /** 시간 값 (시, 분) */
 export interface TimeValue {
@@ -99,12 +105,33 @@ export interface DatePickerProps {
   minDate?: Date | DateTimeLimit;
   /** 선택 가능한 최대 날짜 (Date 또는 { date, time }) */
   maxDate?: Date | DateTimeLimit;
-  /** 분 단위 선택 간격 (1, 5, 10, 15, 30) 기본값: 1 */
+  /** 분 단위 선택 간격 (1, 5, 10, 15, 30) 기본값: 1
+   *  type='hour'일 때는 무시됨 (분 컬럼이 렌더링되지 않음)
+   */
   minuteStep?: MinuteStep;
+  /**
+   * 시(hour) 표시 포맷 (type='hour'일 때만 유효)
+   * '24': 0~23시 (기본), '12': 오전/오후 1~12시
+   */
+  hourFormat?: HourFormat;
+  /**
+   * 선택 불가능한 시간 배열 (0~23, type='hour'일 때만 유효)
+   * hourFormat과 무관하게 항상 24시 기준 값
+   * 예: [0,1,2,3,4,5,22,23] → 새벽/심야 비활성
+   */
+  disabledHours?: number[];
+  /**
+   * 시(hour) 선택 간격 (type='hour'일 때만 유효)
+   * 예: hourStep=2 → 0,2,4,...,22 만 선택 가능
+   * 기본값: 1
+   */
+  hourStep?: HourStep;
   /**
    * 날짜/시간 표시 포맷
    * y: 년, m: 월, d: 일, h: 시, i: 분
    * 예시: "y-m-d", "y.m.d h:i", "y년 m월 d일 h시 i분"
+   * type='hour'에서는 이 prop이 무시되고, hourFormat에 따른
+   * 기본 라벨("h시" 또는 "오전/오후 h시")로 표시됨
    */
   format?: string;
   /**
@@ -952,6 +979,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
   minDate,
   maxDate,
   minuteStep = 1,
+  hourFormat = '24',
+  disabledHours,
+  hourStep = 1,
   format,
   initialCalendar,
   yearRange,
@@ -1016,7 +1046,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
     direction === 'up' ? 'up' : 'down'
   );
 
-  const shouldShowActions = showActions ?? mode === 'period';
+  // hour-only는 native select 단일 입력이라 적용/초기화 액션이 필요 없음 → 즉시 commit
+  const shouldShowActions = showActions ?? (mode === 'period' && type !== 'hour');
   // 날짜 선택 시에만 드롭다운 표시 (시/분은 native select 사용)
   const isOpen = selectingPart === 'date' || selectingPart === 'endDate';
 
@@ -1174,6 +1205,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
   }, [value?.date, value?.endDate, quickSelect, mode]);
 
   const formatPeriodText = () => {
+    // hour-only: date 없이 time 만으로 표시
+    if (type === 'hour') {
+      const startText = tempValue.time ? formatHourLabel(tempValue.time.hour) : '';
+      const endText = tempValue.endTime ? formatHourLabel(tempValue.endTime.hour) : '';
+      if (startText && endText) return `${startText} ~ ${endText}`;
+      return startText;
+    }
+
     if (!tempValue.date) return '';
 
     // format prop이 있으면 사용
@@ -1199,6 +1238,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       }
       return dateStr;
     };
+
     const startText = formatKoreanDateTime(tempValue.date, tempValue.time);
     if (tempValue.endDate) {
       const endText = formatKoreanDateTime(tempValue.endDate, tempValue.endTime);
@@ -1497,10 +1537,32 @@ const DatePicker: React.FC<DatePickerProps> = ({
     );
   };
 
+  // hour-only 모드: 24시간 기준 hour 값을 표시 라벨(한국어/12h) 로 변환
+  const formatHourLabel = (h: number): string => {
+    if (hourFormat === '12') {
+      // 0시 → 오전 12시, 1~11시 → 오전 N시, 12시 → 오후 12시, 13~23시 → 오후 (N-12)시
+      const period = h < 12 ? '오전' : '오후';
+      const h12 = h % 12 === 0 ? 12 : h % 12;
+      return `${period} ${h12}시`;
+    }
+    return `${h}시`;
+  };
+
+  // hour-only 옵션 리스트 생성 (hourStep 적용)
+  const buildHourOptions = (): number[] => {
+    const step = hourStep ?? 1;
+    const list: number[] = [];
+    for (let h = 0; h < 24; h += step) list.push(h);
+    return list;
+  };
+
   // Helper to render hour select
   const renderHourSelect = (time: TimeValue | undefined, part: SelectingPart, isPlaceholder: boolean) => {
+    const isHourOnly = type === 'hour';
     const hour = time?.hour ?? 0;
-    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const hours = isHourOnly
+      ? buildHourOptions()
+      : Array.from({ length: 24 }, (_, i) => i);
     const isEnd = part === 'endHour';
     const currentDate = isEnd ? tempValue.endDate : tempValue.date;
 
@@ -1509,6 +1571,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
     const maxLimit = maxDate ? extractDateTimeLimit(maxDate) : null;
 
     const isHourDisabled = (h: number): boolean => {
+      // hour-only: disabledHours 우선 적용
+      if (isHourOnly && disabledHours && disabledHours.includes(h)) return true;
+
       if (!currentDate) return false;
 
       // minDate와 같은 날짜인 경우
@@ -1524,6 +1589,20 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedHour = parseInt(e.target.value, 10);
+
+      // hour-only: 분은 항상 0으로 정규화, minuteStep/min,maxDate time 보정 모두 무시
+      if (isHourOnly) {
+        const newTime: TimeValue = { hour: selectedHour, minute: 0 };
+        const newValue = isEnd
+          ? { ...tempValue, endTime: newTime }
+          : { ...tempValue, time: newTime };
+        setTempValue(newValue);
+        if (!shouldShowActions) {
+          onChange?.(newValue);
+        }
+        return;
+      }
+
       const currentTime = isEnd ? tempValue.endTime : tempValue.time;
       let newMinute = currentTime?.minute ?? 0;
 
@@ -1561,16 +1640,22 @@ const DatePicker: React.FC<DatePickerProps> = ({
       }
     };
 
+    // hour-only: 현재 값이 옵션 리스트에 없으면 가장 가까운 옵션으로 표시
+    const displayHour = isHourOnly && !hours.includes(hour)
+      ? (hours.reduce((prev, curr) => Math.abs(curr - hour) < Math.abs(prev - hour) ? curr : prev, hours[0] ?? 0))
+      : hour;
+
     return (
       <select
-        className={`${styles.timeSelect} ${isPlaceholder ? styles.placeholder : ''}`}
-        value={hour}
+        className={`${styles.timeSelect} ${isHourOnly ? styles.hourSelect : ''} ${isPlaceholder ? styles.placeholder : ''}`}
+        value={displayHour}
         onChange={handleChange}
         disabled={disabled}
+        aria-label={isHourOnly ? '시간 선택' : undefined}
       >
         {hours.map((h) => (
           <option key={h} value={h} disabled={isHourDisabled(h)}>
-            {String(h).padStart(2, '0')}
+            {isHourOnly ? formatHourLabel(h) : String(h).padStart(2, '0')}
           </option>
         ))}
       </select>
@@ -1707,6 +1792,30 @@ const DatePicker: React.FC<DatePickerProps> = ({
       );
     }
 
+    if (type === 'hour') {
+      // hour-only 모드: 분 컬럼/구분자 제거, 시 컬럼만 렌더
+      if (mode === 'period') {
+        return (
+          <div className={styles.inputContent}>
+            <div className={`${styles.timeSection} ${styles.hourSection}`}>
+              {renderHourSelect(displayValue?.time, 'hour', !hasStartTime)}
+            </div>
+            <span className={styles.separator}>~</span>
+            <div className={`${styles.timeSection} ${styles.hourSection}`}>
+              {renderHourSelect(displayValue?.endTime, 'endHour', !hasEndTime)}
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className={styles.inputContent}>
+          <div className={`${styles.timeSection} ${styles.hourSection}`}>
+            {renderHourSelect(displayValue?.time, 'hour', !hasStartTime)}
+          </div>
+        </div>
+      );
+    }
+
     // datetime
     if (mode === 'period') {
       return (
@@ -1812,8 +1921,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
     return null;
   };
 
-  // 아이콘 결정 (time 타입은 icon-time, 나머지는 icon-calendar)
-  const inputIcon = type === 'time' ? 'icon-time' : 'icon-calendar';
+  // 아이콘 결정 (time/hour 타입은 icon-time, 나머지는 icon-calendar)
+  const inputIcon = type === 'time' || type === 'hour' ? 'icon-time' : 'icon-calendar';
 
   // 드롭다운 콘텐츠 렌더링
   const renderDropdown = () => {

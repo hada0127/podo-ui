@@ -4,7 +4,13 @@
 
   // Types
   export type DatePickerMode = 'instant' | 'period';
-  export type DatePickerType = 'date' | 'time' | 'datetime';
+  export type DatePickerType = 'date' | 'time' | 'datetime' | 'hour';
+
+  /** 시(hour) 표시 포맷: 24시간제 | 12시간제(오전/오후) */
+  export type HourFormat = '24' | '12';
+
+  /** 시(hour) 선택 간격 */
+  export type HourStep = 1 | 2 | 3 | 4 | 6 | 12;
 
   export interface TimeValue {
     hour: number;
@@ -194,9 +200,15 @@
     minDate?: Date | DateTimeLimit;
     /** Maximum selectable date */
     maxDate?: Date | DateTimeLimit;
-    /** Minute selection step */
+    /** Minute selection step. Ignored when type='hour'. */
     minuteStep?: MinuteStep;
-    /** Date/time format pattern */
+    /** Hour display format (type='hour' only). '24': 0~23시, '12': 오전/오후 표기. Default '24'. */
+    hourFormat?: HourFormat;
+    /** Hours (0-23) that cannot be selected (type='hour' only). Always 24h reference. */
+    disabledHours?: number[];
+    /** Step interval for hour options (type='hour' only). Default 1. */
+    hourStep?: HourStep;
+    /** Date/time format pattern. Ignored when type='hour'. */
     format?: string;
     /** Initial calendar display month for period mode */
     initialCalendar?: InitialCalendar;
@@ -227,6 +239,9 @@
     minDate,
     maxDate,
     minuteStep = 1,
+    hourFormat = '24',
+    disabledHours,
+    hourStep = 1,
     format,
     initialCalendar,
     yearRange,
@@ -255,13 +270,32 @@
   const today = new Date();
 
   // Computed
-  const shouldShowActions = $derived(showActions ?? mode === 'period');
+  // hour-only는 native select 단일 입력이라 적용/초기화 액션이 필요 없음 → 즉시 commit
+  const shouldShowActions = $derived(showActions ?? (mode === 'period' && type !== 'hour'));
   const isOpen = $derived(selectingPart === 'date' || selectingPart === 'endDate');
   const displayValue = $derived(shouldShowActions ? tempValue : value);
   const hasStartValue = $derived(!!displayValue?.date);
   const hasEndValue = $derived(!!displayValue?.endDate);
-  const inputIcon = $derived(type === 'time' ? 'icon-time' : 'icon-calendar');
+  const inputIcon = $derived(type === 'time' || type === 'hour' ? 'icon-time' : 'icon-calendar');
   const showNavigation = $derived(quickSelect && mode === 'period' && !hideNavArrow);
+
+  // hour-only 라벨 (24h="3시", 12h="오전 3시")
+  const formatHourLabel = (h: number): string => {
+    if (hourFormat === '12') {
+      const period = h < 12 ? '오전' : '오후';
+      const h12 = h % 12 === 0 ? 12 : h % 12;
+      return `${period} ${h12}시`;
+    }
+    return `${h}시`;
+  };
+
+  // hour-only 옵션 리스트 (hourStep 적용)
+  const buildHourOptions = (): number[] => {
+    const step = hourStep ?? 1;
+    const list: number[] = [];
+    for (let h = 0; h < 24; h += step) list.push(h);
+    return list;
+  };
 
   // 드롭다운 방향 결정 (direction='auto'일 때 공간 측정)
   let resolvedDirection = $state<'up' | 'down'>(direction === 'up' ? 'up' : 'down');
@@ -533,6 +567,14 @@
 
   // Format display
   const formatPeriodText = () => {
+    // hour-only: date 없이 time 만으로 표시
+    if (type === 'hour') {
+      const startText = tempValue.time ? formatHourLabel(tempValue.time.hour) : '';
+      const endText = tempValue.endTime ? formatHourLabel(tempValue.endTime.hour) : '';
+      if (startText && endText) return `${startText} ~ ${endText}`;
+      return startText;
+    }
+
     if (!tempValue.date) return '';
 
     if (format) {
@@ -847,7 +889,10 @@
     const target = e.target as HTMLSelectElement;
     const hour = parseInt(target.value);
     const currentTime = isEnd ? tempValue.endTime : tempValue.time;
-    const newTime: TimeValue = { hour, minute: currentTime?.minute ?? 0 };
+    // hour-only: 분을 0으로 정규화
+    const newTime: TimeValue = type === 'hour'
+      ? { hour, minute: 0 }
+      : { hour, minute: currentTime?.minute ?? 0 };
 
     const newValue = isEnd
       ? { ...tempValue, endTime: newTime }
@@ -876,8 +921,21 @@
   };
 
   // Time select options
-  const hours = Array.from({ length: 24 }, (_, i) => i);
+  // type='hour'면 hourStep 기반 옵션, 아니면 0~23 전체
+  const hours = $derived<number[]>(type === 'hour' ? buildHourOptions() : Array.from({ length: 24 }, (_, i) => i));
   const minutes = Array.from({ length: Math.ceil(60 / minuteStep) }, (_, i) => i * minuteStep);
+
+  // hour-only: 옵션에 비활성 여부 (disabledHours + min/maxDate time)
+  const isHourOptionDisabled = (h: number, isEnd = false): boolean => {
+    if (type === 'hour' && disabledHours && disabledHours.includes(h)) return true;
+    const currentDate = isEnd ? tempValue.endDate : tempValue.date;
+    if (!currentDate) return false;
+    const minLimit = minDate ? (minDate instanceof Date ? { date: minDate } : minDate) : null;
+    const maxLimit = maxDate ? (maxDate instanceof Date ? { date: maxDate } : maxDate) : null;
+    if (minLimit?.time && isSameDay(currentDate, minLimit.date) && h < minLimit.time.hour) return true;
+    if (maxLimit?.time && isSameDay(currentDate, maxLimit.date) && h > maxLimit.time.hour) return true;
+    return false;
+  };
 
   // Calendar cell class computation
   const getCellClass = (dayInfo: { day: number; date: Date; isOther: boolean; isDisabled: boolean }) => {
@@ -996,6 +1054,50 @@
           >
             {formatDateDisplay(displayValue?.date)}
           </button>
+        {/if}
+      {:else if type === 'hour'}
+        {#if mode === 'period'}
+          <div class="{styles.timeSection} {styles.hourSection}">
+            <select
+              class="{styles.timeSelect} {styles.hourSelect} {!displayValue?.time ? styles.placeholder : ''}"
+              value={displayValue?.time?.hour ?? 0}
+              onchange={(e) => handleHourChange(e, false)}
+              {disabled}
+              aria-label="시간 선택"
+            >
+              {#each hours as h}
+                <option value={h} disabled={isHourOptionDisabled(h, false)}>{formatHourLabel(h)}</option>
+              {/each}
+            </select>
+          </div>
+          <span class={styles.separator}>~</span>
+          <div class="{styles.timeSection} {styles.hourSection}">
+            <select
+              class="{styles.timeSelect} {styles.hourSelect} {!displayValue?.endTime ? styles.placeholder : ''}"
+              value={displayValue?.endTime?.hour ?? 0}
+              onchange={(e) => handleHourChange(e, true)}
+              {disabled}
+              aria-label="종료 시간 선택"
+            >
+              {#each hours as h}
+                <option value={h} disabled={isHourOptionDisabled(h, true)}>{formatHourLabel(h)}</option>
+              {/each}
+            </select>
+          </div>
+        {:else}
+          <div class="{styles.timeSection} {styles.hourSection}">
+            <select
+              class="{styles.timeSelect} {styles.hourSelect} {!displayValue?.time ? styles.placeholder : ''}"
+              value={displayValue?.time?.hour ?? 0}
+              onchange={(e) => handleHourChange(e, false)}
+              {disabled}
+              aria-label="시간 선택"
+            >
+              {#each hours as h}
+                <option value={h} disabled={isHourOptionDisabled(h, false)}>{formatHourLabel(h)}</option>
+              {/each}
+            </select>
+          </div>
         {/if}
       {:else if type === 'time'}
         {#if mode === 'period'}

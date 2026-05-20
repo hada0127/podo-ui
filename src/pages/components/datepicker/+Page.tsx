@@ -130,6 +130,15 @@ export default function DatePickerPage() {
     return startStr;
   };
 
+  const formatHourDisplay = (value: DatePickerValue): string => {
+    if (!value.time) return '-';
+    const label = (t: TimeValue) => `${t.hour}시`;
+    if (value.endTime) {
+      return `${label(value.time)} ~ ${label(value.endTime)}`;
+    }
+    return label(value.time);
+  };
+
   return (
     <>
       <section className={styles.section}>
@@ -216,6 +225,7 @@ export default function DatePickerPage() {
                 formatDateDisplay={formatDateDisplay}
                 formatTimeDisplay={formatTimeDisplay}
                 formatDateTimeDisplay={formatDateTimeDisplay}
+                formatHourDisplay={formatHourDisplay}
               />
             ),
           },
@@ -283,7 +293,7 @@ function SvelteContent({ t }: { t: (key: string) => string }) {
             </tr>
             <tr>
               <td><code>type</code></td>
-              <td><code>'date' | 'time' | 'datetime'</code></td>
+              <td><code>'date' | 'time' | 'datetime' | 'hour'</code></td>
               <td><code>'date'</code></td>
               <td>{t('props.type')}</td>
             </tr>
@@ -352,6 +362,24 @@ function SvelteContent({ t }: { t: (key: string) => string }) {
               <td><code>1 | 5 | 10 | 15 | 20 | 30</code></td>
               <td><code>1</code></td>
               <td>{t('props.minuteStep')}</td>
+            </tr>
+            <tr>
+              <td><code>hourFormat</code></td>
+              <td><code>'24' | '12'</code></td>
+              <td><code>'24'</code></td>
+              <td>type="hour" 전용. 시간 표시 포맷 (12시간제는 오전/오후 표기).</td>
+            </tr>
+            <tr>
+              <td><code>disabledHours</code></td>
+              <td><code>number[]</code></td>
+              <td>-</td>
+              <td>type="hour" 전용. 선택 불가 시간(0-23). hourFormat과 무관하게 24시 기준.</td>
+            </tr>
+            <tr>
+              <td><code>hourStep</code></td>
+              <td><code>1 | 2 | 3 | 4 | 6 | 12</code></td>
+              <td><code>1</code></td>
+              <td>type="hour" 전용. 시 선택 간격 (예: 2면 0,2,4,...,22).</td>
             </tr>
             <tr>
               <td><code>format</code></td>
@@ -783,6 +811,7 @@ interface ReactContentProps {
   formatDateDisplay: (v: DatePickerValue) => string;
   formatTimeDisplay: (v: DatePickerValue) => string;
   formatDateTimeDisplay: (v: DatePickerValue) => string;
+  formatHourDisplay: (v: DatePickerValue) => string;
 }
 
 function ReactContent({
@@ -858,7 +887,14 @@ function ReactContent({
   formatDateDisplay,
   formatTimeDisplay,
   formatDateTimeDisplay,
+  formatHourDisplay,
 }: ReactContentProps) {
+  // Hour-only mode local states
+  const [instantHour, setInstantHour] = useState<DatePickerValue>({});
+  const [periodHour, setPeriodHour] = useState<DatePickerValue>({});
+  const [hour12, setHour12] = useState<DatePickerValue>({});
+  const [hourDisabled, setHourDisabled] = useState<DatePickerValue>({});
+  const [hourStep2, setHourStep2] = useState<DatePickerValue>({});
   return (
     <>
       <section>
@@ -886,7 +922,7 @@ function ReactContent({
             </tr>
             <tr>
               <td><code>type</code></td>
-              <td><code>'date' | 'time' | 'datetime'</code></td>
+              <td><code>'date' | 'time' | 'datetime' | 'hour'</code></td>
               <td><code>'date'</code></td>
               <td>{t('props.type')}</td>
             </tr>
@@ -955,6 +991,24 @@ function ReactContent({
               <td><code>1 | 5 | 10 | 15 | 20 | 30</code></td>
               <td><code>1</code></td>
               <td>{t('props.minuteStep')}</td>
+            </tr>
+            <tr>
+              <td><code>hourFormat</code></td>
+              <td><code>'24' | '12'</code></td>
+              <td><code>'24'</code></td>
+              <td>type="hour" 전용. 시간 표시 포맷 (12시간제는 오전/오후 표기).</td>
+            </tr>
+            <tr>
+              <td><code>disabledHours</code></td>
+              <td><code>number[]</code></td>
+              <td>-</td>
+              <td>type="hour" 전용. 선택 불가 시간(0-23). hourFormat과 무관하게 24시 기준.</td>
+            </tr>
+            <tr>
+              <td><code>hourStep</code></td>
+              <td><code>1 | 2 | 3 | 4 | 6 | 12</code></td>
+              <td><code>1</code></td>
+              <td>type="hour" 전용. 시 선택 간격 (예: 2면 0,2,4,...,22).</td>
             </tr>
             <tr>
               <td><code>format</code></td>
@@ -1089,6 +1143,20 @@ function ReactContent({
                 {formatDateTimeDisplay(instantDateTime)}
               </div>
             </div>
+
+            <div className={styles.typeCard}>
+              <h4>type="hour"</h4>
+              <p>시(hour)만 선택. 분 컬럼 없이 0~23시 한 컬럼으로 표시됨.</p>
+              <DatePicker
+                mode="instant"
+                type="hour"
+                value={instantHour}
+                onChange={setInstantHour}
+              />
+              <div className={styles.selectedValue}>
+                {formatHourDisplay(instantHour)}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1138,8 +1206,96 @@ function ReactContent({
                 {formatDateTimeDisplay(periodDateTime)}
               </div>
             </div>
+
+            <div className={styles.typeCard}>
+              <h4>type="hour" range</h4>
+              <DatePicker
+                mode="period"
+                type="hour"
+                value={periodHour}
+                onChange={setPeriodHour}
+              />
+              <div className={styles.selectedValue}>
+                {formatHourDisplay(periodHour)}
+              </div>
+            </div>
           </div>
         </div>
+      </section>
+
+      <section>
+        <h2>Hour-only 옵션</h2>
+        <p>type="hour"에서 사용 가능한 추가 옵션: <code>hourFormat</code>, <code>disabledHours</code>, <code>hourStep</code>.</p>
+        <div className={styles.demo}>
+          <div className={styles.demoTitle}>옵션별 데모</div>
+          <div className={styles.typeGrid}>
+            <div className={styles.typeCard}>
+              <h4>hourFormat="12"</h4>
+              <p>12시간제. 오전/오후 1~12시로 표시.</p>
+              <DatePicker
+                type="hour"
+                hourFormat="12"
+                value={hour12}
+                onChange={setHour12}
+              />
+              <div className={styles.selectedValue}>
+                {formatHourDisplay(hour12)}
+              </div>
+            </div>
+
+            <div className={styles.typeCard}>
+              <h4>disabledHours</h4>
+              <p>새벽/심야 시간(0-5, 22-23) 선택 불가.</p>
+              <DatePicker
+                type="hour"
+                disabledHours={[0, 1, 2, 3, 4, 5, 22, 23]}
+                value={hourDisabled}
+                onChange={setHourDisabled}
+              />
+              <div className={styles.selectedValue}>
+                {formatHourDisplay(hourDisabled)}
+              </div>
+            </div>
+
+            <div className={styles.typeCard}>
+              <h4>hourStep=2</h4>
+              <p>2시간 간격 (0, 2, 4, ..., 22).</p>
+              <DatePicker
+                type="hour"
+                hourStep={2}
+                value={hourStep2}
+                onChange={setHourStep2}
+              />
+              <div className={styles.selectedValue}>
+                {formatHourDisplay(hourStep2)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>사용 예시</h3>
+        <CodeBlock
+          language="tsx"
+          code={`// 기본 24시간제
+<DatePicker type="hour" value={value} onChange={setValue} />
+
+// 12시간제 (오전/오후)
+<DatePicker type="hour" hourFormat="12" value={value} onChange={setValue} />
+
+// 영업 시간만 (9-18시)
+<DatePicker
+  type="hour"
+  disabledHours={[0,1,2,3,4,5,6,7,8,19,20,21,22,23]}
+  value={value}
+  onChange={setValue}
+/>
+
+// 2시간 단위 알림 시간
+<DatePicker type="hour" hourStep={2} value={value} onChange={setValue} />
+
+// 시간 범위 (영업 시작-종료)
+<DatePicker mode="period" type="hour" value={range} onChange={setRange} />`}
+        />
       </section>
 
       <section>

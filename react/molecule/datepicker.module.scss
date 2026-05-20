@@ -130,6 +130,12 @@
   gap: 0;
 }
 
+// hour-only 모드: 분 컬럼이 제거되므로 단일 select가 충분한 너비 확보
+.hourSection {
+  flex: 1;
+  min-width: 0;
+}
+
 .timeSelect {
   @include p4;
   appearance: none;
@@ -164,6 +170,14 @@
     cursor: not-allowed;
     opacity: 0.6;
   }
+}
+
+// hour-only select: 한국어 라벨("3시"/"오전 3시")을 위한 너비 확보
+.hourSelect {
+  // 12h 라벨 "오전 12시" 폭 + 여백 정도
+  min-width: 72px;
+  text-align: center;
+  text-align-last: center;
 }
 
 .timeSeparator {
