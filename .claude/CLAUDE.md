@@ -123,7 +123,7 @@ docs-writer → i18n-manager (번역 필요시)
 | /dev | `.claude/commands/dev.md` | 개발 서버 |
 | /docs | `.claude/commands/docs.md` | 문서 페이지 작업 |
 | /i18n | `.claude/commands/i18n.md` | 번역 관리 |
-| /icon | `.claude/commands/icon.md` | 아이콘 빌드 |
+| /icon | `.claude/commands/icon.md` | 아이콘 추가 (woff 교체 + 매핑/문서 동기화) |
 | /commit-push | `.claude/commands/commit-push.md` | 버전 업 + 커밋 + 푸시 |
 | /publish | `.claude/commands/publish.md` | NPM 배포 |
 | /scss | `.claude/commands/scss.md` | 스타일 작업 |
