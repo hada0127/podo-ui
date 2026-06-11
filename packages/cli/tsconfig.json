@@ -12,6 +12,7 @@
     { "path": "../tokens" },
     { "path": "../icons" },
     { "path": "../codegen" },
-    { "path": "../studio" }
+    { "path": "../studio" },
+    { "path": "../mcp" }
   ]
 }

@@ -37,6 +37,7 @@ import {
 } from "@podo/tokens";
 import { buildIconAssets, emitIconCss, emitIconTypes, emitNativeGlyphMap } from "@podo/icons";
 import { generateComponentFiles, generateIndexFile, type CodegenTarget } from "@podo/codegen";
+import { startMcpServer } from "@podo/mcp";
 import {
   startStudioServer,
   type StudioBuildInput,
@@ -123,6 +124,10 @@ export async function runCli(
     }
     if (args.command === "ui") {
       await startUi(args, io);
+      return 0;
+    }
+    if (args.command === "mcp") {
+      await startMcp(args, io);
       return 0;
     }
 
@@ -446,6 +451,15 @@ export async function startUi(args: ParsedArgs, io: CliIO): Promise<void> {
   await waitForUiShutdown(server);
 }
 
+export async function startMcp(args: ParsedArgs, io: CliIO): Promise<void> {
+  const root = await findProjectRoot(io.cwd);
+  if (args.options["dry-run"]) {
+    io.stdout.log(formatInfo("mcp", `Would start Podo MCP stdio server for ${root}.`));
+    return;
+  }
+  await startMcpServer({ root });
+}
+
 export function detectFramework(packageJson: Record<string, unknown>): InitOptions["target"] {
   const dependencies = {
     ...(isRecord(packageJson.dependencies) ? packageJson.dependencies : {}),
@@ -649,7 +663,7 @@ function helpText(): string {
     "  ui         Start the local Podo Studio Web UI",
     "  update     Registered for update workflow",
     "  migrate    Registered for schema migrations",
-    "  mcp        Registered for MCP server integration",
+    "  mcp        Start the Podo MCP stdio server",
   ].join("\n");
 }
 

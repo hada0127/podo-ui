@@ -26,6 +26,7 @@
   "dependencies": {
     "@podo/codegen": "workspace:*",
     "@podo/icons": "workspace:*",
+    "@podo/mcp": "workspace:*",
     "@podo/spec": "workspace:*",
     "@podo/studio": "workspace:*",
     "@podo/tokens": "workspace:*"

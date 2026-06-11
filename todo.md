@@ -399,50 +399,50 @@
 
 ### MCP Server
 
-- [ ] `@podo/mcp` 패키지 생성
+- [x] `@podo/mcp` 패키지 생성
   - 완료 기준: MCP stdio server가 실행된다.
-- [ ] `podo mcp` CLI 연결
+- [x] `podo mcp` CLI 연결
   - 완료 기준: `npx podo mcp` 또는 동등한 명령으로 서버가 시작된다.
-- [ ] MCP data loader 구현
+- [x] MCP data loader 구현
   - 완료 기준: package default와 설치 프로젝트 `.podo` 정보를 함께 읽는다.
-- [ ] MCP tool registration 구조 구현
+- [x] MCP tool registration 구조 구현
   - 완료 기준: 도구별 파일이 분리되고 테스트 가능하다.
 
 ### Read Tools
 
-- [ ] `get_system_overview` 구현
+- [x] `get_system_overview` 구현
   - 완료 기준: version, targets, themes, components, config summary를 반환한다.
-- [ ] `search_tokens` 구현
+- [x] `search_tokens` 구현
   - 완료 기준: 이름, 역할, 타입, 값으로 토큰을 검색한다.
-- [ ] `get_token` 구현
+- [x] `get_token` 구현
   - 완료 기준: 원본 값, resolved 값, theme별 값, origin metadata를 반환한다.
-- [ ] `search_components` 구현
+- [x] `search_components` 구현
   - 완료 기준: name, category, slot, prop, target으로 검색한다.
-- [ ] `get_component_spec` 구현
+- [x] `get_component_spec` 구현
   - 완료 기준: 특정 컴포넌트의 JSON 스펙을 반환한다.
-- [ ] `get_component_example` 구현
+- [x] `get_component_example` 구현
   - 완료 기준: web/react/hono/native별 사용 예시를 반환한다.
-- [ ] `validate_podo_project` 구현
+- [x] `validate_podo_project` 구현
   - 완료 기준: `.podo` 검증 결과를 MCP 응답으로 반환한다.
-- [ ] `explain_migration` 구현
+- [x] `explain_migration` 구현
   - 완료 기준: update 시 변경점과 충돌 가능성을 설명한다.
 
 ### Write/Suggest Tools
 
-- [ ] `suggest_component_spec` 구현
+- [x] `suggest_component_spec` 구현
   - 완료 기준: 사용자 요구를 기반으로 component spec 초안을 반환하되 파일은 쓰지 않는다.
-- [ ] write tool 정책 작성
+- [x] write tool 정책 작성
   - 완료 기준: `write_*` 도구는 dry-run, 경로 제한, validation을 반드시 거친다.
-- [ ] MCP 보안 가이드 작성
+- [x] MCP 보안 가이드 작성
   - 완료 기준: Claude Code/Codex 등록 방법과 안전한 사용 범위를 문서화한다.
 
 ### AI 사용성
 
-- [ ] Claude Code 등록 문서 작성
+- [x] Claude Code 등록 문서 작성
   - 완료 기준: `claude mcp add podo -- npx podo mcp` 흐름이 검증된다.
-- [ ] Codex 사용 문서 작성
+- [x] Codex 사용 문서 작성
   - 완료 기준: MCP 또는 JSON fallback 경로가 문서화된다.
-- [ ] AI prompt examples 작성
+- [x] AI prompt examples 작성
   - 완료 기준: 컴포넌트 생성, 토큰 조회, migration 설명 예시가 있다.
 
 ## Phase 7: 업데이트와 마이그레이션

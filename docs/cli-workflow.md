@@ -8,7 +8,8 @@ Phase 4 implements the local `podo` CLI foundation.
 - `podo build`: builds tokens, icons, and component target files from package defaults plus project overrides.
 - `podo validate`: validates `.podo` config, lock, tokens, components, and icon manifest.
 - `podo ui`: starts the local Podo Studio Web UI for `.podo` setup, editing, validation, and build.
-- `podo update`, `podo migrate`, and `podo mcp` are registered route entries for later phases.
+- `podo mcp`: starts the Podo MCP stdio server for AI tools.
+- `podo update` and `podo migrate` are registered route entries for later phases.
 
 ## Project Safety
 
@@ -45,3 +46,17 @@ podo ui --host 127.0.0.1 --port 4873
 - CI and smoke checks can use `podo ui --dry-run`.
 - `podo ui --once` starts the Hono server and immediately closes it after startup validation.
 - Studio setup calls the same init/build pipeline as the CLI, so saved settings and generated outputs remain reproducible from `.podo` JSON.
+
+## MCP
+
+- Smoke check:
+
+```sh
+podo mcp --dry-run
+```
+
+- Claude Code registration:
+
+```sh
+claude mcp add podo -- npx podo mcp
+```

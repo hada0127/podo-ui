@@ -501,10 +501,14 @@ claude mcp add podo -- npx podo mcp
 
 ### Phase 6: MCP
 
-- MCP server package 구현
-- token/component/theme query tools 구현
-- validation/diff/migration 설명 도구 구현
-- Claude Code, Codex 사용 가이드 작성
+- `@podo/mcp`는 `@modelcontextprotocol/sdk` 기반 stdio server를 제공한다.
+- `podo mcp`와 `podo-mcp` bin으로 서버를 실행할 수 있다.
+- MCP data loader는 package default token/component/icon spec과 설치 프로젝트 `.podo` override를 함께 읽는다.
+- tool registration은 overview, token, component, validation/migration, suggest tool 파일로 분리한다.
+- read tools는 `get_system_overview`, `search_tokens`, `get_token`, `search_components`, `get_component_spec`, `get_component_example`, `validate_podo_project`, `explain_migration`을 제공한다.
+- `suggest_component_spec`은 파일을 쓰지 않고 draft component JSON만 반환한다.
+- write tool 정책은 `write_*`, dry-run, `.podo` 경로 제한, validation-before-write를 요구한다.
+- Claude Code, Codex 사용 가이드와 prompt examples를 문서화한다.
 
 완료 기준: AI 도구가 MCP를 통해 Podo 컴포넌트와 토큰을 조회하고 정확한 import/props로 코드를 작성할 수 있다.
 
