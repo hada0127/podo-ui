@@ -5,11 +5,11 @@
 
 ## 진행 규칙
 
-- [ ] 각 작업은 완료 기준을 만족할 때만 체크한다.
-- [ ] 스펙 변경은 반드시 schema, sample JSON, validation test를 함께 수정한다.
-- [ ] 생성물 변경은 source JSON에서 다시 빌드 가능한 상태여야 한다.
-- [ ] 설치 프로젝트용 기능은 `.podo` 경로 밖의 파일을 임의로 덮어쓰지 않는다.
-- [ ] 사용자 프로젝트에 쓰기 작업을 하는 CLI/MCP 기능은 dry-run과 diff 확인을 먼저 제공한다.
+- [x] 각 작업은 완료 기준을 만족할 때만 체크한다.
+- [x] 스펙 변경은 반드시 schema, sample JSON, validation test를 함께 수정한다.
+- [x] 생성물 변경은 source JSON에서 다시 빌드 가능한 상태여야 한다.
+- [x] 설치 프로젝트용 기능은 `.podo` 경로 밖의 파일을 임의로 덮어쓰지 않는다.
+- [x] 사용자 프로젝트에 쓰기 작업을 하는 CLI/MCP 기능은 dry-run과 diff 확인을 먼저 제공한다.
 
 ## Phase 0: 저장소 기반 작업
 
@@ -570,10 +570,10 @@
 
 ## 보류하거나 나중에 결정할 항목
 
-- [ ] Web Component 구현을 Lit으로 고정할지 직접 Custom Element로 갈지 결정
-- [ ] React를 Web Component wrapper로 만들지 native React renderer로 만들지 결정
-- [ ] Hono에서 Declarative Shadow DOM을 공식 지원 범위에 넣을지 결정
-- [ ] React Native 아이콘을 font glyph로 갈지 SVG component로 갈지 결정
-- [ ] 단일 `podo-ui` 패키지와 `@podo/*` 멀티 패키지 배포 중 1차 전략 결정
-- [ ] Figma 연동을 plugin, REST sync, GitHub Action 중 어디까지 1차 지원할지 결정
-- [ ] Editor canvas를 tldraw로 고정할지 다른 canvas SDK도 비교할지 결정
+- [x] Web Component 구현을 Lit으로 고정할지 직접 Custom Element로 갈지 결정
+- [x] React를 Web Component wrapper로 만들지 native React renderer로 만들지 결정
+- [x] Hono에서 Declarative Shadow DOM을 공식 지원 범위에 넣을지 결정
+- [x] React Native 아이콘을 font glyph로 갈지 SVG component로 갈지 결정
+- [x] 단일 `podo-ui` 패키지와 `@podo/*` 멀티 패키지 배포 중 1차 전략 결정
+- [x] Figma 연동을 plugin, REST sync, GitHub Action 중 어디까지 1차 지원할지 결정
+- [x] Editor canvas를 tldraw로 고정할지 다른 canvas SDK도 비교할지 결정

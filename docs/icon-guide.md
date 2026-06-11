@@ -89,4 +89,4 @@ The CSS class shape is:
 }
 ```
 
-Web and React renderers use the font class. React Native uses the generated glyph map or a target-specific icon adapter.
+Web and React renderers use the font class. React Native uses the generated glyph map as the MVP default; target-specific SVG component adapters can be added later for multi-color or per-icon tree-shaking needs.

@@ -7,6 +7,7 @@ Phase 8 introduces `@podo/editor` as the design-system development editor surfac
 - The editor package exports `PodoEditorApp`, a React/tldraw prototype.
 - Run the development editor with `pnpm --filter @podo/editor dev`.
 - `PodoComponentShapeUtil` registers the `podo-component` custom shape.
+- tldraw is the MVP canvas SDK. Compare alternatives only after layout/page schemas require capabilities the current shape model cannot support.
 - Shape props store component id, label, selected variant, props JSON, slots JSON, width, and height.
 - The custom shape follows tldraw's ShapeUtil model: props validators, geometry, render component, resize handling, and selection indicator.
 - tldraw shape changes are synchronized back into `EditorCanvasState` through shape side effects.

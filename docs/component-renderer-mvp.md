@@ -25,6 +25,7 @@ Phase 3 keeps component behavior shared and renderer output target-specific.
 - Hono components are static TSX/SSR renderers.
 - Events are emitted only as attributes or form state in Phase 3. Client interactivity is intentionally outside this MVP.
 - `renderCriticalCss()` provides initial theme attributes and critical CSS insertion for Hono responses.
+- Declarative Shadow DOM is not an official MVP support target. It requires a separate client-entry and hydration strategy before being added.
 
 ## React Native
 
