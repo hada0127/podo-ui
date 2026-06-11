@@ -82,7 +82,20 @@ importers:
 
   examples/web: {}
 
-  packages/cli: {}
+  packages/cli:
+    dependencies:
+      '@podo/codegen':
+        specifier: workspace:*
+        version: link:../codegen
+      '@podo/icons':
+        specifier: workspace:*
+        version: link:../icons
+      '@podo/spec':
+        specifier: workspace:*
+        version: link:../spec
+      '@podo/tokens':
+        specifier: workspace:*
+        version: link:../tokens
 
   packages/codegen:
     dependencies:

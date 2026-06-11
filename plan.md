@@ -474,8 +474,12 @@ claude mcp add podo -- npx podo mcp
 ### Phase 4: CLI와 `.podo`
 
 - `podo init` 구현
+  - non-interactive 옵션과 최소 interactive wizard를 함께 제공한다.
+  - `.podo/config.json`, `.podo/lock.json`, tokens/themes/components/icons/generated/cache/bootstrap 구조를 만든다.
 - `podo build` 구현
+  - token, icon, component target files를 생성하고 `--dry-run`, `--target`, `--out-dir`, build cache를 제공한다.
 - `podo validate` 구현
+  - config, lock, token, component, icon manifest를 검증하고 JSON report를 출력할 수 있다.
 - framework별 bootstrap generator 구현
 - `.podo/lock.json` 구현
 

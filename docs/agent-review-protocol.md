@@ -15,6 +15,14 @@ claude -p --permission-mode dontAsk --tools "Read,Grep,Bash" -- \
 
 The `--` separator before the prompt is required when `--tools` is present. Without it, Claude Code may treat the prompt as part of the tools list and fail with `Input must be provided either through stdin or as a prompt argument when using --print`.
 
+If a tool-enabled Claude Code print review hangs, verify the CLI path with safe mode before retrying:
+
+```bash
+claude -p --safe-mode --permission-mode dontAsk -- "Reply with OK only."
+```
+
+In this repository, that smoke command has returned `OK`. A prompt-only safe-mode review can be used as a fallback when the tool-enabled review is blocked, but the prompt must include the current scope, local verification results, and the relevant diff or implementation summary.
+
 ## Agy Review Command Template
 
 ```bash

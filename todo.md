@@ -277,50 +277,50 @@
 
 ### CLI Foundation
 
-- [ ] `@podo/cli` 패키지 생성
+- [x] `@podo/cli` 패키지 생성
   - 완료 기준: `podo` bin이 로컬에서 실행된다.
-- [ ] CLI command router 구현
+- [x] CLI command router 구현
   - 완료 기준: `init`, `build`, `validate`, `ui`, `update`, `migrate`, `mcp` 명령이 등록된다.
-- [ ] project root 탐색 구현
+- [x] project root 탐색 구현
   - 완료 기준: package.json 또는 git root 기준으로 설치 프로젝트 루트를 찾는다.
-- [ ] config loader 구현
+- [x] config loader 구현
   - 완료 기준: `.podo/config.json`이 없을 때 명확한 안내를 출력한다.
-- [ ] CLI logging/error format 정의
+- [x] CLI logging/error format 정의
   - 완료 기준: validation error, warning, next action이 읽기 쉽게 출력된다.
 
 ### Init
 
-- [ ] `podo init` 인터랙티브 wizard 구현
+- [x] `podo init` 인터랙티브 wizard 구현
   - 완료 기준: environment, theme, dark mode, outDir를 설정한다.
-- [ ] non-interactive init 옵션 구현
+- [x] non-interactive init 옵션 구현
   - 완료 기준: CI나 템플릿에서 `podo init --target react --theme dashboard`가 동작한다.
-- [ ] `.podo` 디렉토리 생성 구현
+- [x] `.podo` 디렉토리 생성 구현
   - 완료 기준: config, lock, tokens, themes, components, icons, generated, cache 구조를 만든다.
-- [ ] framework 감지 구현
+- [x] framework 감지 구현
   - 완료 기준: React, Hono, React Native 프로젝트를 package.json 기반으로 추정한다.
-- [ ] framework별 bootstrap 파일 생성
+- [x] framework별 bootstrap 파일 생성
   - 완료 기준: React provider, Hono CSS helper, RN provider 연결 예시를 만든다.
 
 ### Build
 
-- [ ] `podo build` 구현
+- [x] `podo build` 구현
   - 완료 기준: config target에 맞춰 token/icon/component build를 실행한다.
-- [ ] target별 build 옵션 구현
+- [x] target별 build 옵션 구현
   - 완료 기준: `--target web|react|hono|native`가 동작한다.
-- [ ] outDir 쓰기 정책 구현
+- [x] outDir 쓰기 정책 구현
   - 완료 기준: `.podo/generated`와 프로젝트 지정 outDir 중 선택 가능하다.
-- [ ] build dry-run 구현
+- [x] build dry-run 구현
   - 완료 기준: 생성/수정/삭제될 파일 목록을 실제 쓰기 전에 볼 수 있다.
-- [ ] build cache 구현
+- [x] build cache 구현
   - 완료 기준: 입력 hash가 같으면 불필요한 재생성을 건너뛴다.
 
 ### Validate
 
-- [ ] `podo validate` 구현
+- [x] `podo validate` 구현
   - 완료 기준: `.podo` config, tokens, themes, components, icons를 모두 검증한다.
-- [ ] validation report 파일 출력 옵션 구현
+- [x] validation report 파일 출력 옵션 구현
   - 완료 기준: JSON report를 CI에서 사용할 수 있다.
-- [ ] schema mismatch 감지 구현
+- [x] schema mismatch 감지 구현
   - 완료 기준: lock schema version이 현재 패키지와 다르면 migrate 안내를 한다.
 
 ## Phase 5: 경량 Web UI

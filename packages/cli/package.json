@@ -22,5 +22,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@podo/codegen": "workspace:*",
+    "@podo/icons": "workspace:*",
+    "@podo/spec": "workspace:*",
+    "@podo/tokens": "workspace:*"
   }
 }

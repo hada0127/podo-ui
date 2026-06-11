@@ -82,6 +82,12 @@ Use `--` before the prompt when invoking Claude Code with `--tools`; otherwise t
 claude -p --permission-mode dontAsk --tools "Read,Grep,Bash" -- "Strictly review the current Podo v2 repository scope. Do not edit files. Return PASS only if the scope can be checked in todo.md."
 ```
 
+If Claude Code tool-enabled print mode hangs in this repository, first verify the CLI itself with the safe-mode smoke command, then use safe-mode for a prompt-only review fallback.
+
+```bash
+claude -p --safe-mode --permission-mode dontAsk -- "Reply with OK only."
+```
+
 For Agy print mode, put `--print-timeout` after the prompt.
 
 ```bash
