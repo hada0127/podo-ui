@@ -19,6 +19,7 @@ describe("@podo/studio", () => {
     const html = await htmlResponse.text();
     expect(html).toContain("Podo Studio");
     expect(html).toContain("/api/context");
+    expect(html).toContain("/api/migration/plan");
     expect(html).toContain('<option value="{');
 
     const contextResponse = await app.request("/api/context");
@@ -169,6 +170,84 @@ describe("@podo/studio", () => {
       headers: { "content-type": "application/json" },
     });
     expect(saveComponent.status).toBe(200);
+
+    await writeFile(
+      join(root, ".podo/themes/legacy.tokens.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "tokens",
+          category: "theme",
+          tokens: {
+            color: {
+              primary: { $type: "color", $value: "#3366ff" },
+              text: { $type: "color", $value: "{color.primary}" },
+            },
+          },
+        },
+        null,
+        2
+      )}\n`
+    );
+    await writeFile(
+      join(root, ".podo/components/button.component.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "component",
+          id: "button",
+          name: "Button",
+          category: "atom",
+          status: "stable",
+          anatomy: [{ name: "root" }],
+          slots: [],
+          props: [{ name: "isDisabled", type: { kind: "boolean" } }],
+          variants: [],
+          states: [],
+          tokens: { "root.background": "{color.primary}" },
+          targets: {
+            web: { supported: true, limitations: [] },
+            react: { supported: true, limitations: [] },
+            hono: { supported: true, limitations: [] },
+            native: { supported: true, limitations: [] },
+          },
+          accessibility: { aria: [], keyboard: [] },
+          examples: [],
+        },
+        null,
+        2
+      )}\n`
+    );
+    const migrationPlanResponse = await app.request("/api/migration/plan", {
+      method: "POST",
+      body: JSON.stringify({ to: "2.1.0" }),
+      headers: { "content-type": "application/json" },
+    });
+    expect(migrationPlanResponse.status).toBe(200);
+    const migrationPlan = (await migrationPlanResponse.json()) as {
+      plan: { files: Array<{ path: string; action: string }> };
+    };
+    expect(migrationPlan.plan.files.some((file) => file.action === "update")).toBe(true);
+    const migrationApply = await app.request("/api/migration/apply", {
+      method: "POST",
+      body: JSON.stringify({ to: "2.1.0" }),
+      headers: { "content-type": "application/json" },
+    });
+    expect(migrationApply.status).toBe(200);
+    const migratedTokens = JSON.parse(
+      await readFile(join(root, ".podo/themes/legacy.tokens.json"), "utf8")
+    ) as { tokens: { color: Record<string, { $value: string }> } };
+    const migratedButton = JSON.parse(
+      await readFile(join(root, ".podo/components/button.component.json"), "utf8")
+    ) as { props: Array<{ name: string }>; tokens: Record<string, string> };
+    const migratedLock = JSON.parse(await readFile(join(root, ".podo/lock.json"), "utf8")) as {
+      packageVersion: string;
+    };
+    expect(migratedTokens.tokens.color.brand?.$value).toBe("#3366ff");
+    expect(migratedTokens.tokens.color.text?.$value).toBe("{color.brand}");
+    expect(migratedButton.props[0]?.name).toBe("disabled");
+    expect(migratedButton.tokens["root.background"]).toBe("{color.brand}");
+    expect(migratedLock.packageVersion).toBe("2.1.0");
 
     const svg = await app.request("/api/icons/svg", {
       method: "POST",

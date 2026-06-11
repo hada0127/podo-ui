@@ -7,5 +7,5 @@
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["src/**/*.test.ts"],
-  "references": [{ "path": "../spec" }, { "path": "../tokens" }]
+  "references": [{ "path": "../spec" }, { "path": "../tokens" }, { "path": "../migration" }]
 }

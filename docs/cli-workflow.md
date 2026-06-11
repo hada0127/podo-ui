@@ -1,6 +1,6 @@
 # CLI Workflow
 
-Phase 4 implements the local `podo` CLI foundation.
+Phase 4 implements the local `podo` CLI foundation. Phase 7 adds update and migration commands.
 
 ## Commands
 
@@ -9,7 +9,8 @@ Phase 4 implements the local `podo` CLI foundation.
 - `podo validate`: validates `.podo` config, lock, tokens, components, and icon manifest.
 - `podo ui`: starts the local Podo Studio Web UI for `.podo` setup, editing, validation, and build.
 - `podo mcp`: starts the Podo MCP stdio server for AI tools.
-- `podo update` and `podo migrate` are registered route entries for later phases.
+- `podo update`: plans migrations and reports conflicts without writing files.
+- `podo migrate`: applies reviewed migrations to `.podo` specs and updates `.podo/lock.json`.
 
 ## Project Safety
 
@@ -18,6 +19,8 @@ Phase 4 implements the local `podo` CLI foundation.
 - `build --dry-run` returns the planned file list without writing generated files.
 - Build cache state is stored in `.podo/cache/build.json`; unchanged inputs are skipped unless `--force` is used.
 - `ui` file writes are limited to `.podo` JSON specs and SVG icon sources.
+- `update` is dry-run only; migration reports must be written inside `.podo`.
+- `migrate` writes only `.podo` JSON specs and `.podo/lock.json`.
 
 ## Init Defaults
 
@@ -34,6 +37,24 @@ podo init --target react --theme dashboard --out-dir src/podo --yes
 - Validation reports can be written with `podo validate --report .podo/report.json`.
 - Lock schema mismatches emit a migration-oriented issue and next action.
 - Error logs use `[podo:error]`, and next actions use `[podo:next]`.
+
+## Migration
+
+- Default dry-run:
+
+```sh
+podo update --dry-run --to 2.1.0
+```
+
+- Explicit manifest:
+
+```sh
+podo update --dry-run --manifest .podo/migrations/2.1.0.json
+podo migrate --manifest .podo/migrations/2.1.0.json
+```
+
+- Blocking conflicts stop `podo migrate`; warnings are reported but do not block apply.
+- See `docs/migration-workflow.md` for manifest shape, conflict rules, lockfile updates, and rollback.
 
 ## Studio
 

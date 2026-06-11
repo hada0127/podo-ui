@@ -11,6 +11,7 @@
     { "path": "./packages/native" },
     { "path": "./packages/codegen" },
     { "path": "./packages/editor" },
+    { "path": "./packages/migration" },
     { "path": "./packages/studio" },
     { "path": "./packages/mcp" },
     { "path": "./packages/cli" }

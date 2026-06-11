@@ -371,7 +371,7 @@ datepicker/
 6. 사용자가 승인하면 migration 적용
 7. `podo build` 실행
 
-마이그레이션은 JSON Patch 형태로 관리한다.
+마이그레이션은 JSON Patch 형태로 관리하고, Podo 전용 operation은 runner에서 JSON Patch로 컴파일한다.
 
 ```json
 {
@@ -380,6 +380,8 @@ datepicker/
   "operations": [{ "op": "renameToken", "from": "color.text.body", "to": "color.text.default" }]
 }
 ```
+
+Phase 7의 기본 구현은 `@podo/migration`을 공통 계층으로 두고 CLI와 Studio가 같은 dry-run plan, conflict detector, lockfile update 로직을 사용한다. 적용 범위는 `.podo` JSON 상태로 제한하고 rollback은 VCS 기반으로 수행한다.
 
 ## 13. MCP 설계
 

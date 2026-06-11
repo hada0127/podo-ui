@@ -5,7 +5,7 @@ import type { Dirent } from "node:fs";
 import { createInterface } from "node:readline/promises";
 import { stdin as nodeStdin, stdout as nodeStdout } from "node:process";
 import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   parseComponentDocument,
@@ -37,6 +37,17 @@ import {
 } from "@podo/tokens";
 import { buildIconAssets, emitIconCss, emitIconTypes, emitNativeGlyphMap } from "@podo/icons";
 import { generateComponentFiles, generateIndexFile, type CodegenTarget } from "@podo/codegen";
+import {
+  createDefaultMigrationManifest,
+  hashJson as hashMigrationJson,
+  parseMigrationManifest,
+  runMigrationPlan,
+  updateLockAfterMigration,
+  validateMigrationFile,
+  type MigrationFile,
+  type MigrationManifest,
+  type MigrationPlan,
+} from "@podo/migration";
 import { startMcpServer } from "@podo/mcp";
 import {
   startStudioServer,
@@ -126,14 +137,18 @@ export async function runCli(
       await startUi(args, io);
       return 0;
     }
+    if (args.command === "update") {
+      await updateProject(args, io);
+      return 0;
+    }
+    if (args.command === "migrate") {
+      await migrateProject(args, io);
+      return 0;
+    }
     if (args.command === "mcp") {
       await startMcp(args, io);
       return 0;
     }
-
-    io.stdout.log(
-      formatInfo(args.command, `${args.command} is registered but not implemented in Phase 4.`)
-    );
     return 0;
   } catch (error) {
     io.stderr.error(formatError(args.command, error));
@@ -460,6 +475,202 @@ export async function startMcp(args: ParsedArgs, io: CliIO): Promise<void> {
   await startMcpServer({ root });
 }
 
+export async function updateProject(args: ParsedArgs, io: CliIO): Promise<MigrationPlan> {
+  const root = await findProjectRoot(io.cwd);
+  const plan = await createProjectMigrationPlan(root, args, true);
+  logMigrationPlan("update", plan, io);
+  const reportPath = stringOption(args, "report");
+  if (reportPath) {
+    await writeMigrationReport(root, reportPath, plan);
+  }
+  io.stdout.log(formatInfo("update", "Dry-run only. Run `podo migrate` to apply changes."));
+  return plan;
+}
+
+export async function migrateProject(args: ParsedArgs, io: CliIO): Promise<MigrationPlan> {
+  const root = await findProjectRoot(io.cwd);
+  const dryRun = Boolean(args.options["dry-run"]);
+  const plan = await createProjectMigrationPlan(root, args, dryRun);
+  logMigrationPlan("migrate", plan, io);
+  const reportPath = stringOption(args, "report");
+  if (reportPath) {
+    await writeMigrationReport(root, reportPath, plan);
+  }
+  const blocking = plan.conflicts.filter((conflict) => conflict.severity === "blocking");
+  if (blocking.length) {
+    throw new Error(
+      `Migration has ${blocking.length} blocking conflict${blocking.length === 1 ? "" : "s"}.`
+    );
+  }
+  if (dryRun) {
+    return plan;
+  }
+
+  for (const file of plan.files.filter((item) => item.action === "update")) {
+    const filePath = resolvePodoFilePath(root, file.path);
+    await writeFile(filePath, `${JSON.stringify(file.after, null, 2)}\n`);
+  }
+
+  const lockPath = resolvePodoFilePath(root, ".podo/lock.json");
+  const lock = await readJson<PodoLock>(lockPath);
+  if (!lock) {
+    throw new Error(".podo/lock.json was not found. Run `podo init` first.");
+  }
+  const migratedLock = updateLockAfterMigration({
+    lock,
+    manifest: plan.manifest,
+    generatedHash: hashMigrationJson({
+      manifest: plan.manifest,
+      files: plan.files.map((file) => ({ path: file.path, afterHash: file.afterHash })),
+    }),
+  });
+  await writeFile(lockPath, `${JSON.stringify(migratedLock, null, 2)}\n`);
+  io.stdout.log(
+    formatInfo("migrate", `Applied migration ${plan.manifest.from} -> ${plan.manifest.to}.`)
+  );
+  return plan;
+}
+
+async function createProjectMigrationPlan(
+  root: string,
+  args: ParsedArgs,
+  dryRun: boolean
+): Promise<MigrationPlan> {
+  const lockPath = resolvePodoFilePath(root, ".podo/lock.json");
+  const lock = await readJson<PodoLock>(lockPath);
+  if (!lock) {
+    throw new Error(".podo/lock.json was not found. Run `podo init` first.");
+  }
+
+  const manifest = await loadProjectMigrationManifest(root, args, lock);
+  const files = await loadProjectMigrationFiles(root);
+  const issues = files.flatMap(validateMigrationFile);
+  if (issues.length) {
+    throw new Error(
+      `Migration input validation failed:\n${issues
+        .map((issue) => `${issue.path}: ${issue.message}`)
+        .join("\n")}`
+    );
+  }
+  return runMigrationPlan({ manifest, files, dryRun });
+}
+
+async function loadProjectMigrationManifest(
+  root: string,
+  args: ParsedArgs,
+  lock: PodoLock
+): Promise<MigrationManifest> {
+  const manifestPath = stringOption(args, "manifest") ?? args.positionals[0];
+  if (manifestPath) {
+    const manifest = await readJson<unknown>(resolve(root, manifestPath));
+    if (!manifest) {
+      throw new Error(`Migration manifest was not found at ${manifestPath}.`);
+    }
+    return parseMigrationManifest(manifest);
+  }
+
+  const targetVersion = stringOption(args, "to") ?? lock.packageVersion;
+  return createDefaultMigrationManifest({
+    from: lock.packageVersion,
+    to: targetVersion,
+    packageVersion: targetVersion,
+  });
+}
+
+async function loadProjectMigrationFiles(root: string): Promise<MigrationFile[]> {
+  const files: MigrationFile[] = [];
+  for (const relative of [".podo/config.json", ".podo/lock.json", ".podo/icons/manifest.json"]) {
+    const document = await readJson<unknown>(resolvePodoFilePath(root, relative));
+    if (document !== undefined) {
+      files.push({ path: relative, document });
+    }
+  }
+
+  files.push(
+    ...(await readProjectJsonFiles(root, ".podo/tokens")),
+    ...(await readProjectJsonFiles(root, ".podo/themes")),
+    ...(await readProjectJsonFiles(root, ".podo/components"))
+  );
+  return files.sort((left, right) => left.path.localeCompare(right.path));
+}
+
+async function readProjectJsonFiles(
+  root: string,
+  relativeDirectory: string
+): Promise<MigrationFile[]> {
+  const directory = resolvePodoFilePath(root, relativeDirectory);
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    (error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") {
+        return [] as Dirent[];
+      }
+      throw error;
+    }
+  );
+  const nested = await Promise.all(
+    entries.map(async (entry) => {
+      const absolute = join(directory, entry.name);
+      const relative = relativePath(root, absolute);
+      if (entry.isDirectory()) {
+        return readProjectJsonFiles(root, relative);
+      }
+      if (!entry.isFile() || !entry.name.endsWith(".json")) {
+        return [] as MigrationFile[];
+      }
+      return [{ path: relative, document: JSON.parse(await readFile(absolute, "utf8")) }];
+    })
+  );
+  return nested.flat();
+}
+
+async function writeMigrationReport(
+  root: string,
+  reportPath: string,
+  plan: MigrationPlan
+): Promise<void> {
+  const filePath = resolvePodoFilePath(root, reportPath);
+  await mkdir(dirname(filePath), { recursive: true });
+  await writeFile(filePath, `${JSON.stringify(plan, null, 2)}\n`);
+}
+
+function logMigrationPlan(scope: "update" | "migrate", plan: MigrationPlan, io: CliIO): void {
+  const changed = plan.files.filter((file) => file.action === "update");
+  const blocking = plan.conflicts.filter((conflict) => conflict.severity === "blocking");
+  io.stdout.log(
+    formatInfo(
+      scope,
+      `${plan.dryRun ? "Dry run planned" : "Planned"} ${changed.length} file update${
+        changed.length === 1 ? "" : "s"
+      } for ${plan.manifest.from} -> ${plan.manifest.to}.`
+    )
+  );
+  for (const file of changed) {
+    io.stdout.log(`[podo:plan] update ${file.path} (${file.operations.length} patches)`);
+  }
+  for (const conflict of plan.conflicts) {
+    const log = conflict.severity === "blocking" ? io.stderr.error : io.stdout.log;
+    log(
+      `[podo:conflict] ${conflict.severity} ${conflict.code} ${conflict.path} - ${conflict.message}`
+    );
+  }
+  if (blocking.length) {
+    io.stderr.error("[podo:next] Resolve blocking conflicts before running `podo migrate`.");
+  }
+}
+
+function resolvePodoFilePath(root: string, unsafePath: string): string {
+  const normalized = unsafePath.replaceAll("\\", "/").replace(/^\/+/, "");
+  if (normalized !== ".podo" && !normalized.startsWith(".podo/")) {
+    throw new Error(`Podo migration writes are limited to .podo paths. Received ${unsafePath}.`);
+  }
+  const podoRoot = resolve(root, ".podo");
+  const absolute = resolve(root, normalized);
+  if (absolute !== podoRoot && !absolute.startsWith(`${podoRoot}${sep}`)) {
+    throw new Error(`Path escapes .podo: ${unsafePath}.`);
+  }
+  return absolute;
+}
+
 export function detectFramework(packageJson: Record<string, unknown>): InitOptions["target"] {
   const dependencies = {
     ...(isRecord(packageJson.dependencies) ? packageJson.dependencies : {}),
@@ -661,8 +872,8 @@ function helpText(): string {
     "  build      Build tokens, icons, and component target files",
     "  validate   Validate .podo config, tokens, components, and icons",
     "  ui         Start the local Podo Studio Web UI",
-    "  update     Registered for update workflow",
-    "  migrate    Registered for schema migrations",
+    "  update     Plan package/schema migrations without writing files",
+    "  migrate    Apply reviewed migrations to .podo specs and lockfile",
     "  mcp        Start the Podo MCP stdio server",
   ].join("\n");
 }

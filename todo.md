@@ -447,19 +447,19 @@
 
 ## Phase 7: 업데이트와 마이그레이션
 
-- [ ] migration manifest schema 작성
+- [x] migration manifest schema 작성
   - 완료 기준: from/to version, operations, risk level, notes를 검증한다.
-- [ ] JSON Patch 기반 migration runner 구현
+- [x] JSON Patch 기반 migration runner 구현
   - 완료 기준: renameToken, moveComponentProp, removeDeprecatedToken 등 기본 op가 동작한다.
-- [ ] `podo update --dry-run` 구현
+- [x] `podo update --dry-run` 구현
   - 완료 기준: 새 버전과 현재 `.podo` 차이를 쓰기 없이 보고한다.
-- [ ] conflict detector 구현
+- [x] conflict detector 구현
   - 완료 기준: 사용자 override와 새 기본 스펙 변경이 충돌하면 명확히 표시한다.
-- [ ] migration UI 구현
+- [x] migration UI 구현
   - 완료 기준: Studio에서 변경점, 자동 적용 가능 항목, 수동 처리 항목을 볼 수 있다.
-- [ ] lockfile update 구현
+- [x] lockfile update 구현
   - 완료 기준: migration 성공 후 `.podo/lock.json`이 갱신된다.
-- [ ] rollback 전략 문서화
+- [x] rollback 전략 문서화
   - 완료 기준: migration 전 backup 또는 git diff 기반 복구 방법이 안내된다.
 
 ## Phase 8: 고급 편집 도구

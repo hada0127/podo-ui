@@ -93,6 +93,9 @@ importers:
       '@podo/mcp':
         specifier: workspace:*
         version: link:../mcp
+      '@podo/migration':
+        specifier: workspace:*
+        version: link:../migration
       '@podo/spec':
         specifier: workspace:*
         version: link:../spec
@@ -156,6 +159,15 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
 
+  packages/migration:
+    dependencies:
+      '@podo/spec':
+        specifier: workspace:*
+        version: link:../spec
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+
   packages/native:
     dependencies:
       '@podo/core':
@@ -188,6 +200,9 @@ importers:
       '@hono/node-server':
         specifier: ^2.0.4
         version: 2.0.4(hono@4.12.25)
+      '@podo/migration':
+        specifier: workspace:*
+        version: link:../migration
       '@podo/spec':
         specifier: workspace:*
         version: link:../spec

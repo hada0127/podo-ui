@@ -23,6 +23,7 @@ Phase 5 introduces `@podo/studio`, the installed-project lightweight Web UI serv
 - Components: package/project component list, props, variants, states, slots, gnb/lng local templates.
 - Icons: group JSON editor, SVG import, codepoint preview, rebuild action.
 - Build: validation panel, dry-run file diff, target generated file preview.
+- Migration: target version, optional manifest JSON, conflict report, file update preview, apply.
 
 ## API
 
@@ -33,6 +34,8 @@ Phase 5 introduces `@podo/studio`, the installed-project lightweight Web UI serv
 - `POST /api/setup`: write initial setup and run the first build through injected actions.
 - `POST /api/build`: run build or build dry-run through injected actions.
 - `POST /api/validate`: run validation through injected actions or local Studio validation.
+- `POST /api/migration/plan`: create a dry-run migration plan using the shared migration runner.
+- `POST /api/migration/apply`: apply a reviewed migration to `.podo` and update the lockfile.
 - `POST /api/components/local`: create gnb/lng local component specs.
 - `POST /api/icons/svg`: import SVG icon sources.
 - `PUT /api/icons/groups`: update icon manifest groups.

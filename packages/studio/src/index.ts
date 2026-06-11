@@ -27,6 +27,17 @@ import {
   type ResolvedToken,
   type TokenSource,
 } from "@podo/tokens";
+import {
+  createDefaultMigrationManifest,
+  hashJson as hashMigrationJson,
+  parseMigrationManifest,
+  runMigrationPlan,
+  updateLockAfterMigration,
+  validateMigrationFile,
+  type MigrationFile,
+  type MigrationManifest,
+  type MigrationPlan,
+} from "@podo/migration";
 import { Hono } from "hono";
 
 export const packageName = "@podo/studio";
@@ -57,6 +68,11 @@ export interface StudioBuildInput {
 
 export interface StudioValidateInput {
   report?: string;
+}
+
+export interface StudioMigrationInput {
+  manifest?: unknown;
+  to?: string;
 }
 
 export interface StudioActions {
@@ -270,6 +286,35 @@ export function createStudioApp(options: StudioServerOptions): Hono {
       ? await actions.validate(input)
       : await validateStudioProject(root);
     return context.json({ ok: report.ok, report }, report.ok ? 200 : 422);
+  });
+
+  app.post("/api/migration/plan", async (context) => {
+    const input = await context.req.json<StudioMigrationInput>().catch(() => ({}));
+    const plan = await createStudioMigrationPlan(root, input, true);
+    return context.json({ ok: true, plan });
+  });
+
+  app.post("/api/migration/apply", async (context) => {
+    const input = await context.req.json<StudioMigrationInput>().catch(() => ({}));
+    const plan = await createStudioMigrationPlan(root, input, false);
+    const blocking = plan.conflicts.filter((conflict) => conflict.severity === "blocking");
+    if (blocking.length) {
+      return context.json(
+        {
+          ok: false,
+          plan,
+          issues: blocking.map((conflict) => ({
+            code: conflict.code,
+            path: conflict.path,
+            message: conflict.message,
+          })),
+        },
+        409
+      );
+    }
+
+    await applyStudioMigration(root, plan);
+    return context.json({ ok: true, plan, context: await loadStudioContext(root) });
   });
 
   app.post("/api/components/local", async (context) => {
@@ -503,6 +548,101 @@ export async function validateStudioProject(root: string): Promise<StudioValidat
   return { ok: issues.length === 0, root: resolve(root), issues };
 }
 
+export async function createStudioMigrationPlan(
+  root: string,
+  input: StudioMigrationInput,
+  dryRun: boolean
+): Promise<MigrationPlan> {
+  const projectRoot = resolve(root);
+  const lockRecord = await readJsonRecord(join(projectRoot, ".podo/lock.json"), projectRoot);
+  if (!lockRecord?.json || lockRecord.issues.length) {
+    throw new Error(".podo/lock.json was not found or is invalid. Run setup first.");
+  }
+  const lock = parsePodoLock(lockRecord.json);
+  const manifest = await loadStudioMigrationManifest(lock, input);
+  const files = await loadStudioMigrationFiles(projectRoot);
+  const issues = files.flatMap(validateMigrationFile);
+  if (issues.length) {
+    throw new Error(
+      `Migration input validation failed:\n${issues
+        .map((issue) => `${issue.path}: ${issue.message}`)
+        .join("\n")}`
+    );
+  }
+  return runMigrationPlan({ manifest, files, dryRun });
+}
+
+async function loadStudioMigrationManifest(
+  lock: PodoLock,
+  input: StudioMigrationInput
+): Promise<MigrationManifest> {
+  if (input.manifest) {
+    return parseMigrationManifest(input.manifest);
+  }
+  const targetVersion = input.to?.trim() || lock.packageVersion;
+  return createDefaultMigrationManifest({
+    from: lock.packageVersion,
+    to: targetVersion,
+    packageVersion: targetVersion,
+  });
+}
+
+async function loadStudioMigrationFiles(root: string): Promise<MigrationFile[]> {
+  const directRecords = (
+    await Promise.all(
+      [".podo/config.json", ".podo/lock.json", ".podo/icons/manifest.json"].map((path) =>
+        readJsonRecord(join(root, path), root)
+      )
+    )
+  ).filter((record): record is JsonFileRecord => Boolean(record));
+  const nestedRecords = [
+    ...(await readJsonRecords(join(root, ".podo/tokens"), root)),
+    ...(await readJsonRecords(join(root, ".podo/themes"), root)),
+    ...(await readJsonRecords(join(root, ".podo/components"), root)),
+  ];
+  const records = [...directRecords, ...nestedRecords];
+  const invalid = records.flatMap((record) => record.issues);
+  if (invalid.length) {
+    throw new Error(
+      `Migration input JSON is invalid:\n${invalid
+        .map((issue) => `${issue.path}: ${issue.message}`)
+        .join("\n")}`
+    );
+  }
+  return records
+    .filter((record): record is JsonFileRecord & { json: unknown } => record.json !== undefined)
+    .map((record) => ({ path: record.path, document: record.json }))
+    .sort((left, right) => left.path.localeCompare(right.path));
+}
+
+async function applyStudioMigration(root: string, plan: MigrationPlan): Promise<void> {
+  for (const file of plan.files.filter((item) => item.action === "update")) {
+    await writeProjectFile(
+      resolvePodoPath(root, file.path),
+      `${JSON.stringify(file.after, null, 2)}\n`,
+      true
+    );
+  }
+
+  const lockRecord = await readJsonRecord(join(root, ".podo/lock.json"), root);
+  if (!lockRecord?.json || lockRecord.issues.length) {
+    throw new Error(".podo/lock.json was not found or is invalid after migration.");
+  }
+  const migratedLock = updateLockAfterMigration({
+    lock: lockRecord.json,
+    manifest: plan.manifest,
+    generatedHash: hashMigrationJson({
+      manifest: plan.manifest,
+      files: plan.files.map((file) => ({ path: file.path, afterHash: file.afterHash })),
+    }),
+  });
+  await writeProjectFile(
+    resolvePodoPath(root, ".podo/lock.json"),
+    `${JSON.stringify(migratedLock, null, 2)}\n`,
+    true
+  );
+}
+
 function renderStudioHtml(): string {
   return `<!doctype html>
 <html lang="en">
@@ -601,8 +741,8 @@ function renderStudioHtml(): string {
 
 function studioClientScript(): string {
   return String.raw`
-const tabs = ["setup", "tokens", "components", "icons", "build"];
-let state = { tab: "setup", context: null, validation: null, buildPlan: null, status: "Loading" };
+const tabs = ["setup", "tokens", "components", "icons", "build", "migration"];
+let state = { tab: "setup", context: null, validation: null, buildPlan: null, migrationPlan: null, status: "Loading" };
 
 const $ = (id) => document.getElementById(id);
 const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -636,7 +776,7 @@ function render() {
 }
 
 function tabLabel(tab) {
-  return { setup: "Setup", tokens: "Tokens", components: "Components", icons: "Icons", build: "Build" }[tab];
+  return { setup: "Setup", tokens: "Tokens", components: "Components", icons: "Icons", build: "Build", migration: "Migration" }[tab];
 }
 
 function renderTab() {
@@ -645,6 +785,7 @@ function renderTab() {
   if (state.tab === "tokens") return renderTokens();
   if (state.tab === "components") return renderComponents();
   if (state.tab === "icons") return renderIcons();
+  if (state.tab === "migration") return renderMigration();
   return renderBuild();
 }
 
@@ -699,6 +840,19 @@ function renderBuild() {
     '<div class="grid"><div class="panel"><div class="panel-head"><h2>Diff</h2><span class="badge">' + plan.length + '</span></div><div class="panel-body">' + buildPlan(plan) + '</div></div>' +
     '<div class="panel"><div class="panel-head"><h2>Validation</h2><span class="badge ' + (validationIssues.length ? "bad" : "good") + '">' + validationIssues.length + '</span></div><div class="panel-body">' + issueList(validationIssues) + '</div></div></div>' +
     '<div class="panel"><div class="panel-head"><h2>Target Preview</h2></div><div class="panel-body">' + generatedPreview() + '</div></div></div>';
+}
+
+function renderMigration() {
+  const plan = state.migrationPlan;
+  const files = (plan?.files || []).filter((file) => file.action === "update");
+  const conflicts = plan?.conflicts || [];
+  const defaultTo = state.context.lock?.packageVersion || "0.0.0";
+  return '<div class="section"><h1>Migration</h1><div class="toolbar">' +
+    field("Target version", '<input id="migrationTo" value="' + esc(defaultTo) + '">') +
+    '<button id="planMigration">Plan</button><button class="primary" id="applyMigration">Apply</button></div>' +
+    '<div class="split"><div class="panel"><div class="panel-head"><h2>Manifest</h2><span class="badge">' + esc(plan?.manifest?.riskLevel || "default") + '</span></div><div class="panel-body"><textarea id="migrationManifest" placeholder="{ }"></textarea></div></div>' +
+    '<div class="panel"><div class="panel-head"><h2>Conflicts</h2><span class="badge ' + (conflicts.some((item) => item.severity === "blocking") ? "bad" : conflicts.length ? "" : "good") + '">' + conflicts.length + '</span></div><div class="panel-body">' + migrationConflictList(conflicts) + '</div></div></div>' +
+    '<div class="panel"><div class="panel-head"><h2>File Changes</h2><span class="badge">' + files.length + '</span></div><div class="panel-body">' + migrationFileList(files) + '</div></div></div>';
 }
 
 function field(label, control) {
@@ -769,6 +923,16 @@ function issueList(issues) {
   return '<table><thead><tr><th>Code</th><th>Path</th><th>Message</th></tr></thead><tbody>' + issues.map((issue) => '<tr><td class="mono">' + esc(issue.code) + '</td><td class="mono">' + esc(issue.path) + '</td><td>' + esc(issue.message) + '</td></tr>').join("") + '</tbody></table>';
 }
 
+function migrationConflictList(conflicts) {
+  if (!conflicts.length) return '<div class="empty">No conflicts</div>';
+  return '<table><thead><tr><th>Severity</th><th>Path</th><th>Message</th></tr></thead><tbody>' + conflicts.map((conflict) => '<tr><td><span class="badge ' + (conflict.severity === "blocking" ? "bad" : "") + '">' + esc(conflict.severity) + '</span></td><td class="mono">' + esc(conflict.path) + '</td><td>' + esc(conflict.message) + '</td></tr>').join("") + '</tbody></table>';
+}
+
+function migrationFileList(files) {
+  if (!files.length) return '<div class="empty">No migration changes</div>';
+  return files.map((file) => '<div class="preview"><div class="row"><span class="badge">' + esc(file.kind) + '</span><span class="mono">' + esc(file.path) + '</span><span class="badge">' + file.operations.length + ' patches</span></div><textarea readonly>' + esc(JSON.stringify(file.after, null, 2).slice(0, 4000)) + '</textarea></div>').join("");
+}
+
 function generatedPreview() {
   const files = state.context.generatedPreview || [];
   if (!files.length) return '<div class="empty">No generated preview</div>';
@@ -784,6 +948,14 @@ function setupPayload(dryRun = false) {
     iconGroups: $("setupGroups").value.split(",").map((item) => item.trim()).filter(Boolean),
     dryRun,
     force: true,
+  };
+}
+
+function migrationPayload() {
+  const manifestText = $("migrationManifest")?.value.trim() || "";
+  return {
+    to: $("migrationTo")?.value || undefined,
+    ...(manifestText ? { manifest: JSON.parse(manifestText) } : {}),
   };
 }
 
@@ -865,6 +1037,16 @@ document.addEventListener("click", async (event) => {
       state.status = target.id === "buildDryRun" ? "Dry run complete" : "Build complete";
       await refresh();
       state.tab = "build";
+      render();
+      return;
+    }
+    if (target.id === "planMigration" || target.id === "applyMigration") {
+      const endpoint = target.id === "planMigration" ? "/api/migration/plan" : "/api/migration/apply";
+      const payload = await api(endpoint, { method: "POST", body: JSON.stringify(migrationPayload()) });
+      state.migrationPlan = payload.plan;
+      state.status = target.id === "planMigration" ? "Migration planned" : "Migration applied";
+      await refresh();
+      state.tab = "migration";
       render();
     }
   } catch (error) {

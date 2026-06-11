@@ -44,3 +44,5 @@ Every breaking change must include:
 - rollback guidance
 
 Installed projects must never be silently rewritten. CLI and MCP write tools must validate, show a diff, and support dry-run before applying migrations.
+
+The Phase 7 runner is implemented in `@podo/migration`. It supports JSON Patch plus Podo-specific operations (`renameToken`, `moveComponentProp`, `removeDeprecatedToken`), conflict detection, lockfile updates, and the rollback workflow documented in `docs/migration-workflow.md`.

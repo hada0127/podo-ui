@@ -108,7 +108,81 @@ describe("@podo/cli", () => {
     expect(cached.skipped).toBe(true);
   });
 
-  it("writes validation reports and keeps registered future commands routable", async () => {
+  it("plans and applies migrations with lockfile updates", async () => {
+    const root = await createProject({});
+    const io = createIo(root);
+    await runCli(["init", "--target", "web", "--yes"], io);
+    await writeFile(
+      join(root, ".podo/themes/legacy.tokens.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "tokens",
+          category: "theme",
+          tokens: {
+            color: {
+              primary: { $type: "color", $value: "#3366ff" },
+              text: { $type: "color", $value: "{color.primary}" },
+            },
+          },
+        },
+        null,
+        2
+      )}\n`
+    );
+    await writeFile(
+      join(root, ".podo/components/button.component.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "component",
+          id: "button",
+          name: "Button",
+          category: "atom",
+          status: "stable",
+          anatomy: [{ name: "root" }],
+          slots: [],
+          props: [{ name: "isDisabled", type: { kind: "boolean" } }],
+          variants: [],
+          states: [],
+          tokens: { "root.background": "{color.primary}" },
+          targets: {
+            web: { supported: true, limitations: [] },
+            react: { supported: true, limitations: [] },
+            hono: { supported: true, limitations: [] },
+            native: { supported: true, limitations: [] },
+          },
+          accessibility: { aria: [], keyboard: [] },
+          examples: [],
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    await expect(runCli(["update", "--dry-run", "--to", "2.1.0"], io)).resolves.toBe(0);
+    expect(io.out.some((line) => line.includes("[podo:plan] update .podo/themes"))).toBe(true);
+
+    await expect(runCli(["migrate", "--to", "2.1.0"], io)).resolves.toBe(0);
+    const tokenDocument = JSON.parse(
+      await readFile(join(root, ".podo/themes/legacy.tokens.json"), "utf8")
+    ) as { tokens: { color: Record<string, { $value: string }> } };
+    const componentDocument = JSON.parse(
+      await readFile(join(root, ".podo/components/button.component.json"), "utf8")
+    ) as { props: Array<{ name: string }>; tokens: Record<string, string> };
+    const lock = JSON.parse(await readFile(join(root, ".podo/lock.json"), "utf8")) as {
+      packageVersion: string;
+      migrations: Array<{ to: string; status: string }>;
+    };
+    expect(tokenDocument.tokens.color.brand?.$value).toBe("#3366ff");
+    expect(tokenDocument.tokens.color.text?.$value).toBe("{color.brand}");
+    expect(componentDocument.props[0]?.name).toBe("disabled");
+    expect(componentDocument.tokens["root.background"]).toBe("{color.brand}");
+    expect(lock.packageVersion).toBe("2.1.0");
+    expect(lock.migrations.at(-1)).toMatchObject({ to: "2.1.0", status: "applied" });
+  });
+
+  it("writes validation reports and keeps service commands routable", async () => {
     const root = await createProject({});
     const io = createIo(root);
     await runCli(["init", "--target", "web", "--yes"], io);

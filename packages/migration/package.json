@@ -1,18 +1,16 @@
 {
-  "name": "@podo/cli",
+  "name": "@podo/migration",
   "version": "0.0.0",
   "type": "module",
-  "description": "Podo command-line interface.",
+  "description": "Migration manifest, JSON Patch runner, and conflict detection for Podo projects.",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
-  "bin": {
-    "podo": "./dist/index.js"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -24,12 +22,7 @@
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@podo/codegen": "workspace:*",
-    "@podo/icons": "workspace:*",
-    "@podo/migration": "workspace:*",
-    "@podo/mcp": "workspace:*",
     "@podo/spec": "workspace:*",
-    "@podo/studio": "workspace:*",
-    "@podo/tokens": "workspace:*"
+    "zod": "^4.4.3"
   }
 }

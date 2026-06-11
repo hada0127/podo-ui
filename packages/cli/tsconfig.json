@@ -11,6 +11,7 @@
     { "path": "../spec" },
     { "path": "../tokens" },
     { "path": "../icons" },
+    { "path": "../migration" },
     { "path": "../codegen" },
     { "path": "../studio" },
     { "path": "../mcp" }
