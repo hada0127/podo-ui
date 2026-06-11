@@ -1,0 +1,434 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`@podo/web > renders button slots, states, and activation event 1`] = `
+"<style>:host {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+button,
+input {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.podo-button {
+  align-items: center;
+  background: var(--podo-component-button-background, #5B5BD6);
+  border: 1px solid transparent;
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-component-button-text, #FFFFFF);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--podo-spacing-scale-1, 4px);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.podo-input {
+  background: var(--podo-component-input-background, #FFFFFF);
+  border: 1px solid var(--podo-component-input-border, #14151A);
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-semantic-color-text-default, #14151A);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-input[aria-invalid="true"] {
+  border-color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-field {
+  display: grid;
+  gap: var(--podo-spacing-component-field-gap, 8px);
+}
+
+.podo-field__label {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-weight: 600;
+}
+
+.podo-field__description,
+.podo-field__error {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-size: 0.875em;
+}
+
+.podo-field__error {
+  color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-icon {
+  font-family: "PodoIcons";
+  line-height: 1;
+}
+
+.podo-text {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-family: var(--podo-typography-body-fontFamily, inherit);
+  font-size: var(--podo-typography-body-fontSize, 1rem);
+  line-height: var(--podo-typography-body-lineHeight, 1.5);
+}
+
+.podo-text[data-as="h1"] {
+  font-family: var(--podo-typography-h1-fontFamily, inherit);
+  font-size: var(--podo-typography-h1-fontSize, 2rem);
+  font-weight: var(--podo-typography-h1-fontWeight, 700);
+  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+}</style>
+<button class="podo-button" part="root" data-variant="solid" data-size="md">
+  <slot name="leftIcon"></slot>
+  <span part="label"><slot></slot></span>
+  <slot name="rightIcon"></slot>
+</button>"
+`;
+
+exports[`@podo/web > renders input, field, icon, and typography components > field 1`] = `
+"<style>:host {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+button,
+input {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.podo-button {
+  align-items: center;
+  background: var(--podo-component-button-background, #5B5BD6);
+  border: 1px solid transparent;
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-component-button-text, #FFFFFF);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--podo-spacing-scale-1, 4px);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.podo-input {
+  background: var(--podo-component-input-background, #FFFFFF);
+  border: 1px solid var(--podo-component-input-border, #14151A);
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-semantic-color-text-default, #14151A);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-input[aria-invalid="true"] {
+  border-color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-field {
+  display: grid;
+  gap: var(--podo-spacing-component-field-gap, 8px);
+}
+
+.podo-field__label {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-weight: 600;
+}
+
+.podo-field__description,
+.podo-field__error {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-size: 0.875em;
+}
+
+.podo-field__error {
+  color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-icon {
+  font-family: "PodoIcons";
+  line-height: 1;
+}
+
+.podo-text {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-family: var(--podo-typography-body-fontFamily, inherit);
+  font-size: var(--podo-typography-body-fontSize, 1rem);
+  line-height: var(--podo-typography-body-lineHeight, 1.5);
+}
+
+.podo-text[data-as="h1"] {
+  font-family: var(--podo-typography-h1-fontFamily, inherit);
+  font-size: var(--podo-typography-h1-fontSize, 2rem);
+  font-weight: var(--podo-typography-h1-fontWeight, 700);
+  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+}</style>
+<div class="podo-field" part="root" id="email">
+  <label class="podo-field__label" part="label" id="email-label" for="email-control">
+    <slot name="label">Label</slot>
+  </label>
+  <div part="control"><slot></slot></div>
+  <div class="podo-field__description" part="description" id="email-description">
+    <slot name="description"></slot>
+  </div>
+  <div class="podo-field__error" part="error" id="email-error">
+    <slot name="error"></slot>
+  </div>
+</div>"
+`;
+
+exports[`@podo/web > renders input, field, icon, and typography components > icon 1`] = `
+"<style>:host {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+button,
+input {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.podo-button {
+  align-items: center;
+  background: var(--podo-component-button-background, #5B5BD6);
+  border: 1px solid transparent;
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-component-button-text, #FFFFFF);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--podo-spacing-scale-1, 4px);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.podo-input {
+  background: var(--podo-component-input-background, #FFFFFF);
+  border: 1px solid var(--podo-component-input-border, #14151A);
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-semantic-color-text-default, #14151A);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-input[aria-invalid="true"] {
+  border-color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-field {
+  display: grid;
+  gap: var(--podo-spacing-component-field-gap, 8px);
+}
+
+.podo-field__label {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-weight: 600;
+}
+
+.podo-field__description,
+.podo-field__error {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-size: 0.875em;
+}
+
+.podo-field__error {
+  color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-icon {
+  font-family: "PodoIcons";
+  line-height: 1;
+}
+
+.podo-text {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-family: var(--podo-typography-body-fontFamily, inherit);
+  font-size: var(--podo-typography-body-fontSize, 1rem);
+  line-height: var(--podo-typography-body-lineHeight, 1.5);
+}
+
+.podo-text[data-as="h1"] {
+  font-family: var(--podo-typography-h1-fontFamily, inherit);
+  font-size: var(--podo-typography-h1-fontSize, 2rem);
+  font-weight: var(--podo-typography-h1-fontWeight, 700);
+  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+}</style><span class="podo-icon podo-icon-menu" part="icon" aria-hidden="true"></span>"
+`;
+
+exports[`@podo/web > renders input, field, icon, and typography components > input 1`] = `
+"<style>:host {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+button,
+input {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.podo-button {
+  align-items: center;
+  background: var(--podo-component-button-background, #5B5BD6);
+  border: 1px solid transparent;
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-component-button-text, #FFFFFF);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--podo-spacing-scale-1, 4px);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.podo-input {
+  background: var(--podo-component-input-background, #FFFFFF);
+  border: 1px solid var(--podo-component-input-border, #14151A);
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-semantic-color-text-default, #14151A);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-input[aria-invalid="true"] {
+  border-color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-field {
+  display: grid;
+  gap: var(--podo-spacing-component-field-gap, 8px);
+}
+
+.podo-field__label {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-weight: 600;
+}
+
+.podo-field__description,
+.podo-field__error {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-size: 0.875em;
+}
+
+.podo-field__error {
+  color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-icon {
+  font-family: "PodoIcons";
+  line-height: 1;
+}
+
+.podo-text {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-family: var(--podo-typography-body-fontFamily, inherit);
+  font-size: var(--podo-typography-body-fontSize, 1rem);
+  line-height: var(--podo-typography-body-lineHeight, 1.5);
+}
+
+.podo-text[data-as="h1"] {
+  font-family: var(--podo-typography-h1-fontFamily, inherit);
+  font-size: var(--podo-typography-h1-fontSize, 2rem);
+  font-weight: var(--podo-typography-h1-fontWeight, 700);
+  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+}</style>
+<input class="podo-input" part="control" value="hello" placeholder="" aria-invalid="true">"
+`;
+
+exports[`@podo/web > renders input, field, icon, and typography components > text 1`] = `
+"<style>:host {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+button,
+input {
+  box-sizing: border-box;
+  font: inherit;
+}
+
+.podo-button {
+  align-items: center;
+  background: var(--podo-component-button-background, #5B5BD6);
+  border: 1px solid transparent;
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-component-button-text, #FFFFFF);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--podo-spacing-scale-1, 4px);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.podo-input {
+  background: var(--podo-component-input-background, #FFFFFF);
+  border: 1px solid var(--podo-component-input-border, #14151A);
+  border-radius: var(--podo-radius-control-md, 8px);
+  color: var(--podo-semantic-color-text-default, #14151A);
+  min-height: 40px;
+  padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-input[aria-invalid="true"] {
+  border-color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-field {
+  display: grid;
+  gap: var(--podo-spacing-component-field-gap, 8px);
+}
+
+.podo-field__label {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-weight: 600;
+}
+
+.podo-field__description,
+.podo-field__error {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-size: 0.875em;
+}
+
+.podo-field__error {
+  color: var(--podo-semantic-color-text-danger, #D92D20);
+}
+
+.podo-icon {
+  font-family: "PodoIcons";
+  line-height: 1;
+}
+
+.podo-text {
+  color: var(--podo-semantic-color-text-default, #14151A);
+  font-family: var(--podo-typography-body-fontFamily, inherit);
+  font-size: var(--podo-typography-body-fontSize, 1rem);
+  line-height: var(--podo-typography-body-lineHeight, 1.5);
+}
+
+.podo-text[data-as="h1"] {
+  font-family: var(--podo-typography-h1-fontFamily, inherit);
+  font-size: var(--podo-typography-h1-fontSize, 2rem);
+  font-weight: var(--podo-typography-h1-fontWeight, 700);
+  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+}</style><span class="podo-text" data-as="h1" part="text"><slot></slot></span>"
+`;

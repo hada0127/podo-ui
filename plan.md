@@ -461,10 +461,13 @@ claude mcp add podo -- npx podo mcp
 ### Phase 3: 컴포넌트 코드 생성 MVP
 
 - Button, Input, Field, Icon, Typography 컴포넌트 스펙 작성
+- `@podo/core`에 component registry, renderer contract, a11y helper, behavior helper를 둔다.
 - web renderer 작성
-- react renderer 또는 wrapper 작성
-- hono renderer 작성
-- native renderer 작성
+- web renderer는 dependency-free Custom Elements로 구현한다.
+- react renderer는 Web Component wrapper가 아닌 native React renderer로 구현한다.
+- hono renderer는 Hono TSX 기반 정적 SSR renderer를 1차 범위로 둔다.
+- native renderer는 React Native host adapter 기반으로 Pressable/Text/TextInput/View를 주입 가능하게 구현한다.
+- `@podo/codegen`은 component spec에서 target별 generated file과 barrel을 결정적으로 만든다.
 
 완료 기준: 네 타깃 예제 앱에서 같은 스펙의 Button/Input을 렌더링한다.
 

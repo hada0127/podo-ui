@@ -4,9 +4,9 @@
     "rootDir": "src",
     "outDir": "dist",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"],
-  "references": [{ "path": "../core" }]
+  "references": [{ "path": "../../packages/hono" }]
 }

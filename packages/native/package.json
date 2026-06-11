@@ -20,5 +20,17 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@podo/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": ">=0.73"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    }
   }
 }

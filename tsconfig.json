@@ -9,6 +9,7 @@
     { "path": "./packages/react" },
     { "path": "./packages/hono" },
     { "path": "./packages/native" },
+    { "path": "./packages/codegen" },
     { "path": "./packages/editor" },
     { "path": "./packages/studio" },
     { "path": "./packages/cli" },

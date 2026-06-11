@@ -2,5 +2,13 @@
   "name": "@podo/example-native",
   "version": "0.0.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@podo/native": "workspace:*",
+    "react": "^19.2.7"
+  }
 }

@@ -179,98 +179,98 @@
 
 ### 공통 Core
 
-- [ ] `@podo/core` 패키지 생성
+- [x] `@podo/core` 패키지 생성
   - 완료 기준: 공통 state, interaction, a11y helper를 export한다.
-- [ ] component registry 구현
+- [x] component registry 구현
   - 완료 기준: component spec을 이름/category/target으로 조회할 수 있다.
-- [ ] renderer contract 정의
+- [x] renderer contract 정의
   - 완료 기준: web/react/hono/native renderer가 구현해야 할 인터페이스가 문서화된다.
-- [ ] accessibility helper 구현
+- [x] accessibility helper 구현
   - 완료 기준: id 연결, aria-describedby, focusVisible, keyboard handler를 재사용한다.
-- [ ] state machine 또는 behavior module 패턴 확정
+- [x] state machine 또는 behavior module 패턴 확정
   - 완료 기준: 기능성 컴포넌트가 behavior와 renderer를 분리한다.
 
 ### Web Components
 
-- [ ] `@podo/web` 패키지 생성
+- [x] `@podo/web` 패키지 생성
   - 완료 기준: Custom Element 등록 API와 CSS import가 제공된다.
-- [ ] Web Component 기반 기술 확정
+- [x] Web Component 기반 기술 확정
   - 완료 기준: Lit 사용 여부와 직접 Custom Element 구현 범위가 문서화된다.
-- [ ] Button web renderer 구현
+- [x] Button web renderer 구현
   - 완료 기준: slots, variants, states, CSS variables가 동작한다.
-- [ ] Input web renderer 구현
+- [x] Input web renderer 구현
   - 완료 기준: value, disabled, invalid, focus 상태가 동작한다.
-- [ ] Field web renderer 구현
+- [x] Field web renderer 구현
   - 완료 기준: label/helper/error/control slot과 aria 연결이 동작한다.
-- [ ] Icon web renderer 구현
+- [x] Icon web renderer 구현
   - 완료 기준: icon font와 group subset을 사용할 수 있다.
-- [ ] Typography web renderer 구현
+- [x] Typography web renderer 구현
   - 완료 기준: theme별 typography token이 적용된다.
-- [ ] Web Component visual tests 작성
+- [x] Web Component visual tests 작성
   - 완료 기준: 기본/variant/theme/dark mode 스냅샷이 있다.
 
 ### React
 
-- [ ] `@podo/react` 패키지 생성
+- [x] `@podo/react` 패키지 생성
   - 완료 기준: React entry와 typed component exports가 제공된다.
-- [ ] React 구현 전략 확정
+- [x] React 구현 전략 확정
   - 완료 기준: Web Component wrapper와 native React renderer 중 MVP 전략이 결정된다.
-- [ ] Button React renderer 구현
+- [x] Button React renderer 구현
   - 완료 기준: typed props, ref, event handler, icon slots가 동작한다.
-- [ ] Input React renderer 구현
+- [x] Input React renderer 구현
   - 완료 기준: controlled/uncontrolled value와 a11y 연결이 동작한다.
-- [ ] Field React renderer 구현
+- [x] Field React renderer 구현
   - 완료 기준: children control과 error/helper UI가 동작한다.
-- [ ] React hooks 또는 provider 구현
+- [x] React hooks 또는 provider 구현
   - 완료 기준: theme provider와 color scheme 전환 API가 제공된다.
-- [ ] React tests 작성
+- [x] React tests 작성
   - 완료 기준: Testing Library 기반 interaction 테스트가 통과한다.
 
 ### Hono TSX
 
-- [ ] `@podo/hono` 패키지 생성
+- [x] `@podo/hono` 패키지 생성
   - 완료 기준: Hono JSX에서 import 가능한 TSX 컴포넌트를 제공한다.
-- [ ] Hono renderer 범위 확정
+- [x] Hono renderer 범위 확정
   - 완료 기준: SSR/정적 컴포넌트와 interactive 컴포넌트의 경계가 문서화된다.
-- [ ] Button Hono renderer 구현
+- [x] Button Hono renderer 구현
   - 완료 기준: class/style/token이 SSR HTML로 출력된다.
-- [ ] Input Hono renderer 구현
+- [x] Input Hono renderer 구현
   - 완료 기준: form attribute와 a11y 속성이 SSR HTML에 반영된다.
-- [ ] Field Hono renderer 구현
+- [x] Field Hono renderer 구현
   - 완료 기준: label/helper/error 연결이 SSR HTML에 반영된다.
-- [ ] Hono critical CSS helper 구현
+- [x] Hono critical CSS helper 구현
   - 완료 기준: 초기 theme CSS와 dark mode script 삽입 방식이 제공된다.
-- [ ] Hono examples 작성
+- [x] Hono examples 작성
   - 완료 기준: Hono 앱에서 `c.render` 또는 JSX 응답으로 동작한다.
 
 ### React Native
 
-- [ ] `@podo/native` 패키지 생성
+- [x] `@podo/native` 패키지 생성
   - 완료 기준: RN entry와 typed component exports가 제공된다.
-- [ ] RN token adapter 구현
+- [x] RN token adapter 구현
   - 완료 기준: px/rem 등 웹 단위가 RN number/string으로 변환된다.
-- [ ] RN theme provider 구현
+- [x] RN theme provider 구현
   - 완료 기준: landing/dashboard, light/dark 전환이 가능하다.
-- [ ] Button native renderer 구현
+- [x] Button native renderer 구현
   - 완료 기준: Pressable 기반 variants/states가 동작한다.
-- [ ] Input native renderer 구현
+- [x] Input native renderer 구현
   - 완료 기준: TextInput 기반 value/error/disabled가 동작한다.
-- [ ] Field native renderer 구현
+- [x] Field native renderer 구현
   - 완료 기준: label/helper/error와 accessibilityLabel 연결이 동작한다.
-- [ ] Icon native renderer 구현
+- [x] Icon native renderer 구현
   - 완료 기준: SVG 또는 glyph map 방식으로 아이콘이 표시된다.
-- [ ] RN example app 작성
+- [x] RN example app 작성
   - 완료 기준: Expo 또는 RN 샘플에서 기본 컴포넌트가 렌더링된다.
 
 ### Codegen
 
-- [ ] `@podo/codegen` 또는 내부 codegen 모듈 생성
+- [x] `@podo/codegen` 또는 내부 codegen 모듈 생성
   - 완료 기준: component spec에서 target별 파일을 생성할 수 있다.
-- [ ] codegen template 구조 작성
+- [x] codegen template 구조 작성
   - 완료 기준: renderer별 template와 shared helper가 분리된다.
-- [ ] generated file header 정책 작성
+- [x] generated file header 정책 작성
   - 완료 기준: 생성 파일임을 표시하고 수동 수정 금지 안내가 들어간다.
-- [ ] codegen idempotency 테스트 작성
+- [x] codegen idempotency 테스트 작성
   - 완료 기준: 같은 입력으로 두 번 빌드해도 diff가 없다.
 
 ## Phase 4: CLI와 `.podo`

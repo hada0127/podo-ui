@@ -20,5 +20,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@podo/core": "workspace:*",
+    "hono": "^4.12.25"
   }
 }

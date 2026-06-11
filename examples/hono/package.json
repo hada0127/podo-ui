@@ -2,5 +2,13 @@
   "name": "@podo/example-hono",
   "version": "0.0.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@podo/hono": "workspace:*",
+    "hono": "^4.12.25"
+  }
 }

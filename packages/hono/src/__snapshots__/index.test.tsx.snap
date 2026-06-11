@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`@podo/hono > renders button, icon, typography, and critical css helpers 1`] = `"<style data-podo-critical="true">.podo-button{color:var(--podo-component-button-text)}</style><script data-podo-theme="true">document.documentElement.dataset.podoTheme="dashboard";document.documentElement.dataset.colorScheme="dark";</script><button class="podo-button" type="button" disabled="" aria-busy="true" tabIndex="-1" data-variant="solid" data-size="md" data-loading="true"><i class="podo-icon podo-icon-menu" aria-hidden="true"></i> Save</button><h1 class="podo-text podo-text--h1">Dashboard</h1>"`;
