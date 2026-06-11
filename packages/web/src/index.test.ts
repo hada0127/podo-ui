@@ -43,6 +43,7 @@ describe("@podo/web", () => {
     const field = document.createElement("podo-field");
     field.setAttribute("field-id", "email");
     field.setAttribute("invalid", "");
+    field.setAttribute("required", "");
     field.innerHTML = '<span slot="label">Email</span><podo-input></podo-input>';
     document.body.append(field);
     await Promise.resolve();
@@ -62,6 +63,33 @@ describe("@podo/web", () => {
     expect(field.querySelector("podo-input")?.getAttribute("aria-describedby")).toBe(
       "email-description email-error"
     );
+    expect(
+      field.querySelector("podo-input")?.shadowRoot?.querySelector("input")?.getAttribute("id")
+    ).toBe("email-control");
+    expect(
+      field
+        .querySelector("podo-input")
+        ?.shadowRoot?.querySelector("input")
+        ?.getAttribute("aria-labelledby")
+    ).toBe("email-label");
+    expect(
+      field
+        .querySelector("podo-input")
+        ?.shadowRoot?.querySelector("input")
+        ?.getAttribute("aria-describedby")
+    ).toBe("email-description email-error");
+    expect(
+      field
+        .querySelector("podo-input")
+        ?.shadowRoot?.querySelector("input")
+        ?.getAttribute("aria-invalid")
+    ).toBe("true");
+    expect(
+      field
+        .querySelector("podo-input")
+        ?.shadowRoot?.querySelector("input")
+        ?.getAttribute("aria-required")
+    ).toBe("true");
     expect(icon.shadowRoot?.innerHTML).toMatchSnapshot("icon");
     expect(text.shadowRoot?.innerHTML).toMatchSnapshot("text");
   });

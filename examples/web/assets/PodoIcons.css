@@ -1,0 +1,27 @@
+@font-face {
+  font-family: "PodoIcons";
+  src:
+    url("./PodoIcons.woff") format("woff"),
+    url("./PodoIcons.woff2") format("woff2");
+  font-display: block;
+}
+
+.podo-icon {
+  font-family: "PodoIcons";
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+}
+
+.podo-icon-chevron-left::before {
+  content: "\E001";
+}
+.podo-icon-chevron-right::before {
+  content: "\E002";
+}
+.podo-icon-menu::before {
+  content: "\E003";
+}

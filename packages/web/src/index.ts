@@ -174,10 +174,22 @@ function createButtonElement(): CustomElementConstructor {
 function createInputElement(): CustomElementConstructor {
   return class PodoInputElement extends HTMLElement {
     static get observedAttributes(): string[] {
-      return ["disabled", "invalid", "placeholder", "required", "value"];
+      return [
+        "aria-describedby",
+        "aria-invalid",
+        "aria-labelledby",
+        "aria-required",
+        "disabled",
+        "id",
+        "invalid",
+        "name",
+        "placeholder",
+        "required",
+        "value",
+      ];
     }
 
-    readonly shadow = this.attachShadow({ mode: "open" });
+    readonly shadow = this.attachShadow({ mode: "open", delegatesFocus: true });
 
     get value(): string {
       return attr(this, "value", "");
@@ -195,10 +207,15 @@ function createInputElement(): CustomElementConstructor {
       this.render();
     }
 
+    override focus(options?: FocusOptions): void {
+      this.shadow.querySelector("input")?.focus(options);
+    }
+
     private render(): void {
+      const invalid = this.hasAttribute("invalid") || attr(this, "aria-invalid", "") === "true";
       const behavior = createInputBehavior({
         disabled: this.hasAttribute("disabled"),
-        invalid: this.hasAttribute("invalid"),
+        invalid,
         required: this.hasAttribute("required"),
         value: this.value,
       });
@@ -207,9 +224,15 @@ function createInputElement(): CustomElementConstructor {
       const ariaInvalid = behavior.invalid ? 'aria-invalid="true"' : "";
 
       this.shadow.innerHTML = `<style>${podoWebComponentCss}</style>
-<input class="podo-input" part="control" value="${escapeHtml(this.value)}" placeholder="${escapeHtml(
+<input class="podo-input" part="control" ${attrString("id", attr(this, "id", ""))} ${attrString(
+        "name",
+        attr(this, "name", "")
+      )} value="${escapeHtml(this.value)}" placeholder="${escapeHtml(
         attr(this, "placeholder", "")
-      )}" ${disabled} ${required} ${ariaInvalid} />`;
+      )}" ${attrString("aria-labelledby", attr(this, "aria-labelledby", ""))} ${attrString(
+        "aria-describedby",
+        attr(this, "aria-describedby", "")
+      )} ${attrString("aria-required", attr(this, "aria-required", ""))} ${disabled} ${required} ${ariaInvalid} />`;
       this.shadow.querySelector("input")?.addEventListener("input", (event) => {
         const value = (event.currentTarget as HTMLInputElement).value;
         this.setAttribute("value", value);
@@ -272,7 +295,7 @@ function createFieldElement(): CustomElementConstructor {
 function createIconElement(): CustomElementConstructor {
   return class PodoIconElement extends HTMLElement {
     static get observedAttributes(): string[] {
-      return ["name"];
+      return ["codepoint", "name"];
     }
 
     readonly shadow = this.attachShadow({ mode: "open" });
@@ -287,9 +310,11 @@ function createIconElement(): CustomElementConstructor {
 
     private render(): void {
       const name = attr(this, "name", "");
+      const codepoint = attr(this, "codepoint", defaultWebIconCodepoints[name] ?? "");
+      const glyph = codepoint ? `&#x${escapeHtml(codepoint)};` : "";
       this.shadow.innerHTML = `<style>${podoWebComponentCss}</style><span class="podo-icon podo-icon-${escapeHtml(
         name
-      )}" part="icon" aria-hidden="true"></span>`;
+      )}" part="icon" aria-hidden="true">${glyph}</span>`;
     }
   };
 }
@@ -323,9 +348,19 @@ function attr(element: Element, name: string, fallback: string): string {
   return element.getAttribute(name) ?? fallback;
 }
 
+function attrString(name: string, value: string): string {
+  return value ? `${name}="${escapeHtml(value)}"` : "";
+}
+
 function escapeHtml(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
 }
+
+const defaultWebIconCodepoints: Record<string, string> = {
+  "chevron-left": "E001",
+  "chevron-right": "E002",
+  menu: "E003",
+};
 
 function wireDefaultSlotControl(
   shadow: ShadowRoot,

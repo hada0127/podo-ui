@@ -79,6 +79,8 @@ export interface NativeComponents {
   Icon: (props: NativeIconProps) => React.ReactElement;
 }
 
+export type NativeStyle = Record<string, string | number | undefined>;
+
 export const defaultNativeHost: NativeHost = {
   Pressable: "Pressable",
   Text: "Text",
@@ -138,6 +140,8 @@ export function adaptReactNativeTokens(value: unknown): unknown {
 export function createNativeComponents(host: NativeHost = defaultNativeHost): NativeComponents {
   return {
     Button: (props) => {
+      const theme = usePodoNativeTheme();
+      const styles = createNativeThemeStyles(theme);
       const behavior = createButtonBehavior({ disabled: props.disabled, loading: props.loading });
       return createElement(
         host.Pressable,
@@ -146,16 +150,22 @@ export function createNativeComponents(host: NativeHost = defaultNativeHost): Na
           accessibilityState: { disabled: !behavior.pressable, busy: behavior.loading },
           disabled: !behavior.pressable,
           onPress: behavior.pressable ? props.onPress : undefined,
+          style: {
+            ...styles.button,
+            opacity: behavior.pressable ? 1 : 0.56,
+          },
           testID: props.testID,
           "data-variant": props.variant ?? "solid",
           "data-size": props.size ?? "md",
         },
         props.leftIcon,
-        createElement(host.Text, null, props.children),
+        createElement(host.Text, { style: styles.buttonLabel }, props.children),
         props.rightIcon
       );
     },
     Input: (props) => {
+      const theme = usePodoNativeTheme();
+      const styles = createNativeThemeStyles(theme);
       const behavior = createInputBehavior({
         value: props.value,
         defaultValue: props.defaultValue,
@@ -177,10 +187,13 @@ export function createNativeComponents(host: NativeHost = defaultNativeHost): Na
         value: props.value,
         placeholder: props.placeholder,
         onChangeText: props.onValueChange,
+        style: styles.input,
         testID: props.testID,
       });
     },
     Field: (props) => {
+      const theme = usePodoNativeTheme();
+      const styles = createNativeThemeStyles(theme);
       const a11y = createFieldA11y({
         id: props.id,
         invalid: props.invalid,
@@ -192,22 +205,36 @@ export function createNativeComponents(host: NativeHost = defaultNativeHost): Na
         host.View,
         {
           accessibilityState: { disabled: Boolean(props.disabled) },
+          style: styles.field,
           testID: props.testID,
         },
-        createElement(host.Text, { nativeID: a11y.ids.labelId }, props.label),
+        createElement(host.Text, { nativeID: a11y.ids.labelId, style: styles.label }, props.label),
         wireNativeControl(props.children, a11y),
         props.description
-          ? createElement(host.Text, { nativeID: a11y.ids.descriptionId }, props.description)
+          ? createElement(
+              host.Text,
+              { nativeID: a11y.ids.descriptionId, style: styles.description },
+              props.description
+            )
           : null,
-        props.error ? createElement(host.Text, { nativeID: a11y.ids.errorId }, props.error) : null
+        props.error
+          ? createElement(
+              host.Text,
+              { nativeID: a11y.ids.errorId, style: styles.error },
+              props.error
+            )
+          : null
       );
     },
-    Icon: (props) =>
-      createElement(
+    Icon: (props) => {
+      const theme = usePodoNativeTheme();
+      const styles = createNativeThemeStyles(theme);
+      return createElement(
         host.Text,
-        { accessibilityElementsHidden: true, testID: props.testID },
+        { accessibilityElementsHidden: true, style: styles.icon, testID: props.testID },
         props.glyph ?? props.name
-      ),
+      );
+    },
   };
 }
 
@@ -232,4 +259,77 @@ function wireNativeControl(
       },
     });
   });
+}
+
+function createNativeThemeStyles(
+  theme: NativeTheme
+): Record<
+  "button" | "buttonLabel" | "description" | "error" | "field" | "icon" | "input" | "label",
+  NativeStyle
+> {
+  const tokens = adaptReactNativeTokens(theme.tokens);
+  const textColor = stringToken(tokens, ["color", "text"]) ?? defaultNativeTextColor(theme);
+  const backgroundColor =
+    stringToken(tokens, ["color", "background"]) ?? defaultNativeBackgroundColor(theme);
+  const dangerColor = stringToken(tokens, ["color", "danger"]) ?? "#D92D20";
+  const gap = numberToken(tokens, ["spacing", "controlGap"]) ?? 8;
+  const borderColor = theme.colorScheme === "dark" ? "#61708A" : "#9AA8BD";
+  const accentColor = theme.colorScheme === "dark" ? "#9DB7FF" : "#305CDE";
+
+  return {
+    field: { gap, padding: gap },
+    label: { color: textColor, fontWeight: "600" },
+    description: { color: textColor, opacity: 0.72 },
+    error: { color: dangerColor },
+    input: {
+      backgroundColor,
+      borderColor,
+      borderRadius: 8,
+      borderWidth: 1,
+      color: textColor,
+      minHeight: 40,
+      paddingHorizontal: 12,
+    },
+    button: {
+      alignItems: "center",
+      backgroundColor: accentColor,
+      borderRadius: 8,
+      flexDirection: "row",
+      gap: 6,
+      minHeight: 40,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+    },
+    buttonLabel: { color: theme.colorScheme === "dark" ? "#101828" : "#FFFFFF", fontWeight: "600" },
+    icon: { color: textColor },
+  };
+}
+
+function defaultNativeTextColor(theme: NativeTheme): string {
+  return theme.colorScheme === "dark" ? "#F8FAFC" : "#111827";
+}
+
+function defaultNativeBackgroundColor(theme: NativeTheme): string {
+  return theme.colorScheme === "dark" ? "#101828" : "#FFFFFF";
+}
+
+function stringToken(root: unknown, path: string[]): string | undefined {
+  const value = nestedToken(root, path);
+  return typeof value === "string" ? value : undefined;
+}
+
+function numberToken(root: unknown, path: string[]): number | undefined {
+  const value = nestedToken(root, path);
+  return typeof value === "number" ? value : undefined;
+}
+
+function nestedToken(root: unknown, path: string[]): unknown {
+  let current = root;
+  for (const segment of path) {
+    if (!current || typeof current !== "object" || Array.isArray(current)) {
+      return undefined;
+    }
+    current = (current as Record<string, unknown>)[segment];
+  }
+  return current;
 }

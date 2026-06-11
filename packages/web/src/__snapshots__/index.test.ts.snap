@@ -263,7 +263,7 @@ input {
   font-size: var(--podo-typography-h1-fontSize, 2rem);
   font-weight: var(--podo-typography-h1-fontWeight, 700);
   line-height: var(--podo-typography-h1-lineHeight, 1.2);
-}</style><span class="podo-icon podo-icon-menu" part="icon" aria-hidden="true"></span>"
+}</style><span class="podo-icon podo-icon-menu" part="icon" aria-hidden="true"></span>"
 `;
 
 exports[`@podo/web > renders input, field, icon, and typography components > input 1`] = `

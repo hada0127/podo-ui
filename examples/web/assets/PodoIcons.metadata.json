@@ -1,0 +1,9 @@
+{
+  "fontFiles": ["woff", "woff2"],
+  "codepoints": {
+    "chevron-left": 57345,
+    "chevron-right": 57346,
+    "menu": 57347
+  },
+  "woff2": true
+}

@@ -78,9 +78,20 @@ importers:
         specifier: ^19.2.7
         version: 19.2.7
 
-  examples/react: {}
+  examples/react:
+    dependencies:
+      '@podo/react':
+        specifier: workspace:*
+        version: link:../../packages/react
+      react:
+        specifier: ^19.2.7
+        version: 19.2.7
 
-  examples/web: {}
+  examples/web:
+    dependencies:
+      '@podo/web':
+        specifier: workspace:*
+        version: link:../../packages/web
 
   packages/cli:
     dependencies:

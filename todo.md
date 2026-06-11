@@ -487,25 +487,25 @@
 
 ## Phase 9: 예제와 문서
 
-- [ ] web example 작성
+- [x] web example 작성
   - 완료 기준: Custom Elements와 icon font, theme switching이 보인다.
-- [ ] React example 작성
+- [x] React example 작성
   - 완료 기준: Provider, Button/Input/Field, dark mode가 보인다.
-- [ ] Hono example 작성
+- [x] Hono example 작성
   - 완료 기준: SSR HTML, critical CSS, form example이 보인다.
-- [ ] React Native example 작성
+- [x] React Native example 작성
   - 완료 기준: theme provider와 기본 컴포넌트가 보인다.
-- [ ] 설치 가이드 작성
+- [x] 설치 가이드 작성
   - 완료 기준: npm install, `podo init`, `podo build`, framework 연결이 설명된다.
-- [ ] 토큰 작성 가이드 작성
+- [x] 토큰 작성 가이드 작성
   - 완료 기준: DTCG 형식, alias, theme override, naming rule이 설명된다.
-- [ ] 컴포넌트 스펙 작성 가이드 작성
+- [x] 컴포넌트 스펙 작성 가이드 작성
   - 완료 기준: props, slots, variants, states, a11y, target support 작성법이 설명된다.
-- [ ] 아이콘 가이드 작성
+- [x] 아이콘 가이드 작성
   - 완료 기준: SVG 준비, group, codepoint lock, woff build 사용법이 설명된다.
-- [ ] 업데이트/마이그레이션 가이드 작성
+- [x] 업데이트/마이그레이션 가이드 작성
   - 완료 기준: `podo update`, dry-run, conflict 처리 방법이 설명된다.
-- [ ] MCP 사용 가이드 작성
+- [x] MCP 사용 가이드 작성
   - 완료 기준: Claude Code/Codex에서 사용할 수 있는 도구와 예시가 설명된다.
 
 ## Phase 10: 테스트와 품질 기준

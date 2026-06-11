@@ -65,16 +65,39 @@ describe("@podo/native", () => {
 
     expect(screen.getByTestId("native-theme").textContent).toBe("dashboard:dark");
   });
+
+  it("applies theme token styles to native host components", () => {
+    render(
+      <PodoNativeThemeProvider
+        theme="dashboard"
+        colorScheme="dark"
+        tokens={{ color: { background: "#000000", text: "#eeeeee" }, spacing: { controlGap: 10 } }}
+      >
+        <domNative.Field label="Email" description="Work email" testID="field">
+          <domNative.Input accessibilityLabel="Email" testID="input" />
+        </domNative.Field>
+        <domNative.Button testID="button">Save</domNative.Button>
+      </PodoNativeThemeProvider>
+    );
+
+    expect(screen.getByTestId("field").getAttribute("data-gap")).toBe("10");
+    expect(screen.getByTestId("input").getAttribute("data-bg")).toBe("#000000");
+    expect(screen.getByTestId("input").getAttribute("data-color")).toBe("#eeeeee");
+    expect(screen.getByTestId("button").getAttribute("data-bg")).toBe("#9DB7FF");
+  });
 });
 
 function TestPressable({
   children,
   onPress,
+  style,
   testID,
   ...props
 }: Record<string, unknown> & { children?: React.ReactNode }): React.ReactElement {
+  const styleRecord = style as Record<string, unknown> | undefined;
   return (
     <button
+      data-bg={styleRecord?.backgroundColor as string | undefined}
       data-testid={testID as string | undefined}
       data-size={props["data-size"] as string | undefined}
       data-variant={props["data-variant"] as string | undefined}
@@ -92,15 +115,27 @@ function TestPressable({
 
 function TestText({
   children,
+  style,
   testID,
 }: Record<string, unknown> & { children?: React.ReactNode }): React.ReactElement {
-  return <span data-testid={testID as string | undefined}>{children}</span>;
+  const styleRecord = style as Record<string, unknown> | undefined;
+  return (
+    <span
+      data-color={styleRecord?.color as string | undefined}
+      data-testid={testID as string | undefined}
+    >
+      {children}
+    </span>
+  );
 }
 
 function TestTextInput(props: Record<string, unknown>): React.ReactElement {
+  const styleRecord = props.style as Record<string, unknown> | undefined;
   return (
     <input
       aria-label={props.accessibilityLabel as string | undefined}
+      data-bg={styleRecord?.backgroundColor as string | undefined}
+      data-color={styleRecord?.color as string | undefined}
       data-labelledby={props.accessibilityLabelledBy as string | undefined}
       data-describedby={props.accessibilityDescribedBy as string | undefined}
       data-testid={props.testID as string | undefined}
@@ -112,7 +147,13 @@ function TestTextInput(props: Record<string, unknown>): React.ReactElement {
 
 function TestView({
   children,
+  style,
   testID,
 }: Record<string, unknown> & { children?: React.ReactNode }): React.ReactElement {
-  return <div data-testid={testID as string | undefined}>{children}</div>;
+  const styleRecord = style as Record<string, unknown> | undefined;
+  return (
+    <div data-gap={String(styleRecord?.gap ?? "")} data-testid={testID as string | undefined}>
+      {children}
+    </div>
+  );
 }
