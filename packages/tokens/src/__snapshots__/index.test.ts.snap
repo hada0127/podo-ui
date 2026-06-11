@@ -1,0 +1,1013 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > json-bundle 1`] = `
+"{
+  "tokens": {
+    "color.palette.purple.600": {
+      "path": "color.palette.purple.600",
+      "type": "color",
+      "value": "#5B5BD6",
+      "rawValue": "#5B5BD6",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.palette.gray.0": {
+      "path": "color.palette.gray.0",
+      "type": "color",
+      "value": "#FFFFFF",
+      "rawValue": "#FFFFFF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.palette.gray.900": {
+      "path": "color.palette.gray.900",
+      "type": "color",
+      "value": "#14151A",
+      "rawValue": "#14151A",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.palette.red.600": {
+      "path": "color.palette.red.600",
+      "type": "color",
+      "value": "#D92D20",
+      "rawValue": "#D92D20",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "semantic.color.text.default": {
+      "path": "semantic.color.text.default",
+      "type": "color",
+      "value": "#14151A",
+      "rawValue": "{color.palette.gray.900}",
+      "references": [
+        "color.palette.gray.900"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "semantic.color.text.inverse": {
+      "path": "semantic.color.text.inverse",
+      "type": "color",
+      "value": "#FFFFFF",
+      "rawValue": "{color.palette.gray.0}",
+      "references": [
+        "color.palette.gray.0"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "semantic.color.text.danger": {
+      "path": "semantic.color.text.danger",
+      "type": "color",
+      "value": "#D92D20",
+      "rawValue": "{color.palette.red.600}",
+      "references": [
+        "color.palette.red.600"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "semantic.color.action.primary": {
+      "path": "semantic.color.action.primary",
+      "type": "color",
+      "value": "#5B5BD6",
+      "rawValue": "{color.palette.purple.600}",
+      "references": [
+        "color.palette.purple.600"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "semantic.color.surface": {
+      "path": "semantic.color.surface",
+      "type": "color",
+      "value": "#FFFFFF",
+      "rawValue": "{color.palette.gray.0}",
+      "references": [
+        "color.palette.gray.0"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "semantic.color.dark.surface": {
+      "path": "semantic.color.dark.surface",
+      "type": "color",
+      "value": "#14151A",
+      "rawValue": "{color.palette.gray.900}",
+      "references": [
+        "color.palette.gray.900"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "component.button.background": {
+      "path": "component.button.background",
+      "type": "color",
+      "value": "#5B5BD6",
+      "rawValue": "{semantic.color.action.primary}",
+      "references": [
+        "semantic.color.action.primary"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "component.button.text": {
+      "path": "component.button.text",
+      "type": "color",
+      "value": "#FFFFFF",
+      "rawValue": "{semantic.color.text.inverse}",
+      "references": [
+        "semantic.color.text.inverse"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "component.input.background": {
+      "path": "component.input.background",
+      "type": "color",
+      "value": "#FFFFFF",
+      "rawValue": "{semantic.color.surface}",
+      "references": [
+        "semantic.color.surface"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "component.input.border": {
+      "path": "component.input.border",
+      "type": "color",
+      "value": "#14151A",
+      "rawValue": "{semantic.color.text.default}",
+      "references": [
+        "semantic.color.text.default"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+        "tier": "package"
+      }
+    },
+    "spacing.scale.1": {
+      "path": "spacing.scale.1",
+      "type": "spacing",
+      "value": "4px",
+      "rawValue": "4px",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+        "tier": "package"
+      }
+    },
+    "spacing.scale.2": {
+      "path": "spacing.scale.2",
+      "type": "spacing",
+      "value": "8px",
+      "rawValue": "8px",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+        "tier": "package"
+      }
+    },
+    "spacing.component.field-gap": {
+      "path": "spacing.component.field-gap",
+      "type": "spacing",
+      "value": "8px",
+      "rawValue": "{spacing.scale.2}",
+      "references": [
+        "spacing.scale.2"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+        "tier": "package"
+      }
+    },
+    "radius.control.md": {
+      "path": "radius.control.md",
+      "type": "radius",
+      "value": "8px",
+      "rawValue": "8px",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+        "tier": "package"
+      }
+    },
+    "shadow.popover": {
+      "path": "shadow.popover",
+      "type": "shadow",
+      "value": {
+        "x": "0px",
+        "y": "8px",
+        "blur": "24px",
+        "spread": "0px",
+        "color": "#14151A33"
+      },
+      "rawValue": {
+        "x": "0px",
+        "y": "8px",
+        "blur": "24px",
+        "spread": "0px",
+        "color": "#14151A33"
+      },
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+        "tier": "package"
+      }
+    },
+    "motion.duration.fast": {
+      "path": "motion.duration.fast",
+      "type": "duration",
+      "value": "120ms",
+      "rawValue": "120ms",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+        "tier": "package"
+      }
+    },
+    "motion.easing.standard": {
+      "path": "motion.easing.standard",
+      "type": "cubicBezier",
+      "value": [
+        0.2,
+        0,
+        0,
+        1
+      ],
+      "rawValue": [
+        0.2,
+        0,
+        0,
+        1
+      ],
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+        "tier": "package"
+      }
+    },
+    "motion.transition.fast": {
+      "path": "motion.transition.fast",
+      "type": "motion",
+      "value": {
+        "duration": "120ms",
+        "easing": [
+          0.2,
+          0,
+          0,
+          1
+        ]
+      },
+      "rawValue": {
+        "duration": "{motion.duration.fast}",
+        "easing": "{motion.easing.standard}"
+      },
+      "references": [
+        "motion.duration.fast",
+        "motion.easing.standard"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+        "tier": "package"
+      }
+    },
+    "border.control.default": {
+      "path": "border.control.default",
+      "type": "border",
+      "value": {
+        "color": "#14151A",
+        "width": "1px",
+        "style": "solid"
+      },
+      "rawValue": {
+        "color": "#14151A",
+        "width": "1px",
+        "style": "solid"
+      },
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+        "tier": "package"
+      }
+    },
+    "font.family.sans": {
+      "path": "font.family.sans",
+      "type": "fontFamily",
+      "value": "Pretendard",
+      "rawValue": "Pretendard",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.h1.landing": {
+      "path": "typography.h1.landing",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": "64px",
+        "lineHeight": "72px",
+        "fontWeight": 700,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "24px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "64px",
+        "lineHeight": "72px",
+        "fontWeight": 700,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "24px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.h1.dashboard": {
+      "path": "typography.h1.dashboard",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": "28px",
+        "lineHeight": "36px",
+        "fontWeight": 600,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "12px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "28px",
+        "lineHeight": "36px",
+        "fontWeight": 600,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "12px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.landing": {
+      "path": "typography.body.landing",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": "20px",
+        "lineHeight": "32px",
+        "fontWeight": 400,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "16px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "20px",
+        "lineHeight": "32px",
+        "fontWeight": 400,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "16px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.dashboard": {
+      "path": "typography.body.dashboard",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "fontWeight": 400,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "8px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "fontWeight": 400,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "8px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    }
+  },
+  "origins": {
+    "color.palette.purple.600": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "color.palette.gray.0": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "color.palette.gray.900": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "color.palette.red.600": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "semantic.color.text.default": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "semantic.color.text.inverse": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "semantic.color.text.danger": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "semantic.color.action.primary": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "semantic.color.surface": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "semantic.color.dark.surface": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "component.button.background": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "component.button.text": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "component.input.background": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "component.input.border": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
+      "tier": "package"
+    },
+    "spacing.scale.1": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+      "tier": "package"
+    },
+    "spacing.scale.2": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+      "tier": "package"
+    },
+    "spacing.component.field-gap": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+      "tier": "package"
+    },
+    "radius.control.md": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+      "tier": "package"
+    },
+    "shadow.popover": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+      "tier": "package"
+    },
+    "motion.duration.fast": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+      "tier": "package"
+    },
+    "motion.easing.standard": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+      "tier": "package"
+    },
+    "motion.transition.fast": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+      "tier": "package"
+    },
+    "border.control.default": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/foundation.tokens.json",
+      "tier": "package"
+    },
+    "font.family.sans": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.h1.landing": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.h1.dashboard": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.landing": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.dashboard": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    }
+  }
+}
+"
+`;
+
+exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > react-native-tokens 1`] = `
+"export const tokens = {
+  "color": {
+    "palette": {
+      "purple": {
+        "600": "#5B5BD6"
+      },
+      "gray": {
+        "0": "#FFFFFF",
+        "900": "#14151A"
+      },
+      "red": {
+        "600": "#D92D20"
+      }
+    }
+  },
+  "semantic": {
+    "color": {
+      "text": {
+        "default": "#14151A",
+        "inverse": "#FFFFFF",
+        "danger": "#D92D20"
+      },
+      "action": {
+        "primary": "#5B5BD6"
+      },
+      "surface": "#FFFFFF"
+    }
+  },
+  "component": {
+    "button": {
+      "background": "#5B5BD6",
+      "text": "#FFFFFF"
+    },
+    "input": {
+      "background": "#FFFFFF",
+      "border": "#14151A"
+    }
+  },
+  "spacing": {
+    "scale": {
+      "1": 4,
+      "2": 8
+    },
+    "component": {
+      "field-gap": 8
+    }
+  },
+  "radius": {
+    "control": {
+      "md": 8
+    }
+  },
+  "shadow": {
+    "popover": {
+      "x": 0,
+      "y": 8,
+      "blur": 24,
+      "spread": 0,
+      "color": "#14151A33"
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": 120
+    },
+    "easing": {
+      "standard": [
+        0.2,
+        0,
+        0,
+        1
+      ]
+    },
+    "transition": {
+      "fast": {
+        "duration": 120,
+        "easing": [
+          0.2,
+          0,
+          0,
+          1
+        ]
+      }
+    }
+  },
+  "border": {
+    "control": {
+      "default": {
+        "color": "#14151A",
+        "width": 1,
+        "style": "solid"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "sans": "Pretendard"
+    }
+  },
+  "typography": {
+    "h1": {
+      "fontFamily": "Pretendard",
+      "fontSize": 28,
+      "lineHeight": 36,
+      "fontWeight": 600,
+      "letterSpacing": 0,
+      "paragraphSpacing": 12
+    },
+    "body": {
+      "fontFamily": "Pretendard",
+      "fontSize": 14,
+      "lineHeight": 20,
+      "fontWeight": 400,
+      "letterSpacing": 0,
+      "paragraphSpacing": 8
+    }
+  }
+} as const;
+"
+`;
+
+exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > theme-css 1`] = `
+"[data-podo-theme="landing"][data-color-scheme="light"] {
+  --podo-border-control-default-color: #14151A;
+  --podo-border-control-default-style: solid;
+  --podo-border-control-default-width: 1px;
+  --podo-color-palette-gray-0: #FFFFFF;
+  --podo-color-palette-gray-900: #14151A;
+  --podo-color-palette-purple-600: #5B5BD6;
+  --podo-color-palette-red-600: #D92D20;
+  --podo-component-button-background: #5B5BD6;
+  --podo-component-button-text: #FFFFFF;
+  --podo-component-input-background: #FFFFFF;
+  --podo-component-input-border: #14151A;
+  --podo-font-family-sans: Pretendard;
+  --podo-motion-duration-fast: 120ms;
+  --podo-motion-easing-standard: 0.2, 0, 0, 1;
+  --podo-motion-transition-fast-duration: 120ms;
+  --podo-motion-transition-fast-easing: 0.2, 0, 0, 1;
+  --podo-radius-control-md: 8px;
+  --podo-semantic-color-action-primary: #5B5BD6;
+  --podo-semantic-color-surface: #FFFFFF;
+  --podo-semantic-color-text-danger: #D92D20;
+  --podo-semantic-color-text-default: #14151A;
+  --podo-semantic-color-text-inverse: #FFFFFF;
+  --podo-shadow-popover-blur: 24px;
+  --podo-shadow-popover-color: #14151A33;
+  --podo-shadow-popover-spread: 0px;
+  --podo-shadow-popover-x: 0px;
+  --podo-shadow-popover-y: 8px;
+  --podo-spacing-component-field-gap: 8px;
+  --podo-spacing-scale-1: 4px;
+  --podo-spacing-scale-2: 8px;
+  --podo-typography-body-fontFamily: Pretendard;
+  --podo-typography-body-fontSize: 20px;
+  --podo-typography-body-fontWeight: 400;
+  --podo-typography-body-letterSpacing: 0px;
+  --podo-typography-body-lineHeight: 32px;
+  --podo-typography-body-paragraphSpacing: 16px;
+  --podo-typography-h1-fontFamily: Pretendard;
+  --podo-typography-h1-fontSize: 64px;
+  --podo-typography-h1-fontWeight: 700;
+  --podo-typography-h1-letterSpacing: 0px;
+  --podo-typography-h1-lineHeight: 72px;
+  --podo-typography-h1-paragraphSpacing: 24px;
+}
+
+[data-podo-theme="landing"][data-color-scheme="dark"] {
+  --podo-border-control-default-color: #14151A;
+  --podo-border-control-default-style: solid;
+  --podo-border-control-default-width: 1px;
+  --podo-color-palette-gray-0: #FFFFFF;
+  --podo-color-palette-gray-900: #14151A;
+  --podo-color-palette-purple-600: #5B5BD6;
+  --podo-color-palette-red-600: #D92D20;
+  --podo-component-button-background: #5B5BD6;
+  --podo-component-button-text: #FFFFFF;
+  --podo-component-input-background: #14151A;
+  --podo-component-input-border: #14151A;
+  --podo-font-family-sans: Pretendard;
+  --podo-motion-duration-fast: 120ms;
+  --podo-motion-easing-standard: 0.2, 0, 0, 1;
+  --podo-motion-transition-fast-duration: 120ms;
+  --podo-motion-transition-fast-easing: 0.2, 0, 0, 1;
+  --podo-radius-control-md: 8px;
+  --podo-semantic-color-action-primary: #5B5BD6;
+  --podo-semantic-color-surface: #14151A;
+  --podo-semantic-color-text-danger: #D92D20;
+  --podo-semantic-color-text-default: #14151A;
+  --podo-semantic-color-text-inverse: #FFFFFF;
+  --podo-shadow-popover-blur: 24px;
+  --podo-shadow-popover-color: #14151A33;
+  --podo-shadow-popover-spread: 0px;
+  --podo-shadow-popover-x: 0px;
+  --podo-shadow-popover-y: 8px;
+  --podo-spacing-component-field-gap: 8px;
+  --podo-spacing-scale-1: 4px;
+  --podo-spacing-scale-2: 8px;
+  --podo-typography-body-fontFamily: Pretendard;
+  --podo-typography-body-fontSize: 20px;
+  --podo-typography-body-fontWeight: 400;
+  --podo-typography-body-letterSpacing: 0px;
+  --podo-typography-body-lineHeight: 32px;
+  --podo-typography-body-paragraphSpacing: 16px;
+  --podo-typography-h1-fontFamily: Pretendard;
+  --podo-typography-h1-fontSize: 64px;
+  --podo-typography-h1-fontWeight: 700;
+  --podo-typography-h1-letterSpacing: 0px;
+  --podo-typography-h1-lineHeight: 72px;
+  --podo-typography-h1-paragraphSpacing: 24px;
+}
+
+[data-podo-theme="dashboard"][data-color-scheme="light"] {
+  --podo-border-control-default-color: #14151A;
+  --podo-border-control-default-style: solid;
+  --podo-border-control-default-width: 1px;
+  --podo-color-palette-gray-0: #FFFFFF;
+  --podo-color-palette-gray-900: #14151A;
+  --podo-color-palette-purple-600: #5B5BD6;
+  --podo-color-palette-red-600: #D92D20;
+  --podo-component-button-background: #5B5BD6;
+  --podo-component-button-text: #FFFFFF;
+  --podo-component-input-background: #FFFFFF;
+  --podo-component-input-border: #14151A;
+  --podo-font-family-sans: Pretendard;
+  --podo-motion-duration-fast: 120ms;
+  --podo-motion-easing-standard: 0.2, 0, 0, 1;
+  --podo-motion-transition-fast-duration: 120ms;
+  --podo-motion-transition-fast-easing: 0.2, 0, 0, 1;
+  --podo-radius-control-md: 8px;
+  --podo-semantic-color-action-primary: #5B5BD6;
+  --podo-semantic-color-surface: #FFFFFF;
+  --podo-semantic-color-text-danger: #D92D20;
+  --podo-semantic-color-text-default: #14151A;
+  --podo-semantic-color-text-inverse: #FFFFFF;
+  --podo-shadow-popover-blur: 24px;
+  --podo-shadow-popover-color: #14151A33;
+  --podo-shadow-popover-spread: 0px;
+  --podo-shadow-popover-x: 0px;
+  --podo-shadow-popover-y: 8px;
+  --podo-spacing-component-field-gap: 8px;
+  --podo-spacing-scale-1: 4px;
+  --podo-spacing-scale-2: 8px;
+  --podo-typography-body-fontFamily: Pretendard;
+  --podo-typography-body-fontSize: 14px;
+  --podo-typography-body-fontWeight: 400;
+  --podo-typography-body-letterSpacing: 0px;
+  --podo-typography-body-lineHeight: 20px;
+  --podo-typography-body-paragraphSpacing: 8px;
+  --podo-typography-h1-fontFamily: Pretendard;
+  --podo-typography-h1-fontSize: 28px;
+  --podo-typography-h1-fontWeight: 600;
+  --podo-typography-h1-letterSpacing: 0px;
+  --podo-typography-h1-lineHeight: 36px;
+  --podo-typography-h1-paragraphSpacing: 12px;
+}
+
+[data-podo-theme="dashboard"][data-color-scheme="dark"] {
+  --podo-border-control-default-color: #14151A;
+  --podo-border-control-default-style: solid;
+  --podo-border-control-default-width: 1px;
+  --podo-color-palette-gray-0: #FFFFFF;
+  --podo-color-palette-gray-900: #14151A;
+  --podo-color-palette-purple-600: #5B5BD6;
+  --podo-color-palette-red-600: #D92D20;
+  --podo-component-button-background: #5B5BD6;
+  --podo-component-button-text: #FFFFFF;
+  --podo-component-input-background: #14151A;
+  --podo-component-input-border: #14151A;
+  --podo-font-family-sans: Pretendard;
+  --podo-motion-duration-fast: 120ms;
+  --podo-motion-easing-standard: 0.2, 0, 0, 1;
+  --podo-motion-transition-fast-duration: 120ms;
+  --podo-motion-transition-fast-easing: 0.2, 0, 0, 1;
+  --podo-radius-control-md: 8px;
+  --podo-semantic-color-action-primary: #5B5BD6;
+  --podo-semantic-color-surface: #14151A;
+  --podo-semantic-color-text-danger: #D92D20;
+  --podo-semantic-color-text-default: #14151A;
+  --podo-semantic-color-text-inverse: #FFFFFF;
+  --podo-shadow-popover-blur: 24px;
+  --podo-shadow-popover-color: #14151A33;
+  --podo-shadow-popover-spread: 0px;
+  --podo-shadow-popover-x: 0px;
+  --podo-shadow-popover-y: 8px;
+  --podo-spacing-component-field-gap: 8px;
+  --podo-spacing-scale-1: 4px;
+  --podo-spacing-scale-2: 8px;
+  --podo-typography-body-fontFamily: Pretendard;
+  --podo-typography-body-fontSize: 14px;
+  --podo-typography-body-fontWeight: 400;
+  --podo-typography-body-letterSpacing: 0px;
+  --podo-typography-body-lineHeight: 20px;
+  --podo-typography-body-paragraphSpacing: 8px;
+  --podo-typography-h1-fontFamily: Pretendard;
+  --podo-typography-h1-fontSize: 28px;
+  --podo-typography-h1-fontWeight: 600;
+  --podo-typography-h1-letterSpacing: 0px;
+  --podo-typography-h1-lineHeight: 36px;
+  --podo-typography-h1-paragraphSpacing: 12px;
+}
+"
+`;
+
+exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > typescript-tokens 1`] = `
+"export const tokens = {
+  "color": {
+    "palette": {
+      "purple": {
+        "600": "#5B5BD6"
+      },
+      "gray": {
+        "0": "#FFFFFF",
+        "900": "#14151A"
+      },
+      "red": {
+        "600": "#D92D20"
+      }
+    }
+  },
+  "semantic": {
+    "color": {
+      "text": {
+        "default": "#14151A",
+        "inverse": "#FFFFFF",
+        "danger": "#D92D20"
+      },
+      "action": {
+        "primary": "#5B5BD6"
+      },
+      "surface": "#FFFFFF",
+      "dark": {
+        "surface": "#14151A"
+      }
+    }
+  },
+  "component": {
+    "button": {
+      "background": "#5B5BD6",
+      "text": "#FFFFFF"
+    },
+    "input": {
+      "background": "#FFFFFF",
+      "border": "#14151A"
+    }
+  },
+  "spacing": {
+    "scale": {
+      "1": "4px",
+      "2": "8px"
+    },
+    "component": {
+      "field-gap": "8px"
+    }
+  },
+  "radius": {
+    "control": {
+      "md": "8px"
+    }
+  },
+  "shadow": {
+    "popover": {
+      "x": "0px",
+      "y": "8px",
+      "blur": "24px",
+      "spread": "0px",
+      "color": "#14151A33"
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": "120ms"
+    },
+    "easing": {
+      "standard": [
+        0.2,
+        0,
+        0,
+        1
+      ]
+    },
+    "transition": {
+      "fast": {
+        "duration": "120ms",
+        "easing": [
+          0.2,
+          0,
+          0,
+          1
+        ]
+      }
+    }
+  },
+  "border": {
+    "control": {
+      "default": {
+        "color": "#14151A",
+        "width": "1px",
+        "style": "solid"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "sans": "Pretendard"
+    }
+  },
+  "typography": {
+    "h1": {
+      "landing": {
+        "fontFamily": "Pretendard",
+        "fontSize": "64px",
+        "lineHeight": "72px",
+        "fontWeight": 700,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "24px"
+      },
+      "dashboard": {
+        "fontFamily": "Pretendard",
+        "fontSize": "28px",
+        "lineHeight": "36px",
+        "fontWeight": 600,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "12px"
+      }
+    },
+    "body": {
+      "landing": {
+        "fontFamily": "Pretendard",
+        "fontSize": "20px",
+        "lineHeight": "32px",
+        "fontWeight": 400,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "16px"
+      },
+      "dashboard": {
+        "fontFamily": "Pretendard",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "fontWeight": 400,
+        "letterSpacing": "0px",
+        "paragraphSpacing": "8px"
+      }
+    }
+  }
+} as const;
+
+export type TokenPath = "border.control.default" | "color.palette.gray.0" | "color.palette.gray.900" | "color.palette.purple.600" | "color.palette.red.600" | "component.button.background" | "component.button.text" | "component.input.background" | "component.input.border" | "font.family.sans" | "motion.duration.fast" | "motion.easing.standard" | "motion.transition.fast" | "radius.control.md" | "semantic.color.action.primary" | "semantic.color.dark.surface" | "semantic.color.surface" | "semantic.color.text.danger" | "semantic.color.text.default" | "semantic.color.text.inverse" | "shadow.popover" | "spacing.component.field-gap" | "spacing.scale.1" | "spacing.scale.2" | "typography.body.dashboard" | "typography.body.landing" | "typography.h1.dashboard" | "typography.h1.landing";
+"
+`;

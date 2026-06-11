@@ -1,0 +1,299 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`legacy grid compatibility > emits SCSS compatible with the v1 source contract > legacy-grid-scss 1`] = `
+"@use './spacing' as *;
+@use './device' as *;
+$grid-pc: 12;
+$grid-tb: 6;
+$grid-mo: 4;
+.grid {
+  display: grid;
+  grid-template-columns: repeat($grid-pc, 1fr);
+  grid-gap: s(6);
+  padding: 0 s(6) 0 s(6);
+
+  @include tb {
+    grid-template-columns: repeat($grid-tb, 1fr);
+    grid-gap: s(5);
+    padding: 0 s(5) 0 s(5);
+  }
+  @include mo {
+    grid-template-columns: repeat($grid-mo, 1fr);
+    grid-gap: s(5);
+    padding: 0 s(5) 0 s(5);
+  }
+
+  @for $i from 2 through 6 {
+    &.grid-fix-#{$i} {
+      grid-template-columns: repeat(#{$i}, 1fr);
+    }
+    @for $j from 1 through $i {
+      > .w-#{$j}_#{$i} {
+        grid-column: span #{$j};
+      }
+    }
+  }
+  @for $i from 1 through $grid-pc {
+    > .w-#{$i} {
+      grid-column: span #{$i};
+    }
+  }
+
+  > .w-full {
+    grid-column: span $grid-pc;
+    @include tb {
+      grid-column: span $grid-tb;
+    }
+    @include mo {
+      grid-column: span $grid-mo;
+    }
+  }
+}
+*:not(.grid) {
+  @for $i from 1 through $grid-pc {
+    > .w-#{$i} {
+      width: calc(#{$i}/ 12 * 100%);
+    }
+  }
+  > .w-full {
+    width: 100%;
+  }
+}
+* {
+  @for $i from 0 through 5000 {
+    &.w-#{$i}px {
+      width: #{$i} + 'px';
+    }
+  }
+}
+"
+`;
+
+exports[`legacy grid compatibility > emits the old grid selectors and responsive rules > legacy-grid-css 1`] = `
+".grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-gap: 24px;
+  padding: 0 24px 0 24px;
+}
+
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  .grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-gap: 16px;
+    padding: 0 16px 0 16px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 16px;
+    padding: 0 16px 0 16px;
+  }
+}
+
+.grid.grid-fix-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.grid > .w-1_2 {
+  grid-column: span 1;
+}
+.grid > .w-2_2 {
+  grid-column: span 2;
+}
+.grid.grid-fix-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.grid > .w-1_3 {
+  grid-column: span 1;
+}
+.grid > .w-2_3 {
+  grid-column: span 2;
+}
+.grid > .w-3_3 {
+  grid-column: span 3;
+}
+.grid.grid-fix-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.grid > .w-1_4 {
+  grid-column: span 1;
+}
+.grid > .w-2_4 {
+  grid-column: span 2;
+}
+.grid > .w-3_4 {
+  grid-column: span 3;
+}
+.grid > .w-4_4 {
+  grid-column: span 4;
+}
+.grid.grid-fix-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+.grid > .w-1_5 {
+  grid-column: span 1;
+}
+.grid > .w-2_5 {
+  grid-column: span 2;
+}
+.grid > .w-3_5 {
+  grid-column: span 3;
+}
+.grid > .w-4_5 {
+  grid-column: span 4;
+}
+.grid > .w-5_5 {
+  grid-column: span 5;
+}
+.grid.grid-fix-6 {
+  grid-template-columns: repeat(6, 1fr);
+}
+.grid > .w-1_6 {
+  grid-column: span 1;
+}
+.grid > .w-2_6 {
+  grid-column: span 2;
+}
+.grid > .w-3_6 {
+  grid-column: span 3;
+}
+.grid > .w-4_6 {
+  grid-column: span 4;
+}
+.grid > .w-5_6 {
+  grid-column: span 5;
+}
+.grid > .w-6_6 {
+  grid-column: span 6;
+}
+.grid > .w-1 {
+  grid-column: span 1;
+}
+.grid > .w-2 {
+  grid-column: span 2;
+}
+.grid > .w-3 {
+  grid-column: span 3;
+}
+.grid > .w-4 {
+  grid-column: span 4;
+}
+.grid > .w-5 {
+  grid-column: span 5;
+}
+.grid > .w-6 {
+  grid-column: span 6;
+}
+.grid > .w-7 {
+  grid-column: span 7;
+}
+.grid > .w-8 {
+  grid-column: span 8;
+}
+.grid > .w-9 {
+  grid-column: span 9;
+}
+.grid > .w-10 {
+  grid-column: span 10;
+}
+.grid > .w-11 {
+  grid-column: span 11;
+}
+.grid > .w-12 {
+  grid-column: span 12;
+}
+.grid > .w-full {
+  grid-column: span 12;
+}
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  .grid > .w-full {
+    grid-column: span 6;
+  }
+}
+@media screen and (max-width: 767px) {
+  .grid > .w-full {
+    grid-column: span 4;
+  }
+}
+*:not(.grid) > .w-1 {
+  width: calc(1/ 12 * 100%);
+}
+*:not(.grid) > .w-2 {
+  width: calc(2/ 12 * 100%);
+}
+*:not(.grid) > .w-3 {
+  width: calc(3/ 12 * 100%);
+}
+*:not(.grid) > .w-4 {
+  width: calc(4/ 12 * 100%);
+}
+*:not(.grid) > .w-5 {
+  width: calc(5/ 12 * 100%);
+}
+*:not(.grid) > .w-6 {
+  width: calc(6/ 12 * 100%);
+}
+*:not(.grid) > .w-7 {
+  width: calc(7/ 12 * 100%);
+}
+*:not(.grid) > .w-8 {
+  width: calc(8/ 12 * 100%);
+}
+*:not(.grid) > .w-9 {
+  width: calc(9/ 12 * 100%);
+}
+*:not(.grid) > .w-10 {
+  width: calc(10/ 12 * 100%);
+}
+*:not(.grid) > .w-11 {
+  width: calc(11/ 12 * 100%);
+}
+*:not(.grid) > .w-12 {
+  width: calc(12/ 12 * 100%);
+}
+*:not(.grid) > .w-full {
+  width: 100%;
+}
+*.w-0px {
+  width: 0px;
+}
+*.w-1px {
+  width: 1px;
+}
+*.w-2px {
+  width: 2px;
+}
+*.w-3px {
+  width: 3px;
+}
+*.w-4px {
+  width: 4px;
+}
+*.w-5px {
+  width: 5px;
+}
+*.w-6px {
+  width: 6px;
+}
+*.w-7px {
+  width: 7px;
+}
+*.w-8px {
+  width: 8px;
+}
+*.w-9px {
+  width: 9px;
+}
+*.w-10px {
+  width: 10px;
+}
+*.w-11px {
+  width: 11px;
+}
+*.w-12px {
+  width: 12px;
+}
+"
+`;

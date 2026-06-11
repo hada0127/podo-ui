@@ -20,5 +20,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@podo/spec": "workspace:*",
+    "fantasticon": "^4.1.0",
+    "svgo": "^4.0.1",
+    "wawoff2": "^2.0.1"
   }
 }

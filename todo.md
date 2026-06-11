@@ -110,62 +110,69 @@
 
 ### Token Resolver
 
-- [ ] `@podo/tokens` 패키지 생성
+- [x] `@podo/tokens` 패키지 생성
   - 완료 기준: token load, merge, resolve API가 export된다.
-- [ ] token file loader 구현
+- [x] token file loader 구현
   - 완료 기준: package default와 `.podo/tokens`를 함께 로드한다.
-- [ ] alias resolver 구현
+- [x] alias resolver 구현
   - 완료 기준: `{color.primary}` 형태 참조와 JSON Pointer 참조를 해석한다.
-- [ ] theme resolver 구현
+- [x] theme resolver 구현
   - 완료 기준: landing/dashboard/custom, light/dark 조합의 resolved token set을 만든다.
-- [ ] component token resolver 구현
+- [x] component token resolver 구현
   - 완료 기준: component token이 primitive/semantic token을 참조해 최종 값으로 풀린다.
-- [ ] token validation CLI API 구현
+- [x] token validation CLI API 구현
   - 완료 기준: 중복 이름, 잘못된 단위, circular alias를 에러로 표시한다.
 
 ### Token Outputs
 
-- [ ] CSS variables 생성기 구현
+- [x] CSS variables 생성기 구현
   - 완료 기준: theme별 `[data-podo-theme]`, `[data-color-scheme]` CSS가 생성된다.
-- [ ] TypeScript token object 생성기 구현
+- [x] TypeScript token object 생성기 구현
   - 완료 기준: ESM import 가능한 typed token object가 생성된다.
-- [ ] React Native token object 생성기 구현
+- [x] React Native token object 생성기 구현
   - 완료 기준: RN에서 사용할 number/string 값이 단위 변환되어 생성된다.
-- [ ] token JSON bundle 생성기 구현
+- [x] token JSON bundle 생성기 구현
   - 완료 기준: MCP와 editor가 읽는 resolved JSON bundle이 생성된다.
-- [ ] sourcemap 또는 origin metadata 생성
+- [x] sourcemap 또는 origin metadata 생성
   - 완료 기준: resolved 값이 어느 원본 파일/토큰에서 왔는지 추적된다.
+
+### Legacy Grid Compatibility
+
+- [x] 기존 grid 시스템 호환 산출물 구현
+  - 완료 기준: v1 `scss/layout/grid.scss`의 `.grid`, `.grid-fix-{2..6}`, `.w-*`, `.w-full`, `.w-{n}_{d}`, `.w-{n}px` 동작과 12/6/4 컬럼 규칙을 유지하는 CSS/SCSS 산출물이 생성된다.
+- [x] grid 호환성 테스트 작성
+  - 완료 기준: 기존 grid 클래스와 PC/tablet/mobile column/gap/padding 규칙이 snapshot으로 고정된다.
 
 ### Icon Build
 
-- [ ] `@podo/icons` 패키지 생성
+- [x] `@podo/icons` 패키지 생성
   - 완료 기준: icon manifest parser와 build API가 export된다.
-- [ ] SVG source 규칙 정의
+- [x] SVG source 규칙 정의
   - 완료 기준: viewBox, currentColor, width/height 제거 규칙이 문서화된다.
-- [ ] SVG optimizer 도입
+- [x] SVG optimizer 도입
   - 완료 기준: 빌드 전에 SVG가 일관된 형태로 정리된다.
-- [ ] SVG to WOFF 빌드 구현
+- [x] SVG to WOFF 빌드 구현
   - 완료 기준: `PodoIcons.woff`와 CSS font-face가 생성된다.
-- [ ] WOFF2 산출 여부 결정 및 구현
+- [x] WOFF2 산출 여부 결정 및 구현
   - 완료 기준: 웹 성능을 위한 `woff2` 생성 여부가 결정되고 빌드에 반영된다.
-- [ ] icon class CSS 생성
+- [x] icon class CSS 생성
   - 완료 기준: `.podo-icon-chevron-left::before` 또는 동등한 클래스가 생성된다.
-- [ ] TypeScript icon name union 생성
+- [x] TypeScript icon name union 생성
   - 완료 기준: React/Web 컴포넌트에서 icon name 자동완성이 된다.
-- [ ] React Native icon 산출물 생성
+- [x] React Native icon 산출물 생성
   - 완료 기준: RN용 glyph map 또는 SVG component 산출물이 생성된다.
-- [ ] icon group build 구현
+- [x] icon group build 구현
   - 완료 기준: 특정 그룹만 포함한 subset font를 만들 수 있다.
-- [ ] codepoint lock 검증 구현
+- [x] codepoint lock 검증 구현
   - 완료 기준: 기존 아이콘 codepoint 변경 시 빌드가 실패한다.
 
 ### Build 검증
 
-- [ ] landing/dashboard light/dark 토큰 빌드 테스트
+- [x] landing/dashboard light/dark 토큰 빌드 테스트
   - 완료 기준: 네 조합의 CSS/TS/RN 출력 snapshot이 생성된다.
-- [ ] icon font snapshot 테스트
+- [x] icon font snapshot 테스트
   - 완료 기준: manifest, CSS, font metadata가 안정적으로 생성된다.
-- [ ] 빌드 성능 기준 설정
+- [x] 빌드 성능 기준 설정
   - 완료 기준: token/icon build 최대 실행 시간이 문서화된다.
 
 ## Phase 3: 컴포넌트 코드 생성 MVP

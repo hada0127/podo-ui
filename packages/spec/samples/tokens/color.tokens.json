@@ -104,18 +104,18 @@
           }
         },
         "surface": {
-          "default": {
-            "$type": "color",
-            "$value": "{color.palette.gray.0}",
-            "$extensions": {
-              "podo": {
-                "themeable": true,
-                "scope": "semantic",
-                "roles": ["surface", "light"]
-              }
+          "$type": "color",
+          "$value": "{color.palette.gray.0}",
+          "$extensions": {
+            "podo": {
+              "themeable": true,
+              "scope": "semantic",
+              "roles": ["surface", "light"]
             }
-          },
-          "dark": {
+          }
+        },
+        "dark": {
+          "surface": {
             "$type": "color",
             "$value": "{color.palette.gray.900}",
             "$extensions": {
@@ -155,7 +155,7 @@
       "input": {
         "background": {
           "$type": "color",
-          "$value": "{semantic.color.surface.default}",
+          "$value": "{semantic.color.surface}",
           "$extensions": {
             "podo": {
               "scope": "component",

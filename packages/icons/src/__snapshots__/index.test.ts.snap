@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`@podo/icons > emits CSS, TypeScript icon names, native glyph maps, and subsets > icon-css 1`] = `
+"@font-face {
+  font-family: "PodoIcons";
+  src: url("./PodoIcons.woff") format("woff"),
+       url("./PodoIcons.woff2") format("woff2");
+  font-display: block;
+}
+
+.podo-icon {
+  font-family: "PodoIcons";
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+}
+
+.podo-icon-chevron-left::before { content: "\\E001"; }
+.podo-icon-chevron-right::before { content: "\\E002"; }
+.podo-icon-menu::before { content: "\\E003"; }
+"
+`;
+
+exports[`@podo/icons > emits CSS, TypeScript icon names, native glyph maps, and subsets > icon-types 1`] = `
+"export type PodoIconName = "chevron-left" | "chevron-right" | "menu";
+
+export const podoIconNames = [
+  "chevron-left",
+  "chevron-right",
+  "menu"
+] as const;
+"
+`;
+
+exports[`@podo/icons > emits CSS, TypeScript icon names, native glyph maps, and subsets > native-glyph-map 1`] = `
+"export const podoIconGlyphMap = {
+  "chevron-left": 57345,
+  "chevron-right": 57346,
+  "menu": 57347
+} as const;
+"
+`;

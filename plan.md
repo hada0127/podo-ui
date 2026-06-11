@@ -254,6 +254,24 @@ podo mcp
 | hono   | Hono TSX, SSR helpers, critical CSS                | hydration 없는 컴포넌트를 1차 지원                    |
 | native | React Native TSX, token JS objects, theme provider | DOM slot은 named prop으로 변환                        |
 
+### 8.3 Legacy Grid Compatibility
+
+그리드 시스템은 v1의 `scss/layout/grid.scss` 동작을 그대로 유지한다. v2 토큰 시스템으로 재설계하거나 클래스 이름을 바꾸지 않는다.
+
+유지해야 하는 계약:
+
+- PC 12 columns, tablet 6 columns, mobile 4 columns
+- `.grid` container
+- `.grid-fix-{2..6}` fixed column helpers
+- direct child `.w-{1..12}` column span helpers
+- direct child `.w-full`
+- fraction helpers `.w-{n}_{d}`
+- non-grid child width helpers
+- pixel width helpers `.w-{0..5000}px`
+- gap/padding은 기존 spacing scale 기준: PC `s(6)` 24px, tablet/mobile `s(5)` 16px
+
+v2에서는 이 grid를 `@podo/web` 또는 호환 CSS 산출물에서 그대로 제공하고, 새 JSON 기반 layout/token 시스템과 별도로 취급한다. grid 관련 변경은 bug fix 외에는 breaking change로 본다.
+
 ## 9. 테마 전략
 
 기본 제공 테마는 `landing`, `dashboard` 두 개로 시작한다.
