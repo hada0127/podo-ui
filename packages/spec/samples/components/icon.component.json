@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "component",
+  "id": "icon",
+  "name": "Icon",
+  "category": "atom",
+  "status": "stable",
+  "description": "Icon font glyph renderer backed by the Podo icon manifest.",
+  "anatomy": [
+    {
+      "name": "root",
+      "targets": { "web": "i", "react": "i", "hono": "i", "native": "Text" }
+    },
+    {
+      "name": "glyph",
+      "targets": { "web": "::before", "react": "className", "hono": "class", "native": "children" }
+    }
+  ],
+  "slots": [],
+  "props": [
+    {
+      "name": "name",
+      "type": { "kind": "string" },
+      "required": true,
+      "description": "Icon name from the generated PodoIconName union."
+    },
+    {
+      "name": "decorative",
+      "type": { "kind": "boolean" },
+      "default": true,
+      "description": "Decorative icons are hidden from assistive technology."
+    }
+  ],
+  "variants": [{ "name": "size", "values": ["sm", "md", "lg"], "default": "md" }],
+  "states": [],
+  "tokens": {
+    "glyph.color": "{semantic.color.text.default}"
+  },
+  "targets": {
+    "web": { "supported": true, "limitations": [] },
+    "react": { "supported": true, "limitations": [] },
+    "hono": { "supported": true, "limitations": [] },
+    "native": { "supported": true, "limitations": ["Uses generated glyph map output."] }
+  },
+  "accessibility": {
+    "aria": ["aria-hidden", "aria-label"],
+    "keyboard": [],
+    "focusManagement": "Icons are not focusable unless wrapped by an interactive component."
+  },
+  "examples": [
+    {
+      "target": "react",
+      "title": "Decorative menu icon",
+      "code": "<Icon name=\"menu\" />"
+    },
+    {
+      "target": "web",
+      "title": "Icon font class",
+      "code": "<podo-icon name=\"menu\"></podo-icon>"
+    }
+  ]
+}

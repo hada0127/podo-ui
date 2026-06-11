@@ -549,15 +549,15 @@
 
 ## 1차 MVP 완료 기준
 
-- [ ] JSON token/component/icon/config schema가 있다.
-- [ ] Button, Input, Field, Icon, Typography 샘플 스펙이 있다.
-- [ ] landing/dashboard와 light/dark token build가 된다.
-- [ ] icon woff와 manifest가 생성된다.
-- [ ] web/react/hono/native 중 최소 web/react/hono Button이 렌더링된다.
-- [ ] `podo init`, `podo validate`, `podo build`가 동작한다.
-- [ ] `.podo` 설정이 생성되고 build 산출물에 반영된다.
-- [ ] MCP read tools로 token/component 조회가 가능하다.
-- [ ] 설치 가이드와 MCP 사용 가이드가 있다.
+- [x] JSON token/component/icon/config schema가 있다.
+- [x] Button, Input, Field, Icon, Typography 샘플 스펙이 있다.
+- [x] landing/dashboard와 light/dark token build가 된다.
+- [x] icon woff와 manifest가 생성된다.
+- [x] web/react/hono/native 중 최소 web/react/hono Button이 렌더링된다.
+- [x] `podo init`, `podo validate`, `podo build`가 동작한다.
+- [x] `.podo` 설정이 생성되고 build 산출물에 반영된다.
+- [x] MCP read tools로 token/component 조회가 가능하다.
+- [x] 설치 가이드와 MCP 사용 가이드가 있다.
 
 ## 2차 MVP 완료 기준
 

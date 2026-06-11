@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "component",
+  "id": "typography",
+  "name": "Typography",
+  "category": "atom",
+  "status": "stable",
+  "description": "Theme-aware text primitive for headings and body copy.",
+  "anatomy": [
+    {
+      "name": "root",
+      "targets": { "web": "podo-text", "react": "p", "hono": "p", "native": "Text" }
+    },
+    {
+      "name": "content",
+      "targets": { "web": "slot", "react": "children", "hono": "children", "native": "children" }
+    }
+  ],
+  "slots": [
+    {
+      "name": "children",
+      "required": true,
+      "targets": {
+        "web": { "name": "default" },
+        "react": { "name": "children" },
+        "hono": { "name": "children" },
+        "native": { "name": "children" }
+      }
+    }
+  ],
+  "props": [
+    {
+      "name": "as",
+      "type": { "kind": "enum", "values": ["span", "p", "h1"] },
+      "default": "p",
+      "description": "Semantic element to render when the target supports it."
+    },
+    {
+      "name": "variant",
+      "type": { "kind": "enum", "values": ["body", "h1"] },
+      "default": "body",
+      "description": "Typography token set to apply."
+    }
+  ],
+  "variants": [{ "name": "variant", "values": ["body", "h1"], "default": "body" }],
+  "states": [],
+  "tokens": {
+    "root.color": "{semantic.color.text.default}",
+    "body.typography": "{typography.body.dashboard}",
+    "heading.typography": "{typography.h1.dashboard}"
+  },
+  "targets": {
+    "web": { "supported": true, "limitations": [] },
+    "react": { "supported": true, "limitations": [] },
+    "hono": { "supported": true, "limitations": [] },
+    "native": { "supported": true, "limitations": ["Semantic element maps to Text."] }
+  },
+  "accessibility": {
+    "aria": [],
+    "keyboard": [],
+    "focusManagement": "Typography is static text and does not manage focus."
+  },
+  "examples": [
+    {
+      "target": "react",
+      "title": "Dashboard heading",
+      "code": "<Typography as=\"h1\">Dashboard</Typography>"
+    },
+    {
+      "target": "web",
+      "title": "Web text primitive",
+      "code": "<podo-text as=\"h1\">Dashboard</podo-text>"
+    }
+  ]
+}

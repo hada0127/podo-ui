@@ -41,10 +41,14 @@ describe("Podo spec schemas", () => {
     const button = parseComponentDocument(loadSample("components/button.component.json"));
     const input = parseComponentDocument(loadSample("components/input.component.json"));
     const field = parseComponentDocument(loadSample("components/field.component.json"));
+    const icon = parseComponentDocument(loadSample("components/icon.component.json"));
+    const typography = parseComponentDocument(loadSample("components/typography.component.json"));
 
     expect(button.slots.some((slot) => slot.name === "children" && slot.required)).toBe(true);
     expect(input.states.some((state) => state.name === "invalid")).toBe(true);
     expect(field.slots.some((slot) => slot.name === "control" && slot.required)).toBe(true);
+    expect(icon.props.some((prop) => prop.name === "name" && prop.required)).toBe(true);
+    expect(typography.tokens["heading.typography"]).toBe("{typography.h1.dashboard}");
   });
 
   it("parses valid icon and .podo sample documents", () => {
@@ -249,14 +253,22 @@ describe("Podo spec schemas", () => {
 
   it("detects broken component token bindings", () => {
     const color = parseTokenDocument(loadSample("tokens/color.tokens.json"));
+    const foundation = parseTokenDocument(loadSample("tokens/foundation.tokens.json"));
+    const typography = parseTokenDocument(loadSample("tokens/typography.tokens.json"));
     const button = parseComponentDocument(loadSample("components/button.component.json"));
     const input = parseComponentDocument(loadSample("components/input.component.json"));
     const field = parseComponentDocument(loadSample("components/field.component.json"));
-    const tokenPaths = collectTokenPaths(color.tokens);
+    const icon = parseComponentDocument(loadSample("components/icon.component.json"));
+    const text = parseComponentDocument(loadSample("components/typography.component.json"));
+    const tokenPaths = [color, foundation, typography].flatMap((document) =>
+      collectTokenPaths(document.tokens)
+    );
 
     expect(validateComponentTokenBindings(button, tokenPaths)).toEqual([]);
     expect(validateComponentTokenBindings(input, tokenPaths)).toEqual([]);
     expect(validateComponentTokenBindings(field, tokenPaths)).toEqual([]);
+    expect(validateComponentTokenBindings(icon, tokenPaths)).toEqual([]);
+    expect(validateComponentTokenBindings(text, tokenPaths)).toEqual([]);
 
     const brokenButton: ComponentDocument = {
       ...button,
