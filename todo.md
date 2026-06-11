@@ -533,19 +533,19 @@
 
 ## 릴리스 준비 체크리스트
 
-- [ ] 모든 package `exports` 검증
-- [ ] ESM/CJS 지원 범위 결정 및 문서화
-- [ ] TypeScript declaration 출력 검증
-- [ ] npm `files` 필드 검증
-- [ ] bin 실행 권한 검증
-- [ ] `prepublishOnly` 또는 CI publish pipeline 검증
-- [ ] Changesets version/publish dry-run 검증
-- [ ] README 작성
-- [ ] CHANGELOG 생성
-- [ ] license 포함
-- [ ] example projects build 검증
-- [ ] MCP 패키지 실행 검증
-- [ ] canary 배포 전략 문서화
+- [x] 모든 package `exports` 검증
+- [x] ESM/CJS 지원 범위 결정 및 문서화
+- [x] TypeScript declaration 출력 검증
+- [x] npm `files` 필드 검증
+- [x] bin 실행 권한 검증
+- [x] `prepublishOnly` 또는 CI publish pipeline 검증
+- [x] Changesets version/publish dry-run 검증
+- [x] README 작성
+- [x] CHANGELOG 생성
+- [x] license 포함
+- [x] example projects build 검증
+- [x] MCP 패키지 실행 검증
+- [x] canary 배포 전략 문서화
 
 ## 1차 MVP 완료 기준
 

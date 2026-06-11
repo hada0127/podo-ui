@@ -29,6 +29,28 @@ Changesets is the default versioning and publishing tool. The root package is pr
 
 The Changesets base branch is currently `v2` because this branch is an orphan rebuild branch. When v2 becomes the release base or merges back into the normal release branch, revisit `.changeset/config.json`.
 
+## Release Verification
+
+Run the release gate before publishing:
+
+```sh
+pnpm check
+pnpm test:studio:e2e
+pnpm build
+pnpm release:verify
+pnpm changeset:dry-run
+```
+
+`pnpm release:verify` checks package `exports`, TypeScript declaration entries, npm `files` allowlists, CLI/MCP bin shebangs and executable bits, root README/CHANGELOG/LICENSE files, and a dry-run MCP launch path. `pnpm changeset:dry-run` runs `changeset status --verbose` and `pnpm --filter './packages/*' pack --dry-run` to inspect version impact and tarball contents without publishing.
+
 ## Canary Policy
+
+Canary releases use npm dist-tags and must not replace `latest`.
+
+1. Run the release gate above on `v2`.
+2. Run `pnpm changeset version --snapshot canary` on a disposable release branch or CI workspace.
+3. Run `pnpm build && pnpm release:verify && pnpm changeset:dry-run`.
+4. Publish with `changeset publish --tag canary --no-git-tag`.
+5. Install in a sample project with `npm install @podo/cli@canary @podo/react@canary` and run `podo init`, `podo build --dry-run`, and `podo validate`.
 
 Installing directly from `main` is allowed only for canary validation. Reproducible project installs should use npm versions or explicit git tags.

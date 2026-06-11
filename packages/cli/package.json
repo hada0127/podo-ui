@@ -20,7 +20,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && chmod +x dist/index.js",
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {

@@ -15,8 +15,9 @@
   },
   "homepage": "https://podoui.com",
   "scripts": {
-    "build": "pnpm -r --if-present build",
+    "build": "pnpm clean && pnpm -r --if-present build",
     "clean": "pnpm -r --if-present clean && rm -rf dist coverage .turbo",
+    "examples:build": "pnpm --filter './examples/*' build",
     "lint": "eslint . --max-warnings=0",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
@@ -25,10 +26,12 @@
     "test:studio:e2e": "playwright test -c playwright.config.ts",
     "test:watch": "vitest",
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm format:check",
+    "release:verify": "node scripts/verify-release.mjs",
+    "changeset:dry-run": "changeset status --verbose && pnpm --filter './packages/*' pack --dry-run",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "pnpm check && pnpm test:studio:e2e && pnpm build && changeset publish",
-    "prepublishOnly": "pnpm check && pnpm test:studio:e2e && pnpm build"
+    "release": "pnpm check && pnpm test:studio:e2e && pnpm build && pnpm release:verify && pnpm changeset:dry-run && changeset publish",
+    "prepublishOnly": "pnpm check && pnpm test:studio:e2e && pnpm build && pnpm release:verify && pnpm changeset:dry-run"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",

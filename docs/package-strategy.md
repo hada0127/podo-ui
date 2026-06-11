@@ -30,4 +30,10 @@ Each publishable package must expose:
 - explicit `files` allowlist
 - stable subpath exports only when needed
 
+## ESM/CJS Support
+
+Podo v2 is ESM-only for the first release. Every publishable package sets `type: module` and exposes `exports["."].import` plus `exports["."].types`.
+
+CommonJS output is intentionally not generated in the MVP. If downstream projects require CJS later, add it as a separate compatibility target with explicit `exports["."].require`, tests, and size budget impact review.
+
 Generated files are never edited manually. Source JSON and TypeScript modules must be enough to reproduce build outputs.
