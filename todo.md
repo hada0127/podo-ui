@@ -561,12 +561,12 @@
 
 ## 2차 MVP 완료 기준
 
-- [ ] React Native 기본 컴포넌트가 동작한다.
-- [ ] Studio에서 초기 설정과 token/theme 편집이 가능하다.
-- [ ] Studio에서 component slot/variant 편집이 가능하다.
-- [ ] Studio에서 icon group 관리와 rebuild가 가능하다.
-- [ ] `podo update --dry-run`과 migration report가 동작한다.
-- [ ] Claude Code/Codex가 MCP로 Podo 스펙을 조회해 코드 작성에 활용할 수 있다.
+- [x] React Native 기본 컴포넌트가 동작한다.
+- [x] Studio에서 초기 설정과 token/theme 편집이 가능하다.
+- [x] Studio에서 component slot/variant 편집이 가능하다.
+- [x] Studio에서 icon group 관리와 rebuild가 가능하다.
+- [x] `podo update --dry-run`과 migration report가 동작한다.
+- [x] Claude Code/Codex가 MCP로 Podo 스펙을 조회해 코드 작성에 활용할 수 있다.
 
 ## 보류하거나 나중에 결정할 항목
 

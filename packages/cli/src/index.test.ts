@@ -160,8 +160,22 @@ describe("@podo/cli", () => {
       )}\n`
     );
 
-    await expect(runCli(["update", "--dry-run", "--to", "2.1.0"], io)).resolves.toBe(0);
+    await expect(
+      runCli(
+        ["update", "--dry-run", "--to", "2.1.0", "--report", ".podo/migration-report.json"],
+        io
+      )
+    ).resolves.toBe(0);
     expect(io.out.some((line) => line.includes("[podo:plan] update .podo/themes"))).toBe(true);
+    const migrationReport = JSON.parse(
+      await readFile(join(root, ".podo/migration-report.json"), "utf8")
+    ) as { dryRun: boolean; files: Array<{ path: string; action: string }> };
+    expect(migrationReport.dryRun).toBe(true);
+    expect(
+      migrationReport.files.some(
+        (file) => file.path === ".podo/themes/legacy.tokens.json" && file.action === "update"
+      )
+    ).toBe(true);
 
     await expect(runCli(["migrate", "--to", "2.1.0"], io)).resolves.toBe(0);
     const tokenDocument = JSON.parse(
