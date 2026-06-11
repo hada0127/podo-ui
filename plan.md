@@ -532,6 +532,8 @@ claude mcp add podo -- npx podo mcp
 - responsive preview
 - Figma variables import/export
 
+Phase 8의 기본 구현은 `@podo/editor`가 tldraw custom shape prototype과 순수 JSON 편집 모델을 함께 제공한다. canvas 결과는 우선 `.component.json`으로 export하고, layout/page schema 경계는 `docs/editor-workflow.md`에 분리 기준을 남긴다. Figma sync는 브라우저 직접 push가 아니라 GitHub Action PR 흐름으로 운영한다.
+
 완료 기준: 에디터에서 만든 컴포넌트/레이아웃 스펙이 JSON으로 저장되고 네 타깃 중 최소 web/react로 빌드된다.
 
 ### Phase 9: 예제와 문서

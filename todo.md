@@ -464,25 +464,25 @@
 
 ## Phase 8: 고급 편집 도구
 
-- [ ] `@podo/editor` 패키지 생성
+- [x] `@podo/editor` 패키지 생성
   - 완료 기준: 디자인 시스템 개발용 editor 앱이 실행된다.
-- [ ] tldraw 기반 canvas 도입 검증
+- [x] tldraw 기반 canvas 도입 검증
   - 완료 기준: Podo component node를 custom shape로 렌더링하는 prototype이 있다.
-- [ ] component drag/drop 구현
+- [x] component drag/drop 구현
   - 완료 기준: canvas에 컴포넌트를 배치하고 props를 수정할 수 있다.
-- [ ] slot composition 구현
+- [x] slot composition 구현
   - 완료 기준: gnb/lng 같은 슬롯형 컴포넌트에 child component를 배치할 수 있다.
-- [ ] responsive preview 구현
+- [x] responsive preview 구현
   - 완료 기준: desktop/tablet/mobile viewport별 preview가 가능하다.
-- [ ] component spec export 구현
+- [x] component spec export 구현
   - 완료 기준: canvas 편집 결과가 `.component.json`으로 저장된다.
-- [ ] layout/page spec 모델 검토
+- [x] layout/page spec 모델 검토
   - 완료 기준: 컴포넌트 스펙과 페이지 조합 스펙의 경계를 문서화한다.
-- [ ] Figma variables import 구현
+- [x] Figma variables import 구현
   - 완료 기준: Figma 변수에서 token JSON으로 가져올 수 있다.
-- [ ] Figma variables export 구현
+- [x] Figma variables export 구현
   - 완료 기준: token JSON을 Figma 변수로 내보내는 흐름이 검증된다.
-- [ ] GitHub sync 전략 검토
+- [x] GitHub sync 전략 검토
   - 완료 기준: Figma sync를 CI/GitHub Action으로 운영할 수 있는지 결정한다.
 
 ## Phase 9: 예제와 문서
