@@ -72,4 +72,19 @@ describe("@podo/react", () => {
     );
     expect(screen.getByRole("heading", { name: "Dashboard" }).className).toContain("podo-text--h1");
   });
+
+  it("snapshots themed variant markup for visual regression", () => {
+    const { container } = render(
+      <PodoThemeProvider theme="dashboard" colorScheme="dark">
+        <Button variant="soft" size="lg" leftIcon={<Icon name="menu" />}>
+          Save
+        </Button>
+        <Field id="email" label="Email" description="Work email" invalid>
+          <Input aria-label="Email" invalid />
+        </Field>
+      </PodoThemeProvider>
+    );
+
+    expect(container.firstElementChild).toMatchSnapshot();
+  });
 });

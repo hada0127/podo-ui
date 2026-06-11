@@ -1,0 +1,60 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`@podo/react > snapshots themed variant markup for visual regression 1`] = `
+<div
+  data-color-scheme="dark"
+  data-podo-theme="dashboard"
+>
+  <button
+    class="podo-button"
+    data-size="lg"
+    data-variant="soft"
+    type="button"
+  >
+    <span
+      class="podo-button__icon"
+    >
+      <i
+        aria-hidden="true"
+        class="podo-icon podo-icon-menu"
+      />
+    </span>
+    <span
+      class="podo-button__label"
+    >
+      Save
+    </span>
+  </button>
+  <div
+    class="podo-field"
+    data-invalid="true"
+  >
+    <label
+      class="podo-field__label"
+      for="email-control"
+      id="email-label"
+    >
+      Email
+    </label>
+    <div
+      class="podo-field__control"
+    >
+      <input
+        aria-describedby="email-description"
+        aria-invalid="true"
+        aria-label="Email"
+        aria-labelledby="email-label"
+        class="podo-input"
+        data-invalid="true"
+        id="email-control"
+      />
+    </div>
+    <div
+      class="podo-field__description"
+      id="email-description"
+    >
+      Work email
+    </div>
+  </div>
+</div>
+`;

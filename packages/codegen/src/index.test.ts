@@ -27,6 +27,18 @@ describe("@podo/codegen", () => {
 
     assertIdempotent(first, second);
     expect(first.map((file) => file.path)).toMatchSnapshot("paths");
+    expect(first.find((file) => file.path.endsWith("web/button.web.ts"))?.contents).toMatchSnapshot(
+      "web button output"
+    );
+    expect(
+      first.find((file) => file.path.endsWith("react/button.react.ts"))?.contents
+    ).toMatchSnapshot("react button output");
+    expect(
+      first.find((file) => file.path.endsWith("hono/button.hono.ts"))?.contents
+    ).toMatchSnapshot("hono button output");
+    expect(
+      first.find((file) => file.path.endsWith("native/button.native.ts"))?.contents
+    ).toMatchSnapshot("native button output");
     expect(first.find((file) => file.path.endsWith("react/button.react.ts"))?.contents).toContain(
       'export { Button } from "@podo/react";'
     );

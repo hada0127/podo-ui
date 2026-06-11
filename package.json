@@ -22,16 +22,18 @@
     "format:check": "prettier . --check",
     "typecheck": "tsc -b tsconfig.json",
     "test": "vitest run",
+    "test:studio:e2e": "playwright test -c playwright.config.ts",
     "test:watch": "vitest",
     "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm format:check",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "pnpm check && pnpm build && changeset publish",
-    "prepublishOnly": "pnpm check && pnpm build"
+    "release": "pnpm check && pnpm test:studio:e2e && pnpm build && changeset publish",
+    "prepublishOnly": "pnpm check && pnpm test:studio:e2e && pnpm build"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.60.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

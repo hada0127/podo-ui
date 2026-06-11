@@ -510,25 +510,25 @@
 
 ## Phase 10: 테스트와 품질 기준
 
-- [ ] unit test 기준 수립
+- [x] unit test 기준 수립
   - 완료 기준: schema, resolver, codegen, CLI 핵심 로직에 테스트가 있다.
-- [ ] visual regression test 기준 수립
+- [x] visual regression test 기준 수립
   - 완료 기준: web/react 컴포넌트의 theme/variant snapshot이 있다.
-- [ ] accessibility test 기준 수립
+- [x] accessibility test 기준 수립
   - 완료 기준: 기본 컴포넌트에 role/aria/keyboard interaction 테스트가 있다.
-- [ ] build output snapshot 기준 수립
+- [x] build output snapshot 기준 수립
   - 완료 기준: token/icon/component 산출물이 snapshot으로 검증된다.
-- [ ] cross-target parity test 작성
+- [x] cross-target parity test 작성
   - 완료 기준: 같은 spec이 web/react/hono/native에서 의미상 같은 props와 token을 사용한다.
-- [ ] CLI e2e test 작성
+- [x] CLI e2e test 작성
   - 완료 기준: temp project에서 `podo init/build/validate/update`가 실행된다.
-- [ ] Studio e2e test 작성
+- [x] Studio e2e test 작성
   - 완료 기준: 설정 변경, token 변경, build 실행 workflow가 Playwright로 검증된다.
-- [ ] MCP integration test 작성
+- [x] MCP integration test 작성
   - 완료 기준: MCP tools가 sample `.podo` 프로젝트에서 올바른 응답을 반환한다.
-- [ ] package size budget 설정
+- [x] package size budget 설정
   - 완료 기준: web/react/native/cli/mcp 패키지의 목표 크기가 문서화된다.
-- [ ] performance budget 설정
+- [x] performance budget 설정
   - 완료 기준: token build, component build, Studio initial load 목표 시간이 문서화된다.
 
 ## 릴리스 준비 체크리스트

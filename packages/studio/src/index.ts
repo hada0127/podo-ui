@@ -968,9 +968,10 @@ document.addEventListener("click", async (event) => {
   }
   try {
     if (target.id === "saveSetup" || target.id === "drySetup") {
+      const payloadInput = setupPayload(target.id === "drySetup");
       state.status = "Saving setup";
       render();
-      const payload = await api("/api/setup", { method: "POST", body: JSON.stringify(setupPayload(target.id === "drySetup")) });
+      const payload = await api("/api/setup", { method: "POST", body: JSON.stringify(payloadInput) });
       state.buildPlan = payload.build;
       await refresh();
       return;
