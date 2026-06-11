@@ -1,0 +1,17 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/spec" },
+    { "path": "./packages/tokens" },
+    { "path": "./packages/icons" },
+    { "path": "./packages/core" },
+    { "path": "./packages/web" },
+    { "path": "./packages/react" },
+    { "path": "./packages/hono" },
+    { "path": "./packages/native" },
+    { "path": "./packages/editor" },
+    { "path": "./packages/studio" },
+    { "path": "./packages/cli" },
+    { "path": "./packages/mcp" }
+  ]
+}

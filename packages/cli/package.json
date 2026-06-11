@@ -1,0 +1,26 @@
+{
+  "name": "@podo/cli",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Podo command-line interface.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "podo": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  }
+}
