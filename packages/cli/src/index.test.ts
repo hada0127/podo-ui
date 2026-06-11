@@ -120,8 +120,8 @@ describe("@podo/cli", () => {
     ).toMatchObject({
       ok: true,
     });
-    await expect(runCli(["ui"], io)).resolves.toBe(0);
-    expect(io.out.some((line) => line.includes("registered"))).toBe(true);
+    await expect(runCli(["ui", "--dry-run"], io)).resolves.toBe(0);
+    expect(io.out.some((line) => line.includes("Would start Podo Studio"))).toBe(true);
   });
 });
 

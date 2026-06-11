@@ -487,11 +487,15 @@ claude mcp add podo -- npx podo mcp
 
 ### Phase 5: 경량 Web UI
 
-- 초기 설정 wizard
-- token/theme editor
-- component override editor
-- icon group editor
-- build/diff panel
+- `@podo/studio`는 Hono 기반 local server와 dependency-light single page UI를 제공한다.
+- `podo ui`는 CLI의 `init`, `build`, `validate` 함수를 Studio action으로 주입한다.
+- file API는 `.podo` 내부 JSON/SVG만 읽고 쓸 수 있으며, JSON schema validation과 SVG script 차단을 먼저 수행한다.
+- 초기 설정 wizard는 environment, theme, dark mode, outDir, icon groups를 저장하고 첫 build를 실행한다.
+- token/theme editor는 resolved token 목록, color swatch, typography/spacing/radius 편집, token reference picker를 제공한다.
+- component editor는 package default와 project local component를 구분하고 props, variants, states, slots를 표시한다.
+- gnb/lng 슬롯형 local component template을 `.podo/components/local`에 생성할 수 있다.
+- icon editor는 group JSON 관리, SVG import, codepoint preview, icon rebuild action을 제공한다.
+- build 화면은 dry-run file plan, validation result, generated target preview를 보여준다.
 
 완료 기준: UI에서 테마를 수정하고 build하면 설치 프로젝트에 즉시 반영된다.
 

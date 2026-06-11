@@ -11,6 +11,7 @@
     { "path": "../spec" },
     { "path": "../tokens" },
     { "path": "../icons" },
-    { "path": "../codegen" }
+    { "path": "../codegen" },
+    { "path": "../studio" }
   ]
 }

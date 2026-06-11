@@ -93,6 +93,9 @@ importers:
       '@podo/spec':
         specifier: workspace:*
         version: link:../spec
+      '@podo/studio':
+        specifier: workspace:*
+        version: link:../studio
       '@podo/tokens':
         specifier: workspace:*
         version: link:../tokens
@@ -164,7 +167,20 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
 
-  packages/studio: {}
+  packages/studio:
+    dependencies:
+      '@hono/node-server':
+        specifier: ^2.0.4
+        version: 2.0.4(hono@4.12.25)
+      '@podo/spec':
+        specifier: workspace:*
+        version: link:../spec
+      '@podo/tokens':
+        specifier: workspace:*
+        version: link:../tokens
+      hono:
+        specifier: ^4.12.25
+        version: 4.12.25
 
   packages/tokens:
     dependencies:
@@ -416,6 +432,12 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
+
+  '@hono/node-server@2.0.4':
+    resolution: {integrity: sha512-Ut3y0dMMPWy6bZ2kVfx25EOVbZlm15dhF4mOsezMlhpNHy+4MkU1qN9Y6lnruYi4wPmFzimGX2X7LF/FwHli4A==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      hono: ^4
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -3177,6 +3199,10 @@ snapshots:
       levn: 0.4.1
 
   '@exodus/bytes@1.15.1': {}
+
+  '@hono/node-server@2.0.4(hono@4.12.25)':
+    dependencies:
+      hono: 4.12.25
 
   '@humanfs/core@0.19.2':
     dependencies:

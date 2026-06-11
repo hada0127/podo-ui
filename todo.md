@@ -327,72 +327,72 @@
 
 ### Studio Foundation
 
-- [ ] `@podo/studio` 패키지 생성
+- [x] `@podo/studio` 패키지 생성
   - 완료 기준: `podo ui`로 로컬 Web UI가 열린다.
-- [ ] Hono 또는 Vite 기반 로컬 서버 구현
+- [x] Hono 또는 Vite 기반 로컬 서버 구현
   - 완료 기준: local file API와 frontend dev/build가 연결된다.
-- [ ] file API 구현
+- [x] file API 구현
   - 완료 기준: `.podo` 파일 읽기/쓰기, validation, build 실행 API가 제공된다.
-- [ ] project context loader 구현
+- [x] project context loader 구현
   - 완료 기준: 설치 프로젝트의 config, resolved tokens, component specs를 UI에 제공한다.
-- [ ] UI shell 구현
+- [x] UI shell 구현
   - 완료 기준: navigation, status bar, validation panel, build button이 있다.
 
 ### Initial Setup UI
 
-- [ ] 초기 설정 wizard 화면 구현
+- [x] 초기 설정 wizard 화면 구현
   - 완료 기준: environment, theme, dark mode, outDir, icon groups를 설정할 수 있다.
-- [ ] framework 감지 결과 표시
+- [x] framework 감지 결과 표시
   - 완료 기준: 자동 감지 결과와 수동 변경 옵션을 제공한다.
-- [ ] 설정 저장 및 build 실행 연결
+- [x] 설정 저장 및 build 실행 연결
   - 완료 기준: wizard 완료 후 `.podo/config.json` 저장과 첫 build가 실행된다.
 
 ### Token/Theme Editor
 
-- [ ] color token editor 구현
+- [x] color token editor 구현
   - 완료 기준: palette/semantic/component token을 편집하고 preview할 수 있다.
-- [ ] typography editor 구현
+- [x] typography editor 구현
   - 완료 기준: landing/dashboard/custom별 h1/body scale을 편집할 수 있다.
-- [ ] spacing/radius editor 구현
+- [x] spacing/radius editor 구현
   - 완료 기준: scale과 component binding preview가 가능하다.
-- [ ] dark mode editor 구현
+- [x] dark mode editor 구현
   - 완료 기준: light/dark 값을 나란히 비교하고 수정할 수 있다.
-- [ ] token reference picker 구현
+- [x] token reference picker 구현
   - 완료 기준: component token binding에 기존 token을 검색해 연결할 수 있다.
 
 ### Component Editor
 
-- [ ] component list/detail UI 구현
+- [x] component list/detail UI 구현
   - 완료 기준: 기본 컴포넌트와 project local component를 구분해 보여준다.
-- [ ] props editor 구현
+- [x] props editor 구현
   - 완료 기준: prop 추가/수정/삭제와 타입 검증이 가능하다.
-- [ ] variants/states editor 구현
+- [x] variants/states editor 구현
   - 완료 기준: variant matrix와 state별 token binding을 편집할 수 있다.
-- [ ] slots editor 구현
+- [x] slots editor 구현
   - 완료 기준: default/named/required slot을 편집하고 target별 매핑을 볼 수 있다.
-- [ ] local component 생성 UI 구현
+- [x] local component 생성 UI 구현
   - 완료 기준: `.podo/components/local`에 새 component spec을 저장한다.
-- [ ] lng/gnb 등 슬롯형 컴포넌트 템플릿 구현
+- [x] lng/gnb 등 슬롯형 컴포넌트 템플릿 구현
   - 완료 기준: navigation 계열 슬롯 컴포넌트를 생성하고 바로 build할 수 있다.
 
 ### Icon Editor
 
-- [ ] icon group manager 구현
+- [x] icon group manager 구현
   - 완료 기준: 그룹 생성/수정/삭제, 아이콘 이동/복사가 가능하다.
-- [ ] SVG upload/import 구현
+- [x] SVG upload/import 구현
   - 완료 기준: SVG 검증 후 `.podo/icons/svg`에 저장한다.
-- [ ] codepoint preview 구현
+- [x] codepoint preview 구현
   - 완료 기준: codepoint lock 상태와 충돌을 UI에서 확인한다.
-- [ ] icon font rebuild action 구현
+- [x] icon font rebuild action 구현
   - 완료 기준: UI에서 아이콘 빌드를 실행하고 결과를 preview한다.
 
 ### Diff/Build UI
 
-- [ ] build diff panel 구현
+- [x] build diff panel 구현
   - 완료 기준: 생성/수정/삭제 파일 diff를 확인할 수 있다.
-- [ ] validation panel 구현
+- [x] validation panel 구현
   - 완료 기준: schema/reference/build error를 위치와 함께 보여준다.
-- [ ] target preview 구현
+- [x] target preview 구현
   - 완료 기준: web/react/hono/native 산출물 일부를 UI에서 확인한다.
 
 ## Phase 6: MCP

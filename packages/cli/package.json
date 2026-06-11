@@ -27,6 +27,7 @@
     "@podo/codegen": "workspace:*",
     "@podo/icons": "workspace:*",
     "@podo/spec": "workspace:*",
+    "@podo/studio": "workspace:*",
     "@podo/tokens": "workspace:*"
   }
 }

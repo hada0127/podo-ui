@@ -37,6 +37,12 @@ import {
 } from "@podo/tokens";
 import { buildIconAssets, emitIconCss, emitIconTypes, emitNativeGlyphMap } from "@podo/icons";
 import { generateComponentFiles, generateIndexFile, type CodegenTarget } from "@podo/codegen";
+import {
+  startStudioServer,
+  type StudioBuildInput,
+  type StudioSetupInput,
+  type StudioServer,
+} from "@podo/studio";
 
 export const packageName = "@podo/cli";
 
@@ -68,7 +74,7 @@ export interface BuildPlan {
   dryRun: boolean;
   skipped: boolean;
   hash: string;
-  files: Array<{ path: string; action: "create" | "update" }>;
+  files: Array<{ path: string; action: "create" | "update"; preview?: string }>;
 }
 
 export interface ValidationReport {
@@ -113,6 +119,10 @@ export async function runCli(
         return 1;
       }
       io.stdout.log(formatInfo("validate", "No validation issues found."));
+      return 0;
+    }
+    if (args.command === "ui") {
+      await startUi(args, io);
       return 0;
     }
 
@@ -304,13 +314,14 @@ export async function buildProject(args: ParsedArgs, io: CliIO): Promise<BuildPl
     hash: buildHash,
     files: await Promise.all(
       [
-        ...generated.map((file) => file.path),
-        join(absoluteOutDir, "icons/PodoIcons.woff"),
-        join(absoluteOutDir, "icons/PodoIcons.woff2"),
-        join(absoluteOutDir, "icons/PodoIcons.metadata.json"),
-      ].map(async (filePath) => ({
-        path: relativePath(root, filePath),
-        action: (await exists(filePath)) ? "update" : "create",
+        ...generated.map((file) => ({ path: file.path, preview: file.contents.slice(0, 4000) })),
+        { path: join(absoluteOutDir, "icons/PodoIcons.woff") },
+        { path: join(absoluteOutDir, "icons/PodoIcons.woff2") },
+        { path: join(absoluteOutDir, "icons/PodoIcons.metadata.json") },
+      ].map(async (file) => ({
+        path: relativePath(root, file.path),
+        action: (await exists(file.path)) ? "update" : "create",
+        ...("preview" in file ? { preview: file.preview } : {}),
       }))
     ),
   };
@@ -395,6 +406,46 @@ export async function validateProject(args: ParsedArgs, io: CliIO): Promise<Vali
   return report;
 }
 
+export async function startUi(args: ParsedArgs, io: CliIO): Promise<void> {
+  const root = await findProjectRoot(io.cwd);
+  const host = stringOption(args, "host") ?? "127.0.0.1";
+  const port = parsePort(stringOption(args, "port") ?? "4873");
+  if (args.options["dry-run"]) {
+    io.stdout.log(
+      formatInfo("ui", `Would start Podo Studio at http://${host}:${port} for ${root}.`)
+    );
+    return;
+  }
+
+  const server = await startStudioServer({
+    root,
+    host,
+    port,
+    io,
+    actions: {
+      initialize: async (input) =>
+        initProject(parseArgs(studioSetupArgs(input)), { ...io, cwd: root }),
+      build: async (input) => buildProject(parseArgs(studioBuildArgs(input)), { ...io, cwd: root }),
+      validate: async (input) =>
+        validateProject(
+          parseArgs(["validate", ...(input.report ? ["--report", input.report] : [])]),
+          {
+            ...io,
+            cwd: root,
+          }
+        ),
+    },
+  });
+  io.stdout.log(formatInfo("ui", `Open ${server.url}.`));
+
+  if (args.options.once) {
+    await server.close();
+    return;
+  }
+
+  await waitForUiShutdown(server);
+}
+
 export function detectFramework(packageJson: Record<string, unknown>): InitOptions["target"] {
   const dependencies = {
     ...(isRecord(packageJson.dependencies) ? packageJson.dependencies : {}),
@@ -475,10 +526,16 @@ async function loadBuildTokenSources(root: string): Promise<TokenSource[]> {
 
 async function loadBuildComponents(root: string): Promise<ComponentDocument[]> {
   const localComponents = await readJsonFiles(join(root, ".podo/components"));
-  return [
-    ...defaultComponentDocuments.map((document) => parseComponentDocument(document)),
-    ...localComponents.map((document) => parseComponentDocument(document)),
-  ];
+  const components = new Map<string, ComponentDocument>();
+  for (const document of defaultComponentDocuments) {
+    const component = parseComponentDocument(document);
+    components.set(component.id, component);
+  }
+  for (const document of localComponents) {
+    const component = parseComponentDocument(document);
+    components.set(component.id, component);
+  }
+  return [...components.values()];
 }
 
 async function loadBuildIconManifest(root: string): Promise<IconManifest> {
@@ -589,7 +646,7 @@ function helpText(): string {
     "  init       Create .podo config, lock, directories, and bootstrap files",
     "  build      Build tokens, icons, and component target files",
     "  validate   Validate .podo config, tokens, components, and icons",
-    "  ui         Registered for Phase 5",
+    "  ui         Start the local Podo Studio Web UI",
     "  update     Registered for update workflow",
     "  migrate    Registered for schema migrations",
     "  mcp        Registered for MCP server integration",
@@ -622,6 +679,52 @@ function parseBooleanOption(value: string | boolean | undefined, fallback: boole
     return false;
   }
   return fallback;
+}
+
+function parsePort(value: string): number {
+  const port = Number(value);
+  if (!Number.isInteger(port) || port < 0 || port > 65535) {
+    throw new Error(`Invalid port "${value}".`);
+  }
+  return port;
+}
+
+function studioSetupArgs(input: StudioSetupInput): string[] {
+  return [
+    "init",
+    "--target",
+    input.target,
+    "--theme",
+    input.theme,
+    "--dark-mode",
+    String(input.darkMode),
+    "--out-dir",
+    input.outDir,
+    "--yes",
+    ...(input.force ? ["--force"] : []),
+  ];
+}
+
+function studioBuildArgs(input: StudioBuildInput): string[] {
+  return [
+    "build",
+    ...(input.target ? ["--target", input.target] : []),
+    ...(input.outDir ? ["--out-dir", input.outDir] : []),
+    ...(input.dryRun ? ["--dry-run"] : []),
+    ...(input.force ? ["--force"] : []),
+  ];
+}
+
+async function waitForUiShutdown(server: StudioServer): Promise<void> {
+  await new Promise<void>((resolveShutdown) => {
+    const close = (): void => {
+      process.off("SIGINT", close);
+      process.off("SIGTERM", close);
+      void server.close().finally(resolveShutdown);
+    };
+    process.once("SIGINT", close);
+    process.once("SIGTERM", close);
+  });
 }
 
 async function writeJson(filePath: string, value: unknown, force: boolean): Promise<void> {
