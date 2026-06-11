@@ -1,0 +1,398 @@
+import { z } from "zod";
+import {
+  PODO_SCHEMA_VERSION,
+  aliasReferenceSchema,
+  dottedPathSchema,
+  extractAliasReferences,
+  issue,
+  normalizeAliasReference,
+  schemaHeaderSchema,
+  type ValidationIssue,
+} from "./shared.js";
+
+const unitValueSchema = z
+  .string()
+  .regex(
+    /^-?(?:\d+|\d*\.\d+)(?:px|rem|em|%|vh|vw|s|ms)?$/,
+    "Use a numeric design value with an allowed unit."
+  );
+
+const hexColorSchema = z
+  .string()
+  .regex(/^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/, "Use a hex color value.");
+
+const cubicBezierValueSchema = z.tuple([
+  z.number().min(0).max(1),
+  z.number().min(0).max(1),
+  z.number().min(0).max(1),
+  z.number().min(0).max(1),
+]);
+
+const dimensionOrAliasSchema = z.union([unitValueSchema, aliasReferenceSchema]);
+
+const colorOrAliasSchema = z.union([hexColorSchema, aliasReferenceSchema]);
+
+export const borderValueSchema = z.object({
+  color: colorOrAliasSchema,
+  width: dimensionOrAliasSchema,
+  style: z.enum(["solid", "dashed", "dotted", "none"]),
+});
+
+export const motionValueSchema = z.object({
+  duration: dimensionOrAliasSchema,
+  easing: z.union([cubicBezierValueSchema, aliasReferenceSchema]),
+  delay: dimensionOrAliasSchema.optional(),
+});
+
+export const tokenScopeSchema = z.enum(["primitive", "semantic", "component", "theme"]);
+
+export const tokenTypeSchema = z.enum([
+  "color",
+  "dimension",
+  "fontFamily",
+  "fontWeight",
+  "duration",
+  "cubicBezier",
+  "number",
+  "string",
+  "shadow",
+  "typography",
+  "spacing",
+  "radius",
+  "motion",
+  "border",
+  "asset",
+]);
+
+export const podoTokenExtensionSchema = z.object({
+  themeable: z.boolean().optional(),
+  roles: z.array(z.string().min(1)).optional(),
+  scope: tokenScopeSchema.optional(),
+  deprecated: z
+    .union([
+      z.boolean(),
+      z.object({
+        since: z.string().min(1),
+        replacement: dottedPathSchema.optional(),
+        reason: z.string().min(1).optional(),
+      }),
+    ])
+    .optional(),
+  migration: z
+    .object({
+      from: z.array(dottedPathSchema).optional(),
+      to: dottedPathSchema.optional(),
+      notes: z.string().min(1).optional(),
+    })
+    .optional(),
+});
+
+export const tokenExtensionsSchema = z
+  .object({
+    podo: podoTokenExtensionSchema.optional(),
+  })
+  .catchall(z.unknown());
+
+export const typographyValueSchema = z.object({
+  fontFamily: z.string().min(1),
+  fontSize: unitValueSchema,
+  lineHeight: unitValueSchema,
+  fontWeight: z.union([z.number().int().min(1), z.string().min(1)]),
+  letterSpacing: unitValueSchema,
+  paragraphSpacing: unitValueSchema.optional(),
+});
+
+export const shadowValueSchema = z.object({
+  x: unitValueSchema,
+  y: unitValueSchema,
+  blur: unitValueSchema,
+  spread: unitValueSchema.optional(),
+  color: z.string().min(1),
+});
+
+export const tokenValueSchema: z.ZodType<unknown> = z.union([
+  z.string().min(1),
+  z.number(),
+  z.boolean(),
+  z.array(z.unknown()),
+  typographyValueSchema,
+  shadowValueSchema,
+  borderValueSchema,
+  motionValueSchema,
+  z.record(z.string(), z.unknown()),
+]);
+
+export const designTokenSchema = z
+  .object({
+    $type: tokenTypeSchema,
+    $value: tokenValueSchema,
+    $description: z.string().optional(),
+    $extensions: tokenExtensionsSchema.optional(),
+  })
+  .superRefine((token, ctx) => {
+    const valueIsAlias =
+      typeof token.$value === "string" && aliasReferenceSchema.safeParse(token.$value).success;
+
+    if (typeof token.$value === "string" && token.$value.startsWith("{") && !valueIsAlias) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["$value"],
+        message: "Alias references must use {token.path} format.",
+      });
+      return;
+    }
+
+    if (valueIsAlias) {
+      return;
+    }
+
+    const requireString = (message: string): boolean => {
+      if (typeof token.$value !== "string") {
+        ctx.addIssue({
+          code: "custom",
+          path: ["$value"],
+          message,
+        });
+        return false;
+      }
+      return true;
+    };
+
+    if (token.$type === "color") {
+      if (!requireString("Color tokens must use a hex color or alias reference.")) {
+        return;
+      }
+
+      if (!hexColorSchema.safeParse(token.$value).success) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["$value"],
+          message: "Color tokens must use a hex color or alias reference.",
+        });
+      }
+      return;
+    }
+
+    if (["dimension", "spacing", "radius", "duration"].includes(token.$type)) {
+      if (!requireString(`${token.$type} tokens must use an allowed unit or alias reference.`)) {
+        return;
+      }
+
+      if (!unitValueSchema.safeParse(token.$value).success) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["$value"],
+          message: `${token.$type} tokens must use an allowed unit or alias reference.`,
+        });
+      }
+      return;
+    }
+
+    if (token.$type === "typography") {
+      if (!typographyValueSchema.safeParse(token.$value).success) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["$value"],
+          message:
+            "Typography tokens must include fontFamily, fontSize, lineHeight, fontWeight, letterSpacing, and optional paragraphSpacing.",
+        });
+      }
+      return;
+    }
+
+    if (token.$type === "shadow") {
+      if (!shadowValueSchema.safeParse(token.$value).success) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["$value"],
+          message: "Shadow tokens must include x, y, blur, optional spread, and color.",
+        });
+      }
+      return;
+    }
+
+    if (token.$type === "cubicBezier") {
+      if (!cubicBezierValueSchema.safeParse(token.$value).success) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["$value"],
+          message: "Cubic bezier tokens must be an array of four numbers between 0 and 1.",
+        });
+      }
+      return;
+    }
+
+    if (token.$type === "border") {
+      if (!borderValueSchema.safeParse(token.$value).success) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["$value"],
+          message: "Border tokens must include color, width, and style.",
+        });
+      }
+      return;
+    }
+
+    if (token.$type === "motion") {
+      if (!motionValueSchema.safeParse(token.$value).success) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["$value"],
+          message: "Motion tokens must include duration, easing, and optional delay.",
+        });
+      }
+      return;
+    }
+
+    if (token.$type === "number" && typeof token.$value !== "number") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["$value"],
+        message: "Number tokens must use a numeric value or alias reference.",
+      });
+      return;
+    }
+
+    if (token.$type === "fontWeight") {
+      if (typeof token.$value !== "number" && typeof token.$value !== "string") {
+        ctx.addIssue({
+          code: "custom",
+          path: ["$value"],
+          message: "Font weight tokens must use a number, string, or alias reference.",
+        });
+      }
+      return;
+    }
+
+    if (
+      ["fontFamily", "string", "asset"].includes(token.$type) &&
+      typeof token.$value !== "string"
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["$value"],
+        message: `${token.$type} tokens must use a string value or alias reference.`,
+      });
+    }
+  });
+
+export type DesignToken = z.infer<typeof designTokenSchema>;
+
+export type TokenTree = {
+  [key: string]: DesignToken | TokenTree;
+};
+
+const tokenTreeSchema: z.ZodType<TokenTree> = z.lazy(() =>
+  z.record(z.string(), z.union([designTokenSchema, tokenTreeSchema]))
+);
+
+export const tokenCategorySchema = z.enum(["primitive", "semantic", "component", "theme"]);
+
+export const tokenDocumentSchema = schemaHeaderSchema.extend({
+  kind: z.literal("tokens"),
+  category: tokenCategorySchema,
+  tokens: tokenTreeSchema,
+});
+
+export type TokenDocument = z.infer<typeof tokenDocumentSchema>;
+
+export function parseTokenDocument(input: unknown): TokenDocument {
+  return tokenDocumentSchema.parse(input);
+}
+
+export function isDesignToken(value: unknown): value is DesignToken {
+  return designTokenSchema.safeParse(value).success;
+}
+
+export function collectTokenPaths(tree: TokenTree, prefix: string[] = []): string[] {
+  return Object.entries(tree).flatMap(([key, value]) => {
+    const path = [...prefix, key];
+    return isDesignToken(value) ? [path.join(".")] : collectTokenPaths(value, path);
+  });
+}
+
+export function collectTokenAliasGraph(
+  tree: TokenTree,
+  prefix: string[] = []
+): Map<string, string[]> {
+  const graph = new Map<string, string[]>();
+
+  for (const [key, value] of Object.entries(tree)) {
+    const path = [...prefix, key];
+    if (isDesignToken(value)) {
+      graph.set(
+        path.join("."),
+        extractAliasReferences(value.$value).map((reference) => normalizeAliasReference(reference))
+      );
+    } else {
+      for (const [childPath, childReferences] of collectTokenAliasGraph(value, path)) {
+        graph.set(childPath, childReferences);
+      }
+    }
+  }
+
+  return graph;
+}
+
+export function validateTokenReferences(document: TokenDocument): ValidationIssue[] {
+  const paths = new Set(collectTokenPaths(document.tokens));
+  const graph = collectTokenAliasGraph(document.tokens);
+  const issues: ValidationIssue[] = [];
+
+  for (const [path, references] of graph) {
+    for (const reference of references) {
+      if (!paths.has(reference)) {
+        issues.push(
+          issue(
+            "token.reference.missing",
+            path,
+            `Token "${path}" references missing token "${reference}".`
+          )
+        );
+      }
+    }
+  }
+
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+  const stack: string[] = [];
+
+  function visit(path: string): void {
+    if (visited.has(path)) {
+      return;
+    }
+
+    if (visiting.has(path)) {
+      const cycleStart = stack.indexOf(path);
+      const cycle = [...stack.slice(Math.max(cycleStart, 0)), path].join(" -> ");
+      issues.push(
+        issue("token.reference.circular", path, `Circular token reference detected: ${cycle}.`)
+      );
+      return;
+    }
+
+    visiting.add(path);
+    stack.push(path);
+
+    for (const reference of graph.get(path) ?? []) {
+      if (paths.has(reference)) {
+        visit(reference);
+      }
+    }
+
+    stack.pop();
+    visiting.delete(path);
+    visited.add(path);
+  }
+
+  for (const path of graph.keys()) {
+    visit(path);
+  }
+
+  return issues;
+}
+
+export const defaultTokenDocument: Pick<TokenDocument, "schemaVersion" | "kind"> = {
+  schemaVersion: PODO_SCHEMA_VERSION,
+  kind: "tokens",
+};

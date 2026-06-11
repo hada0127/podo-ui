@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "tokens",
+  "category": "primitive",
+  "tokens": {
+    "spacing": {
+      "scale": {
+        "1": {
+          "$type": "spacing",
+          "$value": "4px",
+          "$extensions": {
+            "podo": {
+              "scope": "primitive",
+              "roles": ["spacing", "scale"]
+            }
+          }
+        },
+        "2": {
+          "$type": "spacing",
+          "$value": "8px",
+          "$extensions": {
+            "podo": {
+              "scope": "primitive",
+              "roles": ["spacing", "scale"]
+            }
+          }
+        }
+      },
+      "component": {
+        "field-gap": {
+          "$type": "spacing",
+          "$value": "{spacing.scale.2}",
+          "$extensions": {
+            "podo": {
+              "scope": "component",
+              "roles": ["field", "gap"]
+            }
+          }
+        }
+      }
+    },
+    "radius": {
+      "control": {
+        "md": {
+          "$type": "radius",
+          "$value": "8px",
+          "$extensions": {
+            "podo": {
+              "scope": "semantic",
+              "roles": ["control", "radius"]
+            }
+          }
+        }
+      }
+    },
+    "shadow": {
+      "popover": {
+        "$type": "shadow",
+        "$value": {
+          "x": "0px",
+          "y": "8px",
+          "blur": "24px",
+          "spread": "0px",
+          "color": "#14151A33"
+        },
+        "$extensions": {
+          "podo": {
+            "scope": "semantic",
+            "roles": ["elevation", "popover"]
+          }
+        }
+      }
+    },
+    "motion": {
+      "duration": {
+        "fast": {
+          "$type": "duration",
+          "$value": "120ms",
+          "$extensions": {
+            "podo": {
+              "scope": "semantic",
+              "roles": ["motion", "fast"]
+            }
+          }
+        }
+      },
+      "easing": {
+        "standard": {
+          "$type": "cubicBezier",
+          "$value": [0.2, 0, 0, 1],
+          "$extensions": {
+            "podo": {
+              "scope": "semantic",
+              "roles": ["motion", "easing"]
+            }
+          }
+        }
+      },
+      "transition": {
+        "fast": {
+          "$type": "motion",
+          "$value": {
+            "duration": "{motion.duration.fast}",
+            "easing": "{motion.easing.standard}"
+          },
+          "$extensions": {
+            "podo": {
+              "scope": "semantic",
+              "roles": ["motion", "transition", "fast"]
+            }
+          }
+        }
+      }
+    },
+    "border": {
+      "control": {
+        "default": {
+          "$type": "border",
+          "$value": {
+            "color": "#14151A",
+            "width": "1px",
+            "style": "solid"
+          },
+          "$extensions": {
+            "podo": {
+              "scope": "semantic",
+              "roles": ["border", "control"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

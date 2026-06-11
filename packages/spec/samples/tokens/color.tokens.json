@@ -1,0 +1,179 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "tokens",
+  "category": "semantic",
+  "tokens": {
+    "color": {
+      "palette": {
+        "purple": {
+          "600": {
+            "$type": "color",
+            "$value": "#5B5BD6",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["brand", "action"]
+              }
+            }
+          }
+        },
+        "gray": {
+          "0": {
+            "$type": "color",
+            "$value": "#FFFFFF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["surface"]
+              }
+            }
+          },
+          "900": {
+            "$type": "color",
+            "$value": "#14151A",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["text"]
+              }
+            }
+          }
+        },
+        "red": {
+          "600": {
+            "$type": "color",
+            "$value": "#D92D20",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["danger"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "semantic": {
+      "color": {
+        "text": {
+          "default": {
+            "$type": "color",
+            "$value": "{color.palette.gray.900}",
+            "$extensions": {
+              "podo": {
+                "themeable": true,
+                "scope": "semantic",
+                "roles": ["text"]
+              }
+            }
+          },
+          "inverse": {
+            "$type": "color",
+            "$value": "{color.palette.gray.0}",
+            "$extensions": {
+              "podo": {
+                "themeable": true,
+                "scope": "semantic",
+                "roles": ["text", "inverse"]
+              }
+            }
+          },
+          "danger": {
+            "$type": "color",
+            "$value": "{color.palette.red.600}",
+            "$extensions": {
+              "podo": {
+                "themeable": true,
+                "scope": "semantic",
+                "roles": ["text", "danger"]
+              }
+            }
+          }
+        },
+        "action": {
+          "primary": {
+            "$type": "color",
+            "$value": "{color.palette.purple.600}",
+            "$extensions": {
+              "podo": {
+                "themeable": true,
+                "scope": "semantic",
+                "roles": ["action", "primary"]
+              }
+            }
+          }
+        },
+        "surface": {
+          "default": {
+            "$type": "color",
+            "$value": "{color.palette.gray.0}",
+            "$extensions": {
+              "podo": {
+                "themeable": true,
+                "scope": "semantic",
+                "roles": ["surface", "light"]
+              }
+            }
+          },
+          "dark": {
+            "$type": "color",
+            "$value": "{color.palette.gray.900}",
+            "$extensions": {
+              "podo": {
+                "themeable": true,
+                "scope": "theme",
+                "roles": ["surface", "dark"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "component": {
+      "button": {
+        "background": {
+          "$type": "color",
+          "$value": "{semantic.color.action.primary}",
+          "$extensions": {
+            "podo": {
+              "scope": "component",
+              "roles": ["button", "background"]
+            }
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{semantic.color.text.inverse}",
+          "$extensions": {
+            "podo": {
+              "scope": "component",
+              "roles": ["button", "text"]
+            }
+          }
+        }
+      },
+      "input": {
+        "background": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$extensions": {
+            "podo": {
+              "scope": "component",
+              "roles": ["input", "background"]
+            }
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{semantic.color.text.default}",
+          "$extensions": {
+            "podo": {
+              "scope": "component",
+              "roles": ["input", "border"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

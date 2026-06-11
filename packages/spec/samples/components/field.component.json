@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "component",
+  "id": "field",
+  "name": "Field",
+  "category": "molecule",
+  "status": "stable",
+  "description": "Form field wrapper with label, description, error, and control slot.",
+  "anatomy": [
+    { "name": "root" },
+    { "name": "label" },
+    { "name": "description" },
+    { "name": "control" },
+    { "name": "error" }
+  ],
+  "slots": [
+    { "name": "label", "required": true, "fallback": "Label" },
+    { "name": "description" },
+    {
+      "name": "control",
+      "required": true,
+      "targets": {
+        "web": { "name": "default" },
+        "react": { "name": "children" },
+        "hono": { "name": "children" },
+        "native": { "name": "children" }
+      }
+    },
+    { "name": "error" }
+  ],
+  "props": [
+    { "name": "required", "type": { "kind": "boolean" }, "default": false },
+    { "name": "invalid", "type": { "kind": "boolean" }, "default": false },
+    { "name": "disabled", "type": { "kind": "boolean" }, "default": false }
+  ],
+  "variants": [],
+  "states": [
+    { "name": "disabled" },
+    { "name": "invalid", "tokens": { "error.color": "{semantic.color.text.danger}" } }
+  ],
+  "tokens": {
+    "label.color": "{semantic.color.text.default}",
+    "description.color": "{semantic.color.text.default}",
+    "error.color": "{semantic.color.text.danger}"
+  },
+  "targets": {
+    "web": { "supported": true, "limitations": [] },
+    "react": { "supported": true, "limitations": [] },
+    "hono": { "supported": true, "limitations": [] },
+    "native": { "supported": true, "limitations": ["Control slot maps to children prop."] }
+  },
+  "accessibility": {
+    "aria": ["aria-describedby", "aria-invalid", "aria-required"],
+    "keyboard": [],
+    "focusManagement": "Forward label press to the control when target supports it."
+  },
+  "examples": [
+    {
+      "target": "react",
+      "title": "Field with error",
+      "code": "<Field required invalid><Input /></Field>"
+    }
+  ]
+}

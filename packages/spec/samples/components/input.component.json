@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "component",
+  "id": "input",
+  "name": "Input",
+  "category": "atom",
+  "status": "stable",
+  "description": "Text input with invalid and disabled states.",
+  "anatomy": [
+    {
+      "name": "root",
+      "targets": { "web": "input", "react": "input", "hono": "input", "native": "TextInput" }
+    },
+    {
+      "name": "control",
+      "targets": { "web": "input", "react": "input", "hono": "input", "native": "TextInput" }
+    }
+  ],
+  "slots": [],
+  "props": [
+    { "name": "value", "type": { "kind": "string" }, "description": "Controlled value." },
+    {
+      "name": "default-value",
+      "type": { "kind": "string" },
+      "description": "Initial uncontrolled value."
+    },
+    { "name": "placeholder", "type": { "kind": "string" } },
+    { "name": "invalid", "type": { "kind": "boolean" }, "default": false },
+    { "name": "disabled", "type": { "kind": "boolean" }, "default": false },
+    { "name": "required", "type": { "kind": "boolean" }, "default": false },
+    { "name": "onValueChange", "type": { "kind": "event", "payload": { "value": "string" } } }
+  ],
+  "variants": [{ "name": "size", "values": ["sm", "md", "lg"], "default": "md" }],
+  "states": [
+    { "name": "focusVisible" },
+    { "name": "disabled" },
+    { "name": "invalid", "tokens": { "root.borderColor": "{semantic.color.text.danger}" } }
+  ],
+  "tokens": {
+    "root.background": "{component.input.background}",
+    "root.borderColor": "{component.input.border}",
+    "text.color": "{semantic.color.text.default}",
+    "error.color": "{semantic.color.text.danger}"
+  },
+  "targets": {
+    "web": { "supported": true, "limitations": [] },
+    "react": { "supported": true, "limitations": [] },
+    "hono": { "supported": true, "limitations": ["Value changes require client code."] },
+    "native": {
+      "supported": true,
+      "limitations": ["Native keyboard options are target-specific props."]
+    }
+  },
+  "accessibility": {
+    "aria": ["aria-invalid", "aria-required", "aria-describedby"],
+    "keyboard": ["Tab focuses the input"],
+    "focusManagement": "Expose focus ref on React and native targets."
+  },
+  "examples": [
+    {
+      "target": "react",
+      "title": "Invalid input",
+      "code": "<Input invalid aria-describedby=\"email-error\" />"
+    }
+  ]
+}

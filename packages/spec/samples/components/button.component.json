@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "component",
+  "id": "button",
+  "name": "Button",
+  "category": "atom",
+  "status": "stable",
+  "description": "Action button with typed variants, icon slots, and loading state.",
+  "anatomy": [
+    {
+      "name": "root",
+      "targets": { "web": "button", "react": "button", "hono": "button", "native": "Pressable" }
+    },
+    {
+      "name": "left-icon",
+      "targets": { "web": "slot[name=leftIcon]", "react": "leftIcon", "native": "leftIcon" }
+    },
+    {
+      "name": "label",
+      "targets": { "web": "slot", "react": "children", "hono": "children", "native": "Text" }
+    },
+    {
+      "name": "right-icon",
+      "targets": { "web": "slot[name=rightIcon]", "react": "rightIcon", "native": "rightIcon" }
+    }
+  ],
+  "slots": [
+    {
+      "name": "leftIcon",
+      "targets": {
+        "web": { "name": "leftIcon" },
+        "react": { "name": "leftIcon" },
+        "native": { "name": "leftIcon" }
+      }
+    },
+    {
+      "name": "children",
+      "required": true,
+      "targets": {
+        "web": { "name": "default" },
+        "react": { "name": "children" },
+        "hono": { "name": "children" },
+        "native": { "name": "children" }
+      }
+    },
+    {
+      "name": "rightIcon",
+      "targets": {
+        "web": { "name": "rightIcon" },
+        "react": { "name": "rightIcon" },
+        "native": { "name": "rightIcon" }
+      }
+    }
+  ],
+  "props": [
+    {
+      "name": "variant",
+      "type": { "kind": "enum", "values": ["solid", "soft", "outline", "ghost"] },
+      "default": "solid",
+      "description": "Visual treatment."
+    },
+    {
+      "name": "size",
+      "type": { "kind": "enum", "values": ["sm", "md", "lg"] },
+      "default": "md",
+      "description": "Control height and padding."
+    },
+    { "name": "disabled", "type": { "kind": "boolean" }, "default": false },
+    { "name": "loading", "type": { "kind": "boolean" }, "default": false },
+    {
+      "name": "onPress",
+      "type": { "kind": "event", "payload": { "source": "button" } },
+      "description": "Target-neutral activation event."
+    }
+  ],
+  "variants": [
+    {
+      "name": "variant",
+      "values": ["solid", "soft", "outline", "ghost"],
+      "default": "solid",
+      "tokens": {
+        "root.background": "{component.button.background}",
+        "label.color": "{component.button.text}"
+      }
+    },
+    { "name": "size", "values": ["sm", "md", "lg"], "default": "md" }
+  ],
+  "states": [
+    { "name": "hover", "description": "Pointer hover affordance." },
+    { "name": "active", "description": "Pressed state." },
+    { "name": "focusVisible", "description": "Keyboard focus ring." },
+    { "name": "disabled", "description": "Unavailable action." },
+    { "name": "loading", "description": "Pending action indicator." }
+  ],
+  "tokens": {
+    "root.background": "{component.button.background}",
+    "label.color": "{component.button.text}",
+    "icon.color": "{component.button.text}"
+  },
+  "targets": {
+    "web": { "supported": true, "limitations": [] },
+    "react": { "supported": true, "limitations": [] },
+    "hono": {
+      "supported": true,
+      "limitations": ["Events render as attributes only in SSR output."]
+    },
+    "native": { "supported": true, "limitations": ["Slots map to named props."] }
+  },
+  "accessibility": {
+    "role": "button",
+    "aria": ["aria-disabled", "aria-busy"],
+    "keyboard": ["Enter activates", "Space activates"],
+    "focusManagement": "Use focus-visible state for keyboard focus."
+  },
+  "examples": [
+    {
+      "target": "react",
+      "title": "Primary action",
+      "code": "<Button variant=\"solid\">Save</Button>"
+    },
+    {
+      "target": "web",
+      "title": "Web component",
+      "code": "<podo-button variant=\"solid\">Save</podo-button>"
+    }
+  ]
+}

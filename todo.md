@@ -32,78 +32,78 @@
 
 ### Token Schema
 
-- [ ] DTCG 기반 token JSON schema 작성
+- [x] DTCG 기반 token JSON schema 작성
   - 완료 기준: `$type`, `$value`, `$description`, `$extensions`, alias reference를 검증한다.
-- [ ] Podo 전용 token extension 정의
+- [x] Podo 전용 token extension 정의
   - 완료 기준: `$extensions.podo.themeable`, `roles`, `scope`, `deprecated`, `migration` 필드가 타입화된다.
-- [ ] token category 구조 정의
+- [x] token category 구조 정의
   - 완료 기준: `primitive`, `semantic`, `component`, `theme` 계층이 문서화되고 샘플이 있다.
-- [ ] typography composite token 모델 정의
+- [x] typography composite token 모델 정의
   - 완료 기준: fontFamily, fontSize, lineHeight, weight, letterSpacing, paragraphSpacing를 검증한다.
-- [ ] spacing/radius/shadow/motion token 모델 정의
+- [x] spacing/radius/shadow/motion token 모델 정의
   - 완료 기준: 단위, scale, alias, theme override가 검증된다.
-- [ ] color token 모델 정의
+- [x] color token 모델 정의
   - 완료 기준: hex, alpha, semantic alias, light/dark override가 검증된다.
 
 ### Component Schema
 
-- [ ] component JSON schema 작성
+- [x] component JSON schema 작성
   - 완료 기준: id, name, category, status, anatomy, slots, props, states, tokens, targets를 검증한다.
-- [ ] props type system 정의
+- [x] props type system 정의
   - 완료 기준: boolean, string, number, enum, union, object, event handler 타입을 표현한다.
-- [ ] slot model 정의
+- [x] slot model 정의
   - 완료 기준: default slot, named slot, required slot, repeated slot, fallback을 표현한다.
-- [ ] variant/state model 정의
+- [x] variant/state model 정의
   - 완료 기준: variant 조합, state별 token binding, disabled/loading/focusVisible 상태를 표현한다.
-- [ ] anatomy model 정의
+- [x] anatomy model 정의
   - 완료 기준: root, label, icon, helper 등 part 이름과 target별 매핑을 표현한다.
-- [ ] target support model 정의
+- [x] target support model 정의
   - 완료 기준: web/react/hono/native 지원 여부와 제한 사항을 스펙에 표현한다.
-- [ ] accessibility spec model 정의
+- [x] accessibility spec model 정의
   - 완료 기준: role, aria, keyboard interaction, focus management 요구사항을 표현한다.
 
 ### Icon Schema
 
-- [ ] icon manifest schema 작성
+- [x] icon manifest schema 작성
   - 완료 기준: fontFamily, icons, codepoint, source, tags, groups를 검증한다.
-- [ ] icon group schema 작성
+- [x] icon group schema 작성
   - 완료 기준: 그룹 추가/삭제/정렬과 아이콘 중복 포함 규칙을 검증한다.
-- [ ] stable codepoint lock schema 작성
+- [x] stable codepoint lock schema 작성
   - 완료 기준: 기존 아이콘의 codepoint가 의도 없이 바뀌지 않도록 lock 파일을 검증한다.
 
 ### .podo Schema
 
-- [ ] `.podo/config.json` schema 작성
+- [x] `.podo/config.json` schema 작성
   - 완료 기준: environment, darkMode, themes, build target, outDir를 검증한다.
-- [ ] `.podo/lock.json` schema 작성
+- [x] `.podo/lock.json` schema 작성
   - 완료 기준: package version, schema version, migration state, generated hash를 검증한다.
-- [ ] `.podo` override merge 규칙 정의
+- [x] `.podo` override merge 규칙 정의
   - 완료 기준: package default와 project override의 우선순위가 테스트된다.
 
 ### 샘플 스펙
 
-- [ ] Button 샘플 component spec 작성
+- [x] Button 샘플 component spec 작성
   - 완료 기준: props, slots, variants, states, tokens, examples가 포함된다.
-- [ ] Input 샘플 component spec 작성
+- [x] Input 샘플 component spec 작성
   - 완료 기준: value, invalid, disabled, helper/error 상태가 포함된다.
-- [ ] Field 샘플 component spec 작성
+- [x] Field 샘플 component spec 작성
   - 완료 기준: label, description, error, required, control slot이 포함된다.
-- [ ] Typography 샘플 token spec 작성
+- [x] Typography 샘플 token spec 작성
   - 완료 기준: landing/dashboard h1/body 값 차이가 표현된다.
-- [ ] Color 샘플 token spec 작성
+- [x] Color 샘플 token spec 작성
   - 완료 기준: light/dark semantic color가 표현된다.
-- [ ] Icon group 샘플 spec 작성
+- [x] Icon group 샘플 spec 작성
   - 완료 기준: navigation/editor 그룹과 codepoint lock이 표현된다.
 
 ### Validation
 
-- [ ] `@podo/spec` 패키지 생성
+- [x] `@podo/spec` 패키지 생성
   - 완료 기준: schema, zod parser, TypeScript type export가 포함된다.
-- [ ] schema validation test 작성
+- [x] schema validation test 작성
   - 완료 기준: valid sample은 통과하고 invalid sample은 명확한 에러를 낸다.
-- [ ] reference validation 구현
+- [x] reference validation 구현
   - 완료 기준: 존재하지 않는 token alias, circular reference, broken component token binding을 검출한다.
-- [ ] schema versioning 정책 작성
+- [x] schema versioning 정책 작성
   - 완료 기준: breaking/non-breaking schema change 기준이 문서화된다.
 
 ## Phase 2: 토큰과 아이콘 빌드

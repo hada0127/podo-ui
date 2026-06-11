@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "tokens",
+  "category": "theme",
+  "tokens": {
+    "font": {
+      "family": {
+        "sans": {
+          "$type": "fontFamily",
+          "$value": "Pretendard",
+          "$extensions": {
+            "podo": {
+              "scope": "primitive",
+              "roles": ["text"]
+            }
+          }
+        }
+      }
+    },
+    "typography": {
+      "h1": {
+        "landing": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": "64px",
+            "lineHeight": "72px",
+            "fontWeight": 700,
+            "letterSpacing": "0px",
+            "paragraphSpacing": "24px"
+          },
+          "$description": "Landing page h1 typography.",
+          "$extensions": {
+            "podo": {
+              "themeable": true,
+              "roles": ["heading", "landing"],
+              "scope": "theme"
+            }
+          }
+        },
+        "dashboard": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": "28px",
+            "lineHeight": "36px",
+            "fontWeight": 600,
+            "letterSpacing": "0px",
+            "paragraphSpacing": "12px"
+          },
+          "$description": "Dashboard h1 typography.",
+          "$extensions": {
+            "podo": {
+              "themeable": true,
+              "roles": ["heading", "dashboard"],
+              "scope": "theme"
+            }
+          }
+        }
+      },
+      "body": {
+        "landing": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": "20px",
+            "lineHeight": "32px",
+            "fontWeight": 400,
+            "letterSpacing": "0px",
+            "paragraphSpacing": "16px"
+          },
+          "$extensions": {
+            "podo": {
+              "themeable": true,
+              "roles": ["body", "landing"],
+              "scope": "theme"
+            }
+          }
+        },
+        "dashboard": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": 400,
+            "letterSpacing": "0px",
+            "paragraphSpacing": "8px"
+          },
+          "$extensions": {
+            "podo": {
+              "themeable": true,
+              "roles": ["body", "dashboard"],
+              "scope": "theme"
+            }
+          }
+        }
+      }
+    }
+  }
+}

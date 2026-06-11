@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "icons",
+  "fontFamily": "PodoIcons",
+  "icons": {
+    "chevron-left": {
+      "source": "svg/navigation/chevron-left.svg",
+      "codepoint": "E001",
+      "tags": ["navigation", "arrow"]
+    },
+    "chevron-right": {
+      "source": "svg/navigation/chevron-right.svg",
+      "codepoint": "E002",
+      "tags": ["navigation", "arrow"]
+    },
+    "menu": {
+      "source": "svg/navigation/menu.svg",
+      "codepoint": "E003",
+      "tags": ["navigation"]
+    },
+    "bold": {
+      "source": "svg/editor/bold.svg",
+      "codepoint": "E101",
+      "tags": ["editor", "format"]
+    },
+    "italic": {
+      "source": "svg/editor/italic.svg",
+      "codepoint": "E102",
+      "tags": ["editor", "format"]
+    }
+  },
+  "groups": {
+    "navigation": ["chevron-left", "chevron-right", "menu"],
+    "editor": ["bold", "italic"]
+  },
+  "codepointLock": {
+    "chevron-left": "E001",
+    "chevron-right": "E002",
+    "menu": "E003",
+    "bold": "E101",
+    "italic": "E102"
+  }
+}

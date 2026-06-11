@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "2.0.0",
+  "environment": "react",
+  "darkMode": {
+    "enabled": true,
+    "strategy": "class"
+  },
+  "themes": {
+    "default": "dashboard",
+    "available": ["landing", "dashboard"]
+  },
+  "build": {
+    "targets": ["react"],
+    "outDir": "src/podo"
+  }
+}
