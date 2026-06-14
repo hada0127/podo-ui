@@ -583,7 +583,7 @@
 - [x] P0: editor 변경 안정화
   - 완료 기준: `legacy-fixtures.ts`, `spec-editing.ts`, editor UI 변경이 의도된 프로덕션 코드로 포함되고 `pnpm check`가 통과한다.
   - 완료 기준: Claude CLI가 현재 P0 범위를 엄격히 리뷰하고 차단 이슈가 없다고 확인한다.
-- [ ] P1: 테마와 기존 grid 반영 보강
+- [x] P1: 테마와 기존 grid 반영 보강
   - 완료 기준: v2 수정 범위의 기본 color scheme은 `light`, `dark`, `auto`로 명확히 제한하고 editor preview/spec에서 전환 가능하다.
   - 완료 기준: 기존 v1 grid 시스템은 새 토큰 재설계 없이 호환 산출물/문서/테스트 기준으로 유지됨이 editor 보정 범위에서도 확인된다.
 - [ ] P2: Button spec 완성

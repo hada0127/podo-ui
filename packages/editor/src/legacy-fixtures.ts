@@ -123,6 +123,118 @@ const systemColorValues = {
   },
 } as const;
 
+const legacyDarkColorValues = {
+  primary: {
+    base: "#7c3aed",
+    hover: "#8b5cf6",
+    pressed: "#7c3aed",
+    focus: "#8b5cf6",
+    fill: "#111827",
+    reverse: "#ffffff",
+    outline: "rgba(158, 115, 254, 0.3)",
+  },
+  default: {
+    base: "#34343a",
+    hover: "#3f3f46",
+    pressed: "#34343a",
+    focus: "#3f3f46",
+    fill: "#34343a",
+    reverse: "#ffffff",
+    outline: "rgba(63, 63, 70, 0.3)",
+  },
+  "default-deep": {
+    base: "#a1a1aa",
+    hover: "#d1d1d7",
+    pressed: "#a1a1aa",
+    focus: "#d1d1d7",
+    fill: "#52525b",
+    reverse: "#2c2c31",
+    outline: "rgba(209, 209, 215, 0.3)",
+  },
+  info: {
+    base: "#0a73eb",
+    hover: "#1890ff",
+    pressed: "#0a73eb",
+    focus: "#1890ff",
+    fill: "#1c1c20",
+    reverse: "#ffffff",
+    outline: "rgba(24, 144, 255, 0.3)",
+  },
+  link: {
+    base: "#0284c7",
+    hover: "#0ea5e9",
+    pressed: "#0284c7",
+    focus: "#0ea5e9",
+    fill: "#1c1c20",
+    reverse: "#ffffff",
+    outline: "rgba(14, 165, 233, 0.3)",
+  },
+  success: {
+    base: "#0d9488",
+    hover: "#1bb0a2",
+    pressed: "#0d9488",
+    focus: "#1bb0a2",
+    fill: "#1c1c20",
+    reverse: "#ffffff",
+    outline: "rgba(27, 176, 162, 0.3)",
+  },
+  warning: {
+    base: "#e8840f",
+    hover: "#f19b0b",
+    pressed: "#e8840f",
+    focus: "#f19b0b",
+    fill: "#1c1c20",
+    reverse: "#ffffff",
+    outline: "rgba(241, 155, 11, 0.3)",
+  },
+  danger: {
+    base: "#f04646",
+    hover: "#f25959",
+    pressed: "#f04646",
+    focus: "#f25959",
+    fill: "#1c1c20",
+    reverse: "#ffffff",
+    outline: "rgba(242, 89, 89, 0.3)",
+  },
+} as const;
+
+const darkSystemColorValues = {
+  bg: {
+    modal: "#2c2c31",
+    disabled: "#2c2c31",
+    toggle: "#52525b",
+    indicator: "rgba(255, 255, 255, 0.36)",
+    block: "rgba(0, 0, 0, 0.09)",
+    "reverse-wb": "#000000",
+    "reverse-bw": "#ffffff",
+    wt: "#ffffff",
+    bk: "#000000",
+    elevation: "#09090b",
+    "elevation-1": "#18181b",
+    "elevation-2": "#242429",
+    "elevation-3": "#2c2c31",
+  },
+  border: {
+    base: "#52525b",
+    hover: "#71717a",
+    pressed: "#52525b",
+    focus: "#71717a",
+    disabled: "rgba(255, 255, 255, 0.09)",
+    alpha: "rgba(255, 255, 255, 0.18)",
+  },
+  text: {
+    header: "#f4f4f5",
+    body: "#e4e4e7",
+    sub: "#a1a1aa",
+    action: "#d1d1d7",
+    "action-hover": "#f4f4f5",
+    "action-pressed": "#d1d1d7",
+    "action-focus": "#f4f4f5",
+    "action-disabled": "#52525b",
+    "action-reverse": "#ffffff",
+  },
+} as const;
+
 const spacingScale = {
   "0": "0px",
   "1": "2px",
@@ -316,6 +428,61 @@ export const legacyTokenDocuments: TokenDocument[] = [
               typography: { $type: "typography", $value: "{typography.paragraph.p1}" },
             },
           },
+        },
+      },
+    },
+  }),
+  parseTokenDocument({
+    schemaVersion: PODO_SCHEMA_VERSION,
+    kind: "tokens",
+    category: "theme",
+    tokens: {
+      dark: {
+        color: {
+          ...Object.fromEntries(
+            Object.entries(legacyDarkColorValues).map(([name, states]) => [
+              name,
+              Object.fromEntries(
+                Object.entries(states).map(([state, value]) => [
+                  state,
+                  {
+                    $type: value.startsWith("#") ? "color" : "string",
+                    $value: value,
+                    $description: `v1 dark --color-${name}${state === "base" ? "" : `-${state}`}`,
+                    $extensions: {
+                      podo: {
+                        themeable: true,
+                        scope: "theme",
+                        roles: ["color", "dark", name, state],
+                      },
+                    },
+                  },
+                ])
+              ),
+            ])
+          ),
+          ...Object.fromEntries(
+            Object.entries(darkSystemColorValues).map(([group, values]) => [
+              group,
+              Object.fromEntries(
+                Object.entries(values).map(([name, value]) => [
+                  name,
+                  {
+                    $type: value.startsWith("#") ? "color" : "string",
+                    $value: value,
+                    $description: `v1 dark --color-${group === "border" && name === "base" ? "border" : `${group}-${name}`}`,
+                    $extensions: {
+                      podo: {
+                        themeable: true,
+                        scope: "theme",
+                        roles: ["color", "dark", group, name],
+                      },
+                    },
+                  },
+                ])
+              ),
+            ])
+          ),
         },
       },
     },

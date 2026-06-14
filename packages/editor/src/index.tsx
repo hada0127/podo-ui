@@ -52,6 +52,9 @@ export const PODO_COMPONENT_SHAPE_TYPE = "podo-component" as const;
 const PODO_COMPONENT_DRAG_TYPE = "application/x-podo-component";
 
 export type ResponsiveViewportName = "desktop" | "tablet" | "mobile";
+export type EditorColorScheme = "light" | "dark" | "auto";
+
+export const editorColorSchemes: EditorColorScheme[] = ["light", "dark", "auto"];
 
 export interface ResponsiveViewport {
   name: ResponsiveViewportName;
@@ -65,6 +68,23 @@ export const responsiveViewports: Record<ResponsiveViewportName, ResponsiveViewp
   tablet: { name: "tablet", width: 834, height: 1112, columns: 6 },
   mobile: { name: "mobile", width: 390, height: 844, columns: 4 },
 };
+
+export const editorLegacyGridContract = {
+  breakpoints: {
+    pc: { minWidth: "1280px", columns: 12, gap: "24px", paddingInline: "24px" },
+    tablet: {
+      minWidth: "768px",
+      maxWidth: "1279px",
+      columns: 6,
+      gap: "16px",
+      paddingInline: "16px",
+    },
+    mobile: { maxWidth: "767px", columns: 4, gap: "16px", paddingInline: "16px" },
+  },
+  fixedColumns: { min: 2, max: 6 },
+  spanColumns: { min: 1, max: 12 },
+  pixelWidth: { min: 0, max: 5000 },
+} as const;
 
 export interface EditorComponentNode {
   id: string;
@@ -193,6 +213,7 @@ export interface PodoEditorAppProps {
   tokenDocuments?: TokenDocument[];
   initialState?: EditorCanvasState;
   viewport?: ResponsiveViewportName;
+  colorScheme?: EditorColorScheme;
   onStateChange?: (state: EditorCanvasState) => void;
   onSpecsChange?: (specs: {
     components: ComponentDocument[];
@@ -247,6 +268,7 @@ export function PodoEditorApp({
   tokenDocuments = [],
   initialState,
   viewport = "desktop",
+  colorScheme = "light",
   onStateChange,
   onSpecsChange,
 }: PodoEditorAppProps) {
@@ -293,6 +315,8 @@ export function PodoEditorApp({
   const [componentPreviewSelections, setComponentPreviewSelections] = useState<
     Record<string, string>
   >({});
+  const [selectedColorScheme, setSelectedColorScheme] = useState<EditorColorScheme>(colorScheme);
+  const [systemColorScheme, setSystemColorScheme] = useState<"light" | "dark">("light");
   const [exportPreview, setExportPreview] = useState<ComponentSpecExportFile | undefined>();
   const [propsDraft, setPropsDraft] = useState("");
   const [propsDraftNodeId, setPropsDraftNodeId] = useState<string | undefined>();
@@ -306,7 +330,11 @@ export function PodoEditorApp({
     [tokenDocumentsState]
   );
   const tokenGroups = useMemo(() => groupTokenRecordsByType(tokenRecords), [tokenRecords]);
-  const tokenLookup = useMemo(() => createTokenLookup(tokenRecords), [tokenRecords]);
+  const effectiveColorScheme = effectiveEditorColorScheme(selectedColorScheme, systemColorScheme);
+  const previewTokenLookup = useMemo(
+    () => createThemedTokenLookup(tokenRecords, effectiveColorScheme),
+    [effectiveColorScheme, tokenRecords]
+  );
   const selectedToken = selectedTokenKey
     ? tokenRecords.find((record) => tokenRecordKey(record) === selectedTokenKey)
     : undefined;
@@ -346,6 +374,19 @@ export function PodoEditorApp({
       setSelectedTokenKey(tokenRecordKey(tokenRecords[0]));
     }
   }, [selectedTokenKey, tokenRecords]);
+
+  useEffect(() => {
+    const media = globalThis.window?.matchMedia?.("(prefers-color-scheme: dark)");
+    if (!media) {
+      return;
+    }
+    const syncSystemColorScheme = (): void => {
+      setSystemColorScheme(media.matches ? "dark" : "light");
+    };
+    syncSystemColorScheme();
+    media.addEventListener("change", syncSystemColorScheme);
+    return () => media.removeEventListener("change", syncSystemColorScheme);
+  }, []);
 
   useEffect(() => {
     setTokenDraft(selectedToken ? tokenDraftFromRecord(selectedToken) : createNewTokenDraft());
@@ -602,6 +643,25 @@ export function PodoEditorApp({
             </button>
           ))}
         </div>
+        <div style={topBarControlStyle}>
+          <span style={topBarControlLabelStyle}>Scheme</span>
+          <div style={schemeSegmentedStyle}>
+            {editorColorSchemes.map((scheme) => (
+              <button
+                key={scheme}
+                type="button"
+                style={{
+                  ...schemeButtonStyle,
+                  ...(selectedColorScheme === scheme ? schemeButtonActiveStyle : {}),
+                }}
+                onClick={() => setSelectedColorScheme(scheme)}
+              >
+                {scheme}
+              </button>
+            ))}
+          </div>
+          <span style={topBarControlValueStyle}>{effectiveColorScheme}</span>
+        </div>
       </header>
       <aside style={sidebarStyle}>
         {activePanel === "tokens" ? (
@@ -725,6 +785,17 @@ export function PodoEditorApp({
                     {name}
                   </button>
                 ))}
+              </div>
+              <div style={legacyGridPanelStyle}>
+                <span>Legacy grid</span>
+                <strong>
+                  {editorLegacyGridContract.breakpoints.pc.columns}/
+                  {editorLegacyGridContract.breakpoints.tablet.columns}/
+                  {editorLegacyGridContract.breakpoints.mobile.columns} columns
+                </strong>
+                <small>
+                  .grid, .grid-fix-{"{2..6}"}, .w-*, .w-full, .w-{"{n}_{d}"}, .w-{"{n}px"}
+                </small>
               </div>
             </div>
             {selectedNode && selectedComponent ? (
@@ -875,7 +946,7 @@ export function PodoEditorApp({
             {tokenDraftError ? <div style={errorBannerStyle}>{tokenDraftError}</div> : null}
             <div style={previewPanelStyle}>
               <strong>Preview</strong>
-              {renderTokenDraftPreview(tokenDraft, tokenLookup)}
+              {renderTokenDraftPreview(tokenDraft, previewTokenLookup)}
             </div>
             <div style={previewPanelStyle}>
               <strong>Document JSON</strong>
@@ -1004,7 +1075,7 @@ export function PodoEditorApp({
               {renderComponentPreview(
                 selectedComponentForSpec,
                 effectiveComponentPreviewSelections,
-                tokenLookup
+                previewTokenLookup
               )}
             </div>
             <div style={splitPanelStyle}>
@@ -1518,10 +1589,44 @@ function normalizeNodeForComponent(
   };
 }
 
-type TokenLookup = Map<string, DesignToken>;
+export type TokenLookup = Map<string, DesignToken>;
 
-function createTokenLookup(records: EditorTokenRecord[]): TokenLookup {
-  return new Map(records.map((record) => [record.path, record.token]));
+export function effectiveEditorColorScheme(
+  colorScheme: EditorColorScheme,
+  systemColorScheme: "light" | "dark" = "light"
+): "light" | "dark" {
+  return colorScheme === "auto" ? systemColorScheme : colorScheme;
+}
+
+export function createThemedTokenLookup(
+  records: EditorTokenRecord[],
+  colorScheme: "light" | "dark"
+): TokenLookup {
+  const projections = records.flatMap((record, order) => {
+    const projection = projectColorSchemeTokenPath(record.path, colorScheme);
+    return projection ? [{ ...projection, order, token: record.token }] : [];
+  });
+  projections.sort((a, b) => a.specificity - b.specificity || a.order - b.order);
+  return new Map(projections.map((projection) => [projection.path, projection.token]));
+}
+
+function projectColorSchemeTokenPath(
+  path: string,
+  colorScheme: "light" | "dark"
+): { path: string; specificity: number } | undefined {
+  const projected: string[] = [];
+  let specificity = 0;
+  for (const segment of path.split(".")) {
+    if (segment === "light" || segment === "dark") {
+      if (segment !== colorScheme) {
+        return undefined;
+      }
+      specificity += 1;
+      continue;
+    }
+    projected.push(segment);
+  }
+  return { path: projected.join("."), specificity };
 }
 
 function renderTokenDraftPreview(draft: EditorTokenDraft, lookup: TokenLookup) {
@@ -1575,10 +1680,11 @@ function renderComponentPreview(
   selections: Record<string, string>,
   lookup: TokenLookup
 ) {
+  const stageStyle = componentPreviewStageStyleFromTokens(lookup);
   if (component.id === "button") {
     const style = buttonPreviewStyleFromTokens(selections, lookup);
     return (
-      <div style={componentPreviewStageStyle}>
+      <div style={stageStyle}>
         <button type="button" style={style}>
           Submit
         </button>
@@ -1593,7 +1699,7 @@ function renderComponentPreview(
     );
   }
   return (
-    <div style={componentPreviewStageStyle}>
+    <div style={stageStyle}>
       <div style={genericComponentPreviewStyle}>
         <strong>{component.name}</strong>
         <span>{component.props.length} props</span>
@@ -1601,6 +1707,14 @@ function renderComponentPreview(
       </div>
     </div>
   );
+}
+
+function componentPreviewStageStyleFromTokens(lookup: TokenLookup): CSSProperties {
+  return {
+    ...componentPreviewStageStyle,
+    background: cssToken(lookup, "color.bg.elevation", "#f8fafc"),
+    color: cssToken(lookup, "color.text.body", "#171a20"),
+  };
 }
 
 function buttonPreviewStyleFromTokens(
@@ -2499,6 +2613,49 @@ const panelTabActiveStyle: CSSProperties = {
   color: "#153e75",
 };
 
+const topBarControlStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "auto auto auto",
+  alignItems: "center",
+  gap: 8,
+  minWidth: 280,
+};
+
+const topBarControlLabelStyle: CSSProperties = {
+  color: "#5d6775",
+  fontSize: 12,
+  fontWeight: 600,
+};
+
+const topBarControlValueStyle: CSSProperties = {
+  minWidth: 42,
+  color: "#3f4a5a",
+  fontSize: 12,
+  textAlign: "right",
+};
+
+const schemeSegmentedStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(3, 54px)",
+  gap: 3,
+};
+
+const schemeButtonStyle: CSSProperties = {
+  height: 28,
+  border: "1px solid #d8dde6",
+  borderRadius: 6,
+  background: "#ffffff",
+  color: "#4e5968",
+  padding: 0,
+  fontSize: 12,
+};
+
+const schemeButtonActiveStyle: CSSProperties = {
+  border: "1px solid #8fb3f4",
+  background: "#eaf1ff",
+  color: "#153e75",
+};
+
 const sidebarStyle: CSSProperties = {
   minHeight: 0,
   borderRight: "1px solid #d8dde6",
@@ -2756,6 +2913,16 @@ const viewportPanelStyle: CSSProperties = {
   padding: 10,
   display: "grid",
   gap: 4,
+};
+
+const legacyGridPanelStyle: CSSProperties = {
+  marginTop: 8,
+  borderTop: "1px solid #e2e7ef",
+  paddingTop: 8,
+  display: "grid",
+  gap: 4,
+  color: "#5d6775",
+  fontSize: 12,
 };
 
 const workspaceStyle: CSSProperties = {

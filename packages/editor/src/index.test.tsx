@@ -5,9 +5,13 @@ import {
   composeSlot,
   createComponentNode,
   createComponentSpecExportFile,
+  createThemedTokenLookup,
   createEditorState,
   describeLayoutSpecBoundary,
   dropComponentOnCanvas,
+  editorLegacyGridContract,
+  effectiveEditorColorScheme,
+  editorColorSchemes,
   exportComponentSpecFromNode,
   exportFigmaVariables,
   githubSyncStrategy,
@@ -34,6 +38,7 @@ import {
 } from "./spec-editing.js";
 import { legacyComponents, legacyTokenDocuments } from "./legacy-fixtures.js";
 import { PODO_SCHEMA_VERSION, type ComponentDocument } from "@podo/spec";
+import { legacyGridContract } from "@podo/tokens";
 
 describe("@podo/editor", () => {
   it("creates an editor state, drops components, edits props, and composes slots", () => {
@@ -135,6 +140,12 @@ describe("@podo/editor", () => {
 
     expect(state.viewport).toBe("mobile");
     expect(responsiveViewports.mobile.columns).toBe(4);
+    expect(editorLegacyGridContract).toEqual(legacyGridContract);
+    expect(responsiveViewports.desktop.columns).toBe(legacyGridContract.breakpoints.pc.columns);
+    expect(responsiveViewports.tablet.columns).toBe(legacyGridContract.breakpoints.tablet.columns);
+    expect(responsiveViewports.mobile.columns).toBe(legacyGridContract.breakpoints.mobile.columns);
+    expect(legacyGridContract.fixedColumns).toEqual({ min: 2, max: 6 });
+    expect(legacyGridContract.spanColumns).toEqual({ min: 1, max: 12 });
     expect(exported.examples.at(-1)?.target).toBe("web");
     expect(exportFile.path).toBe(".podo/components/editor/button.component.json");
     expect(JSON.parse(exportFile.contents)).toMatchObject({ id: "button", kind: "component" });
@@ -254,6 +265,24 @@ describe("@podo/editor", () => {
       "root.height": "{component.button.size.sm.height}",
       "root.typography": "{component.button.size.sm.typography}",
     });
+  });
+
+  it("projects legacy light, dark, and auto color schemes without warm in the editor preview", () => {
+    const tokenRecords = flattenTokenDocuments(legacyTokenDocuments);
+    const tokenPaths = tokenRecords.map((record) => record.path);
+    const lightLookup = createThemedTokenLookup(tokenRecords, "light");
+    const darkLookup = createThemedTokenLookup(tokenRecords, "dark");
+
+    expect(editorColorSchemes).toEqual(["light", "dark", "auto"]);
+    expect(effectiveEditorColorScheme("auto", "dark")).toBe("dark");
+    expect(effectiveEditorColorScheme("auto", "light")).toBe("light");
+    expect(effectiveEditorColorScheme("dark", "light")).toBe("dark");
+    expect(tokenPaths).toContain("dark.color.primary.hover");
+    expect(tokenPaths.some((path) => path.startsWith("warm."))).toBe(false);
+    expect(lightLookup.get("color.primary.hover")?.$value).toBe("#6d28d9");
+    expect(darkLookup.get("color.primary.hover")?.$value).toBe("#8b5cf6");
+    expect(darkLookup.get("color.bg.elevation")?.$value).toBe("#09090b");
+    expect(darkLookup.has("dark.color.primary.hover")).toBe(false);
   });
 
   it("imports and exports Figma variables as token JSON", () => {
