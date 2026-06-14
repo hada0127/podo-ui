@@ -20,6 +20,19 @@ import {
   type PodoComponentShapeInput,
   type PodoTldrawStateWriter,
 } from "./index.js";
+import {
+  createComponentPropType,
+  createEmptyTokenDocument,
+  deleteComponentProp,
+  deleteComponentVariant,
+  deleteTokenFromDocuments,
+  flattenTokenDocuments,
+  moveTokenInDocuments,
+  parsePropDefaultInput,
+  upsertComponentProp,
+  upsertComponentVariant,
+} from "./spec-editing.js";
+import { legacyComponents, legacyTokenDocuments } from "./legacy-fixtures.js";
 import { PODO_SCHEMA_VERSION, type ComponentDocument } from "@podo/spec";
 
 describe("@podo/editor", () => {
@@ -129,6 +142,118 @@ describe("@podo/editor", () => {
     expect(exported.variants.filter((variant) => variant.name === "editor-variant")).toHaveLength(
       0
     );
+  });
+
+  it("edits token JSON documents through add, move, update, and delete operations", () => {
+    const emptyDocument = createEmptyTokenDocument();
+    const withToken = moveTokenInDocuments([emptyDocument], {
+      documentIndex: 0,
+      toDraft: {
+        documentIndex: 0,
+        path: "color.brand",
+        type: "color",
+        valueText: "#3366ff",
+        description: "Brand",
+      },
+    });
+    const moved = moveTokenInDocuments(withToken, {
+      documentIndex: 0,
+      fromPath: "color.brand",
+      toDraft: {
+        documentIndex: 0,
+        path: "semantic.color.action.primary",
+        type: "color",
+        valueText: "{color.palette.purple.600}",
+      },
+    });
+    const records = flattenTokenDocuments(moved);
+
+    expect(records.map((record) => record.path)).toEqual(["semantic.color.action.primary"]);
+    expect(records[0]?.token.$value).toBe("{color.palette.purple.600}");
+    expect(() =>
+      moveTokenInDocuments(moved, {
+        documentIndex: 0,
+        toDraft: {
+          documentIndex: 0,
+          path: "semantic.color.action.invalid",
+          type: "color",
+          valueText: "not-a-color",
+        },
+      })
+    ).toThrow(/Color tokens/);
+    expect(
+      flattenTokenDocuments(deleteTokenFromDocuments(moved, 0, "semantic.color.action.primary"))
+    ).toHaveLength(0);
+  });
+
+  it("edits component props and variants with schema validation", () => {
+    const prop = {
+      name: "tone",
+      type: createComponentPropType("enum", "neutral, danger"),
+      required: false,
+      default: parsePropDefaultInput("enum", "neutral"),
+      description: "Semantic tone.",
+    };
+    const withProp = upsertComponentProp(buttonComponent, prop);
+    const renamed = upsertComponentProp(deleteComponentProp(withProp, "tone"), {
+      ...prop,
+      name: "intent",
+    });
+    const withVariant = upsertComponentVariant(renamed, {
+      name: "intent",
+      valuesText: "neutral, danger",
+      defaultValue: "danger",
+      tokensText: JSON.stringify({ "root.background": "{component.button.background}" }),
+    });
+
+    expect(withProp.props.find((item) => item.name === "tone")?.type).toMatchObject({
+      kind: "enum",
+      values: ["neutral", "danger"],
+    });
+    expect(renamed.props.map((item) => item.name)).toContain("intent");
+    expect(renamed.props.map((item) => item.name)).not.toContain("tone");
+    expect(withVariant.variants.find((variant) => variant.name === "intent")?.default).toBe(
+      "danger"
+    );
+    expect(
+      deleteComponentVariant(withVariant, "intent").variants.map((item) => item.name)
+    ).not.toContain("intent");
+    expect(() => createComponentPropType("enum", "")).toThrow(/at least one value/);
+    expect(() => upsertComponentVariant(buttonComponent, { name: "tone", valuesText: "" })).toThrow(
+      /at least one value/
+    );
+  });
+
+  it("loads v1 color, typography, spacing, radius, and button fixtures as editable v2 specs", () => {
+    const tokenPaths = flattenTokenDocuments(legacyTokenDocuments).map((record) => record.path);
+    const button = legacyComponents.find((component) => component.id === "button");
+
+    expect(tokenPaths).toContain("color.primary.base");
+    expect(tokenPaths).toContain("color.primary.hover");
+    expect(tokenPaths).toContain("spacing.scale.5");
+    expect(tokenPaths).toContain("radius.scale.3");
+    expect(tokenPaths).toContain("typography.paragraph.p3");
+    expect(tokenPaths).toContain("component.button.theme.primary.solid.background");
+    expect(tokenPaths).toContain("component.button.size.sm.height");
+    expect(legacyComponents.map((component) => component.id)).toEqual(["button", "field", "input"]);
+    expect(button?.props.find((prop) => prop.name === "theme")?.type).toMatchObject({
+      kind: "enum",
+      values: [
+        "default",
+        "primary",
+        "default-deep",
+        "info",
+        "link",
+        "success",
+        "warning",
+        "danger",
+      ],
+    });
+    expect(button?.tokens).toMatchObject({
+      "root.background": "{component.button.theme.primary.solid.background}",
+      "root.height": "{component.button.size.sm.height}",
+      "root.typography": "{component.button.size.sm.typography}",
+    });
   });
 
   it("imports and exports Figma variables as token JSON", () => {

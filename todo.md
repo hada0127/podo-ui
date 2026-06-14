@@ -577,3 +577,21 @@
 - [x] 단일 `podo-ui` 패키지와 `@podo/*` 멀티 패키지 배포 중 1차 전략 결정
 - [x] Figma 연동을 plugin, REST sync, GitHub Action 중 어디까지 1차 지원할지 결정
 - [x] Editor canvas를 tldraw로 고정할지 다른 canvas SDK도 비교할지 결정
+
+## Claude 보고서 기반 보정 작업
+
+- [x] P0: editor 변경 안정화
+  - 완료 기준: `legacy-fixtures.ts`, `spec-editing.ts`, editor UI 변경이 의도된 프로덕션 코드로 포함되고 `pnpm check`가 통과한다.
+  - 완료 기준: Claude CLI가 현재 P0 범위를 엄격히 리뷰하고 차단 이슈가 없다고 확인한다.
+- [ ] P1: 테마와 기존 grid 반영 보강
+  - 완료 기준: v2 수정 범위의 기본 color scheme은 `light`, `dark`, `auto`로 명확히 제한하고 editor preview/spec에서 전환 가능하다.
+  - 완료 기준: 기존 v1 grid 시스템은 새 토큰 재설계 없이 호환 산출물/문서/테스트 기준으로 유지됨이 editor 보정 범위에서도 확인된다.
+- [ ] P2: Button spec 완성
+  - 완료 기준: 기존 Button의 theme, variant, size, state, alignment 조합이 JSON spec과 editor preview/test에 반영된다.
+  - 완료 기준: Button 기본값과 token binding이 v1 문서/SCSS 기준과 충돌하지 않는다.
+- [ ] P3: 기존 컴포넌트 spec fixture 확장
+  - 완료 기준: v1 `public/ai/components`에 있던 주요 컴포넌트가 최소 JSON spec fixture로 이식되고 editor 목록/검색/preview에서 참조 가능하다.
+  - 완료 기준: 누락 컴포넌트 목록과 의도적으로 보류한 범위가 문서화된다.
+- [ ] P4: 설치 프로젝트 반영 플로우 연결 검증
+  - 완료 기준: editor export 결과가 `.podo` 기반 project override/build/update 흐름으로 이어지는 경로가 CLI/Studio 문서와 테스트로 검증된다.
+  - 완료 기준: dry-run, validation, diff 확인 없이 설치 프로젝트 파일을 덮어쓰지 않는다.

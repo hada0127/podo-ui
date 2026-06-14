@@ -88,6 +88,18 @@ If Claude Code tool-enabled print mode hangs in this repository, first verify th
 claude -p --safe-mode --permission-mode dontAsk -- "Reply with OK only."
 ```
 
+The `cc-telegram` project at `/Users/ourteam/project/cc-telegram` invokes Claude by starting `claude --dangerously-skip-permissions` and writing the prompt to stdin. This method was tested in this repository and should be the first fallback when `claude -p` hangs.
+
+```bash
+printf '%s' "Strictly review the current Podo v2 repository scope. Do not edit files. Return PASS only if the scope can be checked in todo.md." | claude --dangerously-skip-permissions
+```
+
+When tool-enabled Claude print mode keeps hanging but the model itself responds, disable tools and stream the result. This works for prompt-only reviews when the prompt already includes the needed evidence; if a report file is required, manually save the returned markdown.
+
+```bash
+claude -p --safe-mode --no-session-persistence --verbose --model sonnet --tools "" --output-format stream-json --include-partial-messages -- "Return a strict markdown review based only on the facts in this prompt."
+```
+
 For Agy print mode, put `--print-timeout` after the prompt.
 
 ```bash
