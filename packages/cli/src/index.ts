@@ -29,12 +29,12 @@ import {
   emitReactNativeTokens,
   emitTokenJsonBundle,
   emitTypeScriptTokens,
-  loadTokenDocuments,
   mergeTokenDocuments,
   resolveTokenDocument,
   validateTokenBuild,
   type TokenSource,
 } from "@podo/tokens";
+import { loadTokenDocuments } from "@podo/tokens/node";
 import { buildIconAssets, emitIconCss, emitIconTypes, emitNativeGlyphMap } from "@podo/icons";
 import { generateComponentFiles, generateIndexFile, type CodegenTarget } from "@podo/codegen";
 import {

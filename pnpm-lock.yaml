@@ -137,6 +137,9 @@ importers:
       '@podo/spec':
         specifier: workspace:*
         version: link:../spec
+      '@podo/tokens':
+        specifier: workspace:*
+        version: link:../tokens
 
   packages/editor:
     dependencies:

@@ -22,6 +22,7 @@
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@podo/spec": "workspace:*"
+    "@podo/spec": "workspace:*",
+    "@podo/tokens": "workspace:*"
   }
 }

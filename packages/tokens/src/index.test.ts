@@ -7,7 +7,6 @@ import {
   emitReactNativeTokens,
   emitTokenJsonBundle,
   emitTypeScriptTokens,
-  loadTokenDocuments,
   mergeTokenDocuments,
   resolveTokenDocument,
   selectThemeTokens,
@@ -15,6 +14,7 @@ import {
   type ResolvedTokenBundle,
   type TokenSource,
 } from "./index.js";
+import { loadTokenDocuments } from "./node.js";
 
 const specSamples = resolve(process.cwd(), "packages/spec/samples/tokens");
 

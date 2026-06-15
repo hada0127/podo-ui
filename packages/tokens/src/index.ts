@@ -1,10 +1,7 @@
-import { readFile } from "node:fs/promises";
-import { join, relative } from "node:path";
 import {
   collectTokenPaths,
   extractAliasReferences,
   isDesignToken,
-  parseTokenDocument,
   validateTokenReferences,
   type DesignToken,
   type TokenDocument,
@@ -62,30 +59,6 @@ export interface ThemeSelection {
 }
 
 const resolvedSourceDocuments = new WeakMap<ResolvedTokenBundle, MergedTokenDocument>();
-
-export async function loadTokenDocument(
-  filePath: string,
-  tier: TokenSourceTier = "package"
-): Promise<TokenSource> {
-  const document = parseTokenDocument(JSON.parse(await readFile(filePath, "utf8")));
-  return { document, filePath, tier };
-}
-
-export async function loadTokenDocuments(
-  options: LoadTokenDocumentsOptions
-): Promise<TokenSource[]> {
-  const packageFiles = await findJsonFiles(options.packageTokensDir);
-  const projectFiles = options.projectTokensDir
-    ? await findJsonFiles(options.projectTokensDir)
-    : [];
-
-  const sources = await Promise.all([
-    ...packageFiles.map((filePath) => loadTokenDocument(filePath, "package")),
-    ...projectFiles.map((filePath) => loadTokenDocument(filePath, "project")),
-  ]);
-
-  return sources.sort((a, b) => sourceSortKey(a, options).localeCompare(sourceSortKey(b, options)));
-}
 
 export function mergeTokenDocuments(sources: TokenSource[]): MergedTokenDocument {
   const tokens: TokenTree = {};
@@ -527,33 +500,3 @@ function toReactNativeValue(value: unknown): unknown {
   return value;
 }
 
-async function findJsonFiles(dir: string): Promise<string[]> {
-  const { readdir } = await import("node:fs/promises");
-  const entries = await readdir(dir, { withFileTypes: true }).catch(
-    (error: NodeJS.ErrnoException) => {
-      if (error.code === "ENOENT") {
-        return [];
-      }
-      throw error;
-    }
-  );
-
-  const files = await Promise.all(
-    entries.map(async (entry) => {
-      const entryPath = join(dir, entry.name);
-      if (entry.isDirectory()) {
-        return findJsonFiles(entryPath);
-      }
-      return entry.isFile() && entry.name.endsWith(".json") ? [entryPath] : [];
-    })
-  );
-
-  return files.flat().sort();
-}
-
-function sourceSortKey(source: TokenSource, options: LoadTokenDocumentsOptions): string {
-  const baseDir =
-    source.tier === "package" ? options.packageTokensDir : (options.projectTokensDir ?? "");
-  const tierOrder = source.tier === "package" ? "0" : "1";
-  return `${tierOrder}:${relative(baseDir, source.filePath)}`;
-}
