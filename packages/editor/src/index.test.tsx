@@ -8,6 +8,7 @@ import {
   createComponentSpecExportFile,
   createThemedTokenLookup,
   createEditorState,
+  createTokenMatrix,
   componentPreviewKind,
   describeLayoutSpecBoundary,
   dropComponentOnCanvas,
@@ -318,6 +319,28 @@ describe("@podo/editor", () => {
       "root.height": "{component.button.size.sm.height}",
       "root.typography": "{component.button.size.sm.typography}",
     });
+  });
+
+  it("builds editable token matrices for natural token variation groups", () => {
+    const colorMatrix = createTokenMatrix(flattenTokenDocuments(legacyTokenDocuments), "color");
+    const primary = colorMatrix.rows.find((row) => row.label === "primary");
+    const darkPrimary = colorMatrix.rows.find((row) => row.label === "dark / primary");
+
+    expect(colorMatrix.columns.slice(0, 6)).toEqual([
+      "base",
+      "hover",
+      "pressed",
+      "focus",
+      "fill",
+      "reverse",
+    ]);
+    expect(primary?.cells.base?.path).toBe("color.primary.base");
+    expect(primary?.cells.hover?.token.$value).toBe("#6d28d9");
+    expect(darkPrimary?.cells.hover?.path).toBe("dark.color.primary.hover");
+    expect(colorMatrix.rows.some((row) => row.id.startsWith("component.button"))).toBe(false);
+
+    const spacingMatrix = createTokenMatrix(flattenTokenDocuments(legacyTokenDocuments), "spacing");
+    expect(spacingMatrix.rows.some((row) => row.label === "scale")).toBe(true);
   });
 
   it("loads every v1 public component fixture as searchable editable specs", () => {

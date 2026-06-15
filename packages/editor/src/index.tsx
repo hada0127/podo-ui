@@ -369,6 +369,10 @@ export function PodoEditorApp({
     [tokenDocumentsState]
   );
   const tokenGroups = useMemo(() => groupTokenRecordsByType(tokenRecords), [tokenRecords]);
+  const tokenMatrix = useMemo(
+    () => createTokenMatrix(tokenRecords, tokenDraft.type),
+    [tokenDraft.type, tokenRecords]
+  );
   const filteredComponents = useMemo(
     () => filterComponentsForEditor(state.components, componentSearch),
     [componentSearch, state.components]
@@ -568,6 +572,26 @@ export function PodoEditorApp({
       setTokenDraftError(undefined);
     } catch (error) {
       setTokenDraftError(error instanceof Error ? error.message : "Token draft is invalid.");
+    }
+  };
+  const updateTokenMatrixCell = (record: EditorTokenRecord, valueText: string): void => {
+    try {
+      const nextDocuments = moveTokenInDocuments(tokenDocumentsState, {
+        documentIndex: record.documentIndex,
+        fromPath: record.path,
+        toDraft: {
+          documentIndex: record.documentIndex,
+          path: record.path,
+          type: record.token.$type,
+          valueText,
+          description: record.token.$description ?? "",
+        },
+      });
+      commitTokenDocuments(nextDocuments);
+      setSelectedTokenKey(tokenRecordKey(record));
+      setTokenDraftError(undefined);
+    } catch (error) {
+      setTokenDraftError(error instanceof Error ? error.message : "Token cell value is invalid.");
     }
   };
   const deleteSelectedToken = (): void => {
@@ -941,6 +965,12 @@ export function PodoEditorApp({
                 </button>
               </div>
             </div>
+            {renderTokenMatrixEditor({
+              matrix: tokenMatrix,
+              selectedTokenKey,
+              onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
+              onCommitValue: updateTokenMatrixCell,
+            })}
             <div style={formGridStyle}>
               <label style={fieldStyle}>
                 Path
@@ -1191,6 +1221,12 @@ export function PodoEditorApp({
                 effectiveComponentPreviewSelections,
                 previewTokenLookup
               )}
+              {renderComponentPreviewMatrix({
+                component: selectedComponentForSpec,
+                selections: effectiveComponentPreviewSelections,
+                lookup: previewTokenLookup,
+                onSelect: setComponentPreviewSelections,
+              })}
             </div>
             <div style={componentEditModeBarStyle}>
               {(["props", "variants"] as const).map((mode) => (
@@ -1547,6 +1583,108 @@ function tokenRecordKey(record: EditorTokenRecord): string {
   return `${record.documentIndex}:${record.path}`;
 }
 
+interface TokenMatrixRow {
+  id: string;
+  label: string;
+  cells: Record<string, EditorTokenRecord | undefined>;
+}
+
+export interface TokenMatrixModel {
+  type: DesignToken["$type"];
+  columns: string[];
+  rows: TokenMatrixRow[];
+  totalRecords: number;
+}
+
+export function createTokenMatrix(
+  records: EditorTokenRecord[],
+  type: DesignToken["$type"]
+): TokenMatrixModel {
+  const matrixRecords = records.filter((record) => shouldIncludeTokenInMatrix(record, type));
+  const columns: string[] = [];
+  const rows = new Map<string, TokenMatrixRow>();
+
+  for (const record of matrixRecords) {
+    const parentPath = tokenParentPath(record.path);
+    const column = tokenVariationName(record.path);
+    if (!columns.includes(column)) {
+      columns.push(column);
+    }
+    const row = rows.get(parentPath) ?? {
+      id: parentPath,
+      label: tokenMatrixRowLabel(parentPath, type),
+      cells: {},
+    };
+    row.cells[column] = record;
+    rows.set(parentPath, row);
+  }
+
+  return {
+    type,
+    columns: sortTokenMatrixColumns(columns, type),
+    rows: [...rows.values()],
+    totalRecords: matrixRecords.length,
+  };
+}
+
+function shouldIncludeTokenInMatrix(
+  record: EditorTokenRecord,
+  type: DesignToken["$type"]
+): boolean {
+  if (record.token.$type !== type) {
+    return false;
+  }
+  if (type === "color") {
+    return record.path.startsWith("color.") || record.path.startsWith("dark.color.");
+  }
+  return true;
+}
+
+function tokenMatrixRowLabel(parentPath: string, type: DesignToken["$type"]): string {
+  const lightPrefix = `${type}.`;
+  const darkPrefix = `dark.${type}.`;
+  if (parentPath.startsWith(darkPrefix)) {
+    return `dark / ${parentPath.slice(darkPrefix.length)}`;
+  }
+  if (parentPath.startsWith(lightPrefix)) {
+    return parentPath.slice(lightPrefix.length);
+  }
+  return parentPath;
+}
+
+function sortTokenMatrixColumns(columns: string[], type: DesignToken["$type"]): string[] {
+  if (type !== "color") {
+    return columns;
+  }
+  return [...columns].sort((a, b) => {
+    const aIndex = colorMatrixColumnOrder.indexOf(a as (typeof colorMatrixColumnOrder)[number]);
+    const bIndex = colorMatrixColumnOrder.indexOf(b as (typeof colorMatrixColumnOrder)[number]);
+    if (aIndex >= 0 || bIndex >= 0) {
+      return (
+        (aIndex >= 0 ? aIndex : Number.MAX_SAFE_INTEGER) -
+        (bIndex >= 0 ? bIndex : Number.MAX_SAFE_INTEGER)
+      );
+    }
+    return a.localeCompare(b);
+  });
+}
+
+const colorMatrixColumnOrder = [
+  "base",
+  "hover",
+  "pressed",
+  "focus",
+  "fill",
+  "reverse",
+  "outline",
+  "modal",
+  "disabled",
+  "toggle",
+  "indicator",
+  "block",
+  "elevation",
+] as const;
+
 function groupTokenRecordsByType(records: EditorTokenRecord[]): Array<{
   type: DesignToken["$type"];
   count: number;
@@ -1608,6 +1746,157 @@ function formatTokenListValue(value: unknown): string {
     return "{...}";
   }
   return "";
+}
+
+function renderTokenMatrixEditor(input: {
+  matrix: TokenMatrixModel;
+  selectedTokenKey: string | undefined;
+  onSelect(record: EditorTokenRecord): void;
+  onCommitValue(record: EditorTokenRecord, valueText: string): void;
+}) {
+  if (!input.matrix.rows.length || !input.matrix.columns.length) {
+    return null;
+  }
+
+  return (
+    <div style={tokenMatrixPanelStyle}>
+      <div style={cardHeaderStyle}>
+        <div>
+          <strong>{input.matrix.type} matrix</strong>
+          <p style={inlineHelpStyle}>
+            {input.matrix.totalRecords} editable cells. Select a cell to sync the detail editor.
+          </p>
+        </div>
+      </div>
+      <div style={tokenMatrixScrollStyle}>
+        <table style={tokenMatrixTableStyle}>
+          <thead>
+            <tr>
+              <th style={tokenMatrixHeaderCellStyle}>group</th>
+              {input.matrix.columns.map((column) => (
+                <th key={column} style={tokenMatrixHeaderCellStyle}>
+                  {column}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {input.matrix.rows.map((row) => (
+              <tr key={row.id}>
+                <th style={tokenMatrixRowHeaderStyle}>{row.label}</th>
+                {input.matrix.columns.map((column) => {
+                  const record = row.cells[column];
+                  return (
+                    <td key={column} style={tokenMatrixCellStyle}>
+                      {record ? (
+                        renderTokenMatrixCell({
+                          record,
+                          selected: input.selectedTokenKey === tokenRecordKey(record),
+                          onSelect: input.onSelect,
+                          onCommitValue: input.onCommitValue,
+                        })
+                      ) : (
+                        <span style={tokenMatrixEmptyCellStyle}>-</span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function renderTokenMatrixCell(input: {
+  record: EditorTokenRecord;
+  selected: boolean;
+  onSelect(record: EditorTokenRecord): void;
+  onCommitValue(record: EditorTokenRecord, valueText: string): void;
+}) {
+  const valueText = serializeEditorTokenValue(input.record.token.$value);
+  const scalar =
+    typeof input.record.token.$value === "string" ||
+    typeof input.record.token.$value === "number" ||
+    typeof input.record.token.$value === "boolean";
+  const commitIfChanged = (valueTextNext: string): void => {
+    if (valueTextNext !== valueText) {
+      input.onCommitValue(input.record, valueTextNext);
+    }
+  };
+
+  if (input.record.token.$type === "color") {
+    return (
+      <div
+        style={{
+          ...tokenMatrixColorCellStyle,
+          ...(input.selected ? tokenMatrixCellActiveStyle : {}),
+        }}
+        onClick={() => input.onSelect(input.record)}
+      >
+        {isHexColorInputValue(valueText) ? (
+          <input
+            aria-label={`${input.record.path} color`}
+            type="color"
+            style={tokenMatrixColorPickerStyle}
+            value={valueText}
+            onChange={(event) => input.onCommitValue(input.record, event.currentTarget.value)}
+          />
+        ) : (
+          <span style={tokenMatrixColorFallbackSwatchStyle} />
+        )}
+        <input
+          key={`${input.record.path}:${valueText}`}
+          aria-label={`${input.record.path} value`}
+          style={tokenMatrixValueInputStyle}
+          defaultValue={valueText}
+          onFocus={() => input.onSelect(input.record)}
+          onBlur={(event) => commitIfChanged(event.currentTarget.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.currentTarget.blur();
+            }
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (scalar) {
+    return (
+      <input
+        key={`${input.record.path}:${valueText}`}
+        aria-label={`${input.record.path} value`}
+        style={{
+          ...tokenMatrixValueInputStyle,
+          ...(input.selected ? tokenMatrixInputActiveStyle : {}),
+        }}
+        defaultValue={valueText}
+        onFocus={() => input.onSelect(input.record)}
+        onBlur={(event) => commitIfChanged(event.currentTarget.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.currentTarget.blur();
+          }
+        }}
+      />
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      style={{
+        ...tokenMatrixObjectCellStyle,
+        ...(input.selected ? tokenMatrixInputActiveStyle : {}),
+      }}
+      onClick={() => input.onSelect(input.record)}
+    >
+      {valueText}
+    </button>
+  );
 }
 
 function normalizeTokenPathLabel(path: string): string {
@@ -1849,6 +2138,89 @@ export function renderComponentPreview(
       data-podo-preview-kind={componentPreviewKind(component)}
     >
       {renderComponentPreviewBody(component, selections, lookup)}
+    </div>
+  );
+}
+
+function renderComponentPreviewMatrix(input: {
+  component: ComponentDocument;
+  selections: Record<string, string>;
+  lookup: TokenLookup;
+  onSelect(selections: Record<string, string>): void;
+}) {
+  const rowVariant = input.component.variants[0];
+  if (!rowVariant) {
+    return null;
+  }
+  const columnVariant = input.component.variants[1];
+  const columns = columnVariant?.values ?? ["preview"];
+  return (
+    <div style={componentMatrixPanelStyle}>
+      <div style={componentMatrixHeaderStyle}>
+        <strong>Variant matrix</strong>
+        <span>
+          {rowVariant.name}
+          {columnVariant ? ` x ${columnVariant.name}` : ""}
+        </span>
+      </div>
+      <div style={componentMatrixScrollStyle}>
+        <table style={componentMatrixTableStyle}>
+          <thead>
+            <tr>
+              <th style={componentMatrixHeaderCellStyle}>{rowVariant.name}</th>
+              {columns.map((column) => (
+                <th key={column} style={componentMatrixHeaderCellStyle}>
+                  {columnVariant ? column : "preview"}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rowVariant.values.map((rowValue) => (
+              <tr key={rowValue}>
+                <th style={componentMatrixRowHeaderStyle}>{rowValue}</th>
+                {columns.map((columnValue) => {
+                  const cellSelections = {
+                    ...input.selections,
+                    [rowVariant.name]: rowValue,
+                    ...(columnVariant ? { [columnVariant.name]: columnValue } : {}),
+                  };
+                  const selected =
+                    input.selections[rowVariant.name] === rowValue &&
+                    (!columnVariant || input.selections[columnVariant.name] === columnValue);
+                  return (
+                    <td key={columnValue} style={componentMatrixCellStyle}>
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        style={{
+                          ...componentMatrixPreviewButtonStyle,
+                          ...(selected ? componentMatrixPreviewButtonActiveStyle : {}),
+                        }}
+                        onClick={() => input.onSelect(cellSelections)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            input.onSelect(cellSelections);
+                          }
+                        }}
+                      >
+                        <span style={componentMatrixPreviewClipStyle}>
+                          {renderComponentPreviewBody(
+                            input.component,
+                            cellSelections,
+                            input.lookup
+                          )}
+                        </span>
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -4211,6 +4583,150 @@ const tokenColorInputStyle: CSSProperties = {
   background: "#ffffff",
 };
 
+const tokenMatrixPanelStyle: CSSProperties = {
+  border: "1px solid #d8dde6",
+  borderRadius: 8,
+  background: "#ffffff",
+  display: "grid",
+  gap: 10,
+  padding: 12,
+};
+
+const inlineHelpStyle: CSSProperties = {
+  margin: "3px 0 0",
+  color: "#6b7280",
+  fontSize: 12,
+  lineHeight: "16px",
+};
+
+const tokenMatrixScrollStyle: CSSProperties = {
+  overflow: "auto",
+  maxHeight: 420,
+  border: "1px solid #e2e7ef",
+  borderRadius: 6,
+};
+
+const tokenMatrixTableStyle: CSSProperties = {
+  width: "max-content",
+  minWidth: "100%",
+  borderCollapse: "separate",
+  borderSpacing: 0,
+};
+
+const tokenMatrixHeaderCellStyle: CSSProperties = {
+  position: "sticky",
+  top: 0,
+  zIndex: 1,
+  minWidth: 132,
+  borderBottom: "1px solid #d8dde6",
+  borderRight: "1px solid #eef2f7",
+  background: "#f6f8fb",
+  color: "#4e5968",
+  padding: "8px",
+  textAlign: "left",
+  fontSize: 12,
+  fontWeight: 700,
+};
+
+const tokenMatrixRowHeaderStyle: CSSProperties = {
+  position: "sticky",
+  left: 0,
+  zIndex: 1,
+  minWidth: 156,
+  maxWidth: 220,
+  borderBottom: "1px solid #eef2f7",
+  borderRight: "1px solid #d8dde6",
+  background: "#ffffff",
+  color: "#171a20",
+  padding: "8px",
+  textAlign: "left",
+  verticalAlign: "top",
+  overflowWrap: "anywhere",
+  fontSize: 12,
+};
+
+const tokenMatrixCellStyle: CSSProperties = {
+  minWidth: 132,
+  borderBottom: "1px solid #eef2f7",
+  borderRight: "1px solid #eef2f7",
+  padding: 6,
+  verticalAlign: "top",
+};
+
+const tokenMatrixColorCellStyle: CSSProperties = {
+  minWidth: 120,
+  minHeight: 64,
+  border: "1px solid transparent",
+  borderRadius: 6,
+  display: "grid",
+  gridTemplateColumns: "28px minmax(0, 1fr)",
+  gap: 6,
+  alignItems: "center",
+  padding: 4,
+};
+
+const tokenMatrixCellActiveStyle: CSSProperties = {
+  border: "1px solid #8fb3f4",
+  background: "#f3f7ff",
+};
+
+const tokenMatrixColorPickerStyle: CSSProperties = {
+  width: 28,
+  height: 42,
+  border: "1px solid #d8dde6",
+  borderRadius: 5,
+  padding: 2,
+  background: "#ffffff",
+};
+
+const tokenMatrixColorFallbackSwatchStyle: CSSProperties = {
+  width: 28,
+  height: 42,
+  border: "1px dashed #b9c2d0",
+  borderRadius: 5,
+  background: "#f6f8fb",
+};
+
+const tokenMatrixValueInputStyle: CSSProperties = {
+  width: "100%",
+  minWidth: 0,
+  minHeight: 32,
+  border: "1px solid #d8dde6",
+  borderRadius: 5,
+  background: "#ffffff",
+  color: "#171a20",
+  padding: "0 6px",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  fontSize: 11,
+};
+
+const tokenMatrixInputActiveStyle: CSSProperties = {
+  border: "1px solid #8fb3f4",
+  background: "#f3f7ff",
+};
+
+const tokenMatrixObjectCellStyle: CSSProperties = {
+  width: "100%",
+  maxWidth: 240,
+  minHeight: 34,
+  border: "1px solid #d8dde6",
+  borderRadius: 5,
+  background: "#ffffff",
+  color: "#4e5968",
+  padding: "6px",
+  textAlign: "left",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  fontSize: 11,
+};
+
+const tokenMatrixEmptyCellStyle: CSSProperties = {
+  color: "#a1a9b5",
+  fontSize: 12,
+};
+
 const summaryListStyle: CSSProperties = {
   display: "grid",
   gap: 8,
@@ -4467,6 +4983,99 @@ const componentPreviewPanelStyle: CSSProperties = {
   position: "sticky",
   top: 12,
   zIndex: 1,
+};
+
+const componentMatrixPanelStyle: CSSProperties = {
+  borderTop: "1px solid #e2e7ef",
+  paddingTop: 10,
+  display: "grid",
+  gap: 8,
+};
+
+const componentMatrixHeaderStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 8,
+  color: "#5d6775",
+  fontSize: 12,
+};
+
+const componentMatrixScrollStyle: CSSProperties = {
+  overflow: "auto",
+  maxHeight: 360,
+  border: "1px solid #e2e7ef",
+  borderRadius: 6,
+};
+
+const componentMatrixTableStyle: CSSProperties = {
+  width: "max-content",
+  minWidth: "100%",
+  borderCollapse: "separate",
+  borderSpacing: 0,
+};
+
+const componentMatrixHeaderCellStyle: CSSProperties = {
+  position: "sticky",
+  top: 0,
+  zIndex: 1,
+  minWidth: 150,
+  borderBottom: "1px solid #d8dde6",
+  borderRight: "1px solid #eef2f7",
+  background: "#f6f8fb",
+  color: "#4e5968",
+  padding: "8px",
+  textAlign: "left",
+  fontSize: 12,
+  fontWeight: 700,
+};
+
+const componentMatrixRowHeaderStyle: CSSProperties = {
+  position: "sticky",
+  left: 0,
+  zIndex: 1,
+  minWidth: 120,
+  borderBottom: "1px solid #eef2f7",
+  borderRight: "1px solid #d8dde6",
+  background: "#ffffff",
+  color: "#171a20",
+  padding: "8px",
+  textAlign: "left",
+  verticalAlign: "middle",
+  fontSize: 12,
+};
+
+const componentMatrixCellStyle: CSSProperties = {
+  minWidth: 150,
+  borderBottom: "1px solid #eef2f7",
+  borderRight: "1px solid #eef2f7",
+  padding: 6,
+  verticalAlign: "middle",
+};
+
+const componentMatrixPreviewButtonStyle: CSSProperties = {
+  width: "100%",
+  minHeight: 82,
+  border: "1px solid #d8dde6",
+  borderRadius: 6,
+  background: "#ffffff",
+  display: "grid",
+  placeItems: "center",
+  padding: 8,
+  cursor: "pointer",
+};
+
+const componentMatrixPreviewButtonActiveStyle: CSSProperties = {
+  border: "1px solid #8fb3f4",
+  background: "#f3f7ff",
+};
+
+const componentMatrixPreviewClipStyle: CSSProperties = {
+  maxWidth: 180,
+  maxHeight: 110,
+  overflow: "hidden",
+  display: "grid",
+  placeItems: "center",
 };
 
 const previewControlRowStyle: CSSProperties = {
