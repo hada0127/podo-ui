@@ -261,7 +261,7 @@ export interface PodoEditorAppProps {
 }
 
 type EditorPanel = "tokens" | "components" | "canvas" | "export";
-type ComponentEditMode = "props" | "variants";
+type ComponentEditMode = "props" | "variants" | "tokens";
 
 interface ComponentMetaDraft {
   name: string;
@@ -412,6 +412,13 @@ export function PodoEditorApp({
   const selectedComponentVariantsKey = selectedComponentForSpec
     ? JSON.stringify(selectedComponentForSpec.variants)
     : "";
+  const selectedComponentTokenModel = useMemo(
+    () =>
+      selectedComponentForSpec
+        ? createComponentTokenEditorModel(tokenRecords, selectedComponentForSpec.id)
+        : createComponentTokenEditorModel(tokenRecords, ""),
+    [selectedComponentForSpec?.id, tokenRecords]
+  );
   const effectiveComponentPreviewSelections = useMemo(
     () =>
       selectedComponentForSpec
@@ -1365,7 +1372,7 @@ export function PodoEditorApp({
               })}
             </div>
             <div style={componentEditModeBarStyle}>
-              {(["props", "variants"] as const).map((mode) => (
+              {(["props", "variants", "tokens"] as const).map((mode) => (
                 <button
                   key={mode}
                   type="button"
@@ -1378,6 +1385,9 @@ export function PodoEditorApp({
                   {mode === "props" ? `Props (${selectedComponentForSpec.props.length})` : null}
                   {mode === "variants"
                     ? `Variants (${selectedComponentForSpec.variants.length})`
+                    : null}
+                  {mode === "tokens"
+                    ? `Tokens (${selectedComponentTokenModel.records.length})`
                     : null}
                 </button>
               ))}
@@ -1635,6 +1645,15 @@ export function PodoEditorApp({
                 </div>
               </div>
             ) : null}
+            {componentEditMode === "tokens"
+              ? renderComponentTokenEditor({
+                  model: selectedComponentTokenModel,
+                  selectedTokenKey,
+                  lookup: previewTokenLookup,
+                  onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
+                  onCommitValue: updateTokenMatrixCell,
+                })
+              : null}
             {componentDraftError ? <div style={errorBannerStyle}>{componentDraftError}</div> : null}
             <details style={disclosureStyle}>
               <summary style={summaryStyle}>Component JSON</summary>
@@ -1739,6 +1758,12 @@ export interface TypographyWorkspaceModel {
   styles: EditorTokenRecord[];
 }
 
+export interface ComponentTokenEditorModel {
+  componentId: string;
+  records: EditorTokenRecord[];
+  groups: Array<{ type: DesignToken["$type"]; records: EditorTokenRecord[] }>;
+}
+
 type TypographyTokenField =
   | "fontFamily"
   | "fontSize"
@@ -1752,6 +1777,7 @@ const typographyWorkspaceTypes = new Set<DesignToken["$type"]>([
   "fontWeight",
   "typography",
 ]);
+const componentLocalTokenTypes = new Set<DesignToken["$type"]>(["dimension", "number", "string"]);
 
 export function createTypographyWorkspaceModel(
   records: EditorTokenRecord[]
@@ -1776,6 +1802,40 @@ function isFontSizeTokenRecord(record: EditorTokenRecord): boolean {
   return (
     record.path.startsWith("font.size.") ||
     Boolean(roles?.includes("font") && roles.includes("size"))
+  );
+}
+
+export function createComponentTokenEditorModel(
+  records: EditorTokenRecord[],
+  componentId: string
+): ComponentTokenEditorModel {
+  const componentRecords = records.filter((record) =>
+    isComponentLocalEditableTokenRecord(record, componentId)
+  );
+  return {
+    componentId,
+    records: componentRecords,
+    groups: editorTokenTypes.flatMap((type) => {
+      const typedRecords = componentRecords.filter((record) => record.token.$type === type);
+      return typedRecords.length ? [{ type, records: typedRecords }] : [];
+    }),
+  };
+}
+
+function isComponentScopedTokenRecord(record: EditorTokenRecord, componentId?: string): boolean {
+  if (!record.path.startsWith("component.")) {
+    return false;
+  }
+  return componentId ? record.path.startsWith(`component.${componentId}.`) : true;
+}
+
+function isComponentLocalEditableTokenRecord(
+  record: EditorTokenRecord,
+  componentId?: string
+): boolean {
+  return (
+    isComponentScopedTokenRecord(record, componentId) &&
+    componentLocalTokenTypes.has(record.token.$type)
   );
 }
 
@@ -1821,7 +1881,10 @@ function shouldIncludeTokenInMatrix(
     return record.path.startsWith("color.") || record.path.startsWith("dark.color.");
   }
   if (type === "dimension") {
-    return !isFontSizeTokenRecord(record);
+    return !isFontSizeTokenRecord(record) && !isComponentLocalEditableTokenRecord(record);
+  }
+  if (type === "number" || type === "string") {
+    return !isComponentLocalEditableTokenRecord(record);
   }
   return true;
 }
@@ -1891,7 +1954,7 @@ function groupTokenRecordsByType(records: EditorTokenRecord[]): Array<{
       type === "typography"
         ? records.filter(isTypographyWorkspaceTokenRecord)
         : (buckets.get(type) ?? []).filter((record) =>
-            type === "dimension" ? !isFontSizeTokenRecord(record) : true
+            shouldIncludeTokenInGlobalTypeGroup(record, type)
           );
     return typedRecords.length
       ? [
@@ -1904,6 +1967,19 @@ function groupTokenRecordsByType(records: EditorTokenRecord[]): Array<{
         ]
       : [];
   });
+}
+
+function shouldIncludeTokenInGlobalTypeGroup(
+  record: EditorTokenRecord,
+  type: DesignToken["$type"]
+): boolean {
+  if (type === "dimension") {
+    return !isFontSizeTokenRecord(record) && !isComponentLocalEditableTokenRecord(record);
+  }
+  if (type === "number" || type === "string") {
+    return !isComponentLocalEditableTokenRecord(record);
+  }
+  return true;
 }
 
 function isTypographyWorkspaceTokenRecord(record: EditorTokenRecord): boolean {
@@ -2338,6 +2414,129 @@ function renderTypographyFieldInput(
       }}
     />
   );
+}
+
+function renderComponentTokenEditor(input: {
+  model: ComponentTokenEditorModel;
+  selectedTokenKey: string | undefined;
+  lookup: TokenLookup;
+  onSelect(record: EditorTokenRecord): void;
+  onCommitValue(record: EditorTokenRecord, valueText: string): void;
+}) {
+  return (
+    <div style={cardStyle}>
+      <div style={cardHeaderStyle}>
+        <div>
+          <strong>Component tokens</strong>
+          <p style={inlineHelpStyle}>
+            Edit local dimension and number values that belong to this component.
+          </p>
+        </div>
+      </div>
+      {input.model.groups.length ? (
+        <div style={componentTokenGroupListStyle}>
+          {input.model.groups.map((group) => (
+            <section key={group.type} style={componentTokenGroupStyle}>
+              <div style={componentTokenGroupHeaderStyle}>
+                <strong>{group.type}</strong>
+                <span>{group.records.length} tokens</span>
+              </div>
+              <div style={componentTokenTableScrollStyle}>
+                <table style={componentTokenTableStyle}>
+                  <thead>
+                    <tr>
+                      <th style={componentTokenHeaderCellStyle}>token</th>
+                      <th style={componentTokenHeaderCellStyle}>value</th>
+                      <th style={componentTokenHeaderCellStyle}>preview</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {group.records.map((record) => {
+                      const valueText = serializeEditorTokenValue(record.token.$value);
+                      const selected = input.selectedTokenKey === tokenRecordKey(record);
+                      return (
+                        <tr key={tokenRecordKey(record)}>
+                          <th style={componentTokenRowHeaderStyle}>
+                            <button
+                              type="button"
+                              style={{
+                                ...typographyTokenPathButtonStyle,
+                                ...(selected ? typographyTokenPathButtonActiveStyle : {}),
+                              }}
+                              onClick={() => input.onSelect(record)}
+                            >
+                              {componentTokenDisplayPath(record.path, input.model.componentId)}
+                            </button>
+                          </th>
+                          <td style={componentTokenCellStyle}>
+                            <input
+                              key={`${record.path}:${valueText}`}
+                              aria-label={`${record.path} value`}
+                              style={typographyInlineInputStyle}
+                              defaultValue={valueText}
+                              onFocus={() => input.onSelect(record)}
+                              onBlur={(event) => {
+                                if (event.currentTarget.value !== valueText) {
+                                  input.onCommitValue(record, event.currentTarget.value);
+                                }
+                              }}
+                              onKeyDown={(event) => {
+                                if (event.key === "Enter") {
+                                  event.currentTarget.blur();
+                                }
+                              }}
+                            />
+                          </td>
+                          <td style={componentTokenCellStyle}>
+                            {renderComponentTokenPreview(record, input.lookup)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <div style={emptyStatePanelStyle}>
+          No local dimension, number, or string tokens for this component.
+        </div>
+      )}
+    </div>
+  );
+}
+
+function componentTokenDisplayPath(path: string, componentId: string): string {
+  const prefix = `component.${componentId}.`;
+  return path.startsWith(prefix) ? path.slice(prefix.length) : path;
+}
+
+function renderComponentTokenPreview(record: EditorTokenRecord, lookup: TokenLookup) {
+  const value = resolveTokenValue(lookup, record.token.$value);
+  if (record.token.$type === "dimension") {
+    const cssValue = String(value);
+    return (
+      <div style={componentTokenPreviewInlineStyle}>
+        <span style={{ ...componentDimensionPreviewBarStyle, width: cssValue }} />
+        <code style={codeStyle}>{cssValue}</code>
+      </div>
+    );
+  }
+  if (record.token.$type === "number") {
+    const numeric = typeof value === "number" ? value : Number(value);
+    const ratio = Number.isFinite(numeric) ? Math.max(0, Math.min(1, numeric)) : 0;
+    return (
+      <div style={componentTokenPreviewInlineStyle}>
+        <span style={componentNumberPreviewTrackStyle}>
+          <span style={{ ...componentNumberPreviewFillStyle, width: `${ratio * 100}%` }} />
+        </span>
+        <code style={codeStyle}>{String(value)}</code>
+      </div>
+    );
+  }
+  return <code style={codeStyle}>{String(value)}</code>;
 }
 
 function renderTokenMatrixEditor(input: {
@@ -5088,7 +5287,24 @@ function tokenValueToFigmaColor(
   if (alias) {
     return alias;
   }
-  if (typeof value !== "string" || !/^#[0-9a-fA-F]{6,8}$/.test(value)) {
+  if (typeof value !== "string") {
+    return { r: 0, g: 0, b: 0, a: 1 };
+  }
+  if (value === "transparent") {
+    return { r: 0, g: 0, b: 0, a: 0 };
+  }
+  const rgba = value.match(
+    /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*(0|1|0?\.\d+))?\s*\)$/
+  );
+  if (rgba) {
+    return {
+      r: clampRgb(Number(rgba[1])) / 255,
+      g: clampRgb(Number(rgba[2])) / 255,
+      b: clampRgb(Number(rgba[3])) / 255,
+      a: rgba[4] === undefined ? 1 : clamp01(Number(rgba[4])),
+    };
+  }
+  if (!/^#[0-9a-fA-F]{6,8}$/.test(value)) {
     return { r: 0, g: 0, b: 0, a: 1 };
   }
   const hex = value.slice(1);
@@ -5114,6 +5330,10 @@ function tokenValueToFigmaValue(value: unknown, type: FigmaVariable["resolvedTyp
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
+}
+
+function clampRgb(value: number): number {
+  return Math.min(255, Math.max(0, value));
 }
 
 function isDesignTokenLike(value: unknown): value is DesignToken {
@@ -6015,9 +6235,6 @@ const previewPanelStyle: CSSProperties = {
 
 const componentPreviewPanelStyle: CSSProperties = {
   ...previewPanelStyle,
-  position: "sticky",
-  top: 12,
-  zIndex: 1,
 };
 
 const componentMatrixPanelStyle: CSSProperties = {
@@ -6111,6 +6328,117 @@ const componentMatrixPreviewClipStyle: CSSProperties = {
   overflow: "hidden",
   display: "grid",
   placeItems: "center",
+};
+
+const componentTokenGroupListStyle: CSSProperties = {
+  display: "grid",
+  gap: 12,
+};
+
+const componentTokenGroupStyle: CSSProperties = {
+  border: "1px solid #dde5ef",
+  borderRadius: 8,
+  background: "#fbfcfe",
+  display: "grid",
+  gap: 8,
+  padding: 10,
+};
+
+const componentTokenGroupHeaderStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  color: "#5d6775",
+  fontSize: 12,
+};
+
+const componentTokenTableScrollStyle: CSSProperties = {
+  overflow: "auto",
+  border: "1px solid #e0e7f0",
+  borderRadius: 6,
+  maxHeight: "min(48vh, 520px)",
+};
+
+const componentTokenTableStyle: CSSProperties = {
+  width: "100%",
+  minWidth: 720,
+  borderCollapse: "separate",
+  borderSpacing: 0,
+};
+
+const componentTokenHeaderCellStyle: CSSProperties = {
+  position: "sticky",
+  top: 0,
+  zIndex: 1,
+  borderBottom: "1px solid #d8e0ea",
+  borderRight: "1px solid #edf1f6",
+  background: "#f7f9fc",
+  color: "#4e5968",
+  padding: "8px",
+  textAlign: "left",
+  fontSize: 12,
+  fontWeight: 700,
+};
+
+const componentTokenRowHeaderStyle: CSSProperties = {
+  minWidth: 260,
+  maxWidth: 360,
+  borderBottom: "1px solid #edf1f6",
+  borderRight: "1px solid #d8e0ea",
+  background: "#ffffff",
+  padding: 6,
+  textAlign: "left",
+  verticalAlign: "middle",
+};
+
+const componentTokenCellStyle: CSSProperties = {
+  minWidth: 160,
+  borderBottom: "1px solid #edf1f6",
+  borderRight: "1px solid #edf1f6",
+  background: "#ffffff",
+  padding: 6,
+  verticalAlign: "middle",
+};
+
+const componentTokenPreviewInlineStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  minWidth: 0,
+};
+
+const componentDimensionPreviewBarStyle: CSSProperties = {
+  display: "block",
+  minWidth: 2,
+  maxWidth: 180,
+  height: 18,
+  border: "1px solid #8fb3f4",
+  background: "#eaf1ff",
+  borderRadius: 4,
+};
+
+const componentNumberPreviewTrackStyle: CSSProperties = {
+  width: 120,
+  height: 8,
+  borderRadius: 999,
+  background: "#e2e8f0",
+  overflow: "hidden",
+};
+
+const componentNumberPreviewFillStyle: CSSProperties = {
+  display: "block",
+  height: "100%",
+  borderRadius: 999,
+  background: "#5b7fd7",
+};
+
+const emptyStatePanelStyle: CSSProperties = {
+  border: "1px dashed #cbd5e1",
+  borderRadius: 8,
+  background: "#f8fafc",
+  padding: 14,
+  color: "#6b7280",
+  fontSize: 13,
 };
 
 const previewControlRowStyle: CSSProperties = {

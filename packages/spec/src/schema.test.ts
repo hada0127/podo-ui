@@ -37,6 +37,22 @@ describe("Podo spec schemas", () => {
     expect(validateTokenReferences(foundation)).toEqual([]);
   });
 
+  it("parses css color values used by legacy tokens", () => {
+    const document = parseTokenDocument({
+      schemaVersion: "2.0.0",
+      kind: "tokens",
+      category: "semantic",
+      tokens: {
+        color: {
+          overlay: { $type: "color", $value: "rgba(0, 0, 0, 0.09)" },
+          clear: { $type: "color", $value: "transparent" },
+        },
+      },
+    });
+
+    expect(document.tokens.color).toBeDefined();
+  });
+
   it("parses embedded font assets on font family tokens", () => {
     const document = parseTokenDocument({
       schemaVersion: "2.0.0",
@@ -115,7 +131,7 @@ describe("Podo spec schemas", () => {
           },
         },
       })
-    ).toThrow(/Color tokens must use a hex color or alias reference/);
+    ).toThrow(/Color tokens must use a color value or alias reference/);
 
     expect(() =>
       parseTokenDocument({
@@ -232,7 +248,7 @@ describe("Podo spec schemas", () => {
           },
         },
       })
-    ).toThrow(/Color tokens must use a hex color or alias reference/);
+    ).toThrow(/Color tokens must use a color value or alias reference/);
 
     expect(() =>
       parseComponentDocument({

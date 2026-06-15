@@ -464,18 +464,15 @@ interface ButtonStyleRefs {
   border: string;
 }
 
-function buttonToken(value: string, type: "color" | "string" = "color") {
-  return { $type: type, $value: value };
+function buttonToken(value: string) {
+  return { $type: "color" as const, $value: value };
 }
 
 function buttonStyleTokens(style: ButtonStyleRefs) {
   return {
-    background: buttonToken(
-      style.background,
-      style.background === "transparent" ? "string" : "color"
-    ),
+    background: buttonToken(style.background),
     color: buttonToken(style.color),
-    border: buttonToken(style.border, style.border === "transparent" ? "string" : "color"),
+    border: buttonToken(style.border),
   };
 }
 
@@ -495,7 +492,7 @@ function legacyButtonThemeTokens(theme: LegacyButtonTheme) {
         },
       ])
     ),
-    outline: buttonToken(`{color.${theme}.outline}`, "string"),
+    outline: buttonToken(`{color.${theme}.outline}`),
   };
 }
 
@@ -690,7 +687,7 @@ export const legacyTokenDocuments: TokenDocument[] = [
               Object.entries(states).map(([state, value]) => [
                 state,
                 {
-                  $type: value.startsWith("#") ? "color" : "string",
+                  $type: "color",
                   $value: value,
                   $description: `v1 --color-${name}${state === "base" ? "" : `-${state}`}`,
                   $extensions: {
@@ -712,7 +709,7 @@ export const legacyTokenDocuments: TokenDocument[] = [
               Object.entries(values).map(([name, value]) => [
                 name,
                 {
-                  $type: value.startsWith("#") ? "color" : "string",
+                  $type: "color",
                   $value: value,
                   $description: `v1 --color-${group === "border" && name === "base" ? "border" : `${group}-${name}`}`,
                   $extensions: {
@@ -797,7 +794,7 @@ export const legacyTokenDocuments: TokenDocument[] = [
                 Object.entries(states).map(([state, value]) => [
                   state,
                   {
-                    $type: value.startsWith("#") ? "color" : "string",
+                    $type: "color",
                     $value: value,
                     $description: `v1 dark --color-${name}${state === "base" ? "" : `-${state}`}`,
                     $extensions: {
@@ -819,7 +816,7 @@ export const legacyTokenDocuments: TokenDocument[] = [
                 Object.entries(values).map(([name, value]) => [
                   name,
                   {
-                    $type: value.startsWith("#") ? "color" : "string",
+                    $type: "color",
                     $value: value,
                     $description: `v1 dark --color-${group === "border" && name === "base" ? "border" : `${group}-${name}`}`,
                     $extensions: {

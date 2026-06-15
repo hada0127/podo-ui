@@ -21,6 +21,15 @@ const hexColorSchema = z
   .string()
   .regex(/^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/, "Use a hex color value.");
 
+const rgbaColorSchema = z
+  .string()
+  .regex(
+    /^rgba?\(\s*(?:\d{1,3}\s*,\s*){2}\d{1,3}(?:\s*,\s*(?:0|1|0?\.\d+))?\s*\)$/,
+    "Use an rgb() or rgba() color value."
+  );
+
+const colorValueSchema = z.union([hexColorSchema, rgbaColorSchema, z.literal("transparent")]);
+
 const cubicBezierValueSchema = z.tuple([
   z.number().min(0).max(1),
   z.number().min(0).max(1),
@@ -30,7 +39,7 @@ const cubicBezierValueSchema = z.tuple([
 
 const dimensionOrAliasSchema = z.union([unitValueSchema, aliasReferenceSchema]);
 
-const colorOrAliasSchema = z.union([hexColorSchema, aliasReferenceSchema]);
+const colorOrAliasSchema = z.union([colorValueSchema, aliasReferenceSchema]);
 
 export const borderValueSchema = z.object({
   color: colorOrAliasSchema,
@@ -172,15 +181,15 @@ export const designTokenSchema = z
     };
 
     if (token.$type === "color") {
-      if (!requireString("Color tokens must use a hex color or alias reference.")) {
+      if (!requireString("Color tokens must use a color value or alias reference.")) {
         return;
       }
 
-      if (!hexColorSchema.safeParse(token.$value).success) {
+      if (!colorValueSchema.safeParse(token.$value).success) {
         ctx.addIssue({
           code: "custom",
           path: ["$value"],
-          message: "Color tokens must use a hex color or alias reference.",
+          message: "Color tokens must use a color value or alias reference.",
         });
       }
       return;

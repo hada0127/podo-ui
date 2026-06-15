@@ -6,6 +6,7 @@ import {
   composeSlot,
   createComponentNode,
   createComponentSpecExportFile,
+  createComponentTokenEditorModel,
   createEmbeddedFontAsset,
   createThemedTokenLookup,
   createEditorState,
@@ -282,7 +283,8 @@ describe("@podo/editor", () => {
     expect(tokenPaths).toContain("component.button.disabled.border.border");
     expect(tokenPaths).toContain("component.button.loading.opacity");
     expect(tokenPaths).toContain("component.button.size.sm.height");
-    expect(tokenByPath.get("component.button.theme.primary.outline")?.$type).toBe("string");
+    expect(tokenByPath.get("component.button.theme.primary.outline")?.$type).toBe("color");
+    expect(tokenRecords.some((record) => record.token.$type === "string")).toBe(false);
     expect(tokenByPath.get("component.button.theme.default-deep.fill.active.color")?.$value).toBe(
       "{color.default-deep.pressed}"
     );
@@ -347,6 +349,26 @@ describe("@podo/editor", () => {
 
     const spacingMatrix = createTokenMatrix(flattenTokenDocuments(legacyTokenDocuments), "spacing");
     expect(spacingMatrix.rows.some((row) => row.label === "scale")).toBe(true);
+
+    const dimensionMatrix = createTokenMatrix(
+      flattenTokenDocuments(legacyTokenDocuments),
+      "dimension"
+    );
+    const numberMatrix = createTokenMatrix(flattenTokenDocuments(legacyTokenDocuments), "number");
+    const buttonTokenModel = createComponentTokenEditorModel(
+      flattenTokenDocuments(legacyTokenDocuments),
+      "button"
+    );
+    expect(dimensionMatrix.rows.some((row) => row.id.startsWith("component.button"))).toBe(false);
+    expect(numberMatrix.rows.some((row) => row.id.startsWith("component.button"))).toBe(false);
+    expect(buttonTokenModel.records.map((record) => record.path)).toEqual(
+      expect.arrayContaining([
+        "component.button.borderWidth",
+        "component.button.focusWidth",
+        "component.button.size.sm.height",
+        "component.button.loading.opacity",
+      ])
+    );
   });
 
   it("builds typography workspace groups and preserves attached font extensions", () => {
