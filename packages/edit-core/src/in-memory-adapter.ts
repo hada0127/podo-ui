@@ -66,7 +66,10 @@ export function createInMemoryAdapter(init: InMemoryAdapterInit = {}): PodoSaveA
       tokenDocuments = deleteTokenFromDocuments(tokenDocuments, documentIndex, path);
       return { ok: true, path };
     },
-    async saveComponent(component: ComponentDocument, options: SaveOptions = {}): Promise<SaveResult> {
+    async saveComponent(
+      component: ComponentDocument,
+      options: SaveOptions = {}
+    ): Promise<SaveResult> {
       if (options.dryRun) {
         return { ok: true, dryRun: true, path: `${component.id}.component.json` };
       }

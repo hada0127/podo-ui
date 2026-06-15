@@ -138,10 +138,17 @@ export function createRepoFsAdapter(options: RepoFsAdapterOptions): PodoSaveAdap
       });
       return writeJson(filePath, next[0], Boolean(input.dryRun));
     },
-    async saveTokenDocuments(documents: TokenDocument[], opts: SaveOptions = {}): Promise<SaveResult> {
+    async saveTokenDocuments(
+      documents: TokenDocument[],
+      opts: SaveOptions = {}
+    ): Promise<SaveResult> {
       for (let index = 0; index < documents.length; index += 1) {
         const name = documents.length === 1 ? tokensFileName : `editor-${index}.tokens.json`;
-        const result = await writeJson(join(options.tokensDir, name), documents[index], Boolean(opts.dryRun));
+        const result = await writeJson(
+          join(options.tokensDir, name),
+          documents[index],
+          Boolean(opts.dryRun)
+        );
         if (!result.ok) {
           return result;
         }

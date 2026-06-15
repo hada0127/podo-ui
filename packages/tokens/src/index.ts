@@ -499,4 +499,3 @@ function toReactNativeValue(value: unknown): unknown {
 
   return value;
 }
-

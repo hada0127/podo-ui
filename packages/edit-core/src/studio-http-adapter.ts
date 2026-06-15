@@ -8,7 +8,10 @@ import {
   type SaveTokenInput,
 } from "./adapter.js";
 
-type FetchLike = (input: string, init?: RequestInit) => Promise<{
+type FetchLike = (
+  input: string,
+  init?: RequestInit
+) => Promise<{
   ok: boolean;
   status: number;
   json(): Promise<unknown>;
@@ -49,7 +52,7 @@ interface ApiResult {
  */
 export function createStudioHttpAdapter(options: StudioHttpAdapterOptions = {}): PodoSaveAdapter {
   const baseUrl = options.baseUrl ?? "";
-  const doFetch: FetchLike = options.fetch ?? ((globalThis.fetch as unknown) as FetchLike);
+  const doFetch: FetchLike = options.fetch ?? (globalThis.fetch as unknown as FetchLike);
   const capabilities = options.capabilities ?? DEFAULT_CAPABILITIES;
 
   async function request(path: string, init?: RequestInit): Promise<ApiResult> {

@@ -151,7 +151,9 @@ describe("createStudioHttpAdapter", () => {
     const calls: RecordedCall[] = [];
     const fetch = async (url: string, init?: RequestInit) => {
       const method = init?.method ?? "GET";
-      const body = init?.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : undefined;
+      const body = init?.body
+        ? (JSON.parse(init.body as string) as Record<string, unknown>)
+        : undefined;
       calls.push({ url, method, body });
       let payload: unknown = { ok: true, path: "written" };
       if (url.includes("/api/context")) {

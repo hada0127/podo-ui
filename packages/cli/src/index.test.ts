@@ -166,7 +166,12 @@ describe("@podo/cli", () => {
             type: "layout",
             layout: { mode: "grid", gap: "{spacing.scale-2}", columns: 12 },
             children: [
-              { type: "component-instance", id: "cta", component: "button", props: { variant: "solid" } },
+              {
+                type: "component-instance",
+                id: "cta",
+                component: "button",
+                props: { variant: "solid" },
+              },
             ],
           },
         },

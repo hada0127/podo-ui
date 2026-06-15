@@ -44,28 +44,28 @@
 
 ### 2.1 `@podo/editor` (React + tldraw, `index.tsx` ~6800 LOC, 단일 파일)
 
-| 문제 | 위치 | 상세 |
-|---|---|---|
-| **`.podo` 영속화 배선 없음** | `index.tsx:256-257` (`onSpecsChange`/`onStateChange`), 저장 함수들 | `saveTokenDraft`, `saveComponentMetaDraft`, `savePropDraft`, `saveVariantDraft`가 모두 React state만 변경(`commitState`/`commitTokenDocuments`). `.podo`로의 POST/fetch가 없다. export 패널은 read-only textarea. **새로고침하면 편집이 사라진다.** |
-| **chrome 전체가 인라인 `CSSProperties`** | `index.tsx:813-1735`, `5343~`, `6764-6800` | `topBarStyle`, `tokenTypeButtonStyle`, `inputStyle` 등 raw hex(`#7c3aed` 등)·px·monospace 하드코딩. **자기가 편집하는 디자인 시스템을 정작 자신은 쓰지 않는다(dogfooding 부재).** |
-| **studio와 공유 코드 0** | `index.tsx` vs `studio/src/index.ts` | 토큰 매트릭스·타이포 워크스페이스·상세 draft·컴포넌트 에디터가 studio의 vanilla-JS 렌더링과 전혀 공유되지 않음. 같은 일을 두 번 구현. |
-| **토큰 매트릭스: 강점 있으나 밀도/성능 문제** | `createTokenMatrix` `index.tsx:1842`, 렌더러 `2542~` | landing/dashboard × light/dark 교차 뷰는 좋은 아이디어. 그러나 (a) color/dimension/component 포함 규칙 하드코딩, (b) 셀이 수백 개 텍스트필드를 직접 렌더 → 성능 부담, (c) 복잡 값은 raw JSON 폴백, (d) origin/diff 설명 약함. |
-| **상세 에디터 ↔ 매트릭스 셀 값 표현 분리** | `1094-1202` vs `2604-2691` | 상세에서 편집·저장해도 매트릭스 셀 `defaultValue`가 re-focus 전까지 갱신 안 됨(stale 버그). |
-| **타입 전환 시 미저장 draft 무경고 폐기** | `selectTokenType` `592-607` | dirty 경고 없이 빈 draft로 교체. |
-| **암묵적 blur 커밋** | `2646-2652` | onBlur/Enter→즉시 커밋. 리뷰 전 커밋, 무효값 에러는 포커스 이동 후 표시. |
-| **variant 토큰 바인딩이 raw JSON** | `variantDraft.tokensText` `1604-1617` | picker/자동완성 없음. `parseVariantTokensInput`은 JSON 형태만 검증, 참조 경로 존재는 검증 안 함. |
-| **레거시 프리뷰 렌더러 ~17–19개 하드코딩** | `legacyComponentPreviewIds` `65-85`, `3090~` | 컴포넌트마다 커스텀 렌더러 필요. 비레거시는 토큰 바인딩/state 프리뷰 없는 폴백. |
-| **캔버스가 프리뷰가 아니라 다이어그램** | `PodoComponentShapeUtil` `179-246` | shape가 "N props, N slots" 메타데이터만 표시, 실제 렌더된 컴포넌트가 아님. |
-| **undo/redo·변경 이력 없음** | 모든 `commit*` 경로 | React state 직접 커밋, 되돌리기 불가. |
+| 문제                                          | 위치                                                               | 상세                                                                                                                                                                                                                                                |
+| --------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`.podo` 영속화 배선 없음**                  | `index.tsx:256-257` (`onSpecsChange`/`onStateChange`), 저장 함수들 | `saveTokenDraft`, `saveComponentMetaDraft`, `savePropDraft`, `saveVariantDraft`가 모두 React state만 변경(`commitState`/`commitTokenDocuments`). `.podo`로의 POST/fetch가 없다. export 패널은 read-only textarea. **새로고침하면 편집이 사라진다.** |
+| **chrome 전체가 인라인 `CSSProperties`**      | `index.tsx:813-1735`, `5343~`, `6764-6800`                         | `topBarStyle`, `tokenTypeButtonStyle`, `inputStyle` 등 raw hex(`#7c3aed` 등)·px·monospace 하드코딩. **자기가 편집하는 디자인 시스템을 정작 자신은 쓰지 않는다(dogfooding 부재).**                                                                   |
+| **studio와 공유 코드 0**                      | `index.tsx` vs `studio/src/index.ts`                               | 토큰 매트릭스·타이포 워크스페이스·상세 draft·컴포넌트 에디터가 studio의 vanilla-JS 렌더링과 전혀 공유되지 않음. 같은 일을 두 번 구현.                                                                                                               |
+| **토큰 매트릭스: 강점 있으나 밀도/성능 문제** | `createTokenMatrix` `index.tsx:1842`, 렌더러 `2542~`               | landing/dashboard × light/dark 교차 뷰는 좋은 아이디어. 그러나 (a) color/dimension/component 포함 규칙 하드코딩, (b) 셀이 수백 개 텍스트필드를 직접 렌더 → 성능 부담, (c) 복잡 값은 raw JSON 폴백, (d) origin/diff 설명 약함.                       |
+| **상세 에디터 ↔ 매트릭스 셀 값 표현 분리**    | `1094-1202` vs `2604-2691`                                         | 상세에서 편집·저장해도 매트릭스 셀 `defaultValue`가 re-focus 전까지 갱신 안 됨(stale 버그).                                                                                                                                                         |
+| **타입 전환 시 미저장 draft 무경고 폐기**     | `selectTokenType` `592-607`                                        | dirty 경고 없이 빈 draft로 교체.                                                                                                                                                                                                                    |
+| **암묵적 blur 커밋**                          | `2646-2652`                                                        | onBlur/Enter→즉시 커밋. 리뷰 전 커밋, 무효값 에러는 포커스 이동 후 표시.                                                                                                                                                                            |
+| **variant 토큰 바인딩이 raw JSON**            | `variantDraft.tokensText` `1604-1617`                              | picker/자동완성 없음. `parseVariantTokensInput`은 JSON 형태만 검증, 참조 경로 존재는 검증 안 함.                                                                                                                                                    |
+| **레거시 프리뷰 렌더러 ~17–19개 하드코딩**    | `legacyComponentPreviewIds` `65-85`, `3090~`                       | 컴포넌트마다 커스텀 렌더러 필요. 비레거시는 토큰 바인딩/state 프리뷰 없는 폴백.                                                                                                                                                                     |
+| **캔버스가 프리뷰가 아니라 다이어그램**       | `PodoComponentShapeUtil` `179-246`                                 | shape가 "N props, N slots" 메타데이터만 표시, 실제 렌더된 컴포넌트가 아님.                                                                                                                                                                          |
+| **undo/redo·변경 이력 없음**                  | 모든 `commit*` 경로                                                | React state 직접 커밋, 되돌리기 불가.                                                                                                                                                                                                               |
 
 ### 2.2 `@podo/studio` (Hono + vanilla JS 문자열 템플릿, `index.ts` ~1850 LOC)
 
-| 문제 | 위치 | 상세 |
-|---|---|---|
-| **문자열 템플릿 + `innerHTML` 렌더** | `renderStudioHtml` `653`, `render()` `775` | 상태 변화 시 `innerHTML` 통째 교체. 컴포넌트화/타입 안전성/상호작용성 낮음. 인라인 CSS 76줄(`660-726`). |
-| **편집 모델이 대부분 raw JSON/text input** | `renderTokens` `815~`, `renderComponents` `830~` | 시각적 편집·프리뷰 빈약. |
-| **컴포넌트 생성만 가능, 기존 편집 UI 없음** | `POST /api/components/local` `327` | gnb/lng 템플릿 생성만. 기존 컴포넌트 속성 수정 화면 없음. |
-| **(긍정) 진짜 영속화 배선은 여기 있다** | `POST /api/tokens/override` `230`, `writeTokenOverride` `1189`, `PUT /api/files` `194` | studio만이 실제로 `.podo`에 쓴다. **풍부한 UI(editor) ↔ 영속화(studio)가 정확히 반대로 갈라져 있는 것이 핵심 모순.** |
+| 문제                                        | 위치                                                                                   | 상세                                                                                                                 |
+| ------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **문자열 템플릿 + `innerHTML` 렌더**        | `renderStudioHtml` `653`, `render()` `775`                                             | 상태 변화 시 `innerHTML` 통째 교체. 컴포넌트화/타입 안전성/상호작용성 낮음. 인라인 CSS 76줄(`660-726`).              |
+| **편집 모델이 대부분 raw JSON/text input**  | `renderTokens` `815~`, `renderComponents` `830~`                                       | 시각적 편집·프리뷰 빈약.                                                                                             |
+| **컴포넌트 생성만 가능, 기존 편집 UI 없음** | `POST /api/components/local` `327`                                                     | gnb/lng 템플릿 생성만. 기존 컴포넌트 속성 수정 화면 없음.                                                            |
+| **(긍정) 진짜 영속화 배선은 여기 있다**     | `POST /api/tokens/override` `230`, `writeTokenOverride` `1189`, `PUT /api/files` `194` | studio만이 실제로 `.podo`에 쓴다. **풍부한 UI(editor) ↔ 영속화(studio)가 정확히 반대로 갈라져 있는 것이 핵심 모순.** |
 
 ### 2.3 공통 구조 문제 (세 엔진 공통 지적)
 
@@ -89,27 +89,32 @@
      → resolveTokenDocument(tokens:131) : alias 해석
      → emit tokens.css/.ts/.native.ts/.json (cli:284-294)
 ```
+
 테스트도 존재(`tokens/src/index.test.ts`). **결론: 에디터가 죽은 콜백 대신 이 라우트를 부르기만 하면 끝.** 어댑터 도입으로 닫힌다.
 
 ### 3.2 컴포넌트 — ⚠️ 파일은 흐르나, codegen이 spec을 안 읽는다 (가장 중요한 갭)
 
 **파일 파이프라인은 연결됨:**
+
 ```
 편집 → PUT /api/files (studio:194, parseComponentDocument 검증 + resolvePodoPath 경로탈출 방지)
         또는 POST /api/components/local → .podo/components/local/{id}.component.json (studio:339)
 빌드 → loadBuildComponents(cli:761) : defaultComponentDocuments + readJsonFiles(".podo/components") [재귀, id 기준 override]
      → generateComponentFiles(codegen:48)
 ```
+
 `readJsonFiles`가 재귀라 `.podo/components/local/*`도 정상 픽업된다(검증). 여기까진 동작.
 
 **그러나 codegen이 spec-driven이 아니다 (Codex 발견 + 직접 검증):**
+
 ```ts
 // packages/codegen/src/index.ts — componentTemplates
-web:    `export const ${exportName}ElementName = "podo-${id}"; export function define...`
-react:  `export { ${exportName} } from "@podo/react";`   // 하드코딩 런타임 재export
-hono:   `export { ${exportName} } from "@podo/hono";`
-native: `export { ${exportName} } from "@podo/native";`
+web: `export const ${exportName}ElementName = "podo-${id}"; export function define...`;
+react: `export { ${exportName} } from "@podo/react";`; // 하드코딩 런타임 재export
+hono: `export { ${exportName} } from "@podo/hono";`;
+native: `export { ${exportName} } from "@podo/native";`;
 ```
+
 `grep -E "variant|state|tokens|props" codegen/src/index.ts` → **0건**. 즉 **컴포넌트 spec의 variant/state/token-binding/anatomy를 코드 생성에 전혀 쓰지 않는다.** 런타임 컴포넌트는 `@podo/web`(`web:59`)·`@podo/react`(`react:31`)에 **하드코딩**되어 있다.
 
 > **결론: 컴포넌트 spec 편집은 "메타데이터/존재" 수준까지만 빌드에 반영되고, 실제 스타일·동작(variant/state/토큰 바인딩)은 반영되지 않는다.** 사용자 요구사항을 진짜로 만족시키려면 **spec → 런타임 코드/스타일을 생성하는 spec-driven codegen**(또는 런타임이 generated `tokens.css`의 컴포넌트 토큰을 소비하도록 재구성)이 필요하다. 이것이 P0/P1의 필수 항목이다. (단기 절충: 미지원 편집을 "metadata-only, 빌드 미반영"으로 UI에 명시.)
@@ -125,23 +130,27 @@ native: `export { ${exportName} } from "@podo/native";`
 세 엔진이 조사한 실제 도구 → JSON-spec-first 모델 매핑.
 
 ### 4.1 토큰 에디터
+
 - **Tokens Studio (Figma)** — **타입 reference picker**(호환 `$type` 토큰 드롭다운이 `{dot.path}` 기록, raw 값 거의 안 침) + `$themes.json`/`$metadata.json` **theme resolver manifest**(set별 `source`=해석전용/`enabled`=해석+방출, 순서 캐스케이드). → picker는 `collectTokenPaths`/`flattenTokenDocuments`로 채우고 `aliasReferenceSchema`로 검증. `source`/`enabled` + 순서는 Podo의 package→project 병합 순서에 그대로 대응.
 - **Style Dictionary v4 (DTCG)** — 편집(DTCG JSON 변경)과 빌드(transitive resolve → 플랫폼별 방출) 분리, theme 순열마다 명명된 독립 출력. → `buildProject()`가 이미 SD 형태. 업그레이드 2개: tier 간 **transitive 해석** 보장(기존 `validateTokenReferences`의 alias 그래프/순환 검출 재사용), 순열별 명명 출력.
 - **Specify** — validate→build→publish, **빌드 전 검증이 필수 게이트**. → `parseTokenDocument`/`parseComponentDocument` + `PODO_SCHEMA_VERSION`이 house 포맷. 방출·`.podo` 기록 전에 항상 게이트.
 - **Supernova** — foundation + 브랜드별 override 레이어. → package-default tier + `.podo` project tier와 구조 동일. DTCG를 interop 출력 형태로 유지.
 
 ### 4.2 컴포넌트 플레이그라운드
+
 - **Storybook 8 (args/controls/argTypes)** — prop 타입에서 컨트롤 자동 추론 + 라이브 프리뷰. → `propTypeSchema`의 discriminated `kind`로 인스펙터 위젯 자동 생성(boolean→switch, number{min,max,step}→slider, enum→select…). 손으로 짠 `savePropDraft` 폼 대체.
 - **Chromatic story modes** — 명명 모드 스택. → **variant × state × theme** 교차 매트릭스(`componentVariantSchema`+`componentStateSchema`). 매트릭스를 프리뷰가 아닌 **편집 표면**으로.
 - **Radix ThemePanel / shadcn theming** — 유한한 토큰 knob이 전체를 재테마, **raw 값 없는 토큰 바인딩 picker**. → `variant.tokens`/`state.tokens` alias 맵 + resolved `tokens.css`.
 
 ### 4.3 DS 플랫폼
+
 - **Knapsack** — 하나의 워크스페이스/레지스트리, 여러 뷰. **페이지 구성을 같은 프로덕션 컴포넌트 위에** 얹음(별도 도구 아님). "보는 것이 곧 배포되는 것".
 - **Supernova / Zeroheight** — repo-as-source-of-truth, CI 동기화, **거버넌스를 상시 표면**(Component Tracker, Missing Elements). repo tier 편집은 **PR로** 영속화(plan.md Phase 8과 일치).
 - **Backlight (반면교사)** — 올인원 클라우드 IDE, **2025-06 종료**. 교훈: Podo 에디터는 **로컬·의존성 가벼운 JSON 프로젝션**으로 유지, Figma 대체물이 되려 하지 말 것.
 - 매핑: editor+studio를 하나의 `@podo/spec` 레지스트리 위 단일 엔진으로 통합. `.podo/config.json`이 Podo의 `knapsack.config.js`. 검증을 상시 노출.
 
 ### 4.4 페이지 빌더 (컨텍스트 B 페이지 디자인용)
+
 - **Builder.io** — page = 재귀 `blocks`, `component.name + options` 간접화, 3-breakpoint `responsiveStyles`.
 - **Plasmic** — **page와 component가 discriminator로 구분되는 같은 doc 타입**, `tplTree`(TplTag/TplComponent/TplSlot), `vsettings`=variant/breakpoint별 override 레이어 목록.
 - **TeleportHQ (UIDL)** — 프레임워크 무관 **discriminated-union 노드 트리**(`element|component|static|dynamic|conditional|repeat|slot`), `dynamic.referenceType`에 `token` 케이스.
@@ -150,6 +159,7 @@ native: `export { ${exportName} } from "@podo/native";`
 - 매핑: `pageNodeSchema = z.discriminatedUnion('type', [...])`; 컴포넌트 인스턴스는 `componentDocumentSchema.id` 참조, props는 `componentPropSchema[]`로 검증; **모든 스타일 값 = `aliasReferenceSchema`(토큰 구동, raw hex/px 금지)**; 반응형=`appliesWhen` 스택 override; 레이아웃=토큰 참조 gap/padding의 flex/grid.
 
 ### 4.5 캔버스 / 아키텍처
+
 - **tldraw SDK v5** — `ShapeUtil`(geometry + `component()` React 렌더 + resize)는 공간 레이아웃에 적합. `PodoComponentShapeUtil`(`index.tsx:179`)이 이미 `declare module "tldraw"` augmentation 사용. **store snapshot을 source of truth로 영속화하지 말 것** — page document만 어댑터로 저장, 세션(카메라/선택)은 `persistenceKey`로 로컬.
 - **Ports & Adapters (Hexagonal)** — 도메인 코어는 아무것도 의존 안 함, outbound `SaveAdapter` 포트 하나, composition root가 어댑터 연결. 현재의 느슨한 `onSpecsChange`/`onStateChange`를 형식화.
 - **반응형 도메인 store (tldraw 아님)** — `@podo/spec` 문서 위 정규화 in-memory 모델 + `useSyncExternalStore`. 흩어진 `useState`/`useRef`와 `isApplyingStateToTldrawRef` 단방향 동기화 핵(`index.tsx:367,504`) 대체. **토큰/컴포넌트 문서는 tldraw store에 두지 말 것.**
@@ -182,6 +192,7 @@ native: `export { ${exportName} } from "@podo/native";`
 ```
 
 ### 5.1 `@podo/edit-core` (유일하게 반드시 필요한 신규 패키지)
+
 - 호스트 중립. `@podo/spec`(+ resolve/merge 재사용 위해 `@podo/tokens`)만 의존. **React/`fs`/`fetch` 없음.**
 - **도메인 store** — `{ tokenDocuments, components, pages?, iconManifest, origins }`를 `parseTokenDocument`/`parseComponentDocument`로 구축. headless라 CLI dry-run/테스트에서도 동작.
 - **mutation 계층** — `spec-editing.ts`의 이미 순수한 헬퍼들(`moveTokenInDocuments`, `upsertTokenInDocuments`, `deleteTokenFromDocuments`, `upsertComponentProp`/`Variant`, `updateComponentMeta`, `parseEditorTokenValue`/`serializeEditorTokenValue`, `parseVariantTokensInput`, `editorTokenTypes` …)을 **그대로 승격**. 전환기엔 `spec-editing.ts`에 re-export shim 유지(순수성 검증됨 → 기계적 이동).
@@ -190,35 +201,39 @@ native: `export { ${exportName} } from "@podo/native";`
 - **SaveAdapter 포트:**
   ```ts
   interface PodoSaveAdapter {
-    loadContext(): Promise<EditContext>
-    saveToken(input: { path; type; value; dryRun?; force? }): Promise<Result>
-    saveComponent(doc: ComponentDocument, opts): Promise<Result>
-    savePage?(doc: PageDocument, opts): Promise<Result>   // 컨텍스트 B만
-    validate(): Promise<ValidationIssue[]>
-    build?(): Promise<BuildPlan>
+    loadContext(): Promise<EditContext>;
+    saveToken(input: { path; type; value; dryRun?; force? }): Promise<Result>;
+    saveComponent(doc: ComponentDocument, opts): Promise<Result>;
+    savePage?(doc: PageDocument, opts): Promise<Result>; // 컨텍스트 B만
+    validate(): Promise<ValidationIssue[]>;
+    build?(): Promise<BuildPlan>;
   }
   interface EditorCapabilities {
-    pageDesign: boolean
-    writeMode: 'repo' | 'overrides'
-    tldrawLicenseKey?: string
+    pageDesign: boolean;
+    writeMode: "repo" | "overrides";
+    tldrawLicenseKey?: string;
   }
   ```
 
 ### 5.2 React UI (두 안 중 택1, 코어가 있으면 가역적)
+
 - **(a) `@podo/editor` 경량 리팩터(Pragmatic, 권장 시작점)** — `index.tsx` 유지, 헬퍼를 `@podo/edit-core`에서 import, 콜백을 어댑터 prop으로 교체, 캔버스 gating. blast radius 최소.
 - **(b) 새 `@podo/edit-ui` 셸(Clean)** — store 바인딩으로 패널 재구축. 상한 높지만 패리티 리스크 큼. → 코어 존재 후 결정해도 늦지 않음(저위험).
 - **tldraw 격리** — 캔버스를 별도 **지연 import 청크 `@podo/editor-canvas`**로 분리, `capabilities.pageDesign`일 때만 로드. **컨텍스트 A와 모든 토큰/컴포넌트 편집은 tldraw 0 바이트.**
 
 ### 5.3 두 얇은 호스트
+
 - **컨텍스트 A (repo dev app)** — `RepoFsAdapter`가 `packages/tokens`+`packages/*/spec`에 기록. `caps {pageDesign:false, write:'repo'}`. AGENTS.md대로 **dry-run 필수**, plan.md Phase 8대로 궁극적으로 GitHub-Action PR 흐름(어댑터 뒤 격리 → PR 어댑터로 교체는 한 파일).
 - **컨텍스트 B (`podo ui`, `@podo/studio`)** — Hono 서버와 `/api/*` 라우트를 `StudioHttpAdapter` 백엔드로 유지, 프리빌트 React 번들을 `serveStatic`+SPA fallback으로 서빙. `caps {pageDesign:true, write:'overrides', tldrawLicenseKey: config.editor?.tldrawLicenseKey}`. **React 번들이 검증된 패리티에 도달하기 전엔 `renderStudioHtml()`을 플래그 뒤에 유지.**
 
 ### 5.4 의존 방향 (비순환)
+
 `@podo/spec ← @podo/tokens ← @podo/edit-core ← (UI) ← {editor-canvas | studio | dev-app}`. 순환 없음.
 
 ---
 
 ## 6. 토큰 편집 모델
+
 - **DTCG 일관.** store는 `TokenDocument[]` + origin/tier(`package`/`project`).
 - **타입 reference picker가 1차 값 입력 컨트롤(핵심).** 모든 매트릭스 셀/상세 필드 기본값이 "호환 `$type`의 기존 토큰 선택" → `{dot.path}` alias 기록(`aliasReferenceSchema` 검증), raw 입력은 폴백. `collectTokenPaths`/`flattenTokenDocuments`를 `$type`로 필터해 채움. **이것으로 컨텍스트 A/B 토큰 편집이 저장대상만 빼고 동일.**
 - **단일 검증 커밋 경로.** UI가 `UpsertToken`/`MoveToken` 디스패치 → 코어 reducer → validation gate(missing-ref/circular) → 통과 시 커밋 + 역명령 push → `adapter.saveToken(...)`. stale 셀, blur 암묵 커밋, 타입전환 draft 손실 결함을 구조적으로 해결.
@@ -228,6 +243,7 @@ native: `export { ${exportName} } from "@podo/native";`
 ---
 
 ## 7. 컴포넌트 속성 편집 모델
+
 - **스키마 구동 인스펙터(Framer Property Controls 공짜).** prop 위젯을 `propTypeSchema`의 discriminated `kind`로 디스패치. 수동 `savePropDraft` 폼 대체, `componentPropSchema`로 커밋 전 검증.
 - **variant·state를 순열 매트릭스로(Chromatic modes).** variant 축 × 고정 `componentStateSchema` enum(hover/active/focusVisible/disabled/loading/invalid/selected/open/checked) × theme. 매트릭스를 **편집 표면**으로(현재 `renderComponentPreviewMatrix` `2990-3071`은 선택만).
 - **토큰 바인딩 picker(raw JSON 아님).** `variant.tokens` textarea(`1604-1617`)를 타입 picker로. 바인딩은 이미 `z.record(string, aliasReferenceSchema)` 타입. `validateComponentTokenBindings`로 **편집 시점**에 검증.
@@ -257,13 +273,14 @@ native: `export { ${exportName} } from "@podo/native";`
 
 ## 9. 영속화 + 빌드 반영 배선 (정확한 함수 인용)
 
-| 영역 | 쓰기 | 로드/병합 | 출력 | 현재 상태 |
-|---|---|---|---|---|
-| 토큰 | `POST /api/tokens/override`→`writeTokenOverride`(studio:230,1189)→`.podo/themes/studio-overrides.tokens.json` | `loadBuildTokenSources`(cli:737)→`mergeTokenDocuments`(tokens:90)→`resolveTokenDocument`(tokens:131) | `tokens.css/.ts/.native.ts/.json`(cli:284) | ✅ 동작. 에디터는 라우트만 호출하면 됨 |
-| 컴포넌트 | `PUT /api/files`(studio:194, 검증+경로보호) / `POST /api/components/local`(studio:327) | `loadBuildComponents`(cli:761, 재귀 id override) | `generateComponentFiles`(codegen:48) | ⚠️ 파일은 흐르나 **codegen 비 spec-driven** → 의미 반영 안 됨(§3.2) |
-| 페이지 | (신규) `POST /api/pages`→`.podo/pages/{id}.page.json` | (신규) `loadBuildPages` | (신규) page codegen | ❌ 전부 신규 |
+| 영역     | 쓰기                                                                                                          | 로드/병합                                                                                            | 출력                                       | 현재 상태                                                           |
+| -------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------- |
+| 토큰     | `POST /api/tokens/override`→`writeTokenOverride`(studio:230,1189)→`.podo/themes/studio-overrides.tokens.json` | `loadBuildTokenSources`(cli:737)→`mergeTokenDocuments`(tokens:90)→`resolveTokenDocument`(tokens:131) | `tokens.css/.ts/.native.ts/.json`(cli:284) | ✅ 동작. 에디터는 라우트만 호출하면 됨                              |
+| 컴포넌트 | `PUT /api/files`(studio:194, 검증+경로보호) / `POST /api/components/local`(studio:327)                        | `loadBuildComponents`(cli:761, 재귀 id override)                                                     | `generateComponentFiles`(codegen:48)       | ⚠️ 파일은 흐르나 **codegen 비 spec-driven** → 의미 반영 안 됨(§3.2) |
+| 페이지   | (신규) `POST /api/pages`→`.podo/pages/{id}.page.json`                                                         | (신규) `loadBuildPages`                                                                              | (신규) page codegen                        | ❌ 전부 신규                                                        |
 
 **해야 할 일:**
+
 1. (토큰) 에디터의 죽은 `onSpecsChange`를 `StudioHttpAdapter.saveToken`으로 교체.
 2. (컴포넌트) **spec-driven codegen** — `generateComponentFiles`가 variant/state/token-binding/anatomy를 읽어 실제 코드·스타일을 생성하도록(또는 런타임이 generated 컴포넌트 토큰 CSS를 소비). 그 전까지 미지원 편집은 UI에서 metadata-only 표시.
 3. (공통) **studio 기본 spec과 CLI 기본 spec 통합**(`studioDefaultTokens`/`studioDefaultComponents` ↔ `defaultTokenDocument`/`defaultComponentDocuments`) — preview/build 불일치 제거.
@@ -274,6 +291,7 @@ native: `export { ${exportName} } from "@podo/native";`
 ---
 
 ## 10. Dogfooding (에디터의 자가 적용)
+
 - 인라인 `CSSProperties` chrome(`index.tsx:813-1735`)과 studio 인라인 CSS(`studio:660-726`)를 **Podo 자체 토큰/컴포넌트로 교체**("보는 것이 곧 배포" — Knapsack).
 - 작은 `editor-base.tokens.json`(패널/버튼/입력/테이블/탭용 color/surface/border/spacing/radius/typography)을 **빌드와 동일한** `resolveTokenDocument`+`emitCssVariables` 경로로 통과 → `editor-chrome.css` 생성, 셸이 `var(--podo-…)` 소비.
 - 가장 반복되는 primitive(button/input/panel/table row/tab)를 `@podo/web`/`@podo/react`로 재구축.
@@ -285,6 +303,7 @@ native: `export { ${exportName} } from "@podo/native";`
 ## 11. 우선순위 로드맵
 
 ### P0 — 통합 + 영속화 (사용자 1차 목표 직결)
+
 1. **`@podo/edit-core` 추출.** 순수 `spec-editing.ts` 이동(re-export shim 유지). 동작 무변경. 검증 mutation 파이프라인 headless 단위 테스트 추가.
 2. **store + validation gate** 구축(커밋 전 spec 파서/검증 재실행). 가능하면 command bus + undo/redo 동반.
 3. **`SaveAdapter` 포트 + `capabilities` 도입**, `onSpecsChange`/`onStateChange`(`index.tsx:256-260`) 대체. `dev-app.tsx` 유지용 in-memory 기본 어댑터 제공. 커밋 지점을 `index.test.tsx` 대조하며 하나씩 어댑터 경유로 전환.
@@ -294,12 +313,14 @@ native: `export { ${exportName} } from "@podo/native";`
 7. **spec-driven codegen 착수** 또는 최소한 컴포넌트 미반영 편집의 "metadata-only" 명시 + §9.6 회귀 테스트(요구사항 4의 컴포넌트 갭을 닫거나 가시화).
 
 ### P1 — 두 컨텍스트 단일 UI (게이트, 신규 인프라)
-8. **`@podo/editor`에 실제 앱/라이브러리 번들 빌드 추가**(Vite, code-split). *(현재 `build`=tsc 라이브러리 컴파일, 검증됨.)*
+
+8. **`@podo/editor`에 실제 앱/라이브러리 번들 빌드 추가**(Vite, code-split). _(현재 `build`=tsc 라이브러리 컴파일, 검증됨.)_
 9. **studio가 번들 서빙**(`serveStatic`+SPA fallback), `GET /api/context`로 어댑터/capabilities 주입. **React UI가 패리티 체크리스트 + 기존 studio playwright e2e 통과 전까진 vanilla UI를 플래그 뒤 유지.** plan.md의 "의존성 가벼운 studio" 목표와 먼저 화해.
 10. **tldraw를 지연 로드 `@podo/editor-canvas` 청크로 격리**, 키는 `.podo/config.json`, 컨텍스트 A는 tldraw 0.
 11. **studio 전용 흐름(setup/migration/icons/build file-plan)을 React 탭으로 이식**해 패리티 달성.
 
 ### P2 — 페이지 디자인 + 마무리 (연기, 임계경로 밖)
+
 12. **`pageDocumentSchema` + `validatePageComponents`**(`@podo/spec`), **Pages 탭**(tldraw 표면, page-doc이 source of truth), **`POST /api/pages`** + **`loadBuildPages`** + page codegen. 컨텍스트 B 전용.
 13. **레거시 프리뷰 렌더러 ~17–19개 → 단일 spec-driven `ComponentPreview`**, 컴포넌트별 스냅샷 테스트 뒤 점진.
 14. **theme-resolver manifest**(멀티모드/멀티브랜드) + transitive 해석 + 순열별 명명 출력.
@@ -326,17 +347,18 @@ native: `export { ${exportName} } from "@podo/native";`
 
 ## 13. 부록 — 세 엔진의 고유 기여
 
-| 엔진 | 고유하게 강하게 기여한 부분 |
-|---|---|
+| 엔진                              | 고유하게 강하게 기여한 부분                                                                                                                                                                                                                                |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Claude (워크플로 22 에이전트)** | 가장 포괄적 종합. 추가 적대적/로컬 검증으로 **tldraw 라이선스 차단**, **앱 번들 빌드 부재**, **`spec-editing.ts` 순수성(추출이 기계적)**, **컴포넌트 저장에 기존 `PUT /api/files` 재사용(신규 라우트 0)**을 발견. 레퍼런스 매핑·판정단·로드맵·리스크 상세. |
-| **Codex (`gpt-5.5`)** | **결정적 갭 2개**: ① studio 기본 spec ≠ CLI 기본 spec(preview/build 불일치) ② **codegen이 spec-driven이 아님 + 런타임 하드코딩 → 컴포넌트 편집 미반영**. 레퍼런스의 도구 현황(Specify/Backlight 종료)까지 정확. |
-| **Agy** | 명료한 아키텍처 다이어그램(`@podo/edit-core` + `SaveAdapter` + `EditorCapabilities`), 구체적 page-spec JSON 예시, ASCII IA 목업, "autobuild trigger / 핫리로드 / 클라이언트 사전검증" 운영 항목. |
+| **Codex (`gpt-5.5`)**             | **결정적 갭 2개**: ① studio 기본 spec ≠ CLI 기본 spec(preview/build 불일치) ② **codegen이 spec-driven이 아님 + 런타임 하드코딩 → 컴포넌트 편집 미반영**. 레퍼런스의 도구 현황(Specify/Backlight 종료)까지 정확.                                            |
+| **Agy**                           | 명료한 아키텍처 다이어그램(`@podo/edit-core` + `SaveAdapter` + `EditorCapabilities`), 구체적 page-spec JSON 예시, ASCII IA 목업, "autobuild trigger / 핫리로드 / 클라이언트 사전검증" 운영 항목.                                                           |
 
 세 엔진의 핵심 결론은 **완전히 수렴**: 헤드리스 `@podo/edit-core` 추출 → `SaveAdapter`+capability로 두 호스트 분기 → 토큰은 이미 반영되니 라우트만 연결, 컴포넌트는 codegen을 spec-driven으로, 페이지는 신규 스펙으로 컨텍스트 B에만. 전면 재작성이 아닌 **재배선 + 신규 패키지 1개**가 정답.
 
 ---
 
 ### 부록 B — 검증된 load-bearing 사실 체크리스트
+
 - ✅ 토큰 `.podo`→빌드 반영 동작(write→merge→resolve→emit, 테스트 존재).
 - ✅ 컴포넌트 spec **파일** 파이프라인 동작(`PUT /api/files` 재사용, 신규 라우트 불필요).
 - ⚠️ 그러나 **codegen 비 spec-driven** → 컴포넌트 의미(variant/state/token) 미반영(grep 0건 + 템플릿 재export 확인).

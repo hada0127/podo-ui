@@ -313,13 +313,18 @@ describe("@podo/studio", () => {
     const context = await loadStudioContext(root);
     expect(context.pages.some((item) => item.id === "home")).toBe(true);
     expect(
-      context.files.some((file) => file.path === ".podo/pages/home.page.json" && file.kind === "page")
+      context.files.some(
+        (file) => file.path === ".podo/pages/home.page.json" && file.kind === "page"
+      )
     ).toBe(true);
 
     // A schema-invalid page is rejected by the write validation.
     const bad = await app.request("/api/files", {
       method: "PUT",
-      body: JSON.stringify({ path: ".podo/pages/bad.page.json", contents: JSON.stringify({ kind: "page" }) }),
+      body: JSON.stringify({
+        path: ".podo/pages/bad.page.json",
+        contents: JSON.stringify({ kind: "page" }),
+      }),
       headers: { "content-type": "application/json" },
     });
     expect(bad.status).toBe(400);

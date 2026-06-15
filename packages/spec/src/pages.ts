@@ -92,9 +92,15 @@ export const pageNodeSchema: z.ZodType<PageNode> = z.lazy(() =>
 );
 
 export const pageFramesSchema = z.object({
-  desktop: z.object({ width: z.number().positive(), columns: z.number().int().positive() }).optional(),
-  tablet: z.object({ width: z.number().positive(), columns: z.number().int().positive() }).optional(),
-  mobile: z.object({ width: z.number().positive(), columns: z.number().int().positive() }).optional(),
+  desktop: z
+    .object({ width: z.number().positive(), columns: z.number().int().positive() })
+    .optional(),
+  tablet: z
+    .object({ width: z.number().positive(), columns: z.number().int().positive() })
+    .optional(),
+  mobile: z
+    .object({ width: z.number().positive(), columns: z.number().int().positive() })
+    .optional(),
 });
 
 export const pageDocumentSchema = z.object({
