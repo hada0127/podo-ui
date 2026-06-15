@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   applyEditorStateToTldraw,
   composeSlot,
@@ -7,6 +8,7 @@ import {
   createComponentSpecExportFile,
   createThemedTokenLookup,
   createEditorState,
+  componentPreviewKind,
   describeLayoutSpecBoundary,
   dropComponentOnCanvas,
   editorLegacyGridContract,
@@ -17,7 +19,9 @@ import {
   filterComponentsForEditor,
   githubSyncStrategy,
   importFigmaVariables,
+  legacyComponentPreviewIds,
   responsiveViewports,
+  renderComponentPreview,
   selectResponsivePreview,
   syncEditorStateFromTldraw,
   updateComponentNodeProps,
@@ -42,6 +46,10 @@ import { PODO_SCHEMA_VERSION, type ComponentDocument } from "@podo/spec";
 import { legacyGridContract } from "@podo/tokens";
 
 describe("@podo/editor", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it("creates an editor state, drops components, edits props, and composes slots", () => {
     const state = createEditorState({ components: [gnbComponent, buttonComponent] });
     const withParent = dropComponentOnCanvas(state, gnbComponent, { x: 40, y: 80 });
@@ -314,6 +322,7 @@ describe("@podo/editor", () => {
 
   it("loads every v1 public component fixture as searchable editable specs", () => {
     expect(legacyComponents).toHaveLength(legacyComponentIds.length);
+    expect([...legacyComponentPreviewIds]).toEqual(legacyComponentIds);
 
     for (const component of legacyComponents) {
       expect(component.schemaVersion).toBe(PODO_SCHEMA_VERSION);
@@ -321,6 +330,7 @@ describe("@podo/editor", () => {
       expect(component.anatomy.length).toBeGreaterThan(0);
       expect(component.targets.web.supported).toBe(true);
       expect(component.targets.react.supported).toBe(true);
+      expect(componentPreviewKind(component)).toBe("dedicated");
     }
 
     expect(
@@ -358,6 +368,52 @@ describe("@podo/editor", () => {
         .find((component) => component.id === "tooltip")
         ?.variants.find((variant) => variant.name === "position")?.values
     ).toContain("bottomRight");
+  });
+
+  it("renders dedicated UI-shaped previews for legacy components", () => {
+    const lookup = createThemedTokenLookup(flattenTokenDocuments(legacyTokenDocuments), "light");
+
+    for (const component of legacyComponents) {
+      const { container, unmount } = render(
+        renderComponentPreview(component, defaultPreviewSelections(component), lookup)
+      );
+
+      expect(container.querySelector('[data-podo-preview-kind="dedicated"]')).not.toBeNull();
+      expect(container.textContent).not.toContain(`${component.props.length} props`);
+      expect(container.textContent).not.toContain(`${component.variants.length} variants`);
+      unmount();
+    }
+
+    render(
+      renderComponentPreview(
+        legacyComponentById("button"),
+        { theme: "primary", variant: "solid", size: "sm" },
+        lookup
+      )
+    );
+    expect(screen.getByRole("button", { name: "Submit" }).tagName).toBe("BUTTON");
+    cleanup();
+
+    render(renderComponentPreview(legacyComponentById("select"), { state: "open" }, lookup));
+    expect(screen.getByText("Operations")).not.toBeNull();
+    cleanup();
+
+    render(renderComponentPreview(legacyComponentById("input"), { state: "invalid" }, lookup));
+    const inputShell = screen.getByText("team@podo.dev").parentElement;
+    expect(inputShell?.style.borderColor).toBe("rgb(240, 70, 70)");
+    cleanup();
+
+    render(renderComponentPreview(legacyComponentById("table"), { display: "table" }, lookup));
+    expect(screen.getByRole("table")).not.toBeNull();
+    cleanup();
+
+    render(renderComponentPreview(legacyComponentById("table"), { display: "list" }, lookup));
+    expect(screen.queryByRole("table")).toBeNull();
+    expect(screen.getByText("Toast")).not.toBeNull();
+    cleanup();
+
+    render(renderComponentPreview(legacyComponentById("toast"), { theme: "success" }, lookup));
+    expect(screen.getByText("Changes saved")).not.toBeNull();
   });
 
   it("projects legacy light, dark, and auto color schemes without warm in the editor preview", () => {
@@ -475,6 +531,20 @@ describe("@podo/editor", () => {
     expect(githubSyncStrategy.checks).toContain("pnpm check");
   });
 });
+
+function legacyComponentById(id: string): ComponentDocument {
+  const component = legacyComponents.find((item) => item.id === id);
+  if (!component) {
+    throw new Error(`Missing legacy component fixture: ${id}`);
+  }
+  return component;
+}
+
+function defaultPreviewSelections(component: ComponentDocument): Record<string, string> {
+  return Object.fromEntries(
+    component.variants.map((variant) => [variant.name, variant.default ?? variant.values[0] ?? ""])
+  );
+}
 
 const legacyComponentIds = [
   "avatar",
