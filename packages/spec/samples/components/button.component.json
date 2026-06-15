@@ -81,6 +81,10 @@
       "tokens": {
         "root.background": "{component.button.background}",
         "label.color": "{component.button.text}"
+      },
+      "valueTokens": {
+        "soft": { "root.background": "{component.button.background}" },
+        "outline": { "label.color": "{component.button.text}" }
       }
     },
     { "name": "size", "values": ["sm", "md", "lg"], "default": "md" }

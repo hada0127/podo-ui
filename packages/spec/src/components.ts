@@ -3,6 +3,7 @@ import {
   aliasReferenceSchema,
   identifierSchema,
   issue,
+  normalizeAliasReference,
   schemaVersionSchema,
   targetNameSchema,
   type ValidationIssue,
@@ -66,13 +67,30 @@ export const anatomyPartSchema = z.object({
   targets: z.partialRecord(targetNameSchema, z.string().min(1)).optional(),
 });
 
-export const componentVariantSchema = z.object({
-  name: identifierSchema,
-  values: z.array(z.string().min(1)).min(1),
-  default: z.string().min(1).optional(),
-  description: z.string().optional(),
-  tokens: z.record(z.string(), aliasReferenceSchema).optional(),
-});
+export const componentVariantSchema = z
+  .object({
+    name: identifierSchema,
+    values: z.array(z.string().min(1)).min(1),
+    default: z.string().min(1).optional(),
+    description: z.string().optional(),
+    // Variant-level token bindings (apply across the whole variant axis).
+    tokens: z.record(z.string(), aliasReferenceSchema).optional(),
+    // Per-value token bindings: value -> part.prop -> token alias, so a specific
+    // variant value (e.g. "soft") can re-bind component tokens. Enables
+    // spec-driven per-variant styling in codegen (report.md §3.2 / §6).
+    valueTokens: z.record(z.string(), z.record(z.string(), aliasReferenceSchema)).optional(),
+  })
+  .superRefine((variant, ctx) => {
+    for (const value of Object.keys(variant.valueTokens ?? {})) {
+      if (!variant.values.includes(value)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `valueTokens key "${value}" is not a declared value of variant "${variant.name}".`,
+          path: ["valueTokens", value],
+        });
+      }
+    }
+  });
 
 export const componentStateSchema = z.object({
   name: z.enum([
@@ -150,6 +168,11 @@ export function collectComponentTokenBindings(component: ComponentDocument): Map
     for (const [path, reference] of Object.entries(variant.tokens ?? {})) {
       bindings.set(`variants.${variant.name}.${path}`, reference);
     }
+    for (const [value, map] of Object.entries(variant.valueTokens ?? {})) {
+      for (const [path, reference] of Object.entries(map)) {
+        bindings.set(`variants.${variant.name}.${value}.${path}`, reference);
+      }
+    }
   }
 
   for (const state of component.states) {
@@ -169,8 +192,8 @@ export function validateComponentTokenBindings(
   const issues: ValidationIssue[] = [];
 
   for (const [bindingPath, reference] of collectComponentTokenBindings(component)) {
-    const tokenPath =
-      reference.startsWith("{") && reference.endsWith("}") ? reference.slice(1, -1) : reference;
+    // Normalize both `{token.path}` and `#/token/path/$value` alias forms.
+    const tokenPath = normalizeAliasReference(reference);
     if (!tokenPaths.has(tokenPath)) {
       issues.push(
         issue(
