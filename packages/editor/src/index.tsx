@@ -25,10 +25,12 @@ import "tldraw/tldraw.css";
 import {
   PODO_SCHEMA_VERSION,
   parseComponentDocument,
+  parsePageDocument,
   parseTokenDocument,
   type ComponentDocument,
   type DesignToken,
   type EmbeddedFontAsset,
+  type PageDocument,
   type TokenDocument,
   type TokenTree,
 } from "@podo/spec";
@@ -380,6 +382,9 @@ export function PodoEditorApp({
   const [selectedColorScheme, setSelectedColorScheme] = useState<EditorColorScheme>(colorScheme);
   const [systemColorScheme, setSystemColorScheme] = useState<"light" | "dark">("light");
   const [exportPreview, setExportPreview] = useState<ComponentSpecExportFile | undefined>();
+  const [pageIdDraft, setPageIdDraft] = useState("home");
+  const [pagePreview, setPagePreview] = useState<PageDocumentExportFile | undefined>();
+  const [pageExportError, setPageExportError] = useState<string | undefined>();
   const [propsDraft, setPropsDraft] = useState("");
   const [propsDraftNodeId, setPropsDraftNodeId] = useState<string | undefined>();
   const [propsDraftError, setPropsDraftError] = useState<string | undefined>();
@@ -1127,6 +1132,47 @@ export function PodoEditorApp({
                 ) : null}
               </div>
             ) : null}
+            <div style={inspectorStyle}>
+              <strong>Page export</strong>
+              <label style={fieldStyle}>
+                Page id
+                <input
+                  aria-label="Page id"
+                  style={inputStyle}
+                  value={pageIdDraft}
+                  onChange={(event) => setPageIdDraft(event.currentTarget.value)}
+                />
+              </label>
+              <button
+                type="button"
+                style={toolbarButtonStyle}
+                onClick={() => {
+                  try {
+                    const id = pageIdDraft.trim();
+                    const file = createPageDocumentExportFile(state, {
+                      id,
+                      name: id || "Page",
+                    });
+                    setPagePreview(file);
+                    setPageExportError(undefined);
+                    if (adapter?.savePage) {
+                      const savePage = adapter.savePage.bind(adapter);
+                      enqueueHostWrite(`page:${file.document.id}`, () => savePage(file.document));
+                    }
+                  } catch (error) {
+                    setPageExportError(
+                      error instanceof Error ? error.message : "Page could not be exported."
+                    );
+                  }
+                }}
+              >
+                Export page
+              </button>
+              {pageExportError ? <span style={errorTextStyle}>{pageExportError}</span> : null}
+              {pagePreview ? (
+                <textarea style={textareaStyle} readOnly value={pagePreview.contents} />
+              ) : null}
+            </div>
           </>
         ) : null}
         {effectiveActivePanel === "export" ? (
@@ -4889,6 +4935,114 @@ export function createComponentSpecExportFile(
   const document = exportComponentSpecFromNode(state, nodeId);
   return {
     path: `${directory.replace(/\/+$/g, "")}/${document.id}.component.json`,
+    contents: `${JSON.stringify(document, null, 2)}\n`,
+    document,
+  };
+}
+
+export interface PageExportOptions {
+  id: string;
+  name: string;
+  route?: string;
+}
+
+export interface PageDocumentExportFile {
+  path: string;
+  contents: string;
+  document: PageDocument;
+}
+
+/**
+ * Map the canvas node graph into an installed-project PageDocument: top-level
+ * nodes become a flex layout of component instances, and each node's slot fills
+ * become nested component-instance children. Page design is installed-project
+ * only (report.md §8). Style values stay token-driven (no raw layout values).
+ */
+export function createPageDocumentFromCanvas(
+  state: EditorCanvasState,
+  options: PageExportOptions
+): PageDocument {
+  const nodeById = new Map(state.nodes.map((node) => [node.id, node]));
+  const slotted = new Set<string>();
+  for (const node of state.nodes) {
+    for (const childIds of Object.values(node.slots)) {
+      for (const childId of childIds) {
+        slotted.add(childId);
+      }
+    }
+  }
+
+  // Cycle detection is PER PATH (ancestors), not global: a node legitimately
+  // shared across two parents must appear under both (no silent drop), while a
+  // slot cycle (a node reachable from itself) throws instead of looping.
+  // `reached` records every node actually exported so we can detect nodes left
+  // unreachable by an all-slotted cyclic subgraph.
+  const reached = new Set<string>();
+  const buildNode = (
+    node: EditorComponentNode,
+    ancestors: Set<string>
+  ): Record<string, unknown> => {
+    if (ancestors.has(node.id)) {
+      throw new Error(
+        `Canvas node "${node.id}" forms a slot cycle and cannot be exported as a page.`
+      );
+    }
+    reached.add(node.id);
+    const nextAncestors = new Set(ancestors).add(node.id);
+    const slots: Record<string, unknown[]> = {};
+    for (const [slotName, childIds] of Object.entries(node.slots)) {
+      const children = childIds
+        .map((childId) => nodeById.get(childId))
+        .filter((child): child is EditorComponentNode => Boolean(child))
+        .map((child) => buildNode(child, nextAncestors));
+      if (children.length) {
+        slots[slotName] = children;
+      }
+    }
+    return {
+      type: "component-instance",
+      component: node.componentId,
+      props: { ...node.props, ...(node.variant ? { variant: node.variant } : {}) },
+      slots,
+    };
+  };
+
+  const topLevel = state.nodes.filter((node) => !slotted.has(node.id));
+  if (state.nodes.length > 0 && topLevel.length === 0) {
+    throw new Error(
+      "Canvas has no top-level nodes to export as a page (every node is slotted; check for a slot cycle)."
+    );
+  }
+  const children = topLevel.map((node) => buildNode(node, new Set()));
+  // Every node must be reachable from a top-level root; otherwise an all-slotted
+  // cyclic subgraph would be silently dropped from the exported page.
+  if (reached.size !== state.nodes.length) {
+    throw new Error(
+      "Some canvas nodes are unreachable (orphaned or in a slot cycle) and cannot be exported as a page."
+    );
+  }
+  return parsePageDocument({
+    schemaVersion: PODO_SCHEMA_VERSION,
+    kind: "page",
+    id: options.id,
+    name: options.name,
+    ...(options.route ? { route: options.route } : {}),
+    root: {
+      type: "layout",
+      layout: { mode: "flex" },
+      children,
+    },
+  });
+}
+
+export function createPageDocumentExportFile(
+  state: EditorCanvasState,
+  options: PageExportOptions,
+  directory = ".podo/pages"
+): PageDocumentExportFile {
+  const document = createPageDocumentFromCanvas(state, options);
+  return {
+    path: `${directory.replace(/\/+$/g, "")}/${document.id}.page.json`,
     contents: `${JSON.stringify(document, null, 2)}\n`,
     document,
   };

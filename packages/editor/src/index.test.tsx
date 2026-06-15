@@ -8,6 +8,9 @@ import {
   tokenReferenceOptions,
   applyEditorStateToTldraw,
   composeSlot,
+  createPageDocumentExportFile,
+  createPageDocumentFromCanvas,
+  type EditorCanvasState,
   createComponentNode,
   createComponentSpecExportFile,
   createComponentTokenEditorModel,
@@ -613,6 +616,220 @@ describe("@podo/editor", () => {
     expect(boundary.layoutSpecOwns).toContain("slot composition");
     expect(githubSyncStrategy.decision).toBe("ci-managed-sync");
     expect(githubSyncStrategy.checks).toContain("pnpm check");
+  });
+});
+
+describe("canvas page export", () => {
+  it("maps the canvas node graph into a page document (slotted nodes nest)", () => {
+    const state = createEditorState({ components: [gnbComponent, buttonComponent] });
+    const withParent = dropComponentOnCanvas(state, gnbComponent, { x: 40, y: 80 });
+    const withChild = dropComponentOnCanvas(withParent, buttonComponent, { x: 120, y: 160 });
+    const composed = composeSlot(
+      withChild,
+      withChild.nodes[0]?.id ?? "",
+      "primary",
+      withChild.nodes[1]?.id ?? ""
+    );
+
+    const page = createPageDocumentFromCanvas(composed, { id: "home", name: "Home" });
+    expect(page.kind).toBe("page");
+    expect(page.id).toBe("home");
+    if (page.root.type !== "layout") {
+      throw new Error("expected a layout root");
+    }
+    // the button is slotted under gnb, so only gnb is top-level
+    expect(page.root.children).toHaveLength(1);
+    const gnb = page.root.children[0];
+    if (gnb?.type !== "component-instance") {
+      throw new Error("expected a component instance");
+    }
+    expect(gnb.component).toBe("gnb");
+    const slotted = gnb.slots.primary?.[0];
+    if (slotted?.type !== "component-instance") {
+      throw new Error("expected a slotted component instance");
+    }
+    expect(slotted.component).toBe("button");
+  });
+
+  it("builds a .podo/pages export path", () => {
+    const state = createEditorState({ components: [buttonComponent] });
+    const placed = dropComponentOnCanvas(state, buttonComponent, { x: 0, y: 0 });
+    const file = createPageDocumentExportFile(placed, { id: "landing", name: "Landing" });
+    expect(file.path).toBe(".podo/pages/landing.page.json");
+    expect(file.document.id).toBe("landing");
+  });
+
+  it("rejects an invalid page id", () => {
+    const state = createEditorState({ components: [buttonComponent] });
+    expect(() => createPageDocumentFromCanvas(state, { id: "Not Valid", name: "X" })).toThrow();
+  });
+
+  it("keeps a shared slot child under every parent (no silent drop)", () => {
+    const state: EditorCanvasState = {
+      schemaVersion: PODO_SCHEMA_VERSION,
+      viewport: "desktop",
+      components: [gnbComponent, buttonComponent],
+      nodes: [
+        {
+          id: "a",
+          componentId: "gnb",
+          name: "A",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: { primary: ["b"] },
+        },
+        {
+          id: "c",
+          componentId: "gnb",
+          name: "C",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: { primary: ["b"] },
+        },
+        {
+          id: "b",
+          componentId: "button",
+          name: "B",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: {},
+        },
+      ],
+    };
+    const page = createPageDocumentFromCanvas(state, { id: "home", name: "Home" });
+    if (page.root.type !== "layout") {
+      throw new Error("expected a layout root");
+    }
+    expect(page.root.children).toHaveLength(2);
+    for (const child of page.root.children) {
+      if (child.type !== "component-instance") {
+        throw new Error("expected a component instance");
+      }
+      expect(child.slots.primary?.[0]?.type).toBe("component-instance");
+    }
+  });
+
+  it("throws on a fully slotted slot cycle instead of exporting an empty page", () => {
+    const state: EditorCanvasState = {
+      schemaVersion: PODO_SCHEMA_VERSION,
+      viewport: "desktop",
+      components: [gnbComponent],
+      nodes: [
+        {
+          id: "a",
+          componentId: "gnb",
+          name: "A",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: { primary: ["b"] },
+        },
+        {
+          id: "b",
+          componentId: "gnb",
+          name: "B",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: { primary: ["a"] },
+        },
+      ],
+    };
+    expect(() => createPageDocumentFromCanvas(state, { id: "home", name: "Home" })).toThrow();
+  });
+
+  it("throws on a reachable slot cycle", () => {
+    const state: EditorCanvasState = {
+      schemaVersion: PODO_SCHEMA_VERSION,
+      viewport: "desktop",
+      components: [gnbComponent],
+      nodes: [
+        {
+          id: "a",
+          componentId: "gnb",
+          name: "A",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: { primary: ["b"] },
+        },
+        {
+          id: "b",
+          componentId: "gnb",
+          name: "B",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: { primary: ["b"] },
+        },
+      ],
+    };
+    expect(() => createPageDocumentFromCanvas(state, { id: "home", name: "Home" })).toThrow();
+  });
+
+  it("throws when a cyclic subgraph is unreachable from a top-level node", () => {
+    // `root` is an independent top-level node; a<->b form an all-slotted cycle
+    // that must NOT be silently dropped from the exported page.
+    const state: EditorCanvasState = {
+      schemaVersion: PODO_SCHEMA_VERSION,
+      viewport: "desktop",
+      components: [gnbComponent],
+      nodes: [
+        {
+          id: "root",
+          componentId: "gnb",
+          name: "Root",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: {},
+        },
+        {
+          id: "a",
+          componentId: "gnb",
+          name: "A",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: { primary: ["b"] },
+        },
+        {
+          id: "b",
+          componentId: "gnb",
+          name: "B",
+          x: 0,
+          y: 0,
+          w: 10,
+          h: 10,
+          props: {},
+          slots: { primary: ["a"] },
+        },
+      ],
+    };
+    expect(() => createPageDocumentFromCanvas(state, { id: "home", name: "Home" })).toThrow(
+      /unreachable/
+    );
   });
 });
 
