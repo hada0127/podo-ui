@@ -592,6 +592,6 @@
 - [x] P3: 기존 컴포넌트 spec fixture 확장
   - 완료 기준: v1 `public/ai/components`에 있던 주요 컴포넌트가 최소 JSON spec fixture로 이식되고 editor 목록/검색/preview에서 참조 가능하다.
   - 완료 기준: 누락 컴포넌트 목록과 의도적으로 보류한 범위가 문서화된다.
-- [ ] P4: 설치 프로젝트 반영 플로우 연결 검증
+- [x] P4: 설치 프로젝트 반영 플로우 연결 검증
   - 완료 기준: editor export 결과가 `.podo` 기반 project override/build/update 흐름으로 이어지는 경로가 CLI/Studio 문서와 테스트로 검증된다.
   - 완료 기준: dry-run, validation, diff 확인 없이 설치 프로젝트 파일을 덮어쓰지 않는다.

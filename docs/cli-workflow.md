@@ -38,6 +38,30 @@ podo init --target react --theme dashboard --out-dir src/podo --yes
 - Lock schema mismatches emit a migration-oriented issue and next action.
 - Error logs use `[podo:error]`, and next actions use `[podo:next]`.
 
+## Editor Export Handoff
+
+Editor component exports are written as project overrides under:
+
+```txt
+.podo/components/editor/{component-id}.component.json
+```
+
+The CLI consumes these files through the normal `.podo` project flow:
+
+```sh
+podo validate
+podo build --dry-run
+podo build --force
+podo update --dry-run --report .podo/update-report.json
+```
+
+- `podo validate` verifies the exported component JSON and token bindings before build.
+- `podo build --dry-run` prints the generated file plan and previews without writing output.
+- `podo build` creates missing generated files. If the build would update existing files, rerun with
+  `--force` only after the dry-run plan has been reviewed.
+- `podo update --dry-run` reports migration changes for `.podo/components/editor` without applying
+  them; use `podo migrate` only after reviewing the report.
+
 ## Migration
 
 - Default dry-run:

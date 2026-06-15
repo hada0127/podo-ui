@@ -308,6 +308,66 @@ describe("@podo/studio", () => {
     });
     expect(unsafe.status).toBe(500);
 
+    const editorExportContents = `${JSON.stringify(createEditorExportedComponent("banner"), null, 2)}\n`;
+    const editorDryRun = await app.request("/api/files", {
+      method: "PUT",
+      body: JSON.stringify({
+        path: ".podo/components/editor/banner.component.json",
+        contents: editorExportContents,
+        dryRun: true,
+      }),
+      headers: { "content-type": "application/json" },
+    });
+    expect(editorDryRun.status).toBe(200);
+    const editorDryRunPayload = (await editorDryRun.json()) as {
+      dryRun: boolean;
+      filePlan: {
+        path: string;
+        action: string;
+        changed: boolean;
+        preview: { before: string; after: string };
+      };
+    };
+    expect(editorDryRunPayload.dryRun).toBe(true);
+    expect(editorDryRunPayload.filePlan).toMatchObject({
+      path: ".podo/components/editor/banner.component.json",
+      action: "create",
+      changed: true,
+    });
+    expect(editorDryRunPayload.filePlan.preview.after).toContain('"id": "banner"');
+    await expect(
+      stat(join(root, ".podo/components/editor/banner.component.json"))
+    ).rejects.toThrow();
+
+    const editorWrite = await app.request("/api/files", {
+      method: "PUT",
+      body: JSON.stringify({
+        path: ".podo/components/editor/banner.component.json",
+        contents: editorExportContents,
+      }),
+      headers: { "content-type": "application/json" },
+    });
+    expect(editorWrite.status).toBe(200);
+    await expect(
+      stat(join(root, ".podo/components/editor/banner.component.json"))
+    ).resolves.toBeDefined();
+
+    const editorOverwriteDryRun = await app.request("/api/files", {
+      method: "PUT",
+      body: JSON.stringify({
+        path: ".podo/components/editor/banner.component.json",
+        contents: `${JSON.stringify(createEditorExportedComponent("banner", "Banner Updated"), null, 2)}\n`,
+        dryRun: true,
+      }),
+      headers: { "content-type": "application/json" },
+    });
+    const editorOverwritePayload = (await editorOverwriteDryRun.json()) as {
+      filePlan: { action: string; preview: { before: string; after: string } };
+    };
+    expect(editorOverwritePayload.filePlan.action).toBe("update");
+    expect(editorOverwritePayload.filePlan.preview.before).toContain('"name": "Banner"');
+    expect(editorOverwritePayload.filePlan.preview.after).toContain('"name": "Banner Updated"');
+
     const validation = await app.request("/api/validate", {
       method: "POST",
       body: "{}",
@@ -339,4 +399,35 @@ async function createProject(packageJson: Record<string, unknown>): Promise<stri
     `${JSON.stringify({ name: "fixture", type: "module", ...packageJson }, null, 2)}\n`
   );
   return root;
+}
+
+function createEditorExportedComponent(id: string, name = "Banner") {
+  return {
+    schemaVersion: "2.0.0",
+    kind: "component",
+    id,
+    name,
+    category: "atom",
+    status: "stable",
+    anatomy: [{ name: "root" }],
+    slots: [],
+    props: [{ name: "title", type: { kind: "string" }, required: true }],
+    variants: [],
+    states: [],
+    tokens: {},
+    targets: {
+      web: { supported: true, limitations: [] },
+      react: { supported: true, limitations: [] },
+      hono: { supported: true, limitations: [] },
+      native: { supported: true, limitations: [] },
+    },
+    accessibility: { aria: [], keyboard: [] },
+    examples: [
+      {
+        target: "web",
+        title: `${name} editor export`,
+        code: `<podo-${id}></podo-${id}>`,
+      },
+    ],
+  };
 }

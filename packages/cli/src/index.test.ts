@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -106,6 +106,70 @@ describe("@podo/cli", () => {
 
     const cached = await buildProject(parseArgs(["build"]), io);
     expect(cached.skipped).toBe(true);
+  });
+
+  it("carries editor component exports through validate, build, and update dry-run", async () => {
+    const root = await createProject({ dependencies: { react: "^19.0.0" } });
+    const io = createIo(root);
+    await runCli(
+      ["init", "--target", "react", "--theme", "dashboard", "--out-dir", "src/podo", "--yes"],
+      io
+    );
+
+    const editorExport = createEditorButtonExportFile();
+    await mkdir(join(root, ".podo/components/editor"), { recursive: true });
+    await writeFile(join(root, editorExport.path), editorExport.contents);
+
+    await expect(validateProject(parseArgs(["validate"]), io)).resolves.toMatchObject({
+      ok: true,
+    });
+
+    const dryRun = await buildProject(parseArgs(["build", "--dry-run"]), io);
+    const generatedButton = dryRun.files.find(
+      (file) => file.path === "src/podo/components/react/button.react.ts"
+    );
+    expect(dryRun.dryRun).toBe(true);
+    expect(generatedButton?.preview).toContain('export { Button } from "@podo/react";');
+    await expect(stat(join(root, "src/podo/components/react/button.react.ts"))).rejects.toThrow();
+
+    const built = await buildProject(parseArgs(["build"]), io);
+    expect(built.skipped).toBe(false);
+    await expect(
+      stat(join(root, "src/podo/components/react/button.react.ts"))
+    ).resolves.toBeDefined();
+
+    await expect(
+      runCli(["update", "--dry-run", "--to", "2.1.0", "--report", ".podo/update-report.json"], io)
+    ).resolves.toBe(0);
+    const updateReport = JSON.parse(
+      await readFile(join(root, ".podo/update-report.json"), "utf8")
+    ) as {
+      dryRun: boolean;
+      files: Array<{ path: string; action: string; operations: Array<{ path: string }> }>;
+    };
+    const editorComponentUpdate = updateReport.files.find(
+      (file) => file.path === ".podo/components/editor/button.component.json"
+    );
+    expect(updateReport.dryRun).toBe(true);
+    expect(editorComponentUpdate).toMatchObject({ action: "update" });
+    expect(editorComponentUpdate?.operations[0]?.path).toBe("/props/0/name");
+    expect(
+      JSON.parse(await readFile(join(root, editorExport.path), "utf8")) as {
+        props: Array<{ name: string }>;
+      }
+    ).toMatchObject({ props: [{ name: "isDisabled" }] });
+
+    const bannerExport = createEditorBannerExportFile();
+    await writeFile(join(root, bannerExport.path), bannerExport.contents);
+    await expect(buildProject(parseArgs(["build"]), io)).rejects.toThrow(/Build would update/);
+    const changedDryRun = await buildProject(parseArgs(["build", "--dry-run"]), io);
+    expect(changedDryRun.files.some((file) => file.action === "update")).toBe(true);
+    await expect(buildProject(parseArgs(["build", "--force"]), io)).resolves.toMatchObject({
+      skipped: false,
+    });
+    await expect(
+      stat(join(root, "src/podo/components/react/banner.react.ts"))
+    ).resolves.toBeDefined();
   });
 
   it("plans and applies migrations with lockfile updates", async () => {
@@ -233,5 +297,84 @@ function createIo(root: string): CliIO & { out: string[]; err: string[] } {
     stderr: { error: (message: string) => err.push(message) },
     out,
     err,
+  };
+}
+
+function createEditorButtonExportFile(): { path: string; contents: string } {
+  return {
+    path: ".podo/components/editor/button.component.json",
+    contents: `${JSON.stringify(
+      {
+        schemaVersion: "2.0.0",
+        kind: "component",
+        id: "button",
+        name: "Button",
+        category: "atom",
+        status: "stable",
+        anatomy: [{ name: "root" }, { name: "label" }],
+        slots: [{ name: "children", required: true }],
+        props: [{ name: "isDisabled", type: { kind: "boolean" }, default: false }],
+        variants: [{ name: "variant", values: ["solid", "soft"], default: "solid" }],
+        states: [{ name: "disabled" }],
+        tokens: {
+          "root.background": "{component.button.background}",
+          "label.color": "{component.button.text}",
+        },
+        targets: {
+          web: { supported: true, limitations: [] },
+          react: { supported: true, limitations: [] },
+          hono: { supported: true, limitations: [] },
+          native: { supported: true, limitations: [] },
+        },
+        accessibility: { role: "button", aria: ["aria-disabled"], keyboard: ["Enter", "Space"] },
+        examples: [
+          {
+            target: "web",
+            title: "Button editor export",
+            code: '<button data-podo-component="button">Submit</button>',
+          },
+        ],
+      },
+      null,
+      2
+    )}\n`,
+  };
+}
+
+function createEditorBannerExportFile(): { path: string; contents: string } {
+  return {
+    path: ".podo/components/editor/banner.component.json",
+    contents: `${JSON.stringify(
+      {
+        schemaVersion: "2.0.0",
+        kind: "component",
+        id: "banner",
+        name: "Banner",
+        category: "atom",
+        status: "stable",
+        anatomy: [{ name: "root" }],
+        slots: [],
+        props: [{ name: "title", type: { kind: "string" }, required: true }],
+        variants: [],
+        states: [],
+        tokens: {},
+        targets: {
+          web: { supported: true, limitations: [] },
+          react: { supported: true, limitations: [] },
+          hono: { supported: true, limitations: [] },
+          native: { supported: true, limitations: [] },
+        },
+        accessibility: { aria: [], keyboard: [] },
+        examples: [
+          {
+            target: "web",
+            title: "Banner editor export",
+            code: "<podo-banner></podo-banner>",
+          },
+        ],
+      },
+      null,
+      2
+    )}\n`,
   };
 }

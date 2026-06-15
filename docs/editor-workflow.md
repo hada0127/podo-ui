@@ -23,6 +23,29 @@ Phase 8 introduces `@podo/editor` as the design-system development editor surfac
 - `exportComponentSpecFromNode` converts a canvas node back to a `.component.json`-compatible component spec.
 - `createComponentSpecExportFile` returns the `.component.json` path and contents that callers can write to disk.
 
+## Installed Project Handoff
+
+Editor exports are project overrides, not generated files. The default export path is:
+
+```txt
+.podo/components/editor/{component-id}.component.json
+```
+
+Installed projects should apply an export through the same safe path used by Studio:
+
+1. Create the export with `createComponentSpecExportFile`.
+2. Send the file to Studio `PUT /api/files` with `dryRun: true` and review the returned
+   create/update preview.
+3. Save the file under `.podo/components/editor` only after the JSON component schema validates.
+4. Run `podo validate`.
+5. Run `podo build --dry-run` and review planned generated files before writing build output; use
+   `podo build --force` only when the reviewed plan intentionally updates existing files.
+6. Run `podo update --dry-run` when package/schema versions change, then apply reviewed migrations
+   with `podo migrate`.
+
+This keeps the editor handoff reproducible from `.podo` JSON and prevents browser/editor code from
+writing directly into application source files.
+
 ## Layout/Page Boundary
 
 Component specs own:

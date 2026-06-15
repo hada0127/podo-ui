@@ -207,6 +207,12 @@ export function createStudioApp(options: StudioServerOptions): Hono {
     if (issues.length) {
       return context.json({ ok: false, dryRun: Boolean(body.dryRun), issues }, 400);
     }
+    const previousContents = await readText(filePath);
+    const filePlan = createFileWritePlan(
+      relativePath(root, filePath),
+      previousContents,
+      body.contents
+    );
 
     if (!body.dryRun) {
       await writeProjectFile(filePath, body.contents, Boolean(body.force));
@@ -216,7 +222,8 @@ export function createStudioApp(options: StudioServerOptions): Hono {
       ok: true,
       dryRun: Boolean(body.dryRun),
       path: relativePath(root, filePath),
-      action: (await exists(filePath)) && !body.dryRun ? "written" : "planned",
+      action: body.dryRun ? filePlan.action : "written",
+      filePlan,
     });
   });
 
@@ -1587,6 +1594,37 @@ async function readText(filePath: string): Promise<string | undefined> {
   }
 }
 
+function createFileWritePlan(
+  path: string,
+  previousContents: string | undefined,
+  nextContents: string
+): {
+  path: string;
+  action: "create" | "update" | "unchanged";
+  changed: boolean;
+  nextHash: string;
+  previousHash?: string;
+  preview: { before: string; after: string };
+} {
+  const action =
+    previousContents === undefined
+      ? "create"
+      : previousContents === nextContents
+        ? "unchanged"
+        : "update";
+  return {
+    path,
+    action,
+    changed: previousContents !== nextContents,
+    ...(previousContents !== undefined ? { previousHash: hashText(previousContents) } : {}),
+    nextHash: hashText(nextContents),
+    preview: {
+      before: previousContents?.slice(0, 4000) ?? "",
+      after: nextContents.slice(0, 4000),
+    },
+  };
+}
+
 async function writeProjectFile(filePath: string, contents: string, force: boolean): Promise<void> {
   if (!force && (await exists(filePath))) {
     throw new Error(`${filePath} already exists. Pass force to overwrite.`);
@@ -1667,6 +1705,10 @@ function normalizeIdentifier(value: string): string {
 
 function hashJson(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
+}
+
+function hashText(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
 }
 
 function errorPayload(code: string, message: string): { ok: false; issues: ValidationIssue[] } {

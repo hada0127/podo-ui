@@ -359,6 +359,15 @@ export async function buildProject(args: ParsedArgs, io: CliIO): Promise<BuildPl
     return plan;
   }
 
+  const updates = plan.files.filter((file) => file.action === "update");
+  if (updates.length && !force) {
+    throw new Error(
+      `Build would update ${updates.length} existing file${
+        updates.length === 1 ? "" : "s"
+      }. Run \`podo build --dry-run\` and rerun with \`--force\` after reviewing the file plan.`
+    );
+  }
+
   await mkdir(absoluteOutDir, { recursive: true });
   for (const file of generated) {
     await mkdir(dirname(file.path), { recursive: true });
