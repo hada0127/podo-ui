@@ -289,6 +289,7 @@ export function PodoEditorApp({
   );
   const [state, setState] = useState(startingState);
   const [activePanel, setActivePanel] = useState<EditorPanel>("tokens");
+  const [componentSearch, setComponentSearch] = useState("");
   const [tokenDocumentsState, setTokenDocumentsState] = useState(initialTokenDocuments);
   const [selectedTokenKey, setSelectedTokenKey] = useState<string | undefined>();
   const [tokenDraft, setTokenDraft] = useState<EditorTokenDraft>(() => createNewTokenDraft());
@@ -330,6 +331,10 @@ export function PodoEditorApp({
     [tokenDocumentsState]
   );
   const tokenGroups = useMemo(() => groupTokenRecordsByType(tokenRecords), [tokenRecords]);
+  const filteredComponents = useMemo(
+    () => filterComponentsForEditor(state.components, componentSearch),
+    [componentSearch, state.components]
+  );
   const effectiveColorScheme = effectiveEditorColorScheme(selectedColorScheme, systemColorScheme);
   const previewTokenLookup = useMemo(
     () => createThemedTokenLookup(tokenRecords, effectiveColorScheme),
@@ -721,8 +726,15 @@ export function PodoEditorApp({
         {activePanel === "components" ? (
           <>
             <div style={sidebarTitleStyle}>Components</div>
+            <input
+              aria-label="Search components"
+              placeholder="Search components"
+              style={inputStyle}
+              value={componentSearch}
+              onChange={(event) => setComponentSearch(event.currentTarget.value)}
+            />
             <div style={listStyle}>
-              {state.components.map((component) => (
+              {filteredComponents.map((component) => (
                 <button
                   key={component.id}
                   type="button"
@@ -736,6 +748,9 @@ export function PodoEditorApp({
                   <small>{component.id}</small>
                 </button>
               ))}
+              {filteredComponents.length ? null : (
+                <span style={emptyListStyle}>No components match this search.</span>
+              )}
             </div>
           </>
         ) : null}
@@ -1619,6 +1634,33 @@ export function effectiveEditorColorScheme(
   systemColorScheme: "light" | "dark" = "light"
 ): "light" | "dark" {
   return colorScheme === "auto" ? systemColorScheme : colorScheme;
+}
+
+export function filterComponentsForEditor(
+  components: ComponentDocument[],
+  query: string
+): ComponentDocument[] {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) {
+    return components;
+  }
+
+  return components.filter((component) => {
+    const searchableValues = [
+      component.id,
+      component.name,
+      component.category,
+      component.status,
+      component.description ?? "",
+      ...component.anatomy.map((part) => part.name),
+      ...component.slots.map((slot) => slot.name),
+      ...component.props.map((prop) => prop.name),
+      ...component.variants.flatMap((variant) => [variant.name, ...variant.values]),
+      ...component.states.map((state) => state.name),
+    ];
+
+    return searchableValues.some((value) => value.toLowerCase().includes(normalizedQuery));
+  });
 }
 
 export function createThemedTokenLookup(
@@ -2726,6 +2768,13 @@ const toolbarButtonStyle: CSSProperties = {
 const listStyle: CSSProperties = {
   display: "grid",
   gap: 12,
+};
+
+const emptyListStyle: CSSProperties = {
+  color: "#6b7280",
+  fontSize: 13,
+  lineHeight: 1.45,
+  padding: "8px 2px",
 };
 
 const tokenGroupStyle: CSSProperties = {

@@ -14,6 +14,7 @@ import {
   editorColorSchemes,
   exportComponentSpecFromNode,
   exportFigmaVariables,
+  filterComponentsForEditor,
   githubSyncStrategy,
   importFigmaVariables,
   responsiveViewports,
@@ -284,7 +285,7 @@ describe("@podo/editor", () => {
         );
       }
     }
-    expect(legacyComponents.map((component) => component.id)).toEqual(["button", "field", "input"]);
+    expect(legacyComponents.map((component) => component.id)).toEqual(legacyComponentIds);
     expect(button?.props.find((prop) => prop.name === "theme")?.type).toMatchObject({
       kind: "enum",
       values: buttonThemes,
@@ -309,6 +310,54 @@ describe("@podo/editor", () => {
       "root.height": "{component.button.size.sm.height}",
       "root.typography": "{component.button.size.sm.typography}",
     });
+  });
+
+  it("loads every v1 public component fixture as searchable editable specs", () => {
+    expect(legacyComponents).toHaveLength(legacyComponentIds.length);
+
+    for (const component of legacyComponents) {
+      expect(component.schemaVersion).toBe(PODO_SCHEMA_VERSION);
+      expect(component.kind).toBe("component");
+      expect(component.anatomy.length).toBeGreaterThan(0);
+      expect(component.targets.web.supported).toBe(true);
+      expect(component.targets.react.supported).toBe(true);
+    }
+
+    expect(
+      filterComponentsForEditor(legacyComponents, "toast").map((component) => component.id)
+    ).toEqual(["toast"]);
+    expect(
+      filterComponentsForEditor(legacyComponents, "options").map((component) => component.id)
+    ).toEqual(expect.arrayContaining(["checkbox-radio", "select"]));
+    expect(
+      filterComponentsForEditor(legacyComponents, "utility").map((component) => component.id)
+    ).toEqual(["doc-tabs"]);
+    expect(
+      legacyComponents.find((component) => component.id === "doc-tabs")?.description
+    ).toContain("mapped to v2 utility");
+    expect(
+      legacyComponents.find((component) => component.id === "field")?.props.map((prop) => prop.name)
+    ).toEqual(
+      expect.arrayContaining(["labelClass", "helper", "helperClass", "validator", "setClassName"])
+    );
+    expect(
+      legacyComponents.find((component) => component.id === "input")?.props.map((prop) => prop.name)
+    ).toEqual(
+      expect.arrayContaining(["validator", "withIcon", "withRightIcon", "unit", "restProps"])
+    );
+    expect(
+      legacyComponents
+        .find((component) => component.id === "textarea")
+        ?.props.map((prop) => prop.name)
+    ).toContain("restProps");
+    expect(
+      legacyComponents.find((component) => component.id === "tab")?.props.map((prop) => prop.name)
+    ).toContain("onChange");
+    expect(
+      legacyComponents
+        .find((component) => component.id === "tooltip")
+        ?.variants.find((variant) => variant.name === "position")?.values
+    ).toContain("bottomRight");
   });
 
   it("projects legacy light, dark, and auto color schemes without warm in the editor preview", () => {
@@ -426,6 +475,28 @@ describe("@podo/editor", () => {
     expect(githubSyncStrategy.checks).toContain("pnpm check");
   });
 });
+
+const legacyComponentIds = [
+  "avatar",
+  "button",
+  "checkbox-radio",
+  "chip",
+  "datepicker",
+  "doc-tabs",
+  "editor",
+  "field",
+  "file",
+  "input",
+  "label",
+  "pagination",
+  "select",
+  "tab",
+  "table",
+  "textarea",
+  "toast",
+  "toggle",
+  "tooltip",
+];
 
 const supportedTargets: ComponentDocument["targets"] = {
   web: { supported: true, limitations: [] },

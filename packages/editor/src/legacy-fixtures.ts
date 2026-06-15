@@ -13,6 +13,140 @@ const targets: ComponentDocument["targets"] = {
   native: { supported: true, limitations: ["Slots map to named props."] },
 };
 
+interface LegacyComponentInput {
+  id: string;
+  name: string;
+  category: ComponentDocument["category"];
+  description: string;
+  anatomy?: string[];
+  slots?: Array<Partial<ComponentDocument["slots"][number]> & { name: string }>;
+  props?: ComponentDocument["props"];
+  variants?: ComponentDocument["variants"];
+  states?: ComponentDocument["states"];
+  tokens?: ComponentDocument["tokens"];
+  examples?: ComponentDocument["examples"];
+  accessibility?: Partial<ComponentDocument["accessibility"]>;
+}
+
+function legacyComponent(input: LegacyComponentInput): ComponentDocument {
+  return parseComponentDocument({
+    schemaVersion: PODO_SCHEMA_VERSION,
+    kind: "component",
+    id: input.id,
+    name: input.name,
+    category: input.category,
+    status: "stable",
+    description: input.description,
+    anatomy: (input.anatomy ?? ["root"]).map((name) => ({ name })),
+    slots: input.slots ?? [],
+    props: input.props ?? [],
+    variants: input.variants ?? [],
+    states: input.states ?? [],
+    tokens: input.tokens ?? legacyBaseComponentTokens(),
+    targets,
+    accessibility: {
+      aria: [],
+      keyboard: [],
+      ...input.accessibility,
+    },
+    examples: input.examples ?? [
+      {
+        target: "react",
+        title: input.name,
+        code: `<${input.name.replace(/\s+/g, "")} />`,
+      },
+    ],
+  });
+}
+
+function legacyBaseComponentTokens(): ComponentDocument["tokens"] {
+  return {
+    "root.background": "{color.bg.modal}",
+    "root.color": "{color.text.body}",
+    "root.borderColor": "{color.border.base}",
+    "root.radius": "{radius.scale.3}",
+    "root.gap": "{spacing.scale.2}",
+    "root.typography": "{typography.paragraph.p3}",
+  };
+}
+
+function enumProp(
+  name: string,
+  values: string[],
+  options: { required?: boolean; default?: string; description?: string } = {}
+): ComponentDocument["props"][number] {
+  return {
+    name,
+    type: { kind: "enum", values },
+    required: options.required ?? false,
+    ...(options.default !== undefined ? { default: options.default } : {}),
+    ...(options.description ? { description: options.description } : {}),
+  };
+}
+
+function stringProp(
+  name: string,
+  options: { required?: boolean; default?: string; description?: string } = {}
+): ComponentDocument["props"][number] {
+  return {
+    name,
+    type: { kind: "string" },
+    required: options.required ?? false,
+    ...(options.default !== undefined ? { default: options.default } : {}),
+    ...(options.description ? { description: options.description } : {}),
+  };
+}
+
+function booleanProp(
+  name: string,
+  options: { required?: boolean; default?: boolean; description?: string } = {}
+): ComponentDocument["props"][number] {
+  return {
+    name,
+    type: { kind: "boolean" },
+    required: options.required ?? false,
+    ...(options.default !== undefined ? { default: options.default } : {}),
+    ...(options.description ? { description: options.description } : {}),
+  };
+}
+
+function numberProp(
+  name: string,
+  options: { required?: boolean; default?: number; description?: string } = {}
+): ComponentDocument["props"][number] {
+  return {
+    name,
+    type: { kind: "number" },
+    required: options.required ?? false,
+    ...(options.default !== undefined ? { default: options.default } : {}),
+    ...(options.description ? { description: options.description } : {}),
+  };
+}
+
+function objectProp(
+  name: string,
+  options: { required?: boolean; description?: string } = {}
+): ComponentDocument["props"][number] {
+  return {
+    name,
+    type: { kind: "object" },
+    required: options.required ?? false,
+    ...(options.description ? { description: options.description } : {}),
+  };
+}
+
+function eventProp(
+  name: string,
+  options: { required?: boolean; description?: string } = {}
+): ComponentDocument["props"][number] {
+  return {
+    name,
+    type: { kind: "event" },
+    required: options.required ?? false,
+    ...(options.description ? { description: options.description } : {}),
+  };
+}
+
 const legacyColorValues = {
   primary: {
     base: "#7c3aed",
@@ -797,6 +931,47 @@ export const legacyTokenDocuments: TokenDocument[] = [
 ];
 
 export const legacyComponents: ComponentDocument[] = [
+  legacyComponent({
+    id: "avatar",
+    name: "Avatar",
+    category: "atom",
+    description: "v1 profile image, icon, or text display component.",
+    anatomy: ["root", "image", "icon", "text", "activity-ring"],
+    props: [
+      enumProp("type", ["image", "icon", "text"], {
+        default: "icon",
+        description: "Avatar content type.",
+      }),
+      stringProp("src", { description: "Image URL for image avatars." }),
+      stringProp("icon", { default: "icon-user", description: "Icon class name." }),
+      stringProp("text", { description: "Text content; v1 displays the first two characters." }),
+      enumProp("size", ["16", "20", "24", "28", "32", "36", "40", "48", "56"], {
+        default: "56",
+        description: "Pixel size.",
+      }),
+      booleanProp("activityRing", { default: false }),
+      stringProp("className"),
+      stringProp("alt", { default: "Avatar" }),
+      eventProp("onClick", { description: "Click handler." }),
+    ],
+    variants: [
+      { name: "type", values: ["image", "icon", "text"], default: "icon" },
+      {
+        name: "size",
+        values: ["16", "20", "24", "28", "32", "36", "40", "48", "56"],
+        default: "56",
+      },
+    ],
+    states: [{ name: "hover", selector: ":hover" }],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "root.size": "{spacing.scale.9}",
+      "root.radius": "{radius.scale.full}",
+      "activity-ring.color": "{color.primary.base}",
+    },
+    accessibility: { aria: ["alt"], keyboard: ["Enter activates when clickable"] },
+    examples: [{ target: "react", title: "Avatar", code: '<Avatar type="icon" size={40} />' }],
+  }),
   parseComponentDocument({
     schemaVersion: PODO_SCHEMA_VERSION,
     kind: "component",
@@ -968,21 +1143,252 @@ export const legacyComponents: ComponentDocument[] = [
       { target: "web", title: "v1 HTML", code: '<button class="primary">Submit</button>' },
     ],
   }),
-  parseComponentDocument({
-    schemaVersion: PODO_SCHEMA_VERSION,
-    kind: "component",
+  legacyComponent({
+    id: "checkbox-radio",
+    name: "Checkbox & Radio",
+    category: "atom",
+    description: "v1 styled checkbox and radio inputs with grouped React component APIs.",
+    anatomy: ["root", "input", "control", "indicator", "label", "group"],
+    props: [
+      enumProp("control", ["checkbox", "radio", "radio-group"], {
+        default: "checkbox",
+        description: "Represents Checkbox, Radio, and Radio.Group from v1.",
+      }),
+      booleanProp("checked", { default: false }),
+      booleanProp("indeterminate", {
+        default: false,
+        description: "Checkbox select-all state.",
+      }),
+      stringProp("name", { description: "Radio group name." }),
+      stringProp("value", { description: "Radio value or current group value." }),
+      objectProp("options", {
+        description: "Radio.Group options: Array<{ value, label, disabled? }>",
+      }),
+      stringProp("label"),
+      booleanProp("vertical", { default: false }),
+      booleanProp("disabled", { default: false }),
+      eventProp("onChange"),
+    ],
+    variants: [
+      { name: "control", values: ["checkbox", "radio", "radio-group"], default: "checkbox" },
+      { name: "layout", values: ["horizontal", "vertical"], default: "horizontal" },
+    ],
+    states: [
+      { name: "checked", tokens: { "control.background": "{color.primary.base}" } },
+      { name: "disabled", tokens: { "root.color": "{color.text.action-disabled}" } },
+      { name: "focusVisible", tokens: { "control.borderColor": "{color.primary.focus}" } },
+    ],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "control.size": "{spacing.scale.6}",
+      "control.borderColor": "{color.border.base}",
+      "control.background": "{color.bg.modal}",
+      "indicator.color": "{color.primary.reverse}",
+    },
+    accessibility: {
+      aria: ["aria-checked", "aria-disabled"],
+      keyboard: ["Space toggles checkbox", "Arrow keys move within radio group"],
+    },
+    examples: [
+      { target: "react", title: "Checkbox", code: '<Checkbox label="Accept terms" />' },
+      {
+        target: "react",
+        title: "Radio group",
+        code: '<Radio.Group name="plan" options={[{ value: "free", label: "Free" }]} />',
+      },
+    ],
+  }),
+  legacyComponent({
+    id: "chip",
+    name: "Chip",
+    category: "atom",
+    description: "v1 tag/chip component for labels and categories.",
+    anatomy: ["root", "icon", "label", "delete-button"],
+    slots: [{ name: "children", required: true }, { name: "icon" }, { name: "deleteButton" }],
+    props: [
+      objectProp("children", { required: true }),
+      enumProp("theme", ["default", "blue", "green", "orange", "yellow", "red"], {
+        default: "default",
+      }),
+      enumProp("type", ["default", "fill", "border"], { default: "default" }),
+      enumProp("size", ["sm", "md"], { default: "md" }),
+      booleanProp("round", { default: false }),
+      stringProp("icon"),
+      eventProp("onDelete", { description: "Shows delete affordance when present." }),
+      stringProp("className"),
+    ],
+    variants: [
+      {
+        name: "theme",
+        values: ["default", "blue", "green", "orange", "yellow", "red"],
+        default: "default",
+      },
+      { name: "type", values: ["default", "fill", "border"], default: "default" },
+      { name: "size", values: ["sm", "md"], default: "md" },
+      { name: "shape", values: ["default", "round"], default: "default" },
+    ],
+    states: [{ name: "hover", selector: ":hover" }],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "root.background": "{color.default.fill}",
+      "root.paddingX": "{spacing.scale.3}",
+      "root.radius": "{radius.scale.3}",
+      "label.typography": "{typography.paragraph.p4}",
+    },
+    examples: [
+      { target: "react", title: "Chip", code: '<Chip theme="blue" type="fill">Status</Chip>' },
+    ],
+  }),
+  legacyComponent({
+    id: "datepicker",
+    name: "DatePicker",
+    category: "molecule",
+    description: "v1 date/time picker with single and period selection modes.",
+    anatomy: ["root", "input", "calendar", "time-list", "quick-actions", "actions"],
+    props: [
+      enumProp("mode", ["instant", "period"], { default: "instant" }),
+      enumProp("type", ["date", "time", "datetime", "hour"], { default: "date" }),
+      objectProp("value", { description: "DatePickerValue." }),
+      eventProp("onChange"),
+      stringProp("placeholder"),
+      booleanProp("disabled", { default: false }),
+      booleanProp("showActions"),
+      enumProp("align", ["left", "right"], { default: "left" }),
+      objectProp("disable", { description: "DateCondition[] dates to disable." }),
+      objectProp("enable", { description: "DateCondition[] dates to enable." }),
+      objectProp("minDate"),
+      objectProp("maxDate"),
+      enumProp("minuteStep", ["1", "5", "10", "15", "20", "30"], { default: "1" }),
+      enumProp("hourFormat", ["24", "12"], { default: "24" }),
+      objectProp("disabledHours", { description: "Hours 0-23 that cannot be selected." }),
+      enumProp("hourStep", ["1", "2", "3", "4", "6", "12"], { default: "1" }),
+      stringProp("format"),
+      objectProp("initialCalendar"),
+      objectProp("yearRange"),
+      booleanProp("quickSelect", { default: false }),
+      booleanProp("portal", { default: false }),
+      booleanProp("hideNavArrow", { default: false }),
+      enumProp("direction", ["down", "up", "auto"], { default: "down" }),
+      eventProp("onReset"),
+      stringProp("className"),
+    ],
+    variants: [
+      { name: "mode", values: ["instant", "period"], default: "instant" },
+      { name: "type", values: ["date", "time", "datetime", "hour"], default: "date" },
+      { name: "direction", values: ["down", "up", "auto"], default: "down" },
+    ],
+    states: [
+      { name: "open", tokens: { "root.borderColor": "{color.primary.base}" } },
+      { name: "disabled", tokens: { "root.background": "{color.bg.disabled}" } },
+      { name: "selected", tokens: { "calendar.background": "{color.primary.fill}" } },
+    ],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "calendar.background": "{color.bg.modal}",
+      "calendar.borderColor": "{color.border.base}",
+      "selected.background": "{color.primary.base}",
+      "selected.color": "{color.primary.reverse}",
+    },
+    accessibility: {
+      aria: ["aria-expanded", "aria-controls", "aria-selected"],
+      keyboard: ["Enter selects date", "Escape closes dropdown", "Arrow keys move calendar focus"],
+      focusManagement: "Calendar focus remains inside the popover while open.",
+    },
+    examples: [
+      { target: "react", title: "Date", code: '<DatePicker mode="instant" type="date" />' },
+    ],
+  }),
+  legacyComponent({
+    id: "doc-tabs",
+    name: "DocTabs",
+    category: "utility",
+    description:
+      "v1 internal documentation tab component; v1 docs category is mapped to v2 utility.",
+    anatomy: ["root", "tab-list", "tab", "panel"],
+    props: [
+      objectProp("tabs", {
+        required: true,
+        description: "DocTabItem[] containing scss/react/cdn content.",
+      }),
+      enumProp("defaultTab", ["scss", "react", "cdn"], { default: "scss" }),
+    ],
+    variants: [{ name: "default-tab", values: ["scss", "react", "cdn"], default: "scss" }],
+    states: [{ name: "selected", tokens: { "tab.color": "{color.primary.base}" } }],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "tab.typography": "{typography.paragraph.p4-semibold}",
+      "panel.padding": "{spacing.scale.5}",
+    },
+    accessibility: {
+      role: "tablist",
+      aria: ["aria-selected", "aria-controls"],
+      keyboard: ["Arrow keys switch tabs"],
+    },
+    examples: [
+      { target: "react", title: "DocTabs", code: '<DocTabs tabs={tabs} defaultTab="scss" />' },
+    ],
+  }),
+  legacyComponent({
+    id: "editor",
+    name: "Editor",
+    category: "atom",
+    description: "v1 WYSIWYG rich text editor with image and YouTube embedding.",
+    anatomy: ["root", "toolbar", "content", "resize-handle"],
+    props: [
+      stringProp("value", { default: "" }),
+      eventProp("onChange", { required: true }),
+      stringProp("width", { default: "100%" }),
+      stringProp("height", { default: "400px" }),
+      stringProp("minHeight"),
+      stringProp("maxHeight"),
+      booleanProp("resizable", { default: false }),
+      stringProp("placeholder", { default: "내용을 입력하세요..." }),
+      objectProp("validator"),
+      objectProp("toolbar", { description: "ToolbarItem[]; default includes all v1 tools." }),
+    ],
+    variants: [{ name: "resize", values: ["fixed", "resizable"], default: "fixed" }],
+    states: [
+      { name: "focusVisible", tokens: { "root.borderColor": "{color.border.focus}" } },
+      { name: "invalid", tokens: { "root.borderColor": "{color.danger.base}" } },
+    ],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "toolbar.background": "{color.bg.elevation}",
+      "content.minHeight": "{spacing.scale.13}",
+      "content.typography": "{typography.paragraph.p3}",
+    },
+    accessibility: {
+      aria: ["aria-label", "aria-invalid"],
+      keyboard: ["Toolbar buttons are reachable with Tab"],
+    },
+    examples: [
+      {
+        target: "react",
+        title: "Editor",
+        code: "<Editor value={content} onChange={setContent} />",
+      },
+    ],
+  }),
+  legacyComponent({
     id: "field",
     name: "Field",
     category: "molecule",
-    status: "stable",
-    description: "Form field composition using v1 spacing and text tokens.",
-    anatomy: [{ name: "root" }, { name: "label" }, { name: "control" }, { name: "message" }],
+    description: "v1 form field composition using spacing and text tokens.",
+    anatomy: ["root", "label", "control", "message"],
     slots: [{ name: "label" }, { name: "control", required: true }, { name: "message" }],
     props: [
-      { name: "invalid", type: { kind: "boolean" }, default: false },
-      { name: "required", type: { kind: "boolean" }, default: false },
+      stringProp("label"),
+      stringProp("labelClass"),
+      objectProp("helper", { description: "Helper text or custom element below input." }),
+      stringProp("helperClass"),
+      stringProp("error"),
+      objectProp("children", { description: "Form control such as Input or Select." }),
+      objectProp("validator", { description: "Zod validation schema." }),
+      stringProp("value", { description: "Value for validation." }),
+      eventProp("setClassName", { description: "Callback to set child input class." }),
+      stringProp("className"),
+      booleanProp("required", { default: false }),
     ],
-    variants: [],
     states: [{ name: "invalid", tokens: { "message.color": "{color.danger.base}" } }],
     tokens: {
       "root.gap": "{spacing.scale.2}",
@@ -991,32 +1397,58 @@ export const legacyComponents: ComponentDocument[] = [
       "message.typography": "{typography.paragraph.p5}",
       "message.color": "{color.text.sub}",
     },
-    targets,
-    accessibility: { aria: ["aria-describedby", "aria-invalid"], keyboard: [] },
+    accessibility: { aria: ["aria-describedby", "aria-invalid", "aria-required"], keyboard: [] },
     examples: [{ target: "react", title: "Field", code: '<Field label="Email"><Input /></Field>' }],
   }),
-  parseComponentDocument({
-    schemaVersion: PODO_SCHEMA_VERSION,
-    kind: "component",
+  legacyComponent({
+    id: "file",
+    name: "File",
+    category: "atom",
+    description:
+      "v1 file input wrapper for accepted types, multiple selection, and disabled state.",
+    anatomy: ["root", "input", "button", "file-list"],
+    props: [
+      stringProp("accept"),
+      booleanProp("multiple", { default: false }),
+      booleanProp("disabled", { default: false }),
+      eventProp("onChange"),
+    ],
+    variants: [{ name: "selection", values: ["single", "multiple"], default: "single" }],
+    states: [
+      { name: "disabled", tokens: { "root.background": "{color.bg.disabled}" } },
+      { name: "focusVisible", tokens: { "root.borderColor": "{color.border.focus}" } },
+    ],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "button.background": "{color.default.base}",
+      "button.typography": "{typography.paragraph.p4-semibold}",
+    },
+    accessibility: { aria: ["aria-disabled"], keyboard: ["Enter opens file picker"] },
+    examples: [{ target: "react", title: "File", code: '<File accept="image/*" multiple />' }],
+  }),
+  legacyComponent({
     id: "input",
     name: "Input",
     category: "atom",
-    status: "stable",
     description: "v1 form input mapped to spacing, radius, border, and typography tokens.",
-    anatomy: [
-      {
-        name: "root",
-        targets: { web: "input", react: "input", hono: "input", native: "TextInput" },
-      },
-    ],
-    slots: [],
+    anatomy: ["root"],
     props: [
-      { name: "value", type: { kind: "string" }, required: false },
-      { name: "placeholder", type: { kind: "string" }, required: false },
-      { name: "disabled", type: { kind: "boolean" }, default: false },
-      { name: "invalid", type: { kind: "boolean" }, default: false },
+      {
+        name: "value",
+        type: { kind: "union", values: ["string", "number"] },
+        required: false,
+      },
+      objectProp("validator", { description: "Zod validation schema." }),
+      stringProp("withIcon", { description: "Left icon class, e.g. icon-search." }),
+      stringProp("withRightIcon", { description: "Right icon class." }),
+      stringProp("unit", { description: "Unit suffix, e.g. km or %." }),
+      stringProp("className"),
+      objectProp("restProps", { description: "Normalized from v1 ...rest native input props." }),
+      stringProp("placeholder"),
+      booleanProp("disabled", { default: false }),
+      booleanProp("invalid", { default: false }),
+      eventProp("onChange"),
     ],
-    variants: [],
     states: [
       { name: "focusVisible", tokens: { "root.borderColor": "{color.border.focus}" } },
       { name: "disabled", tokens: { "root.background": "{color.bg.disabled}" } },
@@ -1031,9 +1463,419 @@ export const legacyComponents: ComponentDocument[] = [
       "root.paddingY": "{spacing.scale.3}",
       "root.typography": "{typography.paragraph.p3}",
     },
-    targets,
     accessibility: { aria: ["aria-invalid", "aria-required"], keyboard: ["Tab focuses input"] },
     examples: [{ target: "react", title: "Input", code: '<Input placeholder="Email" />' }],
+  }),
+  legacyComponent({
+    id: "label",
+    name: "Label",
+    category: "atom",
+    description: "v1 label text component for form controls.",
+    anatomy: ["root", "required-mark"],
+    slots: [{ name: "children", required: true }],
+    props: [
+      objectProp("children", { required: true }),
+      enumProp("size", ["lg", "md", "sm"], { default: "md" }),
+      booleanProp("semibold", { default: false }),
+      booleanProp("required", { default: false }),
+      booleanProp("disabled", { default: false }),
+      stringProp("htmlFor"),
+    ],
+    variants: [
+      { name: "size", values: ["lg", "md", "sm"], default: "md" },
+      { name: "weight", values: ["regular", "semibold"], default: "regular" },
+    ],
+    states: [{ name: "disabled", tokens: { "root.color": "{color.text.action-disabled}" } }],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "root.typography": "{typography.paragraph.p4}",
+      "required-mark.color": "{color.danger.base}",
+    },
+    accessibility: { aria: ["for"], keyboard: [] },
+    examples: [{ target: "react", title: "Label", code: "<Label required>Email</Label>" }],
+  }),
+  legacyComponent({
+    id: "pagination",
+    name: "Pagination",
+    category: "molecule",
+    description: "v1 page navigation with previous/next controls and visible page window.",
+    anatomy: ["root", "prev-button", "page-button", "next-button"],
+    props: [
+      numberProp("currentPage", { required: true }),
+      numberProp("totalPages", { required: true }),
+      eventProp("onPageChange", { required: true }),
+      numberProp("maxVisiblePages", { default: 5 }),
+      stringProp("prevIcon", { default: "icon-arrow-left" }),
+      stringProp("nextIcon", { default: "icon-arrow-right" }),
+    ],
+    variants: [{ name: "density", values: ["default", "compact"], default: "default" }],
+    states: [
+      { name: "selected", tokens: { "page-button.background": "{color.primary.base}" } },
+      { name: "disabled", tokens: { "page-button.color": "{color.text.action-disabled}" } },
+    ],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "page-button.size": "{spacing.scale.8}",
+      "page-button.radius": "{radius.scale.3}",
+      "page-button.typography": "{typography.paragraph.p4}",
+    },
+    accessibility: {
+      role: "navigation",
+      aria: ["aria-current", "aria-label"],
+      keyboard: ["Tab moves through page controls"],
+    },
+    examples: [
+      {
+        target: "react",
+        title: "Pagination",
+        code: "<Pagination currentPage={1} totalPages={10} onPageChange={setPage} />",
+      },
+    ],
+  }),
+  legacyComponent({
+    id: "select",
+    name: "Select",
+    category: "atom",
+    description: "v1 select input with option list, icon support, and disabled state.",
+    anatomy: ["root", "trigger", "value", "icon", "option-list", "option"],
+    props: [
+      stringProp("value"),
+      objectProp("options", { required: true, description: "Array<{ value, label, disabled? }>" }),
+      stringProp("placeholder"),
+      booleanProp("disabled", { default: false }),
+      stringProp("withIcon", { description: "Left icon class name." }),
+      eventProp("onChange"),
+    ],
+    variants: [{ name: "icon", values: ["none", "leading"], default: "none" }],
+    states: [
+      { name: "open", tokens: { "root.borderColor": "{color.primary.base}" } },
+      { name: "disabled", tokens: { "root.background": "{color.bg.disabled}" } },
+      { name: "focusVisible", tokens: { "root.borderColor": "{color.border.focus}" } },
+    ],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "trigger.paddingX": "{spacing.scale.4}",
+      "option-list.background": "{color.bg.modal}",
+      "option.selected.background": "{color.primary.fill}",
+    },
+    accessibility: {
+      role: "combobox",
+      aria: ["aria-expanded", "aria-controls", "aria-selected"],
+      keyboard: ["Arrow keys move options", "Enter selects option", "Escape closes list"],
+    },
+    examples: [
+      {
+        target: "react",
+        title: "Select",
+        code: '<Select options={options} placeholder="Choose" />',
+      },
+    ],
+  }),
+  legacyComponent({
+    id: "tab",
+    name: "Tab",
+    category: "molecule",
+    description: "v1 tab navigation with active/default key support.",
+    anatomy: ["root", "tab-list", "tab", "panel"],
+    props: [
+      objectProp("items", { required: true, description: "Tab items." }),
+      stringProp("activeKey"),
+      stringProp("defaultActiveKey"),
+      booleanProp("fill", { default: false }),
+      eventProp("onChange"),
+    ],
+    variants: [{ name: "width", values: ["auto", "fill"], default: "auto" }],
+    states: [
+      { name: "selected", tokens: { "tab.color": "{color.primary.base}" } },
+      { name: "focusVisible", tokens: { "tab.borderColor": "{color.primary.focus}" } },
+    ],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "tab.paddingX": "{spacing.scale.5}",
+      "tab.typography": "{typography.paragraph.p4-semibold}",
+      "panel.padding": "{spacing.scale.5}",
+    },
+    accessibility: {
+      role: "tablist",
+      aria: ["aria-selected", "aria-controls"],
+      keyboard: ["Arrow keys move tabs"],
+    },
+    examples: [
+      { target: "react", title: "Tab", code: '<Tab items={items} defaultActiveKey="overview" />' },
+    ],
+  }),
+  legacyComponent({
+    id: "table",
+    name: "Table",
+    category: "molecule",
+    description: "v1 data table with columns, data source, row keys, and row click support.",
+    anatomy: ["root", "header", "row", "cell", "empty"],
+    props: [
+      objectProp("columns", { required: true }),
+      objectProp("dataSource", { required: true }),
+      stringProp("rowKey", { required: true }),
+      booleanProp("list", { default: false }),
+      booleanProp("border", { default: false }),
+      booleanProp("fill", { default: false }),
+      eventProp("onRowClick"),
+    ],
+    variants: [
+      { name: "display", values: ["table", "list"], default: "table" },
+      { name: "border", values: ["none", "line"], default: "none" },
+      { name: "fill", values: ["none", "row"], default: "none" },
+    ],
+    states: [{ name: "hover", tokens: { "row.background": "{color.bg.elevation}" } }],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "header.background": "{color.bg.elevation}",
+      "header.typography": "{typography.paragraph.p4-semibold}",
+      "cell.paddingX": "{spacing.scale.4}",
+      "cell.paddingY": "{spacing.scale.3}",
+    },
+    accessibility: {
+      role: "table",
+      aria: ["aria-rowcount", "aria-colcount"],
+      keyboard: ["Tab reaches interactive cell content"],
+    },
+    examples: [
+      {
+        target: "react",
+        title: "Table",
+        code: '<Table columns={columns} dataSource={rows} rowKey="id" />',
+      },
+    ],
+  }),
+  legacyComponent({
+    id: "textarea",
+    name: "Textarea",
+    category: "atom",
+    description: "v1 multiline text input with validation and pass-through props.",
+    anatomy: ["root"],
+    props: [
+      stringProp("value", { required: true }),
+      objectProp("validator"),
+      stringProp("className"),
+      objectProp("restProps", { description: "Normalized from v1 ...rest props." }),
+      stringProp("placeholder"),
+      booleanProp("disabled", { default: false }),
+      eventProp("onChange"),
+    ],
+    states: [
+      { name: "focusVisible", tokens: { "root.borderColor": "{color.border.focus}" } },
+      { name: "disabled", tokens: { "root.background": "{color.bg.disabled}" } },
+      { name: "invalid", tokens: { "root.borderColor": "{color.danger.base}" } },
+    ],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "root.minHeight": "{spacing.scale.13}",
+      "root.paddingX": "{spacing.scale.4}",
+      "root.paddingY": "{spacing.scale.3}",
+    },
+    accessibility: { aria: ["aria-invalid"], keyboard: ["Tab focuses textarea"] },
+    examples: [
+      { target: "react", title: "Textarea", code: "<Textarea value={body} onChange={setBody} />" },
+    ],
+  }),
+  legacyComponent({
+    id: "toast",
+    name: "Toast",
+    category: "molecule",
+    description:
+      "v1 toast provider and notification component with theme, position, and close behavior.",
+    anatomy: ["provider", "viewport", "toast", "header", "message", "close-button"],
+    props: [
+      objectProp("children", { required: true, description: "ToastProvider children." }),
+      stringProp("id", { required: true }),
+      stringProp("message", { required: true }),
+      stringProp("header"),
+      enumProp("theme", ["default", "primary", "info", "success", "warning", "danger"], {
+        default: "default",
+      }),
+      booleanProp("border", { default: false }),
+      booleanProp("long", { default: false }),
+      numberProp("duration", { default: 3000 }),
+      stringProp("width"),
+      enumProp(
+        "position",
+        [
+          "top-left",
+          "top-center",
+          "top-right",
+          "center-left",
+          "center",
+          "center-right",
+          "bottom-left",
+          "bottom-center",
+          "bottom-right",
+        ],
+        { default: "top-right" }
+      ),
+      eventProp("onClose", { required: true }),
+    ],
+    variants: [
+      {
+        name: "theme",
+        values: ["default", "primary", "info", "success", "warning", "danger"],
+        default: "default",
+      },
+      {
+        name: "position",
+        values: [
+          "top-left",
+          "top-center",
+          "top-right",
+          "center-left",
+          "center",
+          "center-right",
+          "bottom-left",
+          "bottom-center",
+          "bottom-right",
+        ],
+        default: "top-right",
+      },
+      { name: "length", values: ["default", "long"], default: "default" },
+    ],
+    states: [{ name: "open", tokens: { "toast.background": "{color.bg.modal}" } }],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "toast.background": "{color.bg.modal}",
+      "toast.borderColor": "{color.border.base}",
+      "toast.shadowColor": "{color.border.alpha}",
+      "header.typography": "{typography.paragraph.p4-semibold}",
+      "message.typography": "{typography.paragraph.p4}",
+    },
+    accessibility: {
+      role: "status",
+      aria: ["aria-live", "aria-atomic"],
+      keyboard: ["Escape closes focused toast"],
+    },
+    examples: [
+      {
+        target: "react",
+        title: "Toast",
+        code: '<Toast message="Saved" theme="success" onClose={close} />',
+      },
+    ],
+  }),
+  legacyComponent({
+    id: "toggle",
+    name: "Toggle",
+    category: "atom",
+    description: "v1 switch-like toggle control with checked and disabled states.",
+    anatomy: ["root", "track", "thumb", "label"],
+    props: [
+      booleanProp("checked", { default: false }),
+      stringProp("label"),
+      booleanProp("disabled", { default: false }),
+      eventProp("onChange"),
+    ],
+    variants: [{ name: "label", values: ["hidden", "visible"], default: "visible" }],
+    states: [
+      { name: "checked", tokens: { "track.background": "{color.primary.base}" } },
+      { name: "disabled", tokens: { "track.background": "{color.bg.disabled}" } },
+      { name: "focusVisible", tokens: { "track.borderColor": "{color.primary.focus}" } },
+    ],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "track.background": "{color.bg.toggle}",
+      "track.radius": "{radius.scale.full}",
+      "thumb.background": "{color.bg.modal}",
+      "thumb.radius": "{radius.scale.full}",
+    },
+    accessibility: {
+      role: "switch",
+      aria: ["aria-checked", "aria-disabled"],
+      keyboard: ["Space toggles switch"],
+    },
+    examples: [
+      {
+        target: "react",
+        title: "Toggle",
+        code: "<Toggle checked={enabled} onChange={setEnabled} />",
+      },
+    ],
+  }),
+  legacyComponent({
+    id: "tooltip",
+    name: "Tooltip",
+    category: "atom",
+    description:
+      "v1 tooltip component with content, position, visibility, portal, and max width controls.",
+    anatomy: ["trigger", "content", "arrow"],
+    slots: [
+      { name: "children", required: true },
+      { name: "content", required: true },
+    ],
+    props: [
+      objectProp("children", { required: true }),
+      objectProp("content", { required: true, description: "Tooltip content, including JSX." }),
+      enumProp("variant", ["default", "info"], { default: "default" }),
+      enumProp(
+        "position",
+        [
+          "top",
+          "topLeft",
+          "topRight",
+          "bottom",
+          "bottomLeft",
+          "bottomRight",
+          "left",
+          "leftTop",
+          "leftBottom",
+          "right",
+          "rightTop",
+          "rightBottom",
+        ],
+        { default: "top" }
+      ),
+      numberProp("offset", { default: 8 }),
+      booleanProp("isVisible"),
+      stringProp("className"),
+      booleanProp("portal", { default: false }),
+      stringProp("maxWidth"),
+    ],
+    variants: [
+      { name: "variant", values: ["default", "info"], default: "default" },
+      {
+        name: "position",
+        values: [
+          "top",
+          "topLeft",
+          "topRight",
+          "bottom",
+          "bottomLeft",
+          "bottomRight",
+          "left",
+          "leftTop",
+          "leftBottom",
+          "right",
+          "rightTop",
+          "rightBottom",
+        ],
+        default: "top",
+      },
+    ],
+    states: [{ name: "open", tokens: { "content.background": "{color.default-deep.base}" } }],
+    tokens: {
+      ...legacyBaseComponentTokens(),
+      "content.background": "{color.default-deep.base}",
+      "content.color": "{color.default-deep.reverse}",
+      "content.paddingX": "{spacing.scale.3}",
+      "content.paddingY": "{spacing.scale.2}",
+      "content.radius": "{radius.scale.3}",
+    },
+    accessibility: {
+      role: "tooltip",
+      aria: ["aria-describedby"],
+      keyboard: ["Escape hides tooltip"],
+    },
+    examples: [
+      {
+        target: "react",
+        title: "Tooltip",
+        code: '<Tooltip content="Help"><button>?</button></Tooltip>',
+      },
+    ],
   }),
 ];
 

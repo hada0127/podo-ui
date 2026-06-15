@@ -589,7 +589,7 @@
 - [x] P2: Button spec 완성
   - 완료 기준: 기존 Button의 theme, variant, size, state, alignment 조합이 JSON spec과 editor preview/test에 반영된다.
   - 완료 기준: Button 기본값과 token binding이 v1 문서/SCSS 기준과 충돌하지 않는다.
-- [ ] P3: 기존 컴포넌트 spec fixture 확장
+- [x] P3: 기존 컴포넌트 spec fixture 확장
   - 완료 기준: v1 `public/ai/components`에 있던 주요 컴포넌트가 최소 JSON spec fixture로 이식되고 editor 목록/검색/preview에서 참조 가능하다.
   - 완료 기준: 누락 컴포넌트 목록과 의도적으로 보류한 범위가 문서화된다.
 - [ ] P4: 설치 프로젝트 반영 플로우 연결 검증
