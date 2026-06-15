@@ -115,6 +115,19 @@ describe("createInMemoryAdapter", () => {
     expect(issues.filter((item) => item.code.endsWith(".schema.invalid"))).toHaveLength(0);
     expect(issues.some((item) => item.code === MISSING)).toBe(false);
   });
+
+  it("stores and reloads page documents", async () => {
+    const adapter = createInMemoryAdapter();
+    await adapter.savePage!({
+      schemaVersion: PODO_SCHEMA_VERSION,
+      kind: "page",
+      id: "home",
+      name: "Home",
+      root: { type: "text", id: "t", value: "hi" } as never,
+    } as never);
+    const context = await adapter.loadContext();
+    expect(context.pages?.map((page) => page.id)).toContain("home");
+  });
 });
 
 describe("createStudioHttpAdapter", () => {
@@ -146,6 +159,7 @@ describe("createStudioHttpAdapter", () => {
           ok: true,
           context: {
             components: [{ document: demoComponent }],
+            pages: [{ id: "home", kind: "page" }],
             files: [{ path: ".podo/tokens/editor.tokens.json", kind: "token" }],
           },
         };
@@ -187,6 +201,18 @@ describe("createStudioHttpAdapter", () => {
       (call) => call.url.endsWith("/api/files") && String(call.body?.path).includes("tokens/editor")
     );
     expect(tokenDocCall?.body?.path).toBe(".podo/tokens/editor.tokens.json");
+
+    await adapter.savePage!({
+      schemaVersion: PODO_SCHEMA_VERSION,
+      kind: "page",
+      id: "home",
+      name: "Home",
+      root: { type: "text", id: "t", value: "hi", overrides: [] } as never,
+    } as never);
+    const pageCall = calls.find(
+      (call) => call.url.includes("/api/files") && String(call.body?.path).includes("pages/")
+    );
+    expect(pageCall?.body?.path).toBe(".podo/pages/home.page.json");
   });
 
   it("maps the real studio context shape and returns validation issues", async () => {
@@ -199,6 +225,8 @@ describe("createStudioHttpAdapter", () => {
     // raw token document is loaded from the token file, not the resolved context
     expect(context.tokenDocuments).toHaveLength(1);
     expect(context.tokenDocuments[0]?.category).toBe("theme");
+    // pages come straight from the context payload
+    expect(context.pages?.map((page) => page.id)).toContain("home");
     expect(await adapter.validate()).toEqual([]);
   });
 

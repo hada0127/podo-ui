@@ -2,6 +2,7 @@ import type {
   ComponentDocument,
   DesignToken,
   IconManifest,
+  PageDocument,
   TokenDocument,
   ValidationIssue,
 } from "@podo/spec";
@@ -27,6 +28,8 @@ export interface EditorCapabilities {
 export interface EditContext {
   tokenDocuments: TokenDocument[];
   components: ComponentDocument[];
+  /** Page documents (installed-project hosts with page design only). */
+  pages?: PageDocument[];
   iconManifest?: IconManifest;
   capabilities: EditorCapabilities;
 }
@@ -61,6 +64,8 @@ export interface PodoSaveAdapter {
   loadContext(): Promise<EditContext>;
   saveToken(input: SaveTokenInput): Promise<SaveResult>;
   saveComponent(component: ComponentDocument, options?: SaveOptions): Promise<SaveResult>;
+  /** Optional: persist a page document (installed-project page design only). */
+  savePage?(page: PageDocument, options?: SaveOptions): Promise<SaveResult>;
   validate(): Promise<ValidationIssue[]>;
   /**
    * Optional bulk token persistence. The editor commits whole token documents

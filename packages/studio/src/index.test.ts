@@ -286,6 +286,45 @@ describe("@podo/studio", () => {
     expect(buttons[0]?.source).toBe("project");
   });
 
+  it("validates and surfaces installed-project pages in the context", async () => {
+    const root = await createProject({});
+    const app = createStudioApp({ root });
+    await app.request("/api/components/local", {
+      method: "POST",
+      body: JSON.stringify({ template: "gnb", id: "gnb" }),
+      headers: { "content-type": "application/json" },
+    });
+
+    const page = {
+      schemaVersion: "2.0.0",
+      kind: "page",
+      id: "home",
+      name: "Home",
+      root: { type: "component-instance", component: "gnb" },
+    };
+    const put = await app.request("/api/files", {
+      method: "PUT",
+      body: JSON.stringify({ path: ".podo/pages/home.page.json", contents: JSON.stringify(page) }),
+      headers: { "content-type": "application/json" },
+    });
+    expect(put.status).toBe(200);
+    await expect(stat(join(root, ".podo/pages/home.page.json"))).resolves.toBeDefined();
+
+    const context = await loadStudioContext(root);
+    expect(context.pages.some((item) => item.id === "home")).toBe(true);
+    expect(
+      context.files.some((file) => file.path === ".podo/pages/home.page.json" && file.kind === "page")
+    ).toBe(true);
+
+    // A schema-invalid page is rejected by the write validation.
+    const bad = await app.request("/api/files", {
+      method: "PUT",
+      body: JSON.stringify({ path: ".podo/pages/bad.page.json", contents: JSON.stringify({ kind: "page" }) }),
+      headers: { "content-type": "application/json" },
+    });
+    expect(bad.status).toBe(400);
+  });
+
   it("connects validate and build APIs and rejects writes outside .podo", async () => {
     const root = await createProject({});
     const app = createStudioApp({

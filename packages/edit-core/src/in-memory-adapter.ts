@@ -1,4 +1,4 @@
-import type { ComponentDocument, TokenDocument } from "@podo/spec";
+import type { ComponentDocument, PageDocument, TokenDocument } from "@podo/spec";
 import {
   type EditContext,
   type EditorCapabilities,
@@ -17,6 +17,7 @@ import { validateWorkspace } from "./validation.js";
 export interface InMemoryAdapterInit {
   tokenDocuments?: TokenDocument[];
   components?: ComponentDocument[];
+  pages?: PageDocument[];
   capabilities?: Partial<EditorCapabilities>;
 }
 
@@ -33,11 +34,12 @@ const DEFAULT_CAPABILITIES: EditorCapabilities = {
 export function createInMemoryAdapter(init: InMemoryAdapterInit = {}): PodoSaveAdapter {
   let tokenDocuments = normalizeEditorTokenDocuments(init.tokenDocuments ?? []);
   let components = init.components ? [...init.components] : [];
+  let pages = init.pages ? [...init.pages] : [];
   const capabilities: EditorCapabilities = { ...DEFAULT_CAPABILITIES, ...init.capabilities };
 
   return {
     async loadContext(): Promise<EditContext> {
-      return { tokenDocuments, components, capabilities };
+      return { tokenDocuments, components, pages, capabilities };
     },
     async saveToken(input: SaveTokenInput): Promise<SaveResult> {
       if (input.dryRun) {
@@ -72,6 +74,15 @@ export function createInMemoryAdapter(init: InMemoryAdapterInit = {}): PodoSaveA
         ? components.map((item) => (item.id === component.id ? component : item))
         : [...components, component];
       return { ok: true, path: `${component.id}.component.json` };
+    },
+    async savePage(page: PageDocument, options: SaveOptions = {}): Promise<SaveResult> {
+      if (options.dryRun) {
+        return { ok: true, dryRun: true, path: `${page.id}.page.json` };
+      }
+      pages = pages.some((item) => item.id === page.id)
+        ? pages.map((item) => (item.id === page.id ? page : item))
+        : [...pages, page];
+      return { ok: true, path: `${page.id}.page.json` };
     },
     async validate() {
       return validateWorkspace({ tokenDocuments, components });

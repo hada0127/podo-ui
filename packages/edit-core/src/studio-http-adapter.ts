@@ -1,4 +1,4 @@
-import type { ComponentDocument, TokenDocument, ValidationIssue } from "@podo/spec";
+import type { ComponentDocument, PageDocument, TokenDocument, ValidationIssue } from "@podo/spec";
 import {
   type EditContext,
   type EditorCapabilities,
@@ -36,6 +36,7 @@ interface ApiResult {
   error?: { message?: string };
   context?: {
     components?: Array<{ document?: ComponentDocument }>;
+    pages?: PageDocument[];
     files?: Array<{ path: string; kind: string }>;
   };
 }
@@ -108,7 +109,8 @@ export function createStudioHttpAdapter(options: StudioHttpAdapterOptions = {}):
           }
         }
       }
-      return { tokenDocuments, components, capabilities };
+      const pages = payload.context?.pages ?? [];
+      return { tokenDocuments, components, pages, capabilities };
     },
     async saveToken(input: SaveTokenInput): Promise<SaveResult> {
       await request(
@@ -142,6 +144,11 @@ export function createStudioHttpAdapter(options: StudioHttpAdapterOptions = {}):
     async saveComponent(component: ComponentDocument, opts: SaveOptions = {}): Promise<SaveResult> {
       const path = `.podo/components/local/${component.id}.component.json`;
       const contents = `${JSON.stringify(component, null, 2)}\n`;
+      return putFile(path, contents, opts);
+    },
+    async savePage(page: PageDocument, opts: SaveOptions = {}): Promise<SaveResult> {
+      const path = `.podo/pages/${page.id}.page.json`;
+      const contents = `${JSON.stringify(page, null, 2)}\n`;
       return putFile(path, contents, opts);
     },
     async validate(): Promise<ValidationIssue[]> {

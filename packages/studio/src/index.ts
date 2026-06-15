@@ -7,14 +7,17 @@ import {
   collectTokenPaths,
   parseComponentDocument,
   parseIconManifest,
+  parsePageDocument,
   parsePodoConfig,
   parsePodoLock,
   parseTokenDocument,
   PODO_SCHEMA_VERSION,
   validateComponentTokenBindings,
   validateIconManifest,
+  validatePageComponents,
   type ComponentDocument,
   type IconManifest,
+  type PageDocument,
   type PodoConfig,
   type PodoLock,
   type TokenDocument,
@@ -96,7 +99,7 @@ export interface StudioServer {
 
 export interface StudioFileSummary {
   path: string;
-  kind: "config" | "lock" | "token" | "theme" | "component" | "icon" | "svg" | "generated";
+  kind: "config" | "lock" | "token" | "theme" | "component" | "page" | "icon" | "svg" | "generated";
   status: "valid" | "invalid" | "unparsed";
   issues: ValidationIssue[];
 }
@@ -137,6 +140,7 @@ export interface StudioContext {
   tokenPaths: string[];
   resolvedTokens: Array<ResolvedToken & { source: "package" | "project" }>;
   components: StudioComponentSummary[];
+  pages: PageDocument[];
   generatedPreview: StudioGeneratedPreview[];
   issues: ValidationIssue[];
   config?: PodoConfig;
@@ -505,6 +509,18 @@ export async function loadStudioContext(root: string): Promise<StudioContext> {
   }
   const components = [...componentMap.values()];
 
+  const pageRecords = await readJsonRecords(join(projectRoot, ".podo/pages"), projectRoot);
+  const componentDocuments = components.map((component) => component.document);
+  const pages: PageDocument[] = [];
+  for (const record of pageRecords) {
+    const page = parseOptionalRecord(record, parsePageDocument, "page", files, issues);
+    if (page) {
+      pages.push(page);
+      issues.push(...validatePageComponents(page, componentDocuments));
+    }
+  }
+  pages.sort((a, b) => a.id.localeCompare(b.id));
+
   const iconRecord = await readJsonRecord(
     join(projectRoot, ".podo/icons/manifest.json"),
     projectRoot
@@ -533,6 +549,7 @@ export async function loadStudioContext(root: string): Promise<StudioContext> {
     tokenPaths,
     resolvedTokens,
     components,
+    pages,
     generatedPreview: await readGeneratedPreview(projectRoot, config),
     issues,
     ...(config ? { config } : {}),
@@ -1152,6 +1169,8 @@ function validateWritableFile(path: string, contents: string): ValidationIssue[]
       parseTokenDocument(json);
     } else if (normalized.endsWith(".component.json")) {
       parseComponentDocument(json);
+    } else if (normalized.endsWith(".page.json")) {
+      parsePageDocument(json);
     } else if (normalized.endsWith(".podo/icons/manifest.json")) {
       parseIconManifest(json);
     }
