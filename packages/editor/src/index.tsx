@@ -258,6 +258,7 @@ export interface PodoEditorAppProps {
 }
 
 type EditorPanel = "tokens" | "components" | "canvas" | "export";
+type ComponentEditMode = "props" | "variants";
 
 interface ComponentMetaDraft {
   name: string;
@@ -352,6 +353,7 @@ export function PodoEditorApp({
   const [componentPreviewSelections, setComponentPreviewSelections] = useState<
     Record<string, string>
   >({});
+  const [componentEditMode, setComponentEditMode] = useState<ComponentEditMode>("props");
   const [selectedColorScheme, setSelectedColorScheme] = useState<EditorColorScheme>(colorScheme);
   const [systemColorScheme, setSystemColorScheme] = useState<"light" | "dark">("light");
   const [exportPreview, setExportPreview] = useState<ComponentSpecExportFile | undefined>();
@@ -769,19 +771,22 @@ export function PodoEditorApp({
               value={componentSearch}
               onChange={(event) => setComponentSearch(event.currentTarget.value)}
             />
-            <div style={listStyle}>
+            <div style={componentListStyle}>
               {filteredComponents.map((component) => (
                 <button
                   key={component.id}
                   type="button"
+                  title={`${component.name} / ${component.id}`}
                   style={{
-                    ...listButtonStyle,
-                    ...(selectedComponentForSpec?.id === component.id ? listButtonActiveStyle : {}),
+                    ...componentListButtonStyle,
+                    ...(selectedComponentForSpec?.id === component.id
+                      ? componentListButtonActiveStyle
+                      : {}),
                   }}
                   onClick={() => setSelectedComponentId(component.id)}
                 >
-                  <span>{component.name}</span>
-                  <small>{component.id}</small>
+                  <span style={componentListNameStyle}>{component.name}</span>
+                  <small style={componentListIdStyle}>{component.id}</small>
                 </button>
               ))}
               {filteredComponents.length ? null : (
@@ -970,14 +975,39 @@ export function PodoEditorApp({
               </label>
               <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
                 Value
-                <textarea
-                  style={{ ...textareaStyle, minHeight: 120 }}
-                  value={tokenDraft.valueText}
-                  onChange={(event) => {
-                    const valueText = event.currentTarget.value;
-                    setTokenDraft((draft) => ({ ...draft, valueText }));
-                  }}
-                />
+                <div
+                  style={
+                    tokenDraft.type === "color" ? tokenValueEditorStyle : tokenValueEditorPlainStyle
+                  }
+                >
+                  {tokenDraft.type === "color" ? (
+                    <input
+                      aria-label="Color value"
+                      type="color"
+                      style={tokenColorInputStyle}
+                      value={
+                        isHexColorInputValue(tokenDraft.valueText)
+                          ? tokenDraft.valueText
+                          : "#000000"
+                      }
+                      onChange={(event) => {
+                        const valueText = event.currentTarget.value;
+                        setTokenDraft((draft) => ({ ...draft, valueText }));
+                      }}
+                    />
+                  ) : null}
+                  <textarea
+                    style={{
+                      ...textareaStyle,
+                      minHeight: tokenDraft.type === "typography" ? 120 : 72,
+                    }}
+                    value={tokenDraft.valueText}
+                    onChange={(event) => {
+                      const valueText = event.currentTarget.value;
+                      setTokenDraft((draft) => ({ ...draft, valueText }));
+                    }}
+                  />
+                </div>
               </label>
               <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
                 Description
@@ -999,14 +1029,14 @@ export function PodoEditorApp({
               <strong>Preview</strong>
               {renderTokenDraftPreview(tokenDraft, previewTokenLookup)}
             </div>
-            <div style={previewPanelStyle}>
-              <strong>Document JSON</strong>
+            <details style={disclosureStyle}>
+              <summary style={summaryStyle}>Document JSON</summary>
               <textarea
                 style={{ ...textareaStyle, minHeight: 220 }}
                 readOnly
                 value={JSON.stringify(tokenDocumentsState, null, 2)}
               />
-            </div>
+            </details>
           </section>
         ) : null}
         {activePanel === "components" && selectedComponentForSpec ? (
@@ -1016,81 +1046,91 @@ export function PodoEditorApp({
                 <h1 style={sectionTitleStyle}>{selectedComponentForSpec.name}</h1>
                 <p style={sectionMetaStyle}>{selectedComponentForSpec.id}.component.json</p>
               </div>
-              <button type="button" style={smallButtonStyle} onClick={saveComponentMetaDraft}>
-                Save component
-              </button>
+              <div style={componentStatRowStyle}>
+                <span>{selectedComponentForSpec.props.length} props</span>
+                <span>{selectedComponentForSpec.variants.length} variants</span>
+                <span>{selectedComponentForSpec.states.length} states</span>
+              </div>
             </div>
-            <div style={formGridStyle}>
-              <label style={fieldStyle}>
-                Name
-                <input
-                  style={inputStyle}
-                  value={componentMetaDraft.name}
-                  onChange={(event) => {
-                    const name = event.currentTarget.value;
-                    setComponentMetaDraft((draft) => ({
-                      ...draft,
-                      name,
-                    }));
-                  }}
-                />
-              </label>
-              <label style={fieldStyle}>
-                Category
-                <select
-                  style={selectStyle}
-                  value={componentMetaDraft.category}
-                  onChange={(event) => {
-                    const category = event.currentTarget.value as ComponentDocument["category"];
-                    setComponentMetaDraft((draft) => ({
-                      ...draft,
-                      category,
-                    }));
-                  }}
-                >
-                  {componentCategories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label style={fieldStyle}>
-                Status
-                <select
-                  style={selectStyle}
-                  value={componentMetaDraft.status}
-                  onChange={(event) => {
-                    const status = event.currentTarget.value as ComponentDocument["status"];
-                    setComponentMetaDraft((draft) => ({
-                      ...draft,
-                      status,
-                    }));
-                  }}
-                >
-                  {componentStatuses.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                Description
-                <input
-                  style={inputStyle}
-                  value={componentMetaDraft.description}
-                  onChange={(event) => {
-                    const description = event.currentTarget.value;
-                    setComponentMetaDraft((draft) => ({
-                      ...draft,
-                      description,
-                    }));
-                  }}
-                />
-              </label>
-            </div>
-            <div style={previewPanelStyle}>
+            <details style={disclosureStyle}>
+              <summary style={summaryStyle}>Details</summary>
+              <div style={compactFormGridStyle}>
+                <label style={fieldStyle}>
+                  Name
+                  <input
+                    style={inputStyle}
+                    value={componentMetaDraft.name}
+                    onChange={(event) => {
+                      const name = event.currentTarget.value;
+                      setComponentMetaDraft((draft) => ({
+                        ...draft,
+                        name,
+                      }));
+                    }}
+                  />
+                </label>
+                <label style={fieldStyle}>
+                  Category
+                  <select
+                    style={selectStyle}
+                    value={componentMetaDraft.category}
+                    onChange={(event) => {
+                      const category = event.currentTarget.value as ComponentDocument["category"];
+                      setComponentMetaDraft((draft) => ({
+                        ...draft,
+                        category,
+                      }));
+                    }}
+                  >
+                    {componentCategories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label style={fieldStyle}>
+                  Status
+                  <select
+                    style={selectStyle}
+                    value={componentMetaDraft.status}
+                    onChange={(event) => {
+                      const status = event.currentTarget.value as ComponentDocument["status"];
+                      setComponentMetaDraft((draft) => ({
+                        ...draft,
+                        status,
+                      }));
+                    }}
+                  >
+                    {componentStatuses.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                  Description
+                  <input
+                    style={inputStyle}
+                    value={componentMetaDraft.description}
+                    onChange={(event) => {
+                      const description = event.currentTarget.value;
+                      setComponentMetaDraft((draft) => ({
+                        ...draft,
+                        description,
+                      }));
+                    }}
+                  />
+                </label>
+                <div style={rowStyle}>
+                  <button type="button" style={smallButtonStyle} onClick={saveComponentMetaDraft}>
+                    Save
+                  </button>
+                </div>
+              </div>
+            </details>
+            <div style={componentPreviewPanelStyle}>
               <div style={cardHeaderStyle}>
                 <strong>Preview</strong>
                 <div style={previewControlRowStyle}>
@@ -1152,7 +1192,25 @@ export function PodoEditorApp({
                 previewTokenLookup
               )}
             </div>
-            <div style={splitPanelStyle}>
+            <div style={componentEditModeBarStyle}>
+              {(["props", "variants"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  style={{
+                    ...componentEditModeButtonStyle,
+                    ...(componentEditMode === mode ? componentEditModeButtonActiveStyle : {}),
+                  }}
+                  onClick={() => setComponentEditMode(mode)}
+                >
+                  {mode === "props" ? `Props (${selectedComponentForSpec.props.length})` : null}
+                  {mode === "variants"
+                    ? `Variants (${selectedComponentForSpec.variants.length})`
+                    : null}
+                </button>
+              ))}
+            </div>
+            {componentEditMode === "props" ? (
               <div style={cardStyle}>
                 <div style={cardHeaderStyle}>
                   <strong>Props</strong>
@@ -1286,6 +1344,8 @@ export function PodoEditorApp({
                   </div>
                 </div>
               </div>
+            ) : null}
+            {componentEditMode === "variants" ? (
               <div style={cardStyle}>
                 <div style={cardHeaderStyle}>
                   <strong>Variants</strong>
@@ -1402,16 +1462,16 @@ export function PodoEditorApp({
                   </div>
                 </div>
               </div>
-            </div>
+            ) : null}
             {componentDraftError ? <div style={errorBannerStyle}>{componentDraftError}</div> : null}
-            <div style={previewPanelStyle}>
-              <strong>Component JSON</strong>
+            <details style={disclosureStyle}>
+              <summary style={summaryStyle}>Component JSON</summary>
               <textarea
                 style={{ ...textareaStyle, minHeight: 220 }}
                 readOnly
                 value={JSON.stringify(selectedComponentForSpec, null, 2)}
               />
-            </div>
+            </details>
           </section>
         ) : null}
         {activePanel === "canvas" ? (
@@ -3075,6 +3135,10 @@ function isCssColorValue(value: unknown): boolean {
   );
 }
 
+function isHexColorInputValue(value: string): boolean {
+  return /^#[0-9a-fA-F]{6}$/.test(value);
+}
+
 function isTypographyValue(value: unknown): value is {
   fontFamily: string;
   fontSize: string;
@@ -3828,7 +3892,7 @@ const editorShellStyle: CSSProperties = {
   height: "100vh",
   display: "grid",
   gridTemplateRows: "56px minmax(0, 1fr)",
-  gridTemplateColumns: "320px minmax(0, 1fr)",
+  gridTemplateColumns: "360px minmax(0, 1fr)",
   overflow: "hidden",
   background: "#f4f6f8",
   color: "#171a20",
@@ -3939,7 +4003,7 @@ const toolbarButtonStyle: CSSProperties = {
 
 const listStyle: CSSProperties = {
   display: "grid",
-  gap: 12,
+  gap: 8,
 };
 
 const emptyListStyle: CSSProperties = {
@@ -4005,34 +4069,16 @@ const tokenVariationHeaderStyle: CSSProperties = {
   fontWeight: 700,
 };
 
-const listButtonStyle: CSSProperties = {
-  minHeight: 44,
-  border: "1px solid #d8dde6",
-  borderRadius: 6,
-  background: "#ffffff",
-  color: "#171a20",
-  padding: "6px 8px",
-  display: "grid",
-  gap: 2,
-  textAlign: "left",
-};
-
-const listButtonActiveStyle: CSSProperties = {
-  border: "1px solid #8fb3f4",
-  background: "#f3f7ff",
-};
-
 const tokenVariationButtonStyle: CSSProperties = {
-  minHeight: 34,
+  minHeight: 42,
   border: "1px solid transparent",
   borderRadius: 6,
   background: "transparent",
   color: "#171a20",
-  padding: "6px 8px 6px 12px",
+  padding: "7px 8px 7px 12px",
   display: "grid",
-  gridTemplateColumns: "minmax(0, 1fr) auto",
-  alignItems: "center",
-  columnGap: 10,
+  gap: 3,
+  alignItems: "start",
   textAlign: "left",
 };
 
@@ -4043,19 +4089,126 @@ const tokenVariationButtonActiveStyle: CSSProperties = {
 
 const tokenVariationNameStyle: CSSProperties = {
   minWidth: 0,
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
+  overflowWrap: "anywhere",
   fontWeight: 600,
 };
 
 const tokenVariationValueStyle: CSSProperties = {
-  maxWidth: 112,
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
+  minWidth: 0,
+  overflowWrap: "anywhere",
   color: "#6b7280",
   fontSize: 11,
+  lineHeight: "16px",
+};
+
+const componentListStyle: CSSProperties = {
+  display: "grid",
+  gap: 3,
+};
+
+const componentListButtonStyle: CSSProperties = {
+  minHeight: 38,
+  border: "1px solid transparent",
+  borderRadius: 6,
+  background: "transparent",
+  color: "#171a20",
+  padding: "7px 8px",
+  display: "grid",
+  gap: 2,
+  textAlign: "left",
+};
+
+const componentListButtonActiveStyle: CSSProperties = {
+  border: "1px solid #8fb3f4",
+  background: "#f3f7ff",
+};
+
+const componentListNameStyle: CSSProperties = {
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  fontWeight: 600,
+  lineHeight: "18px",
+};
+
+const componentListIdStyle: CSSProperties = {
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  color: "#6b7280",
+  lineHeight: "16px",
+};
+
+const disclosureStyle: CSSProperties = {
+  border: "1px solid #d8dde6",
+  borderRadius: 8,
+  background: "#ffffff",
+  padding: 10,
+};
+
+const summaryStyle: CSSProperties = {
+  cursor: "pointer",
+  fontWeight: 700,
+  fontSize: 13,
+};
+
+const compactFormGridStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(3, minmax(160px, 1fr))",
+  gap: 10,
+  marginTop: 10,
+};
+
+const componentStatRowStyle: CSSProperties = {
+  display: "flex",
+  gap: 8,
+  flexWrap: "wrap",
+  justifyContent: "flex-end",
+  color: "#5d6775",
+  fontSize: 12,
+};
+
+const componentEditModeBarStyle: CSSProperties = {
+  display: "inline-flex",
+  width: "fit-content",
+  border: "1px solid #d8dde6",
+  borderRadius: 8,
+  background: "#ffffff",
+  padding: 3,
+  gap: 3,
+};
+
+const componentEditModeButtonStyle: CSSProperties = {
+  minHeight: 30,
+  border: "1px solid transparent",
+  borderRadius: 6,
+  background: "transparent",
+  color: "#4e5968",
+  padding: "0 10px",
+};
+
+const componentEditModeButtonActiveStyle: CSSProperties = {
+  border: "1px solid #8fb3f4",
+  background: "#eaf1ff",
+  color: "#153e75",
+};
+
+const tokenValueEditorStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "auto minmax(0, 1fr)",
+  alignItems: "stretch",
+  gap: 8,
+};
+
+const tokenValueEditorPlainStyle: CSSProperties = {
+  display: "grid",
+};
+
+const tokenColorInputStyle: CSSProperties = {
+  width: 52,
+  minHeight: 72,
+  border: "1px solid #d8dde6",
+  borderRadius: 6,
+  padding: 4,
+  background: "#ffffff",
 };
 
 const summaryListStyle: CSSProperties = {
@@ -4307,6 +4460,13 @@ const previewPanelStyle: CSSProperties = {
   padding: 12,
   display: "grid",
   gap: 10,
+};
+
+const componentPreviewPanelStyle: CSSProperties = {
+  ...previewPanelStyle,
+  position: "sticky",
+  top: 12,
+  zIndex: 1,
 };
 
 const previewControlRowStyle: CSSProperties = {
