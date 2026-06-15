@@ -574,6 +574,19 @@ export function PodoEditorApp({
       setTokenDraftError(error instanceof Error ? error.message : "Token draft is invalid.");
     }
   };
+  const selectTokenType = (type: DesignToken["$type"]): void => {
+    const firstRecord = tokenRecords.find((record) => record.token.$type === type);
+    if (firstRecord) {
+      setSelectedTokenKey(tokenRecordKey(firstRecord));
+      return;
+    }
+    setSelectedTokenKey(undefined);
+    setTokenDraft({
+      ...createNewTokenDraft(),
+      type,
+      path: `${type}.example.value`,
+    });
+  };
   const updateTokenMatrixCell = (record: EditorTokenRecord, valueText: string): void => {
     try {
       const nextDocuments = moveTokenInDocuments(tokenDocumentsState, {
@@ -746,41 +759,20 @@ export function PodoEditorApp({
             </button>
             <div style={listStyle}>
               {tokenGroups.map((group) => (
-                <section key={group.type} style={tokenGroupStyle}>
-                  <div style={tokenGroupHeaderStyle}>
-                    <span>{group.type}</span>
-                    <small style={tokenGroupCountStyle}>{group.count}</small>
-                  </div>
-                  {group.sections.map((section) => (
-                    <div key={section.parentPath} style={tokenVariationGroupStyle}>
-                      <div style={tokenVariationHeaderStyle}>
-                        <span>{section.parentPath}</span>
-                        <small style={tokenGroupCountStyle}>{section.records.length}</small>
-                      </div>
-                      {section.records.map((record) => (
-                        <button
-                          key={tokenRecordKey(record)}
-                          type="button"
-                          title={record.path}
-                          style={{
-                            ...tokenVariationButtonStyle,
-                            ...(selectedTokenKey === tokenRecordKey(record)
-                              ? tokenVariationButtonActiveStyle
-                              : {}),
-                          }}
-                          onClick={() => setSelectedTokenKey(tokenRecordKey(record))}
-                        >
-                          <span style={tokenVariationNameStyle}>
-                            {tokenVariationName(record.path)}
-                          </span>
-                          <small style={tokenVariationValueStyle}>
-                            {formatTokenListValue(record.token.$value)}
-                          </small>
-                        </button>
-                      ))}
-                    </div>
-                  ))}
-                </section>
+                <button
+                  key={group.type}
+                  type="button"
+                  style={{
+                    ...tokenTypeButtonStyle,
+                    ...(tokenDraft.type === group.type ? tokenTypeButtonActiveStyle : {}),
+                  }}
+                  onClick={() => selectTokenType(group.type)}
+                >
+                  <span style={tokenTypeNameStyle}>{group.type}</span>
+                  <small style={tokenTypeMetaStyle}>
+                    {group.count} tokens / {group.sections.length} groups
+                  </small>
+                </button>
               ))}
             </div>
           </>
@@ -971,94 +963,101 @@ export function PodoEditorApp({
               onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
               onCommitValue: updateTokenMatrixCell,
             })}
-            <div style={formGridStyle}>
-              <label style={fieldStyle}>
-                Path
-                <input
-                  style={inputStyle}
-                  value={tokenDraft.path}
-                  onChange={(event) => {
-                    const path = event.currentTarget.value;
-                    setTokenDraft((draft) => ({ ...draft, path }));
-                  }}
-                />
-              </label>
-              <label style={fieldStyle}>
-                Type
-                <select
-                  style={selectStyle}
-                  value={tokenDraft.type}
-                  onChange={(event) => {
-                    const type = event.currentTarget.value as EditorTokenDraft["type"];
-                    setTokenDraft((draft) => ({
-                      ...draft,
-                      type,
-                    }));
-                  }}
-                >
-                  {editorTokenTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                Value
-                <div
-                  style={
-                    tokenDraft.type === "color" ? tokenValueEditorStyle : tokenValueEditorPlainStyle
-                  }
-                >
-                  {tokenDraft.type === "color" ? (
+            {tokenDraftError ? <div style={errorBannerStyle}>{tokenDraftError}</div> : null}
+            <details style={disclosureStyle}>
+              <summary style={summaryStyle}>Selected token detail</summary>
+              <div style={detailPanelBodyStyle}>
+                <div style={formGridStyle}>
+                  <label style={fieldStyle}>
+                    Path
                     <input
-                      aria-label="Color value"
-                      type="color"
-                      style={tokenColorInputStyle}
-                      value={
-                        isHexColorInputValue(tokenDraft.valueText)
-                          ? tokenDraft.valueText
-                          : "#000000"
-                      }
+                      style={inputStyle}
+                      value={tokenDraft.path}
                       onChange={(event) => {
-                        const valueText = event.currentTarget.value;
-                        setTokenDraft((draft) => ({ ...draft, valueText }));
+                        const path = event.currentTarget.value;
+                        setTokenDraft((draft) => ({ ...draft, path }));
                       }}
                     />
-                  ) : null}
-                  <textarea
-                    style={{
-                      ...textareaStyle,
-                      minHeight: tokenDraft.type === "typography" ? 120 : 72,
-                    }}
-                    value={tokenDraft.valueText}
-                    onChange={(event) => {
-                      const valueText = event.currentTarget.value;
-                      setTokenDraft((draft) => ({ ...draft, valueText }));
-                    }}
-                  />
+                  </label>
+                  <label style={fieldStyle}>
+                    Type
+                    <select
+                      style={selectStyle}
+                      value={tokenDraft.type}
+                      onChange={(event) => {
+                        const type = event.currentTarget.value as EditorTokenDraft["type"];
+                        setTokenDraft((draft) => ({
+                          ...draft,
+                          type,
+                        }));
+                      }}
+                    >
+                      {editorTokenTypes.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                    Value
+                    <div
+                      style={
+                        tokenDraft.type === "color"
+                          ? tokenValueEditorStyle
+                          : tokenValueEditorPlainStyle
+                      }
+                    >
+                      {tokenDraft.type === "color" ? (
+                        <input
+                          aria-label="Color value"
+                          type="color"
+                          style={tokenColorInputStyle}
+                          value={
+                            isHexColorInputValue(tokenDraft.valueText)
+                              ? tokenDraft.valueText
+                              : "#000000"
+                          }
+                          onChange={(event) => {
+                            const valueText = event.currentTarget.value;
+                            setTokenDraft((draft) => ({ ...draft, valueText }));
+                          }}
+                        />
+                      ) : null}
+                      <textarea
+                        style={{
+                          ...textareaStyle,
+                          minHeight: tokenDraft.type === "typography" ? 120 : 72,
+                        }}
+                        value={tokenDraft.valueText}
+                        onChange={(event) => {
+                          const valueText = event.currentTarget.value;
+                          setTokenDraft((draft) => ({ ...draft, valueText }));
+                        }}
+                      />
+                    </div>
+                  </label>
+                  <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                    Description
+                    <input
+                      style={inputStyle}
+                      value={tokenDraft.description ?? ""}
+                      onChange={(event) => {
+                        const description = event.currentTarget.value;
+                        setTokenDraft((draft) => ({
+                          ...draft,
+                          description,
+                        }));
+                      }}
+                    />
+                  </label>
                 </div>
-              </label>
-              <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                Description
-                <input
-                  style={inputStyle}
-                  value={tokenDraft.description ?? ""}
-                  onChange={(event) => {
-                    const description = event.currentTarget.value;
-                    setTokenDraft((draft) => ({
-                      ...draft,
-                      description,
-                    }));
-                  }}
-                />
-              </label>
-            </div>
-            {tokenDraftError ? <div style={errorBannerStyle}>{tokenDraftError}</div> : null}
-            <div style={previewPanelStyle}>
-              <strong>Preview</strong>
-              {renderTokenDraftPreview(tokenDraft, previewTokenLookup)}
-            </div>
+                <div style={previewPanelStyle}>
+                  <strong>Preview</strong>
+                  {renderTokenDraftPreview(tokenDraft, previewTokenLookup)}
+                </div>
+              </div>
+            </details>
             <details style={disclosureStyle}>
               <summary style={summaryStyle}>Document JSON</summary>
               <textarea
@@ -1733,19 +1732,6 @@ function tokenParentPath(path: string): string {
 
 function tokenVariationName(path: string): string {
   return path.split(".").at(-1) ?? path;
-}
-
-function formatTokenListValue(value: unknown): string {
-  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-    return String(value);
-  }
-  if (Array.isArray(value)) {
-    return `[${value.length}]`;
-  }
-  if (value && typeof value === "object") {
-    return "{...}";
-  }
-  return "";
 }
 
 function renderTokenMatrixEditor(input: {
@@ -4263,23 +4249,23 @@ function isDesignTokenLike(value: unknown): value is DesignToken {
 const editorShellStyle: CSSProperties = {
   height: "100vh",
   display: "grid",
-  gridTemplateRows: "56px minmax(0, 1fr)",
-  gridTemplateColumns: "360px minmax(0, 1fr)",
+  gridTemplateRows: "52px minmax(0, 1fr)",
+  gridTemplateColumns: "280px minmax(0, 1fr)",
   overflow: "hidden",
-  background: "#f4f6f8",
+  background: "#eef2f7",
   color: "#171a20",
   fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
 };
 
 const topBarStyle: CSSProperties = {
   gridColumn: "1 / -1",
-  borderBottom: "1px solid #d8dde6",
-  background: "#ffffff",
+  borderBottom: "1px solid #d7dee8",
+  background: "#fbfcfe",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   gap: 16,
-  padding: "0 16px",
+  padding: "0 14px",
 };
 
 const productTitleStyle: CSSProperties = { fontSize: 15 };
@@ -4291,7 +4277,7 @@ const panelTabsStyle: CSSProperties = {
 };
 
 const panelTabStyle: CSSProperties = {
-  height: 34,
+  height: 32,
   border: "1px solid transparent",
   borderRadius: 6,
   background: "transparent",
@@ -4299,9 +4285,9 @@ const panelTabStyle: CSSProperties = {
 };
 
 const panelTabActiveStyle: CSSProperties = {
-  border: "1px solid #8fb3f4",
-  background: "#eaf1ff",
-  color: "#153e75",
+  border: "1px solid #7aa7ee",
+  background: "#edf4ff",
+  color: "#123b72",
 };
 
 const topBarControlStyle: CSSProperties = {
@@ -4349,12 +4335,12 @@ const schemeButtonActiveStyle: CSSProperties = {
 
 const sidebarStyle: CSSProperties = {
   minHeight: 0,
-  borderRight: "1px solid #d8dde6",
-  background: "#ffffff",
-  padding: 12,
+  borderRight: "1px solid #d7dee8",
+  background: "#fbfcfe",
+  padding: 10,
   display: "grid",
   alignContent: "start",
-  gap: 12,
+  gap: 10,
   overflowX: "hidden",
   overflowY: "auto",
   overscrollBehavior: "contain",
@@ -4365,12 +4351,13 @@ const sidebarTitleStyle: CSSProperties = { fontWeight: 700, fontSize: 15 };
 const toolbarStyle: CSSProperties = { display: "grid", gap: 8 };
 
 const toolbarButtonStyle: CSSProperties = {
-  height: 34,
-  border: "1px solid #d8dde6",
+  height: 36,
+  border: "1px solid #ccd6e3",
   borderRadius: 6,
   background: "#ffffff",
   textAlign: "left",
-  padding: "0 10px",
+  padding: "0 11px",
+  color: "#263241",
 };
 
 const listStyle: CSSProperties = {
@@ -4385,90 +4372,31 @@ const emptyListStyle: CSSProperties = {
   padding: "8px 2px",
 };
 
-const tokenGroupStyle: CSSProperties = {
-  display: "grid",
-  gap: 8,
-};
-
-const tokenGroupHeaderStyle: CSSProperties = {
-  position: "sticky",
-  top: 0,
-  minHeight: 28,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 8,
-  padding: "0 8px",
-  background: "#ffffff",
-  color: "#4e5968",
-  fontSize: 12,
-  fontWeight: 700,
-  textTransform: "uppercase",
-};
-
-const tokenGroupCountStyle: CSSProperties = {
-  minWidth: 24,
-  height: 18,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: 999,
-  background: "#eef2f7",
-  color: "#5d6775",
-  fontWeight: 500,
-};
-
-const tokenVariationGroupStyle: CSSProperties = {
-  display: "grid",
-  gap: 3,
-  marginLeft: 10,
-  paddingLeft: 12,
-  borderLeft: "1px solid #dfe5ee",
-};
-
-const tokenVariationHeaderStyle: CSSProperties = {
-  minHeight: 26,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 8,
-  margin: "2px 0 2px -6px",
-  padding: "0 8px",
-  borderRadius: 6,
-  background: "#f6f8fb",
-  color: "#3f4a5a",
-  fontSize: 11,
-  fontWeight: 700,
-};
-
-const tokenVariationButtonStyle: CSSProperties = {
-  minHeight: 42,
+const tokenTypeButtonStyle: CSSProperties = {
+  minHeight: 48,
   border: "1px solid transparent",
-  borderRadius: 6,
+  borderRadius: 8,
   background: "transparent",
-  color: "#171a20",
-  padding: "7px 8px 7px 12px",
+  color: "#1f2937",
+  padding: "8px 10px",
   display: "grid",
   gap: 3,
-  alignItems: "start",
   textAlign: "left",
 };
 
-const tokenVariationButtonActiveStyle: CSSProperties = {
-  border: "1px solid #8fb3f4",
-  background: "#f3f7ff",
+const tokenTypeButtonActiveStyle: CSSProperties = {
+  border: "1px solid #7aa7ee",
+  background: "#edf4ff",
+  color: "#123b72",
 };
 
-const tokenVariationNameStyle: CSSProperties = {
-  minWidth: 0,
-  overflowWrap: "anywhere",
-  fontWeight: 600,
+const tokenTypeNameStyle: CSSProperties = {
+  fontWeight: 700,
+  lineHeight: "18px",
 };
 
-const tokenVariationValueStyle: CSSProperties = {
-  minWidth: 0,
-  overflowWrap: "anywhere",
-  color: "#6b7280",
+const tokenTypeMetaStyle: CSSProperties = {
+  color: "#657386",
   fontSize: 11,
   lineHeight: "16px",
 };
@@ -4491,8 +4419,8 @@ const componentListButtonStyle: CSSProperties = {
 };
 
 const componentListButtonActiveStyle: CSSProperties = {
-  border: "1px solid #8fb3f4",
-  background: "#f3f7ff",
+  border: "1px solid #7aa7ee",
+  background: "#edf4ff",
 };
 
 const componentListNameStyle: CSSProperties = {
@@ -4510,9 +4438,9 @@ const componentListIdStyle: CSSProperties = {
 };
 
 const disclosureStyle: CSSProperties = {
-  border: "1px solid #d8dde6",
+  border: "1px solid #d4dce8",
   borderRadius: 8,
-  background: "#ffffff",
+  background: "#fbfcfe",
   padding: 10,
 };
 
@@ -4520,6 +4448,12 @@ const summaryStyle: CSSProperties = {
   cursor: "pointer",
   fontWeight: 700,
   fontSize: 13,
+};
+
+const detailPanelBodyStyle: CSSProperties = {
+  display: "grid",
+  gap: 12,
+  marginTop: 10,
 };
 
 const compactFormGridStyle: CSSProperties = {
@@ -4584,12 +4518,13 @@ const tokenColorInputStyle: CSSProperties = {
 };
 
 const tokenMatrixPanelStyle: CSSProperties = {
-  border: "1px solid #d8dde6",
+  border: "1px solid #d4dce8",
   borderRadius: 8,
   background: "#ffffff",
   display: "grid",
   gap: 10,
   padding: 12,
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
 };
 
 const inlineHelpStyle: CSSProperties = {
@@ -4601,8 +4536,8 @@ const inlineHelpStyle: CSSProperties = {
 
 const tokenMatrixScrollStyle: CSSProperties = {
   overflow: "auto",
-  maxHeight: 420,
-  border: "1px solid #e2e7ef",
+  maxHeight: "min(64vh, 680px)",
+  border: "1px solid #dde5ef",
   borderRadius: 6,
 };
 
@@ -4618,11 +4553,11 @@ const tokenMatrixHeaderCellStyle: CSSProperties = {
   top: 0,
   zIndex: 1,
   minWidth: 132,
-  borderBottom: "1px solid #d8dde6",
-  borderRight: "1px solid #eef2f7",
-  background: "#f6f8fb",
+  borderBottom: "1px solid #d8e0ea",
+  borderRight: "1px solid #edf1f6",
+  background: "#f7f9fc",
   color: "#4e5968",
-  padding: "8px",
+  padding: "9px 10px",
   textAlign: "left",
   fontSize: 12,
   fontWeight: 700,
@@ -4634,11 +4569,11 @@ const tokenMatrixRowHeaderStyle: CSSProperties = {
   zIndex: 1,
   minWidth: 156,
   maxWidth: 220,
-  borderBottom: "1px solid #eef2f7",
-  borderRight: "1px solid #d8dde6",
-  background: "#ffffff",
+  borderBottom: "1px solid #edf1f6",
+  borderRight: "1px solid #d8e0ea",
+  background: "#fbfcfe",
   color: "#171a20",
-  padding: "8px",
+  padding: "10px",
   textAlign: "left",
   verticalAlign: "top",
   overflowWrap: "anywhere",
@@ -4647,9 +4582,9 @@ const tokenMatrixRowHeaderStyle: CSSProperties = {
 
 const tokenMatrixCellStyle: CSSProperties = {
   minWidth: 132,
-  borderBottom: "1px solid #eef2f7",
-  borderRight: "1px solid #eef2f7",
-  padding: 6,
+  borderBottom: "1px solid #edf1f6",
+  borderRight: "1px solid #edf1f6",
+  padding: 7,
   verticalAlign: "top",
 };
 
@@ -4666,8 +4601,8 @@ const tokenMatrixColorCellStyle: CSSProperties = {
 };
 
 const tokenMatrixCellActiveStyle: CSSProperties = {
-  border: "1px solid #8fb3f4",
-  background: "#f3f7ff",
+  border: "1px solid #7aa7ee",
+  background: "#edf4ff",
 };
 
 const tokenMatrixColorPickerStyle: CSSProperties = {
@@ -4691,9 +4626,9 @@ const tokenMatrixValueInputStyle: CSSProperties = {
   width: "100%",
   minWidth: 0,
   minHeight: 32,
-  border: "1px solid #d8dde6",
+  border: "1px solid #ccd6e3",
   borderRadius: 5,
-  background: "#ffffff",
+  background: "#fbfcfe",
   color: "#171a20",
   padding: "0 6px",
   fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -4701,8 +4636,8 @@ const tokenMatrixValueInputStyle: CSSProperties = {
 };
 
 const tokenMatrixInputActiveStyle: CSSProperties = {
-  border: "1px solid #8fb3f4",
-  background: "#f3f7ff",
+  border: "1px solid #7aa7ee",
+  background: "#edf4ff",
 };
 
 const tokenMatrixObjectCellStyle: CSSProperties = {
@@ -4735,12 +4670,14 @@ const summaryListStyle: CSSProperties = {
 };
 
 const smallButtonStyle: CSSProperties = {
-  minHeight: 28,
-  border: "1px solid #d8dde6",
+  minHeight: 32,
+  border: "1px solid #ccd6e3",
   borderRadius: 6,
   background: "#ffffff",
-  padding: "0 8px",
+  padding: "0 10px",
   textAlign: "left",
+  color: "#263241",
+  boxShadow: "0 1px 1px rgba(15, 23, 42, 0.03)",
 };
 
 const dangerButtonStyle: CSSProperties = {
@@ -4778,9 +4715,10 @@ const inspectorStyle: CSSProperties = {
 
 const fieldStyle: CSSProperties = {
   display: "grid",
-  gap: 5,
+  gap: 6,
   fontSize: 12,
-  color: "#5d6775",
+  color: "#4e5d70",
+  fontWeight: 600,
 };
 
 const checkboxFieldStyle: CSSProperties = {
@@ -4794,13 +4732,14 @@ const checkboxFieldStyle: CSSProperties = {
 
 const inputStyle: CSSProperties = {
   width: "100%",
-  height: 34,
-  border: "1px solid #d8dde6",
+  height: 38,
+  border: "1px solid #ccd6e3",
   borderRadius: 6,
-  padding: "0 8px",
+  padding: "0 10px",
   fontSize: 13,
   color: "#171a20",
-  background: "#ffffff",
+  background: "#fbfcfe",
+  boxShadow: "inset 0 1px 1px rgba(15, 23, 42, 0.03)",
 };
 
 const selectStyle: CSSProperties = {
@@ -4810,12 +4749,15 @@ const selectStyle: CSSProperties = {
 const textareaStyle: CSSProperties = {
   width: "100%",
   minHeight: 90,
-  border: "1px solid #d8dde6",
+  border: "1px solid #ccd6e3",
   borderRadius: 6,
-  padding: 8,
+  padding: 10,
   resize: "vertical",
   fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
   fontSize: 12,
+  lineHeight: "18px",
+  background: "#fbfcfe",
+  color: "#171a20",
 };
 
 const errorTextStyle: CSSProperties = {
@@ -4860,13 +4802,14 @@ const workspaceStyle: CSSProperties = {
   minWidth: 0,
   minHeight: 0,
   overflow: "auto",
-  padding: 16,
+  padding: 12,
 };
 
 const sectionStyle: CSSProperties = {
   display: "grid",
-  gap: 16,
-  maxWidth: 1280,
+  gap: 12,
+  width: "100%",
+  maxWidth: "none",
 };
 
 const sectionHeaderStyle: CSSProperties = {
@@ -4899,7 +4842,7 @@ const rowStyle: CSSProperties = {
 const formGridStyle: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "repeat(3, minmax(180px, 1fr))",
-  gap: 12,
+  gap: 10,
 };
 
 const splitPanelStyle: CSSProperties = {
@@ -4909,13 +4852,14 @@ const splitPanelStyle: CSSProperties = {
 };
 
 const cardStyle: CSSProperties = {
-  border: "1px solid #d8dde6",
+  border: "1px solid #d4dce8",
   borderRadius: 8,
   background: "#ffffff",
   display: "grid",
   alignContent: "start",
   gap: 12,
   padding: 12,
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
 };
 
 const cardHeaderStyle: CSSProperties = {
@@ -4927,7 +4871,7 @@ const cardHeaderStyle: CSSProperties = {
 
 const tableStyle: CSSProperties = {
   display: "grid",
-  border: "1px solid #e2e7ef",
+  border: "1px solid #dde5ef",
   borderRadius: 6,
   overflow: "hidden",
 };
@@ -4935,7 +4879,7 @@ const tableStyle: CSSProperties = {
 const tableRowStyle: CSSProperties = {
   minHeight: 36,
   border: 0,
-  borderBottom: "1px solid #e2e7ef",
+  borderBottom: "1px solid #edf1f6",
   background: "#ffffff",
   display: "grid",
   gridTemplateColumns: "minmax(96px, 0.45fr) minmax(0, 1fr)",
@@ -4946,8 +4890,8 @@ const tableRowStyle: CSSProperties = {
 };
 
 const tableRowActiveStyle: CSSProperties = {
-  background: "#f3f7ff",
-  color: "#153e75",
+  background: "#edf4ff",
+  color: "#123b72",
 };
 
 const tableCellTextStyle: CSSProperties = {
@@ -4970,12 +4914,13 @@ const editorFormStyle: CSSProperties = {
 };
 
 const previewPanelStyle: CSSProperties = {
-  border: "1px solid #d8dde6",
+  border: "1px solid #d4dce8",
   borderRadius: 8,
   background: "#ffffff",
   padding: 12,
   display: "grid",
   gap: 10,
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
 };
 
 const componentPreviewPanelStyle: CSSProperties = {
@@ -5003,8 +4948,8 @@ const componentMatrixHeaderStyle: CSSProperties = {
 
 const componentMatrixScrollStyle: CSSProperties = {
   overflow: "auto",
-  maxHeight: 360,
-  border: "1px solid #e2e7ef",
+  maxHeight: "min(60vh, 640px)",
+  border: "1px solid #dde5ef",
   borderRadius: 6,
 };
 
@@ -5020,9 +4965,9 @@ const componentMatrixHeaderCellStyle: CSSProperties = {
   top: 0,
   zIndex: 1,
   minWidth: 150,
-  borderBottom: "1px solid #d8dde6",
-  borderRight: "1px solid #eef2f7",
-  background: "#f6f8fb",
+  borderBottom: "1px solid #d8e0ea",
+  borderRight: "1px solid #edf1f6",
+  background: "#f7f9fc",
   color: "#4e5968",
   padding: "8px",
   textAlign: "left",
@@ -5035,9 +4980,9 @@ const componentMatrixRowHeaderStyle: CSSProperties = {
   left: 0,
   zIndex: 1,
   minWidth: 120,
-  borderBottom: "1px solid #eef2f7",
-  borderRight: "1px solid #d8dde6",
-  background: "#ffffff",
+  borderBottom: "1px solid #edf1f6",
+  borderRight: "1px solid #d8e0ea",
+  background: "#fbfcfe",
   color: "#171a20",
   padding: "8px",
   textAlign: "left",
@@ -5047,8 +4992,8 @@ const componentMatrixRowHeaderStyle: CSSProperties = {
 
 const componentMatrixCellStyle: CSSProperties = {
   minWidth: 150,
-  borderBottom: "1px solid #eef2f7",
-  borderRight: "1px solid #eef2f7",
+  borderBottom: "1px solid #edf1f6",
+  borderRight: "1px solid #edf1f6",
   padding: 6,
   verticalAlign: "middle",
 };
@@ -5056,9 +5001,9 @@ const componentMatrixCellStyle: CSSProperties = {
 const componentMatrixPreviewButtonStyle: CSSProperties = {
   width: "100%",
   minHeight: 82,
-  border: "1px solid #d8dde6",
+  border: "1px solid #d7dee8",
   borderRadius: 6,
-  background: "#ffffff",
+  background: "#fbfcfe",
   display: "grid",
   placeItems: "center",
   padding: 8,
@@ -5066,8 +5011,8 @@ const componentMatrixPreviewButtonStyle: CSSProperties = {
 };
 
 const componentMatrixPreviewButtonActiveStyle: CSSProperties = {
-  border: "1px solid #8fb3f4",
-  background: "#f3f7ff",
+  border: "1px solid #7aa7ee",
+  background: "#edf4ff",
 };
 
 const componentMatrixPreviewClipStyle: CSSProperties = {
@@ -5305,15 +5250,15 @@ const previewTooltipStageStyle: CSSProperties = {
 };
 
 const componentPreviewStageStyle: CSSProperties = {
-  minHeight: 180,
-  border: "1px solid #e2e7ef",
+  minHeight: 168,
+  border: "1px solid #dde5ef",
   borderRadius: 8,
   background: "#f8fafc",
   display: "grid",
   alignContent: "center",
   justifyItems: "center",
   gap: 16,
-  padding: 24,
+  padding: 20,
 };
 
 const buttonBasePreviewStyle: CSSProperties = {
