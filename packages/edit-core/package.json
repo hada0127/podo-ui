@@ -1,0 +1,27 @@
+{
+  "name": "@podo/edit-core",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Headless editing engine for Podo specs: token/component mutations, validation gate, and save-adapter contract shared by the editor and studio hosts.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@podo/spec": "workspace:*"
+  }
+}

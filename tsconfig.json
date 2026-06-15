@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "./packages/spec" },
+    { "path": "./packages/edit-core" },
     { "path": "./packages/tokens" },
     { "path": "./packages/icons" },
     { "path": "./packages/core" },

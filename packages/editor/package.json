@@ -24,6 +24,7 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
+    "@podo/edit-core": "workspace:*",
     "@podo/spec": "workspace:*",
     "tldraw": "^5.1.0"
   },

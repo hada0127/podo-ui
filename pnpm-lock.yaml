@@ -132,8 +132,17 @@ importers:
         specifier: workspace:*
         version: link:../spec
 
+  packages/edit-core:
+    dependencies:
+      '@podo/spec':
+        specifier: workspace:*
+        version: link:../spec
+
   packages/editor:
     dependencies:
+      '@podo/edit-core':
+        specifier: workspace:*
+        version: link:../edit-core
       '@podo/spec':
         specifier: workspace:*
         version: link:../spec
