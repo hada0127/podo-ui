@@ -5,3 +5,4 @@ export * from "./adapter.js";
 export * from "./validation.js";
 export * from "./store.js";
 export * from "./in-memory-adapter.js";
+export * from "./studio-http-adapter.js";

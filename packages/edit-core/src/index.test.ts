@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { PODO_SCHEMA_VERSION, parseComponentDocument, parseTokenDocument } from "@podo/spec";
-import { createEditStore, createInMemoryAdapter, validateWorkspace } from "./index.js";
+import {
+  createEditStore,
+  createInMemoryAdapter,
+  createStudioHttpAdapter,
+  validateWorkspace,
+} from "./index.js";
 
 const demoComponent = parseComponentDocument({
   schemaVersion: PODO_SCHEMA_VERSION,
@@ -109,5 +114,113 @@ describe("createInMemoryAdapter", () => {
     expect(context.tokenDocuments.length).toBeGreaterThan(0);
     expect(issues.filter((item) => item.code.endsWith(".schema.invalid"))).toHaveLength(0);
     expect(issues.some((item) => item.code === MISSING)).toBe(false);
+  });
+});
+
+describe("createStudioHttpAdapter", () => {
+  interface RecordedCall {
+    url: string;
+    method?: string;
+    body?: Record<string, unknown>;
+  }
+
+  const editorTokenDoc = {
+    schemaVersion: PODO_SCHEMA_VERSION,
+    kind: "tokens",
+    category: "theme",
+    tokens: { color: { brand: { $type: "color", $value: "#5b5bd6" } } },
+  };
+
+  // Mirrors the REAL studio route shapes: /api/context returns component
+  // summaries with the document nested at `.document` and a `files` list (no raw
+  // tokenDocuments); raw token docs are fetched via GET /api/files.
+  function mockStudio() {
+    const calls: RecordedCall[] = [];
+    const fetch = async (url: string, init?: RequestInit) => {
+      const method = init?.method ?? "GET";
+      const body = init?.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : undefined;
+      calls.push({ url, method, body });
+      let payload: unknown = { ok: true, path: "written" };
+      if (url.includes("/api/context")) {
+        payload = {
+          ok: true,
+          context: {
+            components: [{ document: demoComponent }],
+            files: [{ path: ".podo/tokens/editor.tokens.json", kind: "token" }],
+          },
+        };
+      } else if (url.includes("/api/files") && method === "GET") {
+        payload = { ok: true, contents: `${JSON.stringify(editorTokenDoc)}\n` };
+      } else if (url.includes("/api/validate")) {
+        payload = { ok: true, report: { ok: true, issues: [] } };
+      }
+      return { ok: true, status: 200, json: async () => payload };
+    };
+    return { fetch, calls };
+  }
+
+  it("writes tokens and components through the studio routes", async () => {
+    const { fetch, calls } = mockStudio();
+    const adapter = createStudioHttpAdapter({ fetch });
+
+    await adapter.saveToken({ path: "color.brand", type: "color", value: "#5b5bd6" });
+    await adapter.saveComponent(demoComponent);
+    await adapter.saveTokenDocuments!([
+      parseTokenDocument({
+        schemaVersion: PODO_SCHEMA_VERSION,
+        kind: "tokens",
+        category: "theme",
+        tokens: {},
+      }),
+    ]);
+
+    const tokenCall = calls.find((call) => call.url.endsWith("/api/tokens/override"));
+    expect(tokenCall?.body).toMatchObject({ path: "color.brand", type: "color", value: "#5b5bd6" });
+
+    const componentCall = calls.find(
+      (call) =>
+        call.url.endsWith("/api/files") && String(call.body?.path).includes("components/local")
+    );
+    expect(componentCall?.body?.path).toBe(".podo/components/local/demo.component.json");
+
+    const tokenDocCall = calls.find(
+      (call) => call.url.endsWith("/api/files") && String(call.body?.path).includes("tokens/editor")
+    );
+    expect(tokenDocCall?.body?.path).toBe(".podo/tokens/editor.tokens.json");
+  });
+
+  it("maps the real studio context shape and returns validation issues", async () => {
+    const { fetch } = mockStudio();
+    const adapter = createStudioHttpAdapter({ fetch });
+    const context = await adapter.loadContext();
+    expect(context.capabilities.pageDesign).toBe(true);
+    // component is unwrapped from the summary `.document`
+    expect(context.components.map((component) => component.id)).toContain("demo");
+    // raw token document is loaded from the token file, not the resolved context
+    expect(context.tokenDocuments).toHaveLength(1);
+    expect(context.tokenDocuments[0]?.category).toBe("theme");
+    expect(await adapter.validate()).toEqual([]);
+  });
+
+  it("overwrites existing .podo files on repeat saves (force defaults true)", async () => {
+    const { fetch, calls } = mockStudio();
+    const adapter = createStudioHttpAdapter({ fetch });
+    await adapter.saveComponent(demoComponent);
+    await adapter.saveComponent(demoComponent);
+    const putCalls = calls.filter(
+      (call) => call.url.includes("/api/files") && call.method === "PUT"
+    );
+    expect(putCalls).toHaveLength(2);
+    expect(putCalls.every((call) => call.body?.force === true)).toBe(true);
+  });
+
+  it("throws when validate hits a server error with no report", async () => {
+    const fetch = async () => ({
+      ok: false,
+      status: 500,
+      json: async () => ({ ok: false, error: { message: "boom" } }),
+    });
+    const adapter = createStudioHttpAdapter({ fetch });
+    await expect(adapter.validate()).rejects.toThrow(/Studio validate failed/);
   });
 });
