@@ -48,6 +48,7 @@ export interface EditorTokenDraft {
   type: DesignToken["$type"];
   valueText: string;
   description?: string;
+  extensionsText?: string;
 }
 
 export function createEmptyTokenDocument(): TokenDocument {
@@ -76,10 +77,12 @@ export function flattenTokenDocuments(documents: TokenDocument[]): EditorTokenRe
 }
 
 export function createTokenFromDraft(draft: EditorTokenDraft): DesignToken {
+  const extensions = parseEditorTokenExtensions(draft.extensionsText);
   const token: DesignToken = {
     $type: draft.type,
     $value: parseEditorTokenValue(draft.type, draft.valueText),
     ...(draft.description?.trim() ? { $description: draft.description.trim() } : {}),
+    ...(extensions ? { $extensions: extensions } : {}),
   };
   return token;
 }
@@ -135,6 +138,31 @@ export function deleteTokenFromDocuments(
 
 export function serializeEditorTokenValue(value: unknown): string {
   return typeof value === "string" ? value : JSON.stringify(value, null, 2);
+}
+
+export function serializeEditorTokenExtensions(value: DesignToken["$extensions"]): string {
+  return value ? JSON.stringify(value, null, 2) : "";
+}
+
+export function parseEditorTokenExtensions(
+  valueText: string | undefined
+): DesignToken["$extensions"] | undefined {
+  const trimmed = valueText?.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  try {
+    const parsed = JSON.parse(trimmed) as unknown;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      throw new Error("Token extensions must be a JSON object.");
+    }
+    return parsed as DesignToken["$extensions"];
+  } catch (error) {
+    if (error instanceof Error && error.message === "Token extensions must be a JSON object.") {
+      throw error;
+    }
+    throw new Error("Token extensions must be valid JSON.");
+  }
 }
 
 export function parseEditorTokenValue(type: DesignToken["$type"], valueText: string): unknown {

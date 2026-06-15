@@ -119,6 +119,8 @@ v2에서는 SCSS-first 구조를 JSON-spec-first 구조로 바꾸고, 기존 JSO
 - `component`: button, input, modal 등 컴포넌트 전용 토큰
 - `theme`: landing, dashboard, custom, light, dark mode override
 
+폰트 패밀리 토큰의 `$value`는 렌더러와 타이포그래피 토큰에서 참조하기 쉬운 family name 또는 alias로 유지한다. 에디터에서 첨부한 실제 폰트 파일은 `$extensions.podo.fontAsset`에 `woff`, `woff2`, `ttf`, `otf` 메타데이터와 base64 data URL로 저장해 DTCG 토큰 값 모델을 깨뜨리지 않고 JSON 단일 원천에 포함한다.
+
 ### 6.2 컴포넌트 스펙
 
 컴포넌트는 `.component.json`으로 정의한다.

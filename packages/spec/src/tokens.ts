@@ -46,6 +46,16 @@ export const motionValueSchema = z.object({
 
 export const tokenScopeSchema = z.enum(["primitive", "semantic", "component", "theme"]);
 
+export const embeddedFontAssetSchema = z.object({
+  kind: z.literal("font"),
+  source: z.literal("embedded"),
+  family: z.string().min(1),
+  fileName: z.string().min(1),
+  format: z.enum(["woff2", "woff", "truetype", "opentype"]),
+  mimeType: z.string().min(1),
+  dataUrl: z.string().regex(/^data:[^,]+;base64,/, "Use a base64 data URL for embedded fonts."),
+});
+
 export const tokenTypeSchema = z.enum([
   "color",
   "dimension",
@@ -65,6 +75,7 @@ export const tokenTypeSchema = z.enum([
 ]);
 
 export const podoTokenExtensionSchema = z.object({
+  fontAsset: embeddedFontAssetSchema.optional(),
   themeable: z.boolean().optional(),
   roles: z.array(z.string().min(1)).optional(),
   scope: tokenScopeSchema.optional(),
@@ -86,6 +97,8 @@ export const podoTokenExtensionSchema = z.object({
     })
     .optional(),
 });
+
+export type EmbeddedFontAsset = z.infer<typeof embeddedFontAssetSchema>;
 
 export const tokenExtensionsSchema = z
   .object({

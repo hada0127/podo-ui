@@ -28,6 +28,7 @@ import {
   parseTokenDocument,
   type ComponentDocument,
   type DesignToken,
+  type EmbeddedFontAsset,
   type TokenDocument,
   type TokenTree,
 } from "@podo/spec";
@@ -43,8 +44,10 @@ import {
   flattenTokenDocuments,
   moveTokenInDocuments,
   normalizeEditorTokenDocuments,
+  parseEditorTokenExtensions,
   parseEditorTokenValue,
   parsePropDefaultInput,
+  serializeEditorTokenExtensions,
   serializeEditorTokenValue,
   serializePropDefaultInput,
   updateComponentMeta,
@@ -373,6 +376,11 @@ export function PodoEditorApp({
     () => createTokenMatrix(tokenRecords, tokenDraft.type),
     [tokenDraft.type, tokenRecords]
   );
+  const typographyWorkspace = useMemo(
+    () => createTypographyWorkspaceModel(tokenRecords),
+    [tokenRecords]
+  );
+  const typographyWorkspaceActive = isTypographyWorkspaceType(tokenDraft.type);
   const filteredComponents = useMemo(
     () => filterComponentsForEditor(state.components, componentSearch),
     [componentSearch, state.components]
@@ -575,7 +583,10 @@ export function PodoEditorApp({
     }
   };
   const selectTokenType = (type: DesignToken["$type"]): void => {
-    const firstRecord = tokenRecords.find((record) => record.token.$type === type);
+    const firstRecord =
+      type === "typography"
+        ? tokenRecords.find(isTypographyWorkspaceTokenRecord)
+        : tokenRecords.find((record) => record.token.$type === type);
     if (firstRecord) {
       setSelectedTokenKey(tokenRecordKey(firstRecord));
       return;
@@ -587,7 +598,10 @@ export function PodoEditorApp({
       path: `${type}.example.value`,
     });
   };
-  const updateTokenMatrixCell = (record: EditorTokenRecord, valueText: string): void => {
+  const commitTokenRecordDraft = (
+    record: EditorTokenRecord,
+    input: { valueText: string; extensionsText?: string }
+  ): void => {
     try {
       const nextDocuments = moveTokenInDocuments(tokenDocumentsState, {
         documentIndex: record.documentIndex,
@@ -596,8 +610,10 @@ export function PodoEditorApp({
           documentIndex: record.documentIndex,
           path: record.path,
           type: record.token.$type,
-          valueText,
+          valueText: input.valueText,
           description: record.token.$description ?? "",
+          extensionsText:
+            input.extensionsText ?? serializeEditorTokenExtensions(record.token.$extensions),
         },
       });
       commitTokenDocuments(nextDocuments);
@@ -605,6 +621,89 @@ export function PodoEditorApp({
       setTokenDraftError(undefined);
     } catch (error) {
       setTokenDraftError(error instanceof Error ? error.message : "Token cell value is invalid.");
+    }
+  };
+  const updateTokenMatrixCell = (record: EditorTokenRecord, valueText: string): void => {
+    commitTokenRecordDraft(record, { valueText });
+  };
+  const updateTypographyTokenField = (
+    record: EditorTokenRecord,
+    field: TypographyTokenField,
+    valueText: string
+  ): void => {
+    if (!isTypographyValue(record.token.$value)) {
+      setTokenDraftError("Typography token values must be structured before field editing.");
+      return;
+    }
+    const nextValue = { ...record.token.$value };
+    if (field === "fontWeight") {
+      nextValue.fontWeight = /^-?\d+(?:\.\d+)?$/.test(valueText.trim())
+        ? Number(valueText)
+        : valueText;
+    } else if (field === "paragraphSpacing") {
+      if (valueText.trim()) {
+        nextValue.paragraphSpacing = valueText;
+      } else {
+        delete nextValue.paragraphSpacing;
+      }
+    } else {
+      nextValue[field] = valueText;
+    }
+    commitTokenRecordDraft(record, {
+      valueText: JSON.stringify(nextValue, null, 2),
+    });
+  };
+  const attachFontAssetToRecord = async (record: EditorTokenRecord, file: File): Promise<void> => {
+    try {
+      const family = inferFontFamilyName(record.token.$value, record.path);
+      const asset = await createEmbeddedFontAssetFromFile(file, family);
+      commitTokenRecordDraft(record, {
+        valueText: serializeEditorTokenValue(family),
+        extensionsText: serializeEditorTokenExtensions(
+          upsertEmbeddedFontAssetExtension(record.token.$extensions, asset)
+        ),
+      });
+    } catch (error) {
+      setTokenDraftError(error instanceof Error ? error.message : "Font file could not be read.");
+    }
+  };
+  const removeFontAssetFromRecord = (record: EditorTokenRecord): void => {
+    commitTokenRecordDraft(record, {
+      valueText: serializeEditorTokenValue(record.token.$value),
+      extensionsText: serializeEditorTokenExtensions(
+        removeEmbeddedFontAssetExtension(record.token.$extensions)
+      ),
+    });
+  };
+  const attachFontAssetToDraft = async (file: File): Promise<void> => {
+    try {
+      const family = inferFontFamilyNameFromDraft(tokenDraft);
+      const asset = await createEmbeddedFontAssetFromFile(file, family);
+      const extensions = parseEditorTokenExtensions(tokenDraft.extensionsText);
+      setTokenDraft((draft) => ({
+        ...draft,
+        valueText: family,
+        extensionsText: serializeEditorTokenExtensions(
+          upsertEmbeddedFontAssetExtension(extensions, asset)
+        ),
+      }));
+      setTokenDraftError(undefined);
+    } catch (error) {
+      setTokenDraftError(error instanceof Error ? error.message : "Font file could not be read.");
+    }
+  };
+  const removeFontAssetFromDraft = (): void => {
+    try {
+      const extensions = parseEditorTokenExtensions(tokenDraft.extensionsText);
+      setTokenDraft((draft) => ({
+        ...draft,
+        extensionsText: serializeEditorTokenExtensions(
+          removeEmbeddedFontAssetExtension(extensions)
+        ),
+      }));
+      setTokenDraftError(undefined);
+    } catch (error) {
+      setTokenDraftError(error instanceof Error ? error.message : "Font attachment is invalid.");
     }
   };
   const deleteSelectedToken = (): void => {
@@ -758,22 +857,28 @@ export function PodoEditorApp({
               New token
             </button>
             <div style={listStyle}>
-              {tokenGroups.map((group) => (
-                <button
-                  key={group.type}
-                  type="button"
-                  style={{
-                    ...tokenTypeButtonStyle,
-                    ...(tokenDraft.type === group.type ? tokenTypeButtonActiveStyle : {}),
-                  }}
-                  onClick={() => selectTokenType(group.type)}
-                >
-                  <span style={tokenTypeNameStyle}>{group.type}</span>
-                  <small style={tokenTypeMetaStyle}>
-                    {group.count} tokens / {group.sections.length} groups
-                  </small>
-                </button>
-              ))}
+              {tokenGroups.map((group) => {
+                const active =
+                  group.type === "typography"
+                    ? typographyWorkspaceActive
+                    : tokenDraft.type === group.type;
+                return (
+                  <button
+                    key={group.type}
+                    type="button"
+                    style={{
+                      ...tokenTypeButtonStyle,
+                      ...(active ? tokenTypeButtonActiveStyle : {}),
+                    }}
+                    onClick={() => selectTokenType(group.type)}
+                  >
+                    <span style={tokenTypeNameStyle}>{group.label}</span>
+                    <small style={tokenTypeMetaStyle}>
+                      {group.count} tokens / {group.sections.length} groups
+                    </small>
+                  </button>
+                );
+              })}
             </div>
           </>
         ) : null}
@@ -957,12 +1062,23 @@ export function PodoEditorApp({
                 </button>
               </div>
             </div>
-            {renderTokenMatrixEditor({
-              matrix: tokenMatrix,
-              selectedTokenKey,
-              onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
-              onCommitValue: updateTokenMatrixCell,
-            })}
+            {typographyWorkspaceActive
+              ? renderTypographyTokenEditor({
+                  model: typographyWorkspace,
+                  selectedTokenKey,
+                  lookup: previewTokenLookup,
+                  onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
+                  onCommitValue: updateTokenMatrixCell,
+                  onCommitTypographyField: updateTypographyTokenField,
+                  onAttachFont: attachFontAssetToRecord,
+                  onRemoveFontAsset: removeFontAssetFromRecord,
+                })
+              : renderTokenMatrixEditor({
+                  matrix: tokenMatrix,
+                  selectedTokenKey,
+                  onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
+                  onCommitValue: updateTokenMatrixCell,
+                })}
             {tokenDraftError ? <div style={errorBannerStyle}>{tokenDraftError}</div> : null}
             <details style={disclosureStyle}>
               <summary style={summaryStyle}>Selected token detail</summary>
@@ -1035,6 +1151,13 @@ export function PodoEditorApp({
                           setTokenDraft((draft) => ({ ...draft, valueText }));
                         }}
                       />
+                      {tokenDraft.type === "fontFamily"
+                        ? renderFontAttachmentDraftEditor({
+                            draft: tokenDraft,
+                            onAttach: attachFontAssetToDraft,
+                            onRemove: removeFontAssetFromDraft,
+                          })
+                        : null}
                     </div>
                   </label>
                   <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
@@ -1051,6 +1174,20 @@ export function PodoEditorApp({
                       }}
                     />
                   </label>
+                  <details style={{ ...nestedDisclosureStyle, gridColumn: "1 / -1" }}>
+                    <summary style={nestedSummaryStyle}>Extensions JSON</summary>
+                    <textarea
+                      style={{ ...textareaStyle, minHeight: 120, marginTop: 8 }}
+                      value={tokenDraft.extensionsText ?? ""}
+                      onChange={(event) => {
+                        const extensionsText = event.currentTarget.value;
+                        setTokenDraft((draft) => ({
+                          ...draft,
+                          extensionsText,
+                        }));
+                      }}
+                    />
+                  </details>
                 </div>
                 <div style={previewPanelStyle}>
                   <strong>Preview</strong>
@@ -1595,6 +1732,53 @@ export interface TokenMatrixModel {
   totalRecords: number;
 }
 
+export interface TypographyWorkspaceModel {
+  families: EditorTokenRecord[];
+  weights: EditorTokenRecord[];
+  sizes: EditorTokenRecord[];
+  styles: EditorTokenRecord[];
+}
+
+type TypographyTokenField =
+  | "fontFamily"
+  | "fontSize"
+  | "lineHeight"
+  | "fontWeight"
+  | "letterSpacing"
+  | "paragraphSpacing";
+
+const typographyWorkspaceTypes = new Set<DesignToken["$type"]>([
+  "fontFamily",
+  "fontWeight",
+  "typography",
+]);
+
+export function createTypographyWorkspaceModel(
+  records: EditorTokenRecord[]
+): TypographyWorkspaceModel {
+  return {
+    families: records.filter((record) => record.token.$type === "fontFamily"),
+    weights: records.filter((record) => record.token.$type === "fontWeight"),
+    sizes: records.filter(isFontSizeTokenRecord),
+    styles: records.filter((record) => record.token.$type === "typography"),
+  };
+}
+
+function isTypographyWorkspaceType(type: DesignToken["$type"]): boolean {
+  return typographyWorkspaceTypes.has(type);
+}
+
+function isFontSizeTokenRecord(record: EditorTokenRecord): boolean {
+  if (record.token.$type !== "dimension") {
+    return false;
+  }
+  const roles = record.token.$extensions?.podo?.roles;
+  return (
+    record.path.startsWith("font.size.") ||
+    Boolean(roles?.includes("font") && roles.includes("size"))
+  );
+}
+
 export function createTokenMatrix(
   records: EditorTokenRecord[],
   type: DesignToken["$type"]
@@ -1635,6 +1819,9 @@ function shouldIncludeTokenInMatrix(
   }
   if (type === "color") {
     return record.path.startsWith("color.") || record.path.startsWith("dark.color.");
+  }
+  if (type === "dimension") {
+    return !isFontSizeTokenRecord(record);
   }
   return true;
 }
@@ -1686,6 +1873,7 @@ const colorMatrixColumnOrder = [
 
 function groupTokenRecordsByType(records: EditorTokenRecord[]): Array<{
   type: DesignToken["$type"];
+  label: string;
   count: number;
   sections: Array<{ parentPath: string; records: EditorTokenRecord[] }>;
 }> {
@@ -1696,17 +1884,35 @@ function groupTokenRecordsByType(records: EditorTokenRecord[]): Array<{
     buckets.set(record.token.$type, bucket);
   }
   return editorTokenTypes.flatMap((type) => {
-    const typedRecords = buckets.get(type) ?? [];
+    if (type === "fontFamily" || type === "fontWeight") {
+      return [];
+    }
+    const typedRecords =
+      type === "typography"
+        ? records.filter(isTypographyWorkspaceTokenRecord)
+        : (buckets.get(type) ?? []).filter((record) =>
+            type === "dimension" ? !isFontSizeTokenRecord(record) : true
+          );
     return typedRecords.length
       ? [
           {
             type,
+            label: type,
             count: typedRecords.length,
             sections: groupTokenRecordsByParentPath(typedRecords),
           },
         ]
       : [];
   });
+}
+
+function isTypographyWorkspaceTokenRecord(record: EditorTokenRecord): boolean {
+  return (
+    record.token.$type === "fontFamily" ||
+    record.token.$type === "fontWeight" ||
+    record.token.$type === "typography" ||
+    isFontSizeTokenRecord(record)
+  );
 }
 
 function groupTokenRecordsByParentPath(
@@ -1732,6 +1938,406 @@ function tokenParentPath(path: string): string {
 
 function tokenVariationName(path: string): string {
   return path.split(".").at(-1) ?? path;
+}
+
+function renderTypographyTokenEditor(input: {
+  model: TypographyWorkspaceModel;
+  selectedTokenKey: string | undefined;
+  lookup: TokenLookup;
+  onSelect(record: EditorTokenRecord): void;
+  onCommitValue(record: EditorTokenRecord, valueText: string): void;
+  onCommitTypographyField(
+    record: EditorTokenRecord,
+    field: TypographyTokenField,
+    valueText: string
+  ): void;
+  onAttachFont(record: EditorTokenRecord, file: File): Promise<void>;
+  onRemoveFontAsset(record: EditorTokenRecord): void;
+}) {
+  const hasTypographyTokens =
+    input.model.families.length ||
+    input.model.weights.length ||
+    input.model.sizes.length ||
+    input.model.styles.length;
+
+  if (!hasTypographyTokens) {
+    return null;
+  }
+
+  return (
+    <div style={typographyWorkspaceStyle}>
+      <div style={typographyWorkspaceHeaderStyle}>
+        <div>
+          <strong>Typography workspace</strong>
+          <p style={inlineHelpStyle}>
+            Edit font families, weights, size tokens, and text styles without opening raw JSON.
+          </p>
+        </div>
+        <div style={typographyWorkspaceCountStyle}>
+          <span>{input.model.families.length} families</span>
+          <span>{input.model.styles.length} styles</span>
+        </div>
+      </div>
+      {input.model.families.length ? (
+        <section style={typographySubPanelStyle}>
+          <div style={typographySubHeaderStyle}>
+            <strong>Font families</strong>
+            <span>Attach .woff, .woff2, .ttf, or .otf files to a family token.</span>
+          </div>
+          <div style={typographyTableScrollStyle}>
+            <table style={typographyTableStyle}>
+              <thead>
+                <tr>
+                  <th style={typographyHeaderCellStyle}>token</th>
+                  <th style={typographyHeaderCellStyle}>family</th>
+                  <th style={typographyHeaderCellStyle}>font file</th>
+                  <th style={typographyHeaderCellStyle}>preview</th>
+                </tr>
+              </thead>
+              <tbody>
+                {input.model.families.map((record) => {
+                  const valueText = serializeEditorTokenValue(record.token.$value);
+                  const family = inferFontFamilyName(record.token.$value, record.path);
+                  const asset = getEmbeddedFontAssetFromExtensions(record.token.$extensions);
+                  return (
+                    <tr key={tokenRecordKey(record)}>
+                      <th style={typographyRowHeaderCellStyle}>
+                        {renderTokenPathButton(record, input)}
+                      </th>
+                      <td style={typographyCellStyle}>
+                        <input
+                          key={`${record.path}:${valueText}`}
+                          aria-label={`${record.path} family`}
+                          style={typographyInlineInputStyle}
+                          defaultValue={valueText}
+                          onFocus={() => input.onSelect(record)}
+                          onBlur={(event) => {
+                            if (event.currentTarget.value !== valueText) {
+                              input.onCommitValue(record, event.currentTarget.value);
+                            }
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                              event.currentTarget.blur();
+                            }
+                          }}
+                        />
+                      </td>
+                      <td style={typographyCellStyle}>
+                        <div style={fontAssetCellStyle}>
+                          <label style={fontAttachButtonStyle}>
+                            Attach
+                            <input
+                              aria-label={`${record.path} font file`}
+                              type="file"
+                              accept={FONT_FILE_ACCEPT}
+                              style={hiddenFileInputStyle}
+                              onChange={(event) => {
+                                const file = event.currentTarget.files?.[0];
+                                event.currentTarget.value = "";
+                                if (file) {
+                                  void input.onAttachFont(record, file);
+                                }
+                              }}
+                            />
+                          </label>
+                          {asset ? (
+                            <>
+                              <span style={fontAssetNameStyle}>{asset.fileName}</span>
+                              <button
+                                type="button"
+                                style={fontRemoveButtonStyle}
+                                onClick={() => input.onRemoveFontAsset(record)}
+                              >
+                                Remove
+                              </button>
+                            </>
+                          ) : (
+                            <span style={fontAssetEmptyStyle}>No file</span>
+                          )}
+                        </div>
+                      </td>
+                      <td style={typographyCellStyle}>
+                        <FontPreviewSample family={family} asset={asset} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+      <div style={typographyTwoColumnStyle}>
+        {input.model.weights.length ? (
+          <section style={typographySubPanelStyle}>
+            <div style={typographySubHeaderStyle}>
+              <strong>Weights</strong>
+              <span>Numbers or aliases used by typography styles.</span>
+            </div>
+            <div style={typographyTableScrollStyle}>
+              <table style={typographyTableStyle}>
+                <thead>
+                  <tr>
+                    <th style={typographyHeaderCellStyle}>token</th>
+                    <th style={typographyHeaderCellStyle}>value</th>
+                    <th style={typographyHeaderCellStyle}>preview</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {input.model.weights.map((record) => {
+                    const valueText = serializeEditorTokenValue(record.token.$value);
+                    return (
+                      <tr key={tokenRecordKey(record)}>
+                        <th style={typographyRowHeaderCellStyle}>
+                          {renderTokenPathButton(record, input)}
+                        </th>
+                        <td style={typographyCellStyle}>
+                          {renderScalarTypographyInput(record, valueText, input)}
+                        </td>
+                        <td style={typographyCellStyle}>
+                          <span style={{ ...fontWeightPreviewStyle, fontWeight: valueText }}>
+                            Aa
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : null}
+        {input.model.sizes.length ? (
+          <section style={typographySubPanelStyle}>
+            <div style={typographySubHeaderStyle}>
+              <strong>Font sizes</strong>
+              <span>Dimension tokens marked as font size scale.</span>
+            </div>
+            <div style={typographyTableScrollStyle}>
+              <table style={typographyTableStyle}>
+                <thead>
+                  <tr>
+                    <th style={typographyHeaderCellStyle}>token</th>
+                    <th style={typographyHeaderCellStyle}>size</th>
+                    <th style={typographyHeaderCellStyle}>preview</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {input.model.sizes.map((record) => {
+                    const valueText = serializeEditorTokenValue(record.token.$value);
+                    const resolved = resolveTokenValue(input.lookup, record.token.$value);
+                    return (
+                      <tr key={tokenRecordKey(record)}>
+                        <th style={typographyRowHeaderCellStyle}>
+                          {renderTokenPathButton(record, input)}
+                        </th>
+                        <td style={typographyCellStyle}>
+                          {renderScalarTypographyInput(record, valueText, input)}
+                        </td>
+                        <td style={typographyCellStyle}>
+                          <span style={{ ...fontSizePreviewStyle, fontSize: String(resolved) }}>
+                            Aa
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : null}
+      </div>
+      {input.model.styles.length ? (
+        <section style={typographySubPanelStyle}>
+          <div style={typographySubHeaderStyle}>
+            <strong>Typography styles</strong>
+            <span>Structured text styles edited as fields, saved back to JSON tokens.</span>
+          </div>
+          <div style={typographyTableScrollStyle}>
+            <table style={typographyWideTableStyle}>
+              <thead>
+                <tr>
+                  <th style={typographyHeaderCellStyle}>style</th>
+                  <th style={typographyHeaderCellStyle}>family</th>
+                  <th style={typographyHeaderCellStyle}>size</th>
+                  <th style={typographyHeaderCellStyle}>line</th>
+                  <th style={typographyHeaderCellStyle}>weight</th>
+                  <th style={typographyHeaderCellStyle}>letter</th>
+                  <th style={typographyHeaderCellStyle}>paragraph</th>
+                  <th style={typographyHeaderCellStyle}>preview</th>
+                </tr>
+              </thead>
+              <tbody>
+                {input.model.styles.map((record) => {
+                  const value = record.token.$value;
+                  const typography = isTypographyValue(value) ? value : undefined;
+                  const asset = typography
+                    ? findEmbeddedFontAssetForFamily(input.model.families, typography.fontFamily)
+                    : undefined;
+                  return (
+                    <tr key={tokenRecordKey(record)}>
+                      <th style={typographyRowHeaderCellStyle}>
+                        {renderTokenPathButton(record, input)}
+                      </th>
+                      {typography ? (
+                        <>
+                          <td style={typographyCellStyle}>
+                            {renderTypographyFieldInput(
+                              record,
+                              "fontFamily",
+                              typography.fontFamily,
+                              input
+                            )}
+                          </td>
+                          <td style={typographyCellStyle}>
+                            {renderTypographyFieldInput(
+                              record,
+                              "fontSize",
+                              typography.fontSize,
+                              input
+                            )}
+                          </td>
+                          <td style={typographyCellStyle}>
+                            {renderTypographyFieldInput(
+                              record,
+                              "lineHeight",
+                              typography.lineHeight,
+                              input
+                            )}
+                          </td>
+                          <td style={typographyCellStyle}>
+                            {renderTypographyFieldInput(
+                              record,
+                              "fontWeight",
+                              String(typography.fontWeight),
+                              input
+                            )}
+                          </td>
+                          <td style={typographyCellStyle}>
+                            {renderTypographyFieldInput(
+                              record,
+                              "letterSpacing",
+                              typography.letterSpacing,
+                              input
+                            )}
+                          </td>
+                          <td style={typographyCellStyle}>
+                            {renderTypographyFieldInput(
+                              record,
+                              "paragraphSpacing",
+                              typography.paragraphSpacing ?? "",
+                              input
+                            )}
+                          </td>
+                          <td style={typographyCellStyle}>
+                            <FontPreviewSample
+                              family={typography.fontFamily}
+                              asset={asset}
+                              text="The quick brown fox"
+                              style={typographyToCss(typography)}
+                              showMeta={false}
+                            />
+                          </td>
+                        </>
+                      ) : (
+                        <td style={typographyCellStyle} colSpan={7}>
+                          <button
+                            type="button"
+                            style={tokenMatrixObjectCellStyle}
+                            onClick={() => input.onSelect(record)}
+                          >
+                            Open JSON detail
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
+function renderTokenPathButton(
+  record: EditorTokenRecord,
+  input: Pick<Parameters<typeof renderTypographyTokenEditor>[0], "selectedTokenKey" | "onSelect">
+) {
+  return (
+    <button
+      type="button"
+      style={{
+        ...typographyTokenPathButtonStyle,
+        ...(input.selectedTokenKey === tokenRecordKey(record)
+          ? typographyTokenPathButtonActiveStyle
+          : {}),
+      }}
+      onClick={() => input.onSelect(record)}
+    >
+      {record.path}
+    </button>
+  );
+}
+
+function renderScalarTypographyInput(
+  record: EditorTokenRecord,
+  valueText: string,
+  input: Pick<Parameters<typeof renderTypographyTokenEditor>[0], "onSelect" | "onCommitValue">
+) {
+  return (
+    <input
+      key={`${record.path}:${valueText}`}
+      aria-label={`${record.path} value`}
+      style={typographyInlineInputStyle}
+      defaultValue={valueText}
+      onFocus={() => input.onSelect(record)}
+      onBlur={(event) => {
+        if (event.currentTarget.value !== valueText) {
+          input.onCommitValue(record, event.currentTarget.value);
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          event.currentTarget.blur();
+        }
+      }}
+    />
+  );
+}
+
+function renderTypographyFieldInput(
+  record: EditorTokenRecord,
+  field: TypographyTokenField,
+  valueText: string,
+  input: Pick<
+    Parameters<typeof renderTypographyTokenEditor>[0],
+    "onSelect" | "onCommitTypographyField"
+  >
+) {
+  return (
+    <input
+      key={`${record.path}:${field}:${valueText}`}
+      aria-label={`${record.path} ${field}`}
+      style={typographyInlineInputStyle}
+      defaultValue={valueText}
+      onFocus={() => input.onSelect(record)}
+      onBlur={(event) => {
+        if (event.currentTarget.value !== valueText) {
+          input.onCommitTypographyField(record, field, event.currentTarget.value);
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          event.currentTarget.blur();
+        }
+      }}
+    />
+  );
 }
 
 function renderTokenMatrixEditor(input: {
@@ -1904,6 +2510,7 @@ function createNewTokenDraft(documentIndex = 0): EditorTokenDraft {
     type: "color",
     valueText: "#3366ff",
     description: "",
+    extensionsText: "",
   };
 }
 
@@ -1914,6 +2521,7 @@ function tokenDraftFromRecord(record: EditorTokenRecord): EditorTokenDraft {
     type: record.token.$type,
     valueText: serializeEditorTokenValue(record.token.$value),
     description: record.token.$description ?? "",
+    extensionsText: serializeEditorTokenExtensions(record.token.$extensions),
   };
 }
 
@@ -2065,9 +2673,61 @@ function projectColorSchemeTokenPath(
   return { path: projected.join("."), specificity };
 }
 
+function renderFontAttachmentDraftEditor(input: {
+  draft: EditorTokenDraft;
+  onAttach(file: File): Promise<void>;
+  onRemove(): void;
+}) {
+  const asset = getEmbeddedFontAssetFromDraft(input.draft);
+  return (
+    <div style={fontAttachmentPanelStyle}>
+      <div style={fontAttachmentHeaderStyle}>
+        <span>{asset ? asset.fileName : "No font file attached"}</span>
+        {asset ? <small>{asset.format}</small> : null}
+      </div>
+      <div style={fontAttachmentActionsStyle}>
+        <label style={fontAttachButtonStyle}>
+          Attach font file
+          <input
+            aria-label="Attach font file"
+            type="file"
+            accept={FONT_FILE_ACCEPT}
+            style={hiddenFileInputStyle}
+            onChange={(event) => {
+              const file = event.currentTarget.files?.[0];
+              event.currentTarget.value = "";
+              if (file) {
+                void input.onAttach(file);
+              }
+            }}
+          />
+        </label>
+        {asset ? (
+          <button type="button" style={fontRemoveButtonStyle} onClick={input.onRemove}>
+            Remove
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function getEmbeddedFontAssetFromDraft(draft: EditorTokenDraft): EmbeddedFontAsset | undefined {
+  try {
+    return getEmbeddedFontAssetFromExtensions(parseEditorTokenExtensions(draft.extensionsText));
+  } catch {
+    return undefined;
+  }
+}
+
 function renderTokenDraftPreview(draft: EditorTokenDraft, lookup: TokenLookup) {
   try {
     const value = resolveTokenValue(lookup, parseEditorTokenValue(draft.type, draft.valueText));
+    if (draft.type === "fontFamily") {
+      const asset = getEmbeddedFontAssetFromDraft(draft);
+      const family = inferFontFamilyName(value, draft.path);
+      return <FontPreviewSample family={family} asset={asset} text="The quick brown fox 123" />;
+    }
     if (draft.type === "color" || isCssColorValue(value)) {
       const color = String(value);
       return (
@@ -3503,6 +4163,7 @@ function isTypographyValue(value: unknown): value is {
   lineHeight: string;
   fontWeight: string | number;
   letterSpacing: string;
+  paragraphSpacing?: string;
 } {
   return (
     Boolean(value) &&
@@ -3522,6 +4183,7 @@ function typographyToCss(value: {
   lineHeight: string;
   fontWeight: string | number;
   letterSpacing: string;
+  paragraphSpacing?: string;
 }): CSSProperties {
   return {
     fontFamily: `${value.fontFamily}, ui-sans-serif, system-ui, sans-serif`,
@@ -3530,6 +4192,218 @@ function typographyToCss(value: {
     fontWeight: value.fontWeight,
     letterSpacing: value.letterSpacing,
   };
+}
+
+const FONT_FILE_ACCEPT = ".woff,.woff2,.ttf,.otf,font/woff,font/woff2,font/ttf,font/otf";
+
+export function fontFormatFromFileName(fileName: string): EmbeddedFontAsset["format"] {
+  const extension = fileName.split(".").at(-1)?.toLowerCase();
+  if (extension === "woff2") {
+    return "woff2";
+  }
+  if (extension === "woff") {
+    return "woff";
+  }
+  if (extension === "ttf") {
+    return "truetype";
+  }
+  if (extension === "otf") {
+    return "opentype";
+  }
+  throw new Error("Font files must be .woff, .woff2, .ttf, or .otf.");
+}
+
+export function createEmbeddedFontAsset(input: {
+  family: string;
+  fileName: string;
+  mimeType: string;
+  dataUrl: string;
+}): EmbeddedFontAsset {
+  const family = input.family.trim();
+  if (!family) {
+    throw new Error("Font family is required before attaching a font file.");
+  }
+  if (!input.dataUrl.startsWith("data:")) {
+    throw new Error("Attached font files must be stored as data URLs.");
+  }
+  return {
+    kind: "font",
+    source: "embedded",
+    family,
+    fileName: input.fileName,
+    format: fontFormatFromFileName(input.fileName),
+    mimeType: input.mimeType || mimeTypeForFontFormat(fontFormatFromFileName(input.fileName)),
+    dataUrl: input.dataUrl,
+  };
+}
+
+export function isEmbeddedFontAsset(value: unknown): value is EmbeddedFontAsset {
+  return (
+    Boolean(value) &&
+    typeof value === "object" &&
+    value !== null &&
+    (value as EmbeddedFontAsset).kind === "font" &&
+    (value as EmbeddedFontAsset).source === "embedded" &&
+    typeof (value as EmbeddedFontAsset).family === "string" &&
+    typeof (value as EmbeddedFontAsset).fileName === "string" &&
+    typeof (value as EmbeddedFontAsset).dataUrl === "string"
+  );
+}
+
+export function upsertEmbeddedFontAssetExtension(
+  extensions: DesignToken["$extensions"] | undefined,
+  asset: EmbeddedFontAsset
+): DesignToken["$extensions"] {
+  return {
+    ...(extensions ?? {}),
+    podo: {
+      ...(extensions?.podo ?? {}),
+      fontAsset: asset,
+    },
+  };
+}
+
+export function removeEmbeddedFontAssetExtension(
+  extensions: DesignToken["$extensions"] | undefined
+): DesignToken["$extensions"] | undefined {
+  if (!extensions?.podo?.fontAsset) {
+    return extensions;
+  }
+  const nextPodo = { ...extensions.podo };
+  delete nextPodo.fontAsset;
+  if (!Object.keys(nextPodo).length) {
+    const withoutPodo: DesignToken["$extensions"] = { ...extensions };
+    delete withoutPodo.podo;
+    return Object.keys(withoutPodo).length ? withoutPodo : undefined;
+  }
+  return { ...extensions, podo: nextPodo };
+}
+
+function getEmbeddedFontAssetFromExtensions(
+  extensions: DesignToken["$extensions"] | undefined
+): EmbeddedFontAsset | undefined {
+  const asset = extensions?.podo?.fontAsset;
+  return isEmbeddedFontAsset(asset) ? asset : undefined;
+}
+
+function findEmbeddedFontAssetForFamily(
+  records: EditorTokenRecord[],
+  family: string
+): EmbeddedFontAsset | undefined {
+  return records
+    .filter((record) => inferFontFamilyName(record.token.$value, record.path) === family)
+    .map((record) => getEmbeddedFontAssetFromExtensions(record.token.$extensions))
+    .find(Boolean);
+}
+
+function inferFontFamilyName(value: unknown, path: string): string {
+  if (typeof value === "string" && value.trim() && !/^\{[^}]+\}$/.test(value.trim())) {
+    return value.trim();
+  }
+  return tokenVariationName(path)
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+function inferFontFamilyNameFromDraft(draft: EditorTokenDraft): string {
+  const valueText = draft.valueText.trim();
+  if (valueText && !/^\{[^}]+\}$/.test(valueText)) {
+    return valueText;
+  }
+  return inferFontFamilyName(valueText, draft.path);
+}
+
+async function createEmbeddedFontAssetFromFile(
+  file: File,
+  family: string
+): Promise<EmbeddedFontAsset> {
+  fontFormatFromFileName(file.name);
+  const dataUrl = await readFileAsDataUrl(file);
+  return createEmbeddedFontAsset({
+    family,
+    fileName: file.name,
+    mimeType: file.type || mimeTypeForFontFormat(fontFormatFromFileName(file.name)),
+    dataUrl,
+  });
+}
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("Font file could not be converted to a data URL."));
+      }
+    });
+    reader.addEventListener("error", () => reject(new Error("Font file could not be read.")));
+    reader.readAsDataURL(file);
+  });
+}
+
+function mimeTypeForFontFormat(format: EmbeddedFontAsset["format"]): string {
+  if (format === "woff2") {
+    return "font/woff2";
+  }
+  if (format === "woff") {
+    return "font/woff";
+  }
+  if (format === "truetype") {
+    return "font/ttf";
+  }
+  return "font/otf";
+}
+
+function fontFaceName(asset: EmbeddedFontAsset): string {
+  return `PodoAttachedFont-${hashString(`${asset.family}:${asset.fileName}:${asset.dataUrl}`)}`;
+}
+
+function hashString(value: string): string {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(index);
+    hash |= 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+function escapeCssString(value: string): string {
+  return value.replace(/["\\]/g, "\\$&");
+}
+
+function FontPreviewSample({
+  family,
+  asset,
+  text = "Aa Bb Cc 123",
+  style,
+  showMeta = true,
+}: {
+  family: string;
+  asset?: EmbeddedFontAsset | undefined;
+  text?: string | undefined;
+  style?: CSSProperties | undefined;
+  showMeta?: boolean | undefined;
+}) {
+  const attachedName = asset ? fontFaceName(asset) : undefined;
+  const fontFamily = attachedName
+    ? `"${escapeCssString(attachedName)}", ui-sans-serif, system-ui, sans-serif`
+    : `${family}, ui-sans-serif, system-ui, sans-serif`;
+  return (
+    <div style={fontPreviewSampleStyle}>
+      {asset ? (
+        <style>
+          {`@font-face{font-family:"${escapeCssString(attachedName ?? "")}";src:url("${escapeCssString(
+            asset.dataUrl
+          )}") format("${asset.format}");font-display:swap;}`}
+        </style>
+      ) : null}
+      <span style={{ ...fontPreviewTextStyle, ...style, fontFamily }}>{text}</span>
+      {showMeta ? (
+        <small style={fontPreviewMetaStyle}>{asset ? asset.fileName : family}</small>
+      ) : null}
+    </div>
+  );
 }
 
 export function createEditorState(input: {
@@ -4450,6 +5324,20 @@ const summaryStyle: CSSProperties = {
   fontSize: 13,
 };
 
+const nestedDisclosureStyle: CSSProperties = {
+  border: "1px solid #e0e7f0",
+  borderRadius: 6,
+  background: "#ffffff",
+  padding: 8,
+};
+
+const nestedSummaryStyle: CSSProperties = {
+  cursor: "pointer",
+  fontWeight: 700,
+  fontSize: 12,
+  color: "#4e5968",
+};
+
 const detailPanelBodyStyle: CSSProperties = {
   display: "grid",
   gap: 12,
@@ -4660,6 +5548,208 @@ const tokenMatrixObjectCellStyle: CSSProperties = {
 const tokenMatrixEmptyCellStyle: CSSProperties = {
   color: "#a1a9b5",
   fontSize: 12,
+};
+
+const typographyWorkspaceStyle: CSSProperties = {
+  border: "1px solid #d4dce8",
+  borderRadius: 8,
+  background: "#ffffff",
+  display: "grid",
+  gap: 12,
+  padding: 12,
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+};
+
+const typographyWorkspaceHeaderStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "start",
+  justifyContent: "space-between",
+  gap: 16,
+};
+
+const typographyWorkspaceCountStyle: CSSProperties = {
+  display: "flex",
+  gap: 6,
+  flexWrap: "wrap",
+  justifyContent: "flex-end",
+  color: "#5d6775",
+  fontSize: 12,
+};
+
+const typographySubPanelStyle: CSSProperties = {
+  border: "1px solid #dde5ef",
+  borderRadius: 8,
+  background: "#fbfcfe",
+  display: "grid",
+  alignContent: "start",
+  gap: 8,
+  padding: 10,
+};
+
+const typographySubHeaderStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "baseline",
+  justifyContent: "space-between",
+  gap: 12,
+  color: "#5d6775",
+  fontSize: 12,
+};
+
+const typographyTwoColumnStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gap: 12,
+};
+
+const typographyTableScrollStyle: CSSProperties = {
+  overflow: "auto",
+  border: "1px solid #e0e7f0",
+  borderRadius: 6,
+  maxHeight: "min(50vh, 520px)",
+};
+
+const typographyTableStyle: CSSProperties = {
+  width: "100%",
+  minWidth: 640,
+  borderCollapse: "separate",
+  borderSpacing: 0,
+};
+
+const typographyWideTableStyle: CSSProperties = {
+  ...typographyTableStyle,
+  minWidth: 1120,
+};
+
+const typographyHeaderCellStyle: CSSProperties = {
+  position: "sticky",
+  top: 0,
+  zIndex: 1,
+  borderBottom: "1px solid #d8e0ea",
+  borderRight: "1px solid #edf1f6",
+  background: "#f7f9fc",
+  color: "#4e5968",
+  padding: "8px",
+  textAlign: "left",
+  fontSize: 12,
+  fontWeight: 700,
+};
+
+const typographyRowHeaderCellStyle: CSSProperties = {
+  minWidth: 180,
+  maxWidth: 260,
+  borderBottom: "1px solid #edf1f6",
+  borderRight: "1px solid #d8e0ea",
+  background: "#ffffff",
+  padding: 6,
+  textAlign: "left",
+  verticalAlign: "middle",
+};
+
+const typographyCellStyle: CSSProperties = {
+  minWidth: 128,
+  borderBottom: "1px solid #edf1f6",
+  borderRight: "1px solid #edf1f6",
+  background: "#ffffff",
+  padding: 6,
+  verticalAlign: "middle",
+};
+
+const typographyTokenPathButtonStyle: CSSProperties = {
+  width: "100%",
+  minHeight: 32,
+  border: "1px solid transparent",
+  borderRadius: 5,
+  background: "transparent",
+  color: "#263241",
+  padding: "5px 6px",
+  textAlign: "left",
+  overflowWrap: "anywhere",
+  fontSize: 12,
+};
+
+const typographyTokenPathButtonActiveStyle: CSSProperties = {
+  border: "1px solid #7aa7ee",
+  background: "#edf4ff",
+  color: "#123b72",
+};
+
+const typographyInlineInputStyle: CSSProperties = {
+  width: "100%",
+  minWidth: 0,
+  height: 32,
+  border: "1px solid #ccd6e3",
+  borderRadius: 5,
+  background: "#fbfcfe",
+  color: "#171a20",
+  padding: "0 7px",
+  fontSize: 12,
+};
+
+const fontAssetCellStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 7,
+  flexWrap: "wrap",
+};
+
+const fontAttachButtonStyle: CSSProperties = {
+  minHeight: 30,
+  border: "1px solid #9fb4cf",
+  borderRadius: 6,
+  background: "#ffffff",
+  color: "#263241",
+  padding: "6px 9px",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  cursor: "pointer",
+  fontSize: 12,
+  fontWeight: 600,
+};
+
+const hiddenFileInputStyle: CSSProperties = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  opacity: 0,
+  pointerEvents: "none",
+};
+
+const fontAssetNameStyle: CSSProperties = {
+  maxWidth: 180,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  color: "#4e5968",
+  fontSize: 12,
+};
+
+const fontAssetEmptyStyle: CSSProperties = {
+  color: "#8a95a3",
+  fontSize: 12,
+};
+
+const fontRemoveButtonStyle: CSSProperties = {
+  minHeight: 28,
+  border: "1px solid #e1b4af",
+  borderRadius: 6,
+  background: "#fff8f7",
+  color: "#a23a32",
+  padding: "0 8px",
+  fontSize: 12,
+};
+
+const fontWeightPreviewStyle: CSSProperties = {
+  display: "inline-block",
+  minWidth: 42,
+  fontSize: 22,
+  lineHeight: "28px",
+};
+
+const fontSizePreviewStyle: CSSProperties = {
+  display: "inline-block",
+  minWidth: 42,
+  lineHeight: 1.2,
 };
 
 const summaryListStyle: CSSProperties = {
@@ -5064,6 +6154,52 @@ const tokenSwatchStyle: CSSProperties = {
 const tokenTypographyPreviewStyle: CSSProperties = {
   display: "grid",
   gap: 8,
+};
+
+const fontPreviewSampleStyle: CSSProperties = {
+  minWidth: 0,
+  display: "grid",
+  gap: 4,
+};
+
+const fontPreviewTextStyle: CSSProperties = {
+  display: "block",
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  fontSize: 20,
+  lineHeight: "28px",
+  color: "#171a20",
+};
+
+const fontPreviewMetaStyle: CSSProperties = {
+  minWidth: 0,
+  overflowWrap: "anywhere",
+  color: "#6b7280",
+  fontSize: 11,
+};
+
+const fontAttachmentPanelStyle: CSSProperties = {
+  border: "1px solid #dde5ef",
+  borderRadius: 6,
+  background: "#ffffff",
+  padding: 8,
+  display: "grid",
+  gap: 8,
+};
+
+const fontAttachmentHeaderStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 8,
+  color: "#4e5968",
+  fontSize: 12,
+};
+
+const fontAttachmentActionsStyle: CSSProperties = {
+  display: "flex",
+  gap: 8,
+  flexWrap: "wrap",
 };
 
 const tokenScalePreviewStyle: CSSProperties = {

@@ -10,6 +10,15 @@
           "$value": "Pretendard",
           "$extensions": {
             "podo": {
+              "fontAsset": {
+                "kind": "font",
+                "source": "embedded",
+                "family": "Pretendard",
+                "fileName": "pretendard.woff2",
+                "format": "woff2",
+                "mimeType": "font/woff2",
+                "dataUrl": "data:font/woff2;base64,AAAA"
+              },
               "scope": "primitive",
               "roles": ["text"]
             }

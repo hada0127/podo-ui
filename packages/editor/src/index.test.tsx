@@ -6,9 +6,11 @@ import {
   composeSlot,
   createComponentNode,
   createComponentSpecExportFile,
+  createEmbeddedFontAsset,
   createThemedTokenLookup,
   createEditorState,
   createTokenMatrix,
+  createTypographyWorkspaceModel,
   componentPreviewKind,
   describeLayoutSpecBoundary,
   dropComponentOnCanvas,
@@ -20,17 +22,21 @@ import {
   filterComponentsForEditor,
   githubSyncStrategy,
   importFigmaVariables,
+  fontFormatFromFileName,
+  isEmbeddedFontAsset,
   legacyComponentPreviewIds,
   responsiveViewports,
   renderComponentPreview,
   selectResponsivePreview,
   syncEditorStateFromTldraw,
   updateComponentNodeProps,
+  upsertEmbeddedFontAssetExtension,
   type FigmaVariableCollection,
   type PodoComponentShapeInput,
   type PodoTldrawStateWriter,
 } from "./index.js";
 import {
+  createTokenFromDraft,
   createComponentPropType,
   createEmptyTokenDocument,
   deleteComponentProp,
@@ -341,6 +347,35 @@ describe("@podo/editor", () => {
 
     const spacingMatrix = createTokenMatrix(flattenTokenDocuments(legacyTokenDocuments), "spacing");
     expect(spacingMatrix.rows.some((row) => row.label === "scale")).toBe(true);
+  });
+
+  it("builds typography workspace groups and preserves attached font extensions", () => {
+    const records = flattenTokenDocuments(legacyTokenDocuments);
+    const workspace = createTypographyWorkspaceModel(records);
+    const asset = createEmbeddedFontAsset({
+      family: "Podo Sans",
+      fileName: "podo-sans.woff2",
+      mimeType: "font/woff2",
+      dataUrl: "data:font/woff2;base64,AAAA",
+    });
+    const token = createTokenFromDraft({
+      path: "font.family.podo",
+      type: "fontFamily",
+      valueText: "Podo Sans",
+      extensionsText: JSON.stringify(upsertEmbeddedFontAssetExtension(undefined, asset)),
+    });
+
+    expect(workspace.families.some((record) => record.path === "font.family.pretendard")).toBe(
+      true
+    );
+    expect(workspace.weights.map((record) => record.path)).toEqual(
+      expect.arrayContaining(["font.weight.regular", "font.weight.bold"])
+    );
+    expect(workspace.sizes.some((record) => record.path.startsWith("font.size."))).toBe(true);
+    expect(workspace.styles.some((record) => record.path === "typography.heading.h1")).toBe(true);
+    expect(fontFormatFromFileName("podo-sans.otf")).toBe("opentype");
+    expect(isEmbeddedFontAsset(token.$extensions?.podo?.fontAsset)).toBe(true);
+    expect(token.$extensions?.podo?.fontAsset?.fileName).toBe("podo-sans.woff2");
   });
 
   it("loads every v1 public component fixture as searchable editable specs", () => {

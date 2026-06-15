@@ -37,6 +37,39 @@ describe("Podo spec schemas", () => {
     expect(validateTokenReferences(foundation)).toEqual([]);
   });
 
+  it("parses embedded font assets on font family tokens", () => {
+    const document = parseTokenDocument({
+      schemaVersion: "2.0.0",
+      kind: "tokens",
+      category: "theme",
+      tokens: {
+        font: {
+          family: {
+            podo: {
+              $type: "fontFamily",
+              $value: "Podo Sans",
+              $extensions: {
+                podo: {
+                  fontAsset: {
+                    kind: "font",
+                    source: "embedded",
+                    family: "Podo Sans",
+                    fileName: "podo-sans.woff2",
+                    format: "woff2",
+                    mimeType: "font/woff2",
+                    dataUrl: "data:font/woff2;base64,AAAA",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(JSON.stringify(document.tokens)).toContain("podo-sans.woff2");
+  });
+
   it("parses valid component sample documents", () => {
     const button = parseComponentDocument(loadSample("components/button.component.json"));
     const input = parseComponentDocument(loadSample("components/input.component.json"));
