@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   aliasReferenceSchema,
+  dottedPathSchema,
   identifierSchema,
   issue,
   normalizeAliasReference,
@@ -73,12 +74,13 @@ export const componentVariantSchema = z
     values: z.array(z.string().min(1)).min(1),
     default: z.string().min(1).optional(),
     description: z.string().optional(),
-    // Variant-level token bindings (apply across the whole variant axis).
-    tokens: z.record(z.string(), aliasReferenceSchema).optional(),
+    // Variant-level token bindings (apply across the whole variant axis). Keys
+    // are dotted binding paths (part.prop) so they emit valid CSS custom props.
+    tokens: z.record(dottedPathSchema, aliasReferenceSchema).optional(),
     // Per-value token bindings: value -> part.prop -> token alias, so a specific
     // variant value (e.g. "soft") can re-bind component tokens. Enables
     // spec-driven per-variant styling in codegen (report.md §3.2 / §6).
-    valueTokens: z.record(z.string(), z.record(z.string(), aliasReferenceSchema)).optional(),
+    valueTokens: z.record(z.string(), z.record(dottedPathSchema, aliasReferenceSchema)).optional(),
   })
   .superRefine((variant, ctx) => {
     for (const value of Object.keys(variant.valueTokens ?? {})) {
@@ -106,7 +108,7 @@ export const componentStateSchema = z.object({
   ]),
   description: z.string().optional(),
   selector: z.string().optional(),
-  tokens: z.record(z.string(), aliasReferenceSchema).optional(),
+  tokens: z.record(dottedPathSchema, aliasReferenceSchema).optional(),
 });
 
 export const targetSupportSchema = z.object({
@@ -140,7 +142,7 @@ export const componentDocumentSchema = z.object({
   props: z.array(componentPropSchema).default([]),
   variants: z.array(componentVariantSchema).default([]),
   states: z.array(componentStateSchema).default([]),
-  tokens: z.record(z.string(), aliasReferenceSchema).default({}),
+  tokens: z.record(dottedPathSchema, aliasReferenceSchema).default({}),
   targets: z.object({
     web: targetSupportSchema,
     react: targetSupportSchema,

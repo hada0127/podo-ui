@@ -490,9 +490,9 @@ export async function loadStudioContext(root: string): Promise<StudioContext> {
           })
         )
       : [];
-  const tokenPaths = tokenSources
-    .flatMap((source) => collectTokenPaths(source.document.tokens))
-    .sort();
+  // Merged token paths (not the union of sources) so shadowed package paths are
+  // not treated as available when validating component bindings.
+  const tokenPaths = collectTokenPaths(mergeTokenDocuments(tokenSources).tokens).sort();
 
   const componentMap = new Map(
     studioDefaultComponents.map((component) => [

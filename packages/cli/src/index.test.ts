@@ -196,6 +196,163 @@ describe("@podo/cli", () => {
     expect(JSON.parse(await readFile(join(root, "src/podo/pages.json"), "utf8"))).toEqual([]);
   });
 
+  it("emits a component CSS layer reflecting variant token bindings", async () => {
+    const root = await createProject({ dependencies: { react: "^19.0.0" } });
+    const io = createIo(root);
+    await runCli(
+      ["init", "--target", "react", "--theme", "dashboard", "--out-dir", "src/podo", "--yes"],
+      io
+    );
+    await mkdir(join(root, ".podo/components"), { recursive: true });
+    await writeFile(
+      join(root, ".podo/components/card.component.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "component",
+          id: "card",
+          name: "Card",
+          category: "atom",
+          status: "stable",
+          anatomy: [{ name: "root" }],
+          tokens: { "root.background": "{color.text}" },
+          variants: [
+            {
+              name: "tone",
+              values: ["solid", "soft"],
+              default: "solid",
+              valueTokens: { soft: { "root.background": "{color.text}" } },
+            },
+          ],
+          states: [],
+          targets: {
+            web: { supported: true, limitations: [] },
+            react: { supported: true, limitations: [] },
+            hono: { supported: true, limitations: [] },
+            native: { supported: true, limitations: [] },
+          },
+          accessibility: { aria: [], keyboard: [] },
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    expect((await validateProject(parseArgs(["validate"]), io)).ok).toBe(true);
+    const built = await buildProject(parseArgs(["build"]), io);
+    expect(built.skipped).toBe(false);
+    const css = await readFile(join(root, "src/podo/components.css"), "utf8");
+    expect(css).toContain(".podo-card {");
+    expect(css).toContain("--podo-card-root-background: var(--podo-color-text);");
+    expect(css).toContain('.podo-card[data-tone="soft"] {');
+  });
+
+  it("fails the build when a component binding references a missing token", async () => {
+    const root = await createProject({ dependencies: { react: "^19.0.0" } });
+    const io = createIo(root);
+    await runCli(
+      ["init", "--target", "react", "--theme", "dashboard", "--out-dir", "src/podo", "--yes"],
+      io
+    );
+    await mkdir(join(root, ".podo/components"), { recursive: true });
+    await writeFile(
+      join(root, ".podo/components/broken.component.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "component",
+          id: "broken",
+          name: "Broken",
+          category: "atom",
+          status: "stable",
+          anatomy: [{ name: "root" }],
+          tokens: { "root.background": "{color.does-not-exist}" },
+          variants: [],
+          states: [],
+          targets: {
+            web: { supported: true, limitations: [] },
+            react: { supported: true, limitations: [] },
+            hono: { supported: true, limitations: [] },
+            native: { supported: true, limitations: [] },
+          },
+          accessibility: { aria: [], keyboard: [] },
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    await expect(buildProject(parseArgs(["build"]), io)).rejects.toThrow(/Component build failed/);
+  });
+
+  it("fails the build when a component binds a token path shadowed away by merge", async () => {
+    const root = await createProject({ dependencies: { react: "^19.0.0" } });
+    const io = createIo(root);
+    await runCli(
+      ["init", "--target", "react", "--theme", "dashboard", "--out-dir", "src/podo", "--yes"],
+      io
+    );
+    // a-base defines color.accent.light (nested); b-override replaces color.accent
+    // with a leaf, so after merge color.accent.light no longer exists.
+    await writeFile(
+      join(root, ".podo/tokens/a-base.tokens.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "tokens",
+          category: "primitive",
+          tokens: { color: { accent: { light: { $type: "color", $value: "#ffffff" } } } },
+        },
+        null,
+        2
+      )}\n`
+    );
+    await writeFile(
+      join(root, ".podo/tokens/b-override.tokens.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "tokens",
+          category: "primitive",
+          tokens: { color: { accent: { $type: "color", $value: "#000000" } } },
+        },
+        null,
+        2
+      )}\n`
+    );
+    await mkdir(join(root, ".podo/components"), { recursive: true });
+    await writeFile(
+      join(root, ".podo/components/card.component.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "component",
+          id: "card",
+          name: "Card",
+          category: "atom",
+          status: "stable",
+          anatomy: [{ name: "root" }],
+          tokens: { "root.background": "{color.accent.light}" },
+          variants: [],
+          states: [],
+          targets: {
+            web: { supported: true, limitations: [] },
+            react: { supported: true, limitations: [] },
+            hono: { supported: true, limitations: [] },
+            native: { supported: true, limitations: [] },
+          },
+          accessibility: { aria: [], keyboard: [] },
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    // color.accent.light exists in a source (union) but not after merge -> must fail.
+    await expect(buildProject(parseArgs(["build"]), io)).rejects.toThrow(/Component build failed/);
+    expect((await validateProject(parseArgs(["validate"]), io)).ok).toBe(false);
+  });
+
   it("fails validate and build when a page references a missing component", async () => {
     const root = await createProject({ dependencies: { react: "^19.0.0" } });
     const io = createIo(root);

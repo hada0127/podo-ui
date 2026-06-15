@@ -1,4 +1,4 @@
-import type { ComponentDocument } from "@podo/spec";
+import { normalizeAliasReference, type ComponentDocument } from "@podo/spec";
 
 export type CodegenTarget = "web" | "react" | "hono" | "native";
 
@@ -94,6 +94,87 @@ export function assertIdempotent(filesA: GeneratedFile[], filesB: GeneratedFile[
   if (stableA !== stableB) {
     throw new Error("Codegen output is not idempotent for the same inputs.");
   }
+}
+
+function componentBindingVar(id: string, key: string): string {
+  return `--podo-${id}-${key.replace(/\./g, "-")}`;
+}
+
+function aliasToCssVar(reference: string): string {
+  return `var(--podo-${normalizeAliasReference(reference).replace(/\./g, "-")})`;
+}
+
+// Escape a variant value for safe use inside a quoted CSS attribute selector
+// ([data-x="<value>"]). Variant values are free-form spec strings.
+function escapeCssAttributeValue(value: string): string {
+  return value.replace(/[\\"\n\r\f]/g, (char) => {
+    if (char === "\n") return "\\A ";
+    if (char === "\r") return "\\D ";
+    if (char === "\f") return "\\C ";
+    return `\\${char}`;
+  });
+}
+
+function cssRule(selector: string, declarations: Array<[string, string]>): string | undefined {
+  if (!declarations.length) {
+    return undefined;
+  }
+  const body = declarations.map(([property, value]) => `  ${property}: ${value};`).join("\n");
+  return `${selector} {\n${body}\n}`;
+}
+
+/**
+ * Emit a spec-driven component token CSS layer. Each component's token bindings
+ * become CSS custom properties named after the binding (`--podo-<id>-<part>-<prop>`)
+ * bound to the referenced token var, with per-variant-value and per-state
+ * overrides scoped by `[data-<variant>="<value>"]` / `[data-state="<state>"]`.
+ * Editing a component's variant/state token bindings therefore changes build
+ * output (report.md P0 #7). Deterministic (sorted by id, then binding key).
+ */
+export function emitComponentTokenCss(specs: ComponentDocument[]): string {
+  const blocks: string[] = [];
+  const sorted = [...specs].sort((a, b) => a.id.localeCompare(b.id));
+  const sortedDecls = (map: Record<string, string>, id: string): Array<[string, string]> =>
+    Object.entries(map)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, reference]) => [componentBindingVar(id, key), aliasToCssVar(reference)]);
+
+  for (const spec of sorted) {
+    const base = `.podo-${spec.id}`;
+    // Base = component-level tokens folded with variant-level tokens (which apply
+    // across the whole variant axis), so edits to either reflect in output.
+    const baseMap: Record<string, string> = { ...spec.tokens };
+    for (const variant of spec.variants) {
+      Object.assign(baseMap, variant.tokens ?? {});
+    }
+    const baseRule = cssRule(base, sortedDecls(baseMap, spec.id));
+    if (baseRule) {
+      blocks.push(baseRule);
+    }
+    for (const variant of spec.variants) {
+      for (const value of Object.keys(variant.valueTokens ?? {}).sort()) {
+        const map = variant.valueTokens?.[value] ?? {};
+        const selector = `${base}[data-${variant.name}="${escapeCssAttributeValue(value)}"]`;
+        const rule = cssRule(selector, sortedDecls(map, spec.id));
+        if (rule) {
+          blocks.push(rule);
+        }
+      }
+    }
+    for (const state of [...spec.states].sort((a, b) => a.name.localeCompare(b.name))) {
+      const rule = cssRule(
+        `${base}[data-state="${state.name}"]`,
+        sortedDecls(state.tokens ?? {}, spec.id)
+      );
+      if (rule) {
+        blocks.push(rule);
+      }
+    }
+  }
+
+  return blocks.length
+    ? `${generatedFileHeader}\n${blocks.join("\n\n")}\n`
+    : `${generatedFileHeader}\n`;
 }
 
 function toPascalCase(value: string): string {

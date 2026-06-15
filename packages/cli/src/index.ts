@@ -39,7 +39,12 @@ import {
 } from "@podo/tokens";
 import { loadTokenDocuments } from "@podo/tokens/node";
 import { buildIconAssets, emitIconCss, emitIconTypes, emitNativeGlyphMap } from "@podo/icons";
-import { generateComponentFiles, generateIndexFile, type CodegenTarget } from "@podo/codegen";
+import {
+  emitComponentTokenCss,
+  generateComponentFiles,
+  generateIndexFile,
+  type CodegenTarget,
+} from "@podo/codegen";
 import {
   createDefaultMigrationManifest,
   hashJson as hashMigrationJson,
@@ -283,6 +288,18 @@ export async function buildProject(args: ParsedArgs, io: CliIO): Promise<BuildPl
   const merged = mergeTokenDocuments(tokenSources);
   const resolved = resolveTokenDocument(merged);
   const components = await loadBuildComponents(root);
+  // Validate against the MERGED token tree, not the union of source paths: a
+  // project token can shadow a package subtree, so a path present in some source
+  // may not exist after merge/resolve (and thus not in tokens.css).
+  const componentTokenPaths = collectTokenPaths(merged.tokens);
+  const componentIssues = components.flatMap((component) =>
+    validateComponentTokenBindings(component, componentTokenPaths)
+  );
+  if (componentIssues.length) {
+    throw new Error(
+      `Component build failed:\n${componentIssues.map((issue) => issue.message).join("\n")}`
+    );
+  }
   const pages = await loadBuildPages(root);
   const pageIssues = pages.flatMap((page) => validatePageComponents(page, components));
   if (pageIssues.length) {
@@ -320,6 +337,8 @@ export async function buildProject(args: ParsedArgs, io: CliIO): Promise<BuildPl
     // Always emit pages.json (empty array when there are no pages) so deleting
     // all pages reflects in the build output rather than leaving a stale bundle.
     { path: join(absoluteOutDir, "pages.json"), contents: `${JSON.stringify(pages, null, 2)}\n` },
+    // Spec-driven component token CSS: variant/state token edits reflect here.
+    { path: join(absoluteOutDir, "components.css"), contents: emitComponentTokenCss(components) },
   ];
   generated.push({
     path: resolve(root, join(outDir, "components/index.ts")),
@@ -426,7 +445,9 @@ export async function validateProject(args: ParsedArgs, io: CliIO): Promise<Vali
   issues.push(...validateTokenBuild(tokenSources));
 
   const components = await loadBuildComponents(root);
-  const tokenPaths = tokenSources.flatMap((source) => collectTokenPaths(source.document.tokens));
+  // Validate against the merged token tree so shadowed package paths are not
+  // counted as available (consistent with buildProject + the emitted tokens).
+  const tokenPaths = collectTokenPaths(mergeTokenDocuments(tokenSources).tokens);
   for (const component of components) {
     issues.push(...validateComponentTokenBindings(component, tokenPaths));
   }

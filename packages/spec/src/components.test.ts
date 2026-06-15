@@ -66,6 +66,18 @@ describe("component variant valueTokens", () => {
     expect(issues).toEqual([]);
   });
 
+  it("rejects a binding key that is not a dotted path", () => {
+    expect(() =>
+      parseComponentDocument(
+        buttonWith({
+          name: "variant",
+          values: ["solid"],
+          valueTokens: { solid: { "root background": "{color.brand}" } },
+        })
+      )
+    ).toThrow();
+  });
+
   it("flags a missing token referenced by a per-value binding", () => {
     const component = parseComponentDocument(
       buttonWith({
