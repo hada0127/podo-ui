@@ -108,6 +108,43 @@ describe("@podo/cli", () => {
     expect(cached.skipped).toBe(true);
   });
 
+  it("builds the react-native target and reflects token overrides", async () => {
+    const root = await createProject({ dependencies: { "react-native": "^0.76.0" } });
+    const io = createIo(root);
+    await runCli(
+      ["init", "--target", "native", "--theme", "dashboard", "--out-dir", "src/podo", "--yes"],
+      io
+    );
+    await writeFile(
+      join(root, ".podo/themes/brand.tokens.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "tokens",
+          category: "theme",
+          tokens: {
+            component: { button: { background: { $type: "color", $value: "#abcdef" } } },
+          },
+        },
+        null,
+        2
+      )}\n`
+    );
+    expect((await validateProject(parseArgs(["validate"]), io)).ok).toBe(true);
+
+    const built = await buildProject(parseArgs(["build"]), io);
+    expect(built.skipped).toBe(false);
+    // React Native token object is generated and reflects the .podo override.
+    await expect(stat(join(root, "src/podo/tokens.native.ts"))).resolves.toBeDefined();
+    expect(
+      (await readFile(join(root, "src/podo/tokens.native.ts"), "utf8")).toLowerCase()
+    ).toContain("#abcdef");
+    // The native component renderer is generated for the native target.
+    await expect(
+      stat(join(root, "src/podo/components/native/button.native.ts"))
+    ).resolves.toBeDefined();
+  });
+
   it("carries editor component exports through validate, build, and update dry-run", async () => {
     const root = await createProject({ dependencies: { react: "^19.0.0" } });
     const io = createIo(root);

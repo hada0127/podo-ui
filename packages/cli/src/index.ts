@@ -993,8 +993,12 @@ async function readJsonFiles(dir: string): Promise<unknown[]> {
       throw error;
     }
   );
+  // Sort entries so traversal order is deterministic regardless of the OS
+  // readdir order; this makes id-based overrides (e.g. duplicate component ids
+  // across .podo files) and the build output reproducible.
+  const ordered = [...entries].sort((a, b) => a.name.localeCompare(b.name));
   const files = await Promise.all(
-    entries.map(async (entry) => {
+    ordered.map(async (entry) => {
       const entryPath = join(dir, entry.name);
       if (entry.isDirectory()) {
         return readJsonFiles(entryPath);
