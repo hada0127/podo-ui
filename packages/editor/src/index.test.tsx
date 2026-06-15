@@ -236,8 +236,21 @@ describe("@podo/editor", () => {
   });
 
   it("loads v1 color, typography, spacing, radius, and button fixtures as editable v2 specs", () => {
-    const tokenPaths = flattenTokenDocuments(legacyTokenDocuments).map((record) => record.path);
+    const tokenRecords = flattenTokenDocuments(legacyTokenDocuments);
+    const tokenPaths = tokenRecords.map((record) => record.path);
+    const tokenByPath = new Map(tokenRecords.map((record) => [record.path, record.token]));
     const button = legacyComponents.find((component) => component.id === "button");
+    const buttonThemes = [
+      "default",
+      "primary",
+      "default-deep",
+      "info",
+      "link",
+      "success",
+      "warning",
+      "danger",
+    ];
+    const buttonVariants = ["solid", "fill", "border", "text"];
 
     expect(tokenPaths).toContain("color.primary.base");
     expect(tokenPaths).toContain("color.primary.hover");
@@ -245,23 +258,54 @@ describe("@podo/editor", () => {
     expect(tokenPaths).toContain("radius.scale.3");
     expect(tokenPaths).toContain("typography.paragraph.p3");
     expect(tokenPaths).toContain("component.button.theme.primary.solid.background");
+    expect(tokenPaths).toContain("component.button.theme.primary.solid.hover.background");
+    expect(tokenPaths).toContain("component.button.theme.primary.solid.active.background");
+    expect(tokenPaths).toContain("component.button.theme.default.fill.hover.border");
+    expect(tokenPaths).toContain("component.button.theme.default-deep.border.active.border");
+    expect(tokenPaths).toContain("component.button.disabled.solid.background");
+    expect(tokenPaths).toContain("component.button.disabled.border.border");
+    expect(tokenPaths).toContain("component.button.loading.opacity");
     expect(tokenPaths).toContain("component.button.size.sm.height");
+    expect(tokenByPath.get("component.button.theme.primary.outline")?.$type).toBe("string");
+    expect(tokenByPath.get("component.button.theme.default-deep.fill.active.color")?.$value).toBe(
+      "{color.default-deep.pressed}"
+    );
+    expect(tokenByPath.get("component.button.theme.default-deep.border.active.color")?.$value).toBe(
+      "{color.default-deep.pressed}"
+    );
+    for (const theme of buttonThemes) {
+      for (const variant of buttonVariants) {
+        expect(tokenPaths).toContain(`component.button.theme.${theme}.${variant}.background`);
+        expect(tokenPaths).toContain(`component.button.theme.${theme}.${variant}.color`);
+        expect(tokenPaths).toContain(`component.button.theme.${theme}.${variant}.border`);
+        expect(tokenPaths).toContain(`component.button.theme.${theme}.${variant}.hover.background`);
+        expect(tokenPaths).toContain(
+          `component.button.theme.${theme}.${variant}.active.background`
+        );
+      }
+    }
     expect(legacyComponents.map((component) => component.id)).toEqual(["button", "field", "input"]);
     expect(button?.props.find((prop) => prop.name === "theme")?.type).toMatchObject({
       kind: "enum",
-      values: [
-        "default",
-        "primary",
-        "default-deep",
-        "info",
-        "link",
-        "success",
-        "warning",
-        "danger",
-      ],
+      values: buttonThemes,
+    });
+    expect(button?.props.find((prop) => prop.name === "theme")?.default).toBe("default");
+    expect(button?.variants.find((variant) => variant.name === "alignment")?.values).toEqual([
+      "left",
+      "center",
+      "right",
+    ]);
+    expect(button?.states.find((state) => state.name === "hover")?.tokens).toMatchObject({
+      "root.background": "{component.button.theme.default.solid.hover.background}",
+    });
+    expect(button?.states.find((state) => state.name === "disabled")?.tokens).toMatchObject({
+      "root.background": "{component.button.disabled.solid.background}",
+    });
+    expect(button?.states.find((state) => state.name === "loading")?.tokens).toMatchObject({
+      "root.opacity": "{component.button.loading.opacity}",
     });
     expect(button?.tokens).toMatchObject({
-      "root.background": "{component.button.theme.primary.solid.background}",
+      "root.background": "{component.button.theme.default.solid.background}",
       "root.height": "{component.button.size.sm.height}",
       "root.typography": "{component.button.size.sm.typography}",
     });

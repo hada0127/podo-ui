@@ -1070,6 +1070,29 @@ export function PodoEditorApp({
                       </select>
                     </label>
                   ))}
+                  {selectedComponentForSpec.states.length ? (
+                    <label style={compactFieldStyle}>
+                      state
+                      <select
+                        style={compactSelectStyle}
+                        value={effectiveComponentPreviewSelections.state ?? "default"}
+                        onChange={(event) => {
+                          const value = event.currentTarget.value;
+                          setComponentPreviewSelections((selections) => ({
+                            ...selections,
+                            state: value,
+                          }));
+                        }}
+                      >
+                        <option value="default">default</option>
+                        {selectedComponentForSpec.states.map((stateItem) => (
+                          <option key={stateItem.name} value={stateItem.name}>
+                            {stateItem.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : null}
                 </div>
               </div>
               {renderComponentPreview(
@@ -1721,23 +1744,20 @@ function buttonPreviewStyleFromTokens(
   selections: Record<string, string>,
   lookup: TokenLookup
 ): CSSProperties {
-  const theme = selections.theme ?? "primary";
+  const theme = selections.theme ?? "default";
   const variant = selections.variant ?? "solid";
   const size = selections.size ?? "sm";
-  const textAlign = selections["text-align"] ?? "center";
+  const state = selections.state ?? "default";
+  const textAlign = selections.alignment ?? selections["text-align"] ?? "center";
   const typography = resolveTokenPath(lookup, `component.button.size.${size}.typography`);
   const typographyStyle = isTypographyValue(typography) ? typographyToCss(typography) : {};
-  const background = cssToken(
-    lookup,
-    `component.button.theme.${theme}.${variant}.background`,
-    "#7c3aed"
-  );
-  const color = cssToken(lookup, `component.button.theme.${theme}.${variant}.color`, "#ffffff");
-  const borderColor = cssToken(
-    lookup,
-    `component.button.theme.${theme}.${variant}.border`,
-    background
-  );
+  const references = buttonPreviewTokenReferences(selections);
+  const background = cssToken(lookup, references.background, "#f4f4f5");
+  const color = cssToken(lookup, references.color, "#2c2c31");
+  const borderColor = cssToken(lookup, references.border, background);
+  const isDisabled = state === "disabled";
+  const isLoading = state === "loading";
+  const isFocusVisible = state === "focusVisible";
   return {
     ...buttonBasePreviewStyle,
     ...typographyStyle,
@@ -1757,22 +1777,43 @@ function buttonPreviewStyleFromTokens(
       variant === "text"
         ? "1px solid transparent"
         : `${cssToken(lookup, "component.button.borderWidth", "1px")} solid ${borderColor}`,
-    boxShadow: `0 0 0 ${cssToken(lookup, "component.button.focusWidth", "4px")} ${cssToken(
-      lookup,
-      `component.button.theme.${theme}.outline`,
-      "rgba(124, 58, 237, 0.3)"
-    )}`,
+    boxShadow: isFocusVisible
+      ? `0 0 0 ${cssToken(lookup, "component.button.focusWidth", "4px")} ${cssToken(
+          lookup,
+          `component.button.theme.${theme}.outline`,
+          "rgba(124, 58, 237, 0.3)"
+        )}`
+      : "none",
+    cursor: isDisabled ? "not-allowed" : "default",
+    opacity: isLoading ? Number(cssToken(lookup, "component.button.loading.opacity", "0.72")) : 1,
   };
 }
 
-function buttonPreviewTokenReferences(selections: Record<string, string>): Record<string, string> {
-  const theme = selections.theme ?? "primary";
+interface ButtonPreviewTokenReferences {
+  background: string;
+  color: string;
+  border: string;
+  height: string;
+  typography: string;
+}
+
+function buttonPreviewTokenReferences(
+  selections: Record<string, string>
+): ButtonPreviewTokenReferences {
+  const theme = selections.theme ?? "default";
   const variant = selections.variant ?? "solid";
   const size = selections.size ?? "sm";
+  const state = selections.state ?? "default";
+  const visualPrefix =
+    state === "disabled"
+      ? `component.button.disabled.${variant}`
+      : state === "hover" || state === "active"
+        ? `component.button.theme.${theme}.${variant}.${state}`
+        : `component.button.theme.${theme}.${variant}`;
   return {
-    background: `component.button.theme.${theme}.${variant}.background`,
-    color: `component.button.theme.${theme}.${variant}.color`,
-    border: `component.button.theme.${theme}.${variant}.border`,
+    background: `${visualPrefix}.background`,
+    color: `${visualPrefix}.color`,
+    border: `${visualPrefix}.border`,
     height: `component.button.size.${size}.height`,
     typography: `component.button.size.${size}.typography`,
   };

@@ -306,6 +306,242 @@ const typographyMixins = {
   ],
 } as const;
 
+const legacyButtonThemes = [
+  "default",
+  "primary",
+  "default-deep",
+  "info",
+  "link",
+  "success",
+  "warning",
+  "danger",
+] as const;
+
+const legacyButtonVariants = ["solid", "fill", "border", "text"] as const;
+const legacyButtonStateVariants = ["hover", "active"] as const;
+
+type LegacyButtonTheme = (typeof legacyButtonThemes)[number];
+type LegacyButtonVariant = (typeof legacyButtonVariants)[number];
+type LegacyButtonStateVariant = (typeof legacyButtonStateVariants)[number];
+
+interface ButtonStyleRefs {
+  background: string;
+  color: string;
+  border: string;
+}
+
+function buttonToken(value: string, type: "color" | "string" = "color") {
+  return { $type: type, $value: value };
+}
+
+function buttonStyleTokens(style: ButtonStyleRefs) {
+  return {
+    background: buttonToken(
+      style.background,
+      style.background === "transparent" ? "string" : "color"
+    ),
+    color: buttonToken(style.color),
+    border: buttonToken(style.border, style.border === "transparent" ? "string" : "color"),
+  };
+}
+
+function legacyButtonThemeTokens(theme: LegacyButtonTheme) {
+  return {
+    ...Object.fromEntries(
+      legacyButtonVariants.map((variant) => [
+        variant,
+        {
+          ...buttonStyleTokens(buttonStyleRefs(theme, variant)),
+          ...Object.fromEntries(
+            legacyButtonStateVariants.map((state) => [
+              state,
+              buttonStyleTokens(buttonStyleRefs(theme, variant, state)),
+            ])
+          ),
+        },
+      ])
+    ),
+    outline: buttonToken(`{color.${theme}.outline}`, "string"),
+  };
+}
+
+function buttonStyleRefs(
+  theme: LegacyButtonTheme,
+  variant: LegacyButtonVariant,
+  state?: LegacyButtonStateVariant
+): ButtonStyleRefs {
+  const tone = state === "hover" ? "hover" : state === "active" ? "pressed" : "base";
+  const themeColor = `{color.${theme}.${tone}}`;
+  const baseThemeColor = `{color.${theme}.base}`;
+  const reverse = `{color.${theme}.reverse}`;
+  const fill = `{color.${theme}.fill}`;
+
+  if (theme === "default") {
+    return defaultButtonStyleRefs(variant, state);
+  }
+
+  if (theme === "default-deep") {
+    return defaultDeepButtonStyleRefs(variant, state);
+  }
+
+  if (variant === "solid") {
+    return {
+      background: state ? themeColor : baseThemeColor,
+      color: reverse,
+      border: baseThemeColor,
+    };
+  }
+
+  if (variant === "fill") {
+    return {
+      background: fill,
+      color: state ? themeColor : baseThemeColor,
+      border: state ? themeColor : baseThemeColor,
+    };
+  }
+
+  if (variant === "border") {
+    return {
+      background: "transparent",
+      color: state ? themeColor : baseThemeColor,
+      border: state ? themeColor : baseThemeColor,
+    };
+  }
+
+  return {
+    background: "transparent",
+    color: state ? themeColor : baseThemeColor,
+    border: "transparent",
+  };
+}
+
+function defaultButtonStyleRefs(
+  variant: LegacyButtonVariant,
+  state?: LegacyButtonStateVariant
+): ButtonStyleRefs {
+  if (variant === "solid") {
+    return {
+      background:
+        state === "hover"
+          ? "{color.default.hover}"
+          : state === "active"
+            ? "{color.default.pressed}"
+            : "{color.default.base}",
+      color: "{color.default.reverse}",
+      border: "{color.default.base}",
+    };
+  }
+
+  if (variant === "fill") {
+    return {
+      background: "{color.default.fill}",
+      color: "{color.default.reverse}",
+      border:
+        state === "hover"
+          ? "{color.border.hover}"
+          : state === "active"
+            ? "{color.border.pressed}"
+            : "{color.border.base}",
+    };
+  }
+
+  if (variant === "border") {
+    return {
+      background: "transparent",
+      color: "{color.default.reverse}",
+      border:
+        state === "hover"
+          ? "{color.border.hover}"
+          : state === "active"
+            ? "{color.border.pressed}"
+            : "{color.border.base}",
+    };
+  }
+
+  return {
+    background: "transparent",
+    color:
+      state === "hover"
+        ? "{color.text.action-hover}"
+        : state === "active"
+          ? "{color.text.action-pressed}"
+          : "{color.text.action}",
+    border: "transparent",
+  };
+}
+
+function defaultDeepButtonStyleRefs(
+  variant: LegacyButtonVariant,
+  state?: LegacyButtonStateVariant
+): ButtonStyleRefs {
+  if (variant === "fill") {
+    return {
+      background: "{color.default-deep.fill}",
+      color: state === "active" ? "{color.default-deep.pressed}" : "{color.text.body}",
+      border:
+        state === "hover"
+          ? "{color.border.hover}"
+          : state === "active"
+            ? "{color.border.pressed}"
+            : "{color.border.base}",
+    };
+  }
+
+  if (variant === "border") {
+    return {
+      background: "transparent",
+      color: state === "active" ? "{color.default-deep.pressed}" : "{color.text.body}",
+      border:
+        state === "hover"
+          ? "{color.default-deep.hover}"
+          : state === "active"
+            ? "{color.default-deep.pressed}"
+            : "{color.default-deep.base}",
+    };
+  }
+
+  if (variant === "text") {
+    return {
+      background: "transparent",
+      color: state === "active" ? "{color.default-deep.pressed}" : "{color.text.body}",
+      border: "transparent",
+    };
+  }
+
+  return {
+    background:
+      state === "hover"
+        ? "{color.default-deep.hover}"
+        : state === "active"
+          ? "{color.default-deep.pressed}"
+          : "{color.default-deep.base}",
+    color: "{color.default-deep.reverse}",
+    border: "{color.default-deep.base}",
+  };
+}
+
+function buttonDisabledTokens(variant: LegacyButtonVariant) {
+  if (variant === "border") {
+    return buttonStyleTokens({
+      background: "transparent",
+      color: "{color.text.action-disabled}",
+      border: "{color.border.disabled}",
+    });
+  }
+  if (variant === "text") {
+    return buttonStyleTokens({
+      background: "transparent",
+      color: "{color.text.action-disabled}",
+      border: "transparent",
+    });
+  }
+  return buttonStyleTokens({
+    background: "{color.bg.disabled}",
+    color: "{color.text.action-disabled}",
+    border: variant === "fill" ? "{color.border.disabled}" : "{color.bg.disabled}",
+  });
+}
+
 export const legacyTokenDocuments: TokenDocument[] = [
   parseTokenDocument({
     schemaVersion: PODO_SCHEMA_VERSION,
@@ -364,33 +600,14 @@ export const legacyTokenDocuments: TokenDocument[] = [
           borderWidth: { $type: "dimension", $value: "1px" },
           focusWidth: { $type: "dimension", $value: "4px" },
           theme: Object.fromEntries(
-            Object.keys(legacyColorValues).map((theme) => [
-              theme,
-              {
-                solid: {
-                  background: { $type: "color", $value: `{color.${theme}.base}` },
-                  color: { $type: "color", $value: `{color.${theme}.reverse}` },
-                  border: { $type: "color", $value: `{color.${theme}.base}` },
-                },
-                fill: {
-                  background: { $type: "color", $value: `{color.${theme}.fill}` },
-                  color: { $type: "color", $value: `{color.${theme}.base}` },
-                  border: { $type: "color", $value: `{color.${theme}.base}` },
-                },
-                border: {
-                  background: { $type: "string", $value: "transparent" },
-                  color: { $type: "color", $value: `{color.${theme}.base}` },
-                  border: { $type: "color", $value: `{color.${theme}.base}` },
-                },
-                text: {
-                  background: { $type: "string", $value: "transparent" },
-                  color: { $type: "color", $value: `{color.${theme}.base}` },
-                  border: { $type: "string", $value: "transparent" },
-                },
-                outline: { $type: "string", $value: `{color.${theme}.outline}` },
-              },
-            ])
+            legacyButtonThemes.map((theme) => [theme, legacyButtonThemeTokens(theme)])
           ),
+          disabled: Object.fromEntries(
+            legacyButtonVariants.map((variant) => [variant, buttonDisabledTokens(variant)])
+          ),
+          loading: {
+            opacity: { $type: "number", $value: 0.72 },
+          },
           size: {
             xxs: {
               height: { $type: "dimension", $value: "27px" },
@@ -629,23 +846,14 @@ export const legacyComponents: ComponentDocument[] = [
         name: "theme",
         type: {
           kind: "enum",
-          values: [
-            "default",
-            "primary",
-            "default-deep",
-            "info",
-            "link",
-            "success",
-            "warning",
-            "danger",
-          ],
+          values: [...legacyButtonThemes],
         },
-        default: "primary",
+        default: "default",
         description: "v1 semantic button theme color.",
       },
       {
         name: "variant",
-        type: { kind: "enum", values: ["solid", "fill", "border", "text"] },
+        type: { kind: "enum", values: [...legacyButtonVariants] },
         default: "solid",
         description: "v1 visual style variant.",
       },
@@ -679,33 +887,65 @@ export const legacyComponents: ComponentDocument[] = [
     variants: [
       {
         name: "theme",
-        values: [
-          "default",
-          "primary",
-          "default-deep",
-          "info",
-          "link",
-          "success",
-          "warning",
-          "danger",
-        ],
-        default: "primary",
+        values: [...legacyButtonThemes],
+        default: "default",
       },
-      { name: "variant", values: ["solid", "fill", "border", "text"], default: "solid" },
+      { name: "variant", values: [...legacyButtonVariants], default: "solid" },
       { name: "size", values: ["xxs", "xs", "sm", "md", "lg"], default: "sm" },
-      { name: "text-align", values: ["left", "center", "right"], default: "center" },
+      { name: "alignment", values: ["left", "center", "right"], default: "center" },
     ],
     states: [
-      { name: "hover", description: "Uses v1 -hover color tokens." },
-      { name: "active", description: "Uses v1 -pressed color tokens." },
-      { name: "focusVisible", description: "Uses v1 4px outline ring token." },
-      { name: "disabled", description: "Uses v1 disabled background/text/border tokens." },
-      { name: "loading", description: "Shows pending state while preserving button size." },
+      {
+        name: "hover",
+        description: "Uses v1 -hover color tokens for the selected theme and variant.",
+        selector: ":hover",
+        tokens: {
+          "root.background": "{component.button.theme.default.solid.hover.background}",
+          "root.color": "{component.button.theme.default.solid.hover.color}",
+          "root.borderColor": "{component.button.theme.default.solid.hover.border}",
+        },
+      },
+      {
+        name: "active",
+        description: "Uses v1 -pressed color tokens for the selected theme and variant.",
+        selector: ":active",
+        tokens: {
+          "root.background": "{component.button.theme.default.solid.active.background}",
+          "root.color": "{component.button.theme.default.solid.active.color}",
+          "root.borderColor": "{component.button.theme.default.solid.active.border}",
+        },
+      },
+      {
+        name: "focusVisible",
+        description: "Uses v1 4px outline ring token.",
+        selector: ":focus-visible:not(:disabled)",
+        tokens: {
+          "focus.outlineWidth": "{component.button.focusWidth}",
+          "focus.outlineColor": "{component.button.theme.default.outline}",
+        },
+      },
+      {
+        name: "disabled",
+        description: "Uses v1 disabled background/text/border tokens.",
+        selector: ":disabled",
+        tokens: {
+          "root.background": "{component.button.disabled.solid.background}",
+          "root.color": "{component.button.disabled.solid.color}",
+          "root.borderColor": "{component.button.disabled.solid.border}",
+        },
+      },
+      {
+        name: "loading",
+        description: "Shows pending state while preserving button size.",
+        tokens: {
+          "root.opacity": "{component.button.loading.opacity}",
+        },
+      },
     ],
     tokens: {
-      "root.background": "{component.button.theme.primary.solid.background}",
-      "root.color": "{component.button.theme.primary.solid.color}",
-      "root.borderColor": "{component.button.theme.primary.solid.border}",
+      "root.background": "{component.button.theme.default.solid.background}",
+      "root.color": "{component.button.theme.default.solid.color}",
+      "root.borderColor": "{component.button.theme.default.solid.border}",
       "root.borderWidth": "{component.button.borderWidth}",
       "root.height": "{component.button.size.sm.height}",
       "root.paddingX": "{component.button.size.sm.paddingX}",
@@ -714,7 +954,7 @@ export const legacyComponents: ComponentDocument[] = [
       "root.gap": "{component.button.gap}",
       "root.typography": "{component.button.size.sm.typography}",
       "focus.outlineWidth": "{component.button.focusWidth}",
-      "focus.outlineColor": "{component.button.theme.primary.outline}",
+      "focus.outlineColor": "{component.button.theme.default.outline}",
     },
     targets,
     accessibility: {
