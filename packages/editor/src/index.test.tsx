@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createInMemoryAdapter, type PodoSaveAdapter } from "@podo/edit-core";
 import {
   PodoEditorApp,
+  TOKEN_REFERENCE_LIST_ID,
+  tokenReferenceOptions,
   applyEditorStateToTldraw,
   composeSlot,
   createComponentNode,
@@ -611,6 +613,50 @@ describe("@podo/editor", () => {
     expect(boundary.layoutSpecOwns).toContain("slot composition");
     expect(githubSyncStrategy.decision).toBe("ci-managed-sync");
     expect(githubSyncStrategy.checks).toContain("pnpm check");
+  });
+});
+
+describe("token reference picker", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("builds sorted, de-duplicated {token.path} options", () => {
+    const options = tokenReferenceOptions([
+      { documentIndex: 0, path: "color.brand", token: { $type: "color", $value: "#000" } },
+      { documentIndex: 1, path: "color.brand", token: { $type: "color", $value: "#111" } },
+      { documentIndex: 0, path: "color.accent", token: { $type: "color", $value: "#222" } },
+    ]);
+    expect(options).toEqual(["{color.accent}", "{color.brand}"]);
+  });
+
+  it("renders a token-reference datalist the value inputs point at", () => {
+    const tokenDocuments = [
+      {
+        schemaVersion: PODO_SCHEMA_VERSION,
+        kind: "tokens" as const,
+        category: "primitive" as const,
+        tokens: {
+          color: {
+            brand: { $type: "color" as const, $value: "#5b5bd6" },
+            accent: { $type: "color" as const, $value: "#22d3ee" },
+          },
+        },
+      },
+    ];
+    const { container } = render(
+      <PodoEditorApp components={[buttonComponent]} tokenDocuments={tokenDocuments} />
+    );
+    const datalist = container.querySelector(`#${TOKEN_REFERENCE_LIST_ID}`);
+    expect(datalist).not.toBeNull();
+    const options = Array.from(datalist?.querySelectorAll("option") ?? []).map(
+      (option) => option.value
+    );
+    expect(options).toContain("{color.brand}");
+    expect(options).toContain("{color.accent}");
+    // a matrix value input wires itself to the shared list
+    const wired = container.querySelector(`input[list="${TOKEN_REFERENCE_LIST_ID}"]`);
+    expect(wired).not.toBeNull();
   });
 });
 

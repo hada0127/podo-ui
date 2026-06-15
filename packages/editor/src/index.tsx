@@ -63,6 +63,15 @@ export const packageName = "@podo/editor";
 export const PODO_COMPONENT_SHAPE_TYPE = "podo-component" as const;
 const PODO_COMPONENT_DRAG_TYPE = "application/x-podo-component";
 
+// Shared <datalist> id for typed token-reference autocomplete (report.md P0 #5).
+// Any value input that accepts a `{token.path}` alias references this list so the
+// browser offers existing token paths; the App renders the datalist with options.
+export const TOKEN_REFERENCE_LIST_ID = "podo-token-references";
+
+export function tokenReferenceOptions(records: EditorTokenRecord[]): string[] {
+  return Array.from(new Set(records.map((record) => `{${record.path}}`))).sort();
+}
+
 export const legacyComponentPreviewIds = [
   "avatar",
   "button",
@@ -404,6 +413,7 @@ export function PodoEditorApp({
     () => flattenTokenDocuments(tokenDocumentsState),
     [tokenDocumentsState]
   );
+  const tokenReferenceList = useMemo(() => tokenReferenceOptions(tokenRecords), [tokenRecords]);
   const tokenGroups = useMemo(() => groupTokenRecordsByType(tokenRecords), [tokenRecords]);
   const tokenMatrix = useMemo(
     () => createTokenMatrix(tokenRecords, tokenDraft.type),
@@ -885,6 +895,11 @@ export function PodoEditorApp({
 
   return (
     <div style={editorShellStyle}>
+      <datalist id={TOKEN_REFERENCE_LIST_ID}>
+        {tokenReferenceList.map((reference) => (
+          <option key={reference} value={reference} />
+        ))}
+      </datalist>
       <header style={topBarStyle}>
         <strong style={productTitleStyle}>Podo Editor</strong>
         <div style={panelTabsStyle}>
@@ -2550,6 +2565,7 @@ function renderComponentTokenEditor(input: {
                             <input
                               key={`${record.path}:${valueText}`}
                               aria-label={`${record.path} value`}
+                              list={TOKEN_REFERENCE_LIST_ID}
                               style={typographyInlineInputStyle}
                               defaultValue={valueText}
                               onFocus={() => input.onSelect(record)}
@@ -2719,6 +2735,7 @@ function renderTokenMatrixCell(input: {
         <input
           key={`${input.record.path}:${valueText}`}
           aria-label={`${input.record.path} value`}
+          list={TOKEN_REFERENCE_LIST_ID}
           style={tokenMatrixValueInputStyle}
           defaultValue={valueText}
           onFocus={() => input.onSelect(input.record)}
@@ -2738,6 +2755,7 @@ function renderTokenMatrixCell(input: {
       <input
         key={`${input.record.path}:${valueText}`}
         aria-label={`${input.record.path} value`}
+        list={TOKEN_REFERENCE_LIST_ID}
         style={{
           ...tokenMatrixValueInputStyle,
           ...(input.selected ? tokenMatrixInputActiveStyle : {}),
