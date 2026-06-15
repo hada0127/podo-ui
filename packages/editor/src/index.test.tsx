@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
+import { createInMemoryAdapter, type PodoSaveAdapter } from "@podo/edit-core";
 import {
+  PodoEditorApp,
   applyEditorStateToTldraw,
   composeSlot,
   createComponentNode,
@@ -609,6 +611,85 @@ describe("@podo/editor", () => {
     expect(boundary.layoutSpecOwns).toContain("slot composition");
     expect(githubSyncStrategy.decision).toBe("ci-managed-sync");
     expect(githubSyncStrategy.checks).toContain("pnpm check");
+  });
+});
+
+describe("PodoEditorApp host wiring", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("hides the canvas panel when page design is not a host capability", () => {
+    render(
+      <PodoEditorApp
+        components={[buttonComponent]}
+        capabilities={{ pageDesign: false, writeMode: "overrides" }}
+      />
+    );
+    expect(screen.queryByRole("button", { name: "canvas" })).toBeNull();
+    expect(screen.getByRole("button", { name: "tokens" })).toBeTruthy();
+  });
+
+  it("shows the canvas panel when page design is enabled", () => {
+    render(
+      <PodoEditorApp
+        components={[buttonComponent]}
+        capabilities={{ pageDesign: true, writeMode: "overrides" }}
+      />
+    );
+    expect(screen.getByRole("button", { name: "canvas" })).toBeTruthy();
+  });
+
+  it("stops offering the canvas panel when page design is revoked", () => {
+    const { rerender } = render(
+      <PodoEditorApp
+        components={[buttonComponent]}
+        capabilities={{ pageDesign: true, writeMode: "overrides" }}
+      />
+    );
+    expect(screen.getByRole("button", { name: "canvas" })).toBeTruthy();
+    rerender(
+      <PodoEditorApp
+        components={[buttonComponent]}
+        capabilities={{ pageDesign: false, writeMode: "overrides" }}
+      />
+    );
+    expect(screen.queryByRole("button", { name: "canvas" })).toBeNull();
+  });
+
+  it("persists token edits through the injected save adapter", async () => {
+    let saved = 0;
+    const base = createInMemoryAdapter();
+    const adapter: PodoSaveAdapter = {
+      ...base,
+      saveTokenDocuments: async (documents) => {
+        saved += 1;
+        return base.saveTokenDocuments!(documents);
+      },
+    };
+    render(<PodoEditorApp components={[buttonComponent]} adapter={adapter} />);
+    fireEvent.click(screen.getByRole("button", { name: "Save token" }));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(saved).toBeGreaterThan(0);
+  });
+
+  it("does not wedge the host write queue when a save fails synchronously", async () => {
+    let calls = 0;
+    const adapter: PodoSaveAdapter = {
+      ...createInMemoryAdapter(),
+      saveTokenDocuments: () => {
+        calls += 1;
+        throw new Error("boom"); // synchronous failure
+      },
+    };
+    render(<PodoEditorApp components={[buttonComponent]} adapter={adapter} />);
+    const save = screen.getByRole("button", { name: "Save token" });
+    fireEvent.click(save);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    // If the queue were wedged (inFlight stuck true) the second write would never run.
+    fireEvent.click(save);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(calls).toBeGreaterThanOrEqual(2);
   });
 });
 

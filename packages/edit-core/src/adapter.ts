@@ -62,6 +62,15 @@ export interface PodoSaveAdapter {
   saveToken(input: SaveTokenInput): Promise<SaveResult>;
   saveComponent(component: ComponentDocument, options?: SaveOptions): Promise<SaveResult>;
   validate(): Promise<ValidationIssue[]>;
+  /**
+   * Optional bulk token persistence. The editor commits whole token documents
+   * at once, so hosts that prefer document-level writes (e.g. writing a full
+   * `.podo/themes/*.tokens.json`) implement this; `saveToken` remains for
+   * granular, single-token hosts (e.g. studio's per-token override route).
+   */
+  saveTokenDocuments?(documents: TokenDocument[], options?: SaveOptions): Promise<SaveResult>;
+  /** Optional: remove a token at a path (hosts that support deletion). */
+  deleteToken?(documentIndex: number, path: string, options?: SaveOptions): Promise<SaveResult>;
   /** Optional: trigger a design-system build (installed-project hosts only). */
   build?(options?: SaveOptions): Promise<unknown>;
 }

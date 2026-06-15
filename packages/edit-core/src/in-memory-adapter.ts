@@ -7,7 +7,11 @@ import {
   type SaveResult,
   type SaveTokenInput,
 } from "./adapter.js";
-import { normalizeEditorTokenDocuments, upsertTokenInDocuments } from "./spec-editing.js";
+import {
+  deleteTokenFromDocuments,
+  normalizeEditorTokenDocuments,
+  upsertTokenInDocuments,
+} from "./spec-editing.js";
 import { validateWorkspace } from "./validation.js";
 
 export interface InMemoryAdapterInit {
@@ -45,6 +49,20 @@ export function createInMemoryAdapter(init: InMemoryAdapterInit = {}): PodoSaveA
         valueText: input.value,
       });
       return { ok: true, path: input.path };
+    },
+    async saveTokenDocuments(documents, options = {}): Promise<SaveResult> {
+      if (options.dryRun) {
+        return { ok: true, dryRun: true };
+      }
+      tokenDocuments = normalizeEditorTokenDocuments(documents);
+      return { ok: true };
+    },
+    async deleteToken(documentIndex, path, options = {}): Promise<SaveResult> {
+      if (options.dryRun) {
+        return { ok: true, dryRun: true, path };
+      }
+      tokenDocuments = deleteTokenFromDocuments(tokenDocuments, documentIndex, path);
+      return { ok: true, path };
     },
     async saveComponent(component: ComponentDocument, options: SaveOptions = {}): Promise<SaveResult> {
       if (options.dryRun) {

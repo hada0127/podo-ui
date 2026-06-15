@@ -56,6 +56,7 @@ import {
   type EditorTokenDraft,
   type EditorTokenRecord,
 } from "./spec-editing.js";
+import { type EditorCapabilities, type PodoSaveAdapter } from "@podo/edit-core";
 
 export const packageName = "@podo/editor";
 
@@ -258,6 +259,14 @@ export interface PodoEditorAppProps {
     components: ComponentDocument[];
     tokenDocuments: TokenDocument[];
   }) => void;
+  /**
+   * Host persistence port. When provided, token/component edits are written
+   * through it (repo specs or `.podo` overrides) in addition to the in-memory
+   * callbacks. See report.md §5.
+   */
+  adapter?: PodoSaveAdapter;
+  /** Host capability gating; page design (canvas) is installed-project only. */
+  capabilities?: EditorCapabilities;
 }
 
 type EditorPanel = "tokens" | "components" | "canvas" | "export";
@@ -311,6 +320,8 @@ export function PodoEditorApp({
   colorScheme = "light",
   onStateChange,
   onSpecsChange,
+  adapter,
+  capabilities,
 }: PodoEditorAppProps) {
   const parsedComponents = useMemo(
     () => components.map((component) => parseComponentDocument(component)),
@@ -363,10 +374,32 @@ export function PodoEditorApp({
   const [propsDraft, setPropsDraft] = useState("");
   const [propsDraftNodeId, setPropsDraftNodeId] = useState<string | undefined>();
   const [propsDraftError, setPropsDraftError] = useState<string | undefined>();
+  const [persistError, setPersistError] = useState<string | undefined>();
   const editorRef = useRef<Editor | null>(null);
   const isApplyingStateToTldrawRef = useRef(false);
   const stateRef = useRef(startingState);
+  const writeQueuesRef = useRef(
+    new Map<string, { inFlight: boolean; pending: (() => Promise<unknown>) | undefined }>()
+  );
   const frame = responsiveViewports[state.viewport];
+  // Page design (the canvas) is an installed-project capability only. When a
+  // host declares capabilities without page design, hide the canvas panel.
+  const pageDesignEnabled = capabilities ? capabilities.pageDesign : true;
+  const availablePanels = useMemo(
+    () => (pageDesignEnabled ? editorPanels : editorPanels.filter((panel) => panel !== "canvas")),
+    [pageDesignEnabled]
+  );
+  // Resolve the panel to render this frame so a now-unavailable panel (e.g. the
+  // canvas after page design is revoked) is never rendered, even before the
+  // effect below reconciles state.
+  const effectiveActivePanel: EditorPanel = availablePanels.includes(activePanel)
+    ? activePanel
+    : (availablePanels[0] ?? "tokens");
+  useEffect(() => {
+    if (activePanel !== effectiveActivePanel) {
+      setActivePanel(effectiveActivePanel);
+    }
+  }, [activePanel, effectiveActivePanel]);
   const tokenRecords = useMemo(
     () => flattenTokenDocuments(tokenDocumentsState),
     [tokenDocumentsState]
@@ -509,9 +542,45 @@ export function PodoEditorApp({
       }
     }
   };
+  // Host writes are serialized per channel and coalesced to the latest payload,
+  // so rapid edits (e.g. color onChange) cannot land out of order or let an
+  // older full-document write overwrite a newer one. See report.md §9 / §12.
+  const enqueueHostWrite = (key: string, task: () => Promise<unknown>): void => {
+    const queues = writeQueuesRef.current;
+    const entry = queues.get(key) ?? { inFlight: false, pending: undefined };
+    entry.pending = task;
+    queues.set(key, entry);
+    const run = (): void => {
+      const current = queues.get(key);
+      if (!current || current.inFlight || !current.pending) {
+        return;
+      }
+      const next = current.pending;
+      current.pending = undefined;
+      current.inFlight = true;
+      // Promise.resolve().then(next) so a synchronous throw or a non-thenable
+      // return still flows through .finally and never wedges the queue.
+      Promise.resolve()
+        .then(next)
+        .then(
+          () => setPersistError(undefined),
+          (error: unknown) =>
+            setPersistError(error instanceof Error ? error.message : "Save to host failed.")
+        )
+        .finally(() => {
+          current.inFlight = false;
+          run();
+        });
+    };
+    run();
+  };
   const commitTokenDocuments = (nextDocuments: TokenDocument[]): void => {
     setTokenDocumentsState(nextDocuments);
     onSpecsChange?.({ components: stateRef.current.components, tokenDocuments: nextDocuments });
+    if (adapter?.saveTokenDocuments) {
+      const saveTokenDocuments = adapter.saveTokenDocuments.bind(adapter);
+      enqueueHostWrite("tokens", () => saveTokenDocuments(nextDocuments));
+    }
   };
   const commitComponentSpec = (component: ComponentDocument): void => {
     const parsed = parseComponentDocument(component);
@@ -525,6 +594,10 @@ export function PodoEditorApp({
     };
     commitState(nextState);
     onSpecsChange?.({ components: nextComponents, tokenDocuments: tokenDocumentsState });
+    if (adapter?.saveComponent) {
+      const saveComponent = adapter.saveComponent.bind(adapter);
+      enqueueHostWrite(`component:${parsed.id}`, () => saveComponent(parsed));
+    }
   };
   const placeComponent = (
     component: ComponentDocument,
@@ -815,13 +888,13 @@ export function PodoEditorApp({
       <header style={topBarStyle}>
         <strong style={productTitleStyle}>Podo Editor</strong>
         <div style={panelTabsStyle}>
-          {editorPanels.map((panel) => (
+          {availablePanels.map((panel) => (
             <button
               key={panel}
               type="button"
               style={{
                 ...panelTabStyle,
-                ...(activePanel === panel ? panelTabActiveStyle : {}),
+                ...(effectiveActivePanel === panel ? panelTabActiveStyle : {}),
               }}
               onClick={() => setActivePanel(panel)}
             >
@@ -848,9 +921,14 @@ export function PodoEditorApp({
           </div>
           <span style={topBarControlValueStyle}>{effectiveColorScheme}</span>
         </div>
+        {persistError ? (
+          <span role="alert" style={persistErrorStyle}>
+            {persistError}
+          </span>
+        ) : null}
       </header>
       <aside style={sidebarStyle}>
-        {activePanel === "tokens" ? (
+        {effectiveActivePanel === "tokens" ? (
           <>
             <div style={sidebarTitleStyle}>Tokens</div>
             <button
@@ -889,7 +967,7 @@ export function PodoEditorApp({
             </div>
           </>
         ) : null}
-        {activePanel === "components" ? (
+        {effectiveActivePanel === "components" ? (
           <>
             <div style={sidebarTitleStyle}>Components</div>
             <input
@@ -923,7 +1001,7 @@ export function PodoEditorApp({
             </div>
           </>
         ) : null}
-        {activePanel === "canvas" ? (
+        {effectiveActivePanel === "canvas" ? (
           <>
             <div style={sidebarTitleStyle}>Canvas</div>
             <div style={toolbarStyle}>
@@ -1036,7 +1114,7 @@ export function PodoEditorApp({
             ) : null}
           </>
         ) : null}
-        {activePanel === "export" ? (
+        {effectiveActivePanel === "export" ? (
           <>
             <div style={sidebarTitleStyle}>Export</div>
             <div style={summaryListStyle}>
@@ -1048,7 +1126,7 @@ export function PodoEditorApp({
         ) : null}
       </aside>
       <main style={workspaceStyle}>
-        {activePanel === "tokens" ? (
+        {effectiveActivePanel === "tokens" ? (
           <section style={sectionStyle}>
             <div style={sectionHeaderStyle}>
               <div>
@@ -1212,7 +1290,7 @@ export function PodoEditorApp({
             </details>
           </section>
         ) : null}
-        {activePanel === "components" && selectedComponentForSpec ? (
+        {effectiveActivePanel === "components" && selectedComponentForSpec ? (
           <section style={sectionStyle}>
             <div style={sectionHeaderStyle}>
               <div>
@@ -1665,7 +1743,7 @@ export function PodoEditorApp({
             </details>
           </section>
         ) : null}
-        {activePanel === "canvas" ? (
+        {effectiveActivePanel === "canvas" ? (
           <section
             style={canvasShellStyle}
             onDragOver={(event) => {
@@ -1701,7 +1779,7 @@ export function PodoEditorApp({
             </div>
           </section>
         ) : null}
-        {activePanel === "export" ? (
+        {effectiveActivePanel === "export" ? (
           <section style={sectionStyle}>
             <div style={sectionHeaderStyle}>
               <div>
@@ -5403,6 +5481,11 @@ const topBarControlValueStyle: CSSProperties = {
   color: "#3f4a5a",
   fontSize: 12,
   textAlign: "right",
+};
+const persistErrorStyle: CSSProperties = {
+  color: "#b42318",
+  fontSize: 12,
+  lineHeight: 1.4,
 };
 
 const schemeSegmentedStyle: CSSProperties = {
