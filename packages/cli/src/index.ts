@@ -10,15 +10,18 @@ import { fileURLToPath } from "node:url";
 import {
   parseComponentDocument,
   parseIconManifest,
+  parsePageDocument,
   parsePodoConfig,
   parsePodoLock,
   parseTokenDocument,
   validateComponentTokenBindings,
   validateIconManifest,
+  validatePageComponents,
   collectTokenPaths,
   PODO_SCHEMA_VERSION,
   type ComponentDocument,
   type IconManifest,
+  type PageDocument,
   type PodoConfig,
   type PodoLock,
   type TokenDocument,
@@ -280,6 +283,11 @@ export async function buildProject(args: ParsedArgs, io: CliIO): Promise<BuildPl
   const merged = mergeTokenDocuments(tokenSources);
   const resolved = resolveTokenDocument(merged);
   const components = await loadBuildComponents(root);
+  const pages = await loadBuildPages(root);
+  const pageIssues = pages.flatMap((page) => validatePageComponents(page, components));
+  if (pageIssues.length) {
+    throw new Error(`Page build failed:\n${pageIssues.map((issue) => issue.message).join("\n")}`);
+  }
   const iconManifest = await loadBuildIconManifest(root);
   const generated = [
     {
@@ -309,6 +317,9 @@ export async function buildProject(args: ParsedArgs, io: CliIO): Promise<BuildPl
       targets,
       outDir: join(outDir, "components"),
     }).map((file) => ({ path: resolve(root, file.path), contents: file.contents })),
+    // Always emit pages.json (empty array when there are no pages) so deleting
+    // all pages reflects in the build output rather than leaving a stale bundle.
+    { path: join(absoluteOutDir, "pages.json"), contents: `${JSON.stringify(pages, null, 2)}\n` },
   ];
   generated.push({
     path: resolve(root, join(outDir, "components/index.ts")),
@@ -418,6 +429,19 @@ export async function validateProject(args: ParsedArgs, io: CliIO): Promise<Vali
   const tokenPaths = tokenSources.flatMap((source) => collectTokenPaths(source.document.tokens));
   for (const component of components) {
     issues.push(...validateComponentTokenBindings(component, tokenPaths));
+  }
+
+  try {
+    const pages = await loadBuildPages(root);
+    for (const page of pages) {
+      issues.push(...validatePageComponents(page, components));
+    }
+  } catch (error) {
+    issues.push({
+      code: "podo.page.invalid",
+      path: ".podo/pages",
+      message: error instanceof Error ? error.message : "A page document is invalid.",
+    });
   }
 
   const manifest = await loadBuildIconManifest(root);
@@ -770,6 +794,16 @@ async function loadBuildComponents(root: string): Promise<ComponentDocument[]> {
     components.set(component.id, component);
   }
   return [...components.values()];
+}
+
+async function loadBuildPages(root: string): Promise<PageDocument[]> {
+  const records = await readJsonFiles(join(root, ".podo/pages"));
+  const pages = new Map<string, PageDocument>();
+  for (const record of records) {
+    const page = parsePageDocument(record);
+    pages.set(page.id, page);
+  }
+  return [...pages.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 
 async function loadBuildIconManifest(root: string): Promise<IconManifest> {

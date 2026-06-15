@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -143,6 +143,79 @@ describe("@podo/cli", () => {
     await expect(
       stat(join(root, "src/podo/components/native/button.native.ts"))
     ).resolves.toBeDefined();
+  });
+
+  it("builds installed-project pages and reflects page edits", async () => {
+    const root = await createProject({ dependencies: { react: "^19.0.0" } });
+    const io = createIo(root);
+    await runCli(
+      ["init", "--target", "react", "--theme", "dashboard", "--out-dir", "src/podo", "--yes"],
+      io
+    );
+    await mkdir(join(root, ".podo/pages"), { recursive: true });
+    await writeFile(
+      join(root, ".podo/pages/home.page.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "page",
+          id: "home",
+          name: "Home",
+          route: "/",
+          root: {
+            type: "layout",
+            layout: { mode: "grid", gap: "{spacing.scale-2}", columns: 12 },
+            children: [
+              { type: "component-instance", id: "cta", component: "button", props: { variant: "solid" } },
+            ],
+          },
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    expect((await validateProject(parseArgs(["validate"]), io)).ok).toBe(true);
+    const built = await buildProject(parseArgs(["build"]), io);
+    expect(built.skipped).toBe(false);
+    await expect(stat(join(root, "src/podo/pages.json"))).resolves.toBeDefined();
+    const pages = JSON.parse(await readFile(join(root, "src/podo/pages.json"), "utf8")) as Array<{
+      id: string;
+    }>;
+    expect(pages[0]?.id).toBe("home");
+
+    // Deleting all pages must reflect in the build output (no stale bundle).
+    await rm(join(root, ".podo/pages/home.page.json"));
+    const rebuilt = await buildProject(parseArgs(["build", "--force"]), io);
+    expect(rebuilt.skipped).toBe(false);
+    expect(JSON.parse(await readFile(join(root, "src/podo/pages.json"), "utf8"))).toEqual([]);
+  });
+
+  it("fails validate and build when a page references a missing component", async () => {
+    const root = await createProject({ dependencies: { react: "^19.0.0" } });
+    const io = createIo(root);
+    await runCli(
+      ["init", "--target", "react", "--theme", "dashboard", "--out-dir", "src/podo", "--yes"],
+      io
+    );
+    await mkdir(join(root, ".podo/pages"), { recursive: true });
+    await writeFile(
+      join(root, ".podo/pages/bad.page.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "2.0.0",
+          kind: "page",
+          id: "bad",
+          name: "Bad",
+          root: { type: "component-instance", component: "does-not-exist" },
+        },
+        null,
+        2
+      )}\n`
+    );
+
+    expect((await validateProject(parseArgs(["validate"]), io)).ok).toBe(false);
+    await expect(buildProject(parseArgs(["build"]), io)).rejects.toThrow(/Page build failed/);
   });
 
   it("carries editor component exports through validate, build, and update dry-run", async () => {
