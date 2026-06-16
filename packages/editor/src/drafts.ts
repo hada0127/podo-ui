@@ -14,6 +14,8 @@ import {
   type EditorComponentNode,
 } from "./canvas.js";
 
+export type ComponentEditMode = "props" | "variants" | "tokens";
+
 export interface ComponentMetaDraft {
   name: string;
   category: ComponentDocument["category"];
