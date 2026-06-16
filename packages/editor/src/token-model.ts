@@ -2,6 +2,15 @@ import type { DesignToken } from "@podo/spec";
 import { editorTokenTypes, type EditorTokenRecord } from "./spec-editing.js";
 import { tokenVariationName } from "./token-lookup.js";
 
+// Shared <datalist> id for typed token-reference autocomplete (report.md P0 #5).
+// Any value input that accepts a `{token.path}` alias references this list so the
+// browser offers existing token paths; the App renders the datalist with options.
+export const TOKEN_REFERENCE_LIST_ID = "podo-token-references";
+
+export function tokenReferenceOptions(records: EditorTokenRecord[]): string[] {
+  return Array.from(new Set(records.map((record) => `{${record.path}}`))).sort();
+}
+
 export function tokenRecordKey(record: EditorTokenRecord): string {
   return `${record.documentIndex}:${record.path}`;
 }
