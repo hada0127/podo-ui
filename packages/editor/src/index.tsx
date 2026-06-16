@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
-import { Tldraw, type Editor } from "tldraw";
+import type { Editor } from "tldraw";
 import "tldraw/tldraw.css";
 import {
   parseComponentDocument,
@@ -75,7 +75,6 @@ import {
 } from "./token-editor.js";
 import { type EditorCapabilities, type PodoSaveAdapter } from "@podo/edit-core";
 import {
-  canvasShellStyle,
   cardHeaderStyle,
   cardStyle,
   checkboxFieldStyle,
@@ -99,12 +98,9 @@ import {
   editorShellStyle,
   emptyListStyle,
   errorBannerStyle,
-  errorTextStyle,
   fieldStyle,
   formGridStyle,
   inputStyle,
-  inspectorStyle,
-  legacyGridPanelStyle,
   listStyle,
   nestedDisclosureStyle,
   nestedSummaryStyle,
@@ -113,7 +109,6 @@ import {
   panelTabsStyle,
   persistErrorStyle,
   previewControlRowStyle,
-  previewFrameStyle,
   previewPanelStyle,
   productTitleStyle,
   rowStyle,
@@ -124,13 +119,9 @@ import {
   sectionMetaStyle,
   sectionStyle,
   sectionTitleStyle,
-  segmentedButtonActiveStyle,
-  segmentedButtonStyle,
-  segmentedStyle,
   selectStyle,
   sidebarStyle,
   sidebarTitleStyle,
-  slotRowStyle,
   smallButtonStyle,
   summaryStyle,
   tableCellMetaStyle,
@@ -147,20 +138,16 @@ import {
   tokenValueEditorPlainStyle,
   tokenValueEditorStyle,
   toolbarButtonStyle,
-  toolbarStyle,
   topBarControlLabelStyle,
   topBarControlStyle,
   topBarControlValueStyle,
   topBarStyle,
-  viewportPanelStyle,
   workspaceStyle,
 } from "./styles.js";
 import { isHexColorInputValue, isTypographyValue } from "./token-lookup.js";
 export type { TokenLookup } from "./token-lookup.js";
 
 export const packageName = "@podo/editor";
-
-const PODO_COMPONENT_DRAG_TYPE = "application/x-podo-component";
 
 import {
   defaultPreviewSelectionsForComponent,
@@ -175,7 +162,6 @@ export {
 
 import {
   editorColorSchemes,
-  editorLegacyGridContract,
   responsiveViewports,
   type EditorColorScheme,
   type ResponsiveViewportName,
@@ -184,16 +170,11 @@ export { editorColorSchemes, editorLegacyGridContract, responsiveViewports } fro
 export type { EditorColorScheme, ResponsiveViewport, ResponsiveViewportName } from "./viewport.js";
 
 import {
+  PODO_COMPONENT_DRAG_TYPE,
   applyEditorStateToTldraw,
-  composeSlot,
-  createComponentSpecExportFile,
   createEditorState,
-  createPageDocumentExportFile,
   dropComponentOnCanvas,
-  editorNodeToTldrawShape,
   parseJsonRecord,
-  podoShapeUtils,
-  selectResponsivePreview,
   syncEditorStateFromTldraw,
   updateComponentNodeProps,
   type ComponentSpecExportFile,
@@ -262,6 +243,7 @@ export {
   filterComponentsForEditor,
 } from "./theming.js";
 import { ExportPanelControls, ExportPanelWorkspace } from "./export-panel.js";
+import { CanvasPanelControls, CanvasPanelWorkspace } from "./canvas-panel.js";
 
 export interface PodoEditorAppProps {
   components: ComponentDocument[];
@@ -1002,158 +984,29 @@ export function PodoEditorApp({
           </>
         ) : null}
         {effectiveActivePanel === "canvas" ? (
-          <>
-            <div style={sidebarTitleStyle}>Canvas</div>
-            <div style={toolbarStyle}>
-              {state.components.map((component) => (
-                <button
-                  key={component.id}
-                  type="button"
-                  draggable
-                  style={toolbarButtonStyle}
-                  onDragStart={(event) => {
-                    event.dataTransfer.setData(PODO_COMPONENT_DRAG_TYPE, component.id);
-                    event.dataTransfer.effectAllowed = "copy";
-                  }}
-                  onClick={() => {
-                    placeComponent(component, {
-                      x: 80 + state.nodes.length * 28,
-                      y: 80 + state.nodes.length * 28,
-                    });
-                  }}
-                >
-                  {component.name}
-                </button>
-              ))}
-            </div>
-            <div style={viewportPanelStyle}>
-              <strong>{frame.name}</strong>
-              <span>
-                {frame.width} x {frame.height}
-              </span>
-              <div style={segmentedStyle}>
-                {Object.keys(responsiveViewports).map((name) => (
-                  <button
-                    key={name}
-                    type="button"
-                    style={{
-                      ...segmentedButtonStyle,
-                      ...(state.viewport === name ? segmentedButtonActiveStyle : {}),
-                    }}
-                    onClick={() =>
-                      commitState(selectResponsivePreview(state, name as ResponsiveViewportName))
-                    }
-                  >
-                    {name}
-                  </button>
-                ))}
-              </div>
-              <div style={legacyGridPanelStyle}>
-                <span>Legacy grid</span>
-                <strong>
-                  {editorLegacyGridContract.breakpoints.pc.columns}/
-                  {editorLegacyGridContract.breakpoints.tablet.columns}/
-                  {editorLegacyGridContract.breakpoints.mobile.columns} columns
-                </strong>
-                <small>
-                  .grid, .grid-fix-{"{2..6}"}, .w-*, .w-full, .w-{"{n}_{d}"}, .w-{"{n}px"}
-                </small>
-              </div>
-            </div>
-            {selectedNode && selectedComponent ? (
-              <div style={inspectorStyle}>
-                <strong>{selectedNode.name}</strong>
-                <label style={fieldStyle}>
-                  Props
-                  <textarea
-                    style={textareaStyle}
-                    value={propsDraftNodeId === selectedNode.id ? propsDraft : ""}
-                    onBlur={commitSelectedPropsDraft}
-                    onChange={(event) => updateSelectedPropsDraft(event.currentTarget.value)}
-                  />
-                  <button type="button" style={smallButtonStyle} onClick={commitSelectedPropsDraft}>
-                    Apply
-                  </button>
-                  {propsDraftError ? <span style={errorTextStyle}>{propsDraftError}</span> : null}
-                </label>
-                <div style={fieldStyle}>
-                  <span>Slots</span>
-                  {selectedComponent.slots.map((slot) => (
-                    <div key={slot.name} style={slotRowStyle}>
-                      <span>{slot.name}</span>
-                      {state.nodes
-                        .filter((node) => node.id !== selectedNode.id)
-                        .map((child) => (
-                          <button
-                            key={child.id}
-                            type="button"
-                            style={smallButtonStyle}
-                            onClick={() =>
-                              commitState(composeSlot(state, selectedNode.id, slot.name, child.id))
-                            }
-                          >
-                            + {child.name}
-                          </button>
-                        ))}
-                    </div>
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  style={toolbarButtonStyle}
-                  onClick={() =>
-                    setExportPreview(createComponentSpecExportFile(state, selectedNode.id))
-                  }
-                >
-                  Export node
-                </button>
-                {exportPreview ? (
-                  <textarea style={textareaStyle} readOnly value={exportPreview.contents} />
-                ) : null}
-              </div>
-            ) : null}
-            <div style={inspectorStyle}>
-              <strong>Page export</strong>
-              <label style={fieldStyle}>
-                Page id
-                <input
-                  aria-label="Page id"
-                  style={inputStyle}
-                  value={pageIdDraft}
-                  onChange={(event) => setPageIdDraft(event.currentTarget.value)}
-                />
-              </label>
-              <button
-                type="button"
-                style={toolbarButtonStyle}
-                onClick={() => {
-                  try {
-                    const id = pageIdDraft.trim();
-                    const file = createPageDocumentExportFile(state, {
-                      id,
-                      name: id || "Page",
-                    });
-                    setPagePreview(file);
-                    setPageExportError(undefined);
-                    if (adapter?.savePage) {
-                      const savePage = adapter.savePage.bind(adapter);
-                      enqueueHostWrite(`page:${file.document.id}`, () => savePage(file.document));
-                    }
-                  } catch (error) {
-                    setPageExportError(
-                      error instanceof Error ? error.message : "Page could not be exported."
-                    );
-                  }
-                }}
-              >
-                Export page
-              </button>
-              {pageExportError ? <span style={errorTextStyle}>{pageExportError}</span> : null}
-              {pagePreview ? (
-                <textarea style={textareaStyle} readOnly value={pagePreview.contents} />
-              ) : null}
-            </div>
-          </>
+          <CanvasPanelControls
+            state={state}
+            frame={frame}
+            placeComponent={placeComponent}
+            commitState={commitState}
+            selectedNode={selectedNode}
+            selectedComponent={selectedComponent}
+            propsDraftNodeId={propsDraftNodeId}
+            propsDraft={propsDraft}
+            propsDraftError={propsDraftError}
+            commitSelectedPropsDraft={commitSelectedPropsDraft}
+            updateSelectedPropsDraft={updateSelectedPropsDraft}
+            exportPreview={exportPreview}
+            setExportPreview={setExportPreview}
+            pageIdDraft={pageIdDraft}
+            setPageIdDraft={setPageIdDraft}
+            pagePreview={pagePreview}
+            setPagePreview={setPagePreview}
+            pageExportError={pageExportError}
+            setPageExportError={setPageExportError}
+            adapter={adapter}
+            enqueueHostWrite={enqueueHostWrite}
+          />
         ) : null}
         {effectiveActivePanel === "export" ? (
           <ExportPanelControls tokenRecords={tokenRecords} state={state} />
@@ -1778,40 +1631,13 @@ export function PodoEditorApp({
           </section>
         ) : null}
         {effectiveActivePanel === "canvas" ? (
-          <section
-            style={canvasShellStyle}
-            onDragOver={(event) => {
-              event.preventDefault();
-              event.dataTransfer.dropEffect = "copy";
-            }}
-            onDrop={handleCanvasDrop}
-          >
-            <div style={{ ...previewFrameStyle, width: frame.width / 2, height: frame.height / 2 }}>
-              <Tldraw
-                shapeUtils={podoShapeUtils}
-                onMount={(editor) => {
-                  editorRef.current = editor;
-                  for (const node of state.nodes) {
-                    editor.createShape(editorNodeToTldrawShape(node));
-                  }
-                  const unsubscribers = [
-                    editor.sideEffects.registerAfterChangeHandler("shape", () =>
-                      syncFromTldraw(editor)
-                    ),
-                    editor.sideEffects.registerAfterDeleteHandler("shape", () =>
-                      syncFromTldraw(editor)
-                    ),
-                  ];
-                  return () => {
-                    editorRef.current = null;
-                    for (const unsubscribe of unsubscribers) {
-                      unsubscribe();
-                    }
-                  };
-                }}
-              />
-            </div>
-          </section>
+          <CanvasPanelWorkspace
+            state={state}
+            frame={frame}
+            handleCanvasDrop={handleCanvasDrop}
+            editorRef={editorRef}
+            syncFromTldraw={syncFromTldraw}
+          />
         ) : null}
         {effectiveActivePanel === "export" ? (
           <ExportPanelWorkspace tokenDocumentsState={tokenDocumentsState} state={state} />

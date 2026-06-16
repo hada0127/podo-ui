@@ -22,6 +22,7 @@ import { type ResponsiveViewportName } from "./viewport.js";
 import { componentShapeStyle, shapeBodyStyle, shapeHeaderStyle, shapeMetaStyle } from "./styles.js";
 
 export const PODO_COMPONENT_SHAPE_TYPE = "podo-component" as const;
+export const PODO_COMPONENT_DRAG_TYPE = "application/x-podo-component";
 
 export interface EditorComponentNode {
   id: string;
