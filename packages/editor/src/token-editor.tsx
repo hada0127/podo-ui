@@ -616,6 +616,34 @@ function renderComponentTokenPreview(record: EditorTokenRecord, lookup: TokenLoo
   return <code style={codeStyle}>{String(value)}</code>;
 }
 
+type TokenMatrixRow = TokenMatrixModel["rows"][number];
+
+interface TokenMatrixSection {
+  key: string;
+  columns: string[];
+  rows: TokenMatrixRow[];
+}
+
+// Color (and other) token matrices union every leaf key across unrelated families,
+// producing a wide, mostly-empty table. Group rows that share the same set of
+// columns so each family renders as its own compact, dense table instead.
+function groupTokenMatrixSections(matrix: TokenMatrixModel): TokenMatrixSection[] {
+  const sections = new Map<string, TokenMatrixSection>();
+  const order: string[] = [];
+  for (const row of matrix.rows) {
+    const columns = matrix.columns.filter((column) => row.cells[column]);
+    const key = JSON.stringify(columns);
+    let section = sections.get(key);
+    if (!section) {
+      section = { key, columns, rows: [] };
+      sections.set(key, section);
+      order.push(key);
+    }
+    section.rows.push(row);
+  }
+  return order.map((key) => sections.get(key) as TokenMatrixSection);
+}
+
 export function renderTokenMatrixEditor(input: {
   matrix: TokenMatrixModel;
   selectedTokenKey: string | undefined;
@@ -626,54 +654,59 @@ export function renderTokenMatrixEditor(input: {
     return null;
   }
 
+  const sections = groupTokenMatrixSections(input.matrix);
+
   return (
     <div style={tokenMatrixPanelStyle}>
       <div style={cardHeaderStyle}>
         <div>
           <strong>{input.matrix.type} matrix</strong>
           <p style={inlineHelpStyle}>
-            {input.matrix.totalRecords} editable cells. Select a cell to sync the detail editor.
+            {input.matrix.totalRecords} editable cells across {sections.length}{" "}
+            {sections.length === 1 ? "group" : "groups"}. Select a cell to sync the detail editor.
           </p>
         </div>
       </div>
-      <div style={tokenMatrixScrollStyle}>
-        <table style={tokenMatrixTableStyle}>
-          <thead>
-            <tr>
-              <th style={tokenMatrixHeaderCellStyle}>group</th>
-              {input.matrix.columns.map((column) => (
-                <th key={column} style={tokenMatrixHeaderCellStyle}>
-                  {column}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {input.matrix.rows.map((row) => (
-              <tr key={row.id}>
-                <th style={tokenMatrixRowHeaderStyle}>{row.label}</th>
-                {input.matrix.columns.map((column) => {
-                  const record = row.cells[column];
-                  return (
-                    <td key={column} style={tokenMatrixCellStyle}>
-                      {record ? (
-                        renderTokenMatrixCell({
-                          record,
-                          selected: input.selectedTokenKey === tokenRecordKey(record),
-                          onSelect: input.onSelect,
-                          onCommitValue: input.onCommitValue,
-                        })
-                      ) : (
-                        <span style={tokenMatrixEmptyCellStyle}>-</span>
-                      )}
-                    </td>
-                  );
-                })}
+      {sections.map((section) => (
+        <div key={section.key} style={tokenMatrixScrollStyle}>
+          <table style={tokenMatrixTableStyle}>
+            <thead>
+              <tr>
+                <th style={tokenMatrixHeaderCellStyle}>group</th>
+                {section.columns.map((column) => (
+                  <th key={column} style={tokenMatrixHeaderCellStyle}>
+                    {column}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {section.rows.map((row) => (
+                <tr key={row.id}>
+                  <th style={tokenMatrixRowHeaderStyle}>{row.label}</th>
+                  {section.columns.map((column) => {
+                    const record = row.cells[column];
+                    return (
+                      <td key={column} style={tokenMatrixCellStyle}>
+                        {record ? (
+                          renderTokenMatrixCell({
+                            record,
+                            selected: input.selectedTokenKey === tokenRecordKey(record),
+                            onSelect: input.onSelect,
+                            onCommitValue: input.onCommitValue,
+                          })
+                        ) : (
+                          <span style={tokenMatrixEmptyCellStyle}>-</span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
     </div>
   );
 }

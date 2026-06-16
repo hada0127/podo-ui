@@ -22,6 +22,7 @@ import {
   type ResponsiveViewportName,
 } from "./viewport.js";
 import {
+  canvasArtboardStageStyle,
   canvasShellStyle,
   errorTextStyle,
   fieldStyle,
@@ -89,6 +90,56 @@ export function CanvasPanelControls({
   return (
     <>
       <div style={sidebarTitleStyle}>Canvas</div>
+      {selectedNode && selectedComponent ? (
+        <div style={inspectorStyle}>
+          <strong>{selectedNode.name}</strong>
+          <label style={fieldStyle}>
+            Props
+            <textarea
+              style={textareaStyle}
+              value={propsDraftNodeId === selectedNode.id ? propsDraft : ""}
+              onBlur={commitSelectedPropsDraft}
+              onChange={(event) => updateSelectedPropsDraft(event.currentTarget.value)}
+            />
+            <button type="button" style={smallButtonStyle} onClick={commitSelectedPropsDraft}>
+              Apply
+            </button>
+            {propsDraftError ? <span style={errorTextStyle}>{propsDraftError}</span> : null}
+          </label>
+          <div style={fieldStyle}>
+            <span>Slots</span>
+            {selectedComponent.slots.map((slot) => (
+              <div key={slot.name} style={slotRowStyle}>
+                <span>{slot.name}</span>
+                {state.nodes
+                  .filter((node) => node.id !== selectedNode.id)
+                  .map((child) => (
+                    <button
+                      key={child.id}
+                      type="button"
+                      style={smallButtonStyle}
+                      onClick={() =>
+                        commitState(composeSlot(state, selectedNode.id, slot.name, child.id))
+                      }
+                    >
+                      + {child.name}
+                    </button>
+                  ))}
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            style={toolbarButtonStyle}
+            onClick={() => setExportPreview(createComponentSpecExportFile(state, selectedNode.id))}
+          >
+            Export node
+          </button>
+          {exportPreview ? (
+            <textarea style={textareaStyle} readOnly value={exportPreview.contents} />
+          ) : null}
+        </div>
+      ) : null}
       <div style={toolbarStyle}>
         {state.components.map((component) => (
           <button
@@ -145,56 +196,6 @@ export function CanvasPanelControls({
           </small>
         </div>
       </div>
-      {selectedNode && selectedComponent ? (
-        <div style={inspectorStyle}>
-          <strong>{selectedNode.name}</strong>
-          <label style={fieldStyle}>
-            Props
-            <textarea
-              style={textareaStyle}
-              value={propsDraftNodeId === selectedNode.id ? propsDraft : ""}
-              onBlur={commitSelectedPropsDraft}
-              onChange={(event) => updateSelectedPropsDraft(event.currentTarget.value)}
-            />
-            <button type="button" style={smallButtonStyle} onClick={commitSelectedPropsDraft}>
-              Apply
-            </button>
-            {propsDraftError ? <span style={errorTextStyle}>{propsDraftError}</span> : null}
-          </label>
-          <div style={fieldStyle}>
-            <span>Slots</span>
-            {selectedComponent.slots.map((slot) => (
-              <div key={slot.name} style={slotRowStyle}>
-                <span>{slot.name}</span>
-                {state.nodes
-                  .filter((node) => node.id !== selectedNode.id)
-                  .map((child) => (
-                    <button
-                      key={child.id}
-                      type="button"
-                      style={smallButtonStyle}
-                      onClick={() =>
-                        commitState(composeSlot(state, selectedNode.id, slot.name, child.id))
-                      }
-                    >
-                      + {child.name}
-                    </button>
-                  ))}
-              </div>
-            ))}
-          </div>
-          <button
-            type="button"
-            style={toolbarButtonStyle}
-            onClick={() => setExportPreview(createComponentSpecExportFile(state, selectedNode.id))}
-          >
-            Export node
-          </button>
-          {exportPreview ? (
-            <textarea style={textareaStyle} readOnly value={exportPreview.contents} />
-          ) : null}
-        </div>
-      ) : null}
       <div style={inspectorStyle}>
         <strong>Page export</strong>
         <label style={fieldStyle}>
@@ -242,44 +243,69 @@ export function CanvasPanelControls({
 
 export function CanvasPanelWorkspace({
   state,
+  frame,
   handleCanvasDrop,
   editorRef,
   syncFromTldraw,
 }: {
   state: EditorCanvasState;
+  frame: ResponsiveViewport;
   handleCanvasDrop: (event: DragEvent<HTMLElement>) => void;
   editorRef: MutableRefObject<Editor | null>;
   syncFromTldraw: (editor: Editor) => void;
 }) {
   return (
-    <section
-      style={canvasShellStyle}
-      onDragOver={(event) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "copy";
-      }}
-      onDrop={handleCanvasDrop}
-    >
-      <div style={previewFrameStyle}>
-        <Tldraw
-          shapeUtils={podoShapeUtils}
-          onMount={(editor) => {
-            editorRef.current = editor;
-            for (const node of state.nodes) {
-              editor.createShape(editorNodeToTldrawShape(node));
-            }
-            const unsubscribers = [
-              editor.sideEffects.registerAfterChangeHandler("shape", () => syncFromTldraw(editor)),
-              editor.sideEffects.registerAfterDeleteHandler("shape", () => syncFromTldraw(editor)),
-            ];
-            return () => {
-              editorRef.current = null;
-              for (const unsubscribe of unsubscribers) {
-                unsubscribe();
-              }
-            };
+    <section style={canvasShellStyle}>
+      <div style={canvasArtboardStageStyle}>
+        <div
+          style={{ ...previewFrameStyle, width: frame.width, height: frame.height }}
+          onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "copy";
           }}
-        />
+          onDrop={handleCanvasDrop}
+        >
+          <Tldraw
+            shapeUtils={podoShapeUtils}
+            onMount={(editor) => {
+              editorRef.current = editor;
+              for (const node of state.nodes) {
+                editor.createShape(editorNodeToTldrawShape(node));
+              }
+              const unsubscribers = [
+                editor.sideEffects.registerAfterChangeHandler("shape", () =>
+                  syncFromTldraw(editor)
+                ),
+                editor.sideEffects.registerAfterDeleteHandler("shape", () =>
+                  syncFromTldraw(editor)
+                ),
+                // Selection lives on instance_page_state (not shape records), so a plain
+                // selection click does not fire the shape handlers. This record also
+                // changes on hover/edit/crop, so sync only when selectedShapeIds actually
+                // changes — otherwise hovering would needlessly emit editor-state updates.
+                editor.sideEffects.registerAfterChangeHandler(
+                  "instance_page_state",
+                  (prev, next) => {
+                    const before = prev.selectedShapeIds;
+                    const after = next.selectedShapeIds;
+                    if (
+                      before.length !== after.length ||
+                      before.some((id, index) => id !== after[index])
+                    ) {
+                      syncFromTldraw(editor);
+                    }
+                  }
+                ),
+              ];
+              return () => {
+                editorRef.current = null;
+                for (const unsubscribe of unsubscribers) {
+                  unsubscribe();
+                }
+              };
+            }}
+          />
+        </div>
       </div>
     </section>
   );

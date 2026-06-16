@@ -320,6 +320,10 @@ export const tokenMatrixScrollStyle: CSSProperties = {
   maxHeight: "min(64vh, 680px)",
   border: "1px solid #dde5ef",
   borderRadius: 6,
+  scrollbarWidth: "thin",
+  scrollbarColor: "#aab4c4 #eef2f7",
+  scrollbarGutter: "stable",
+  boxShadow: "inset -16px 0 14px -16px rgba(15, 23, 42, 0.28)",
 };
 
 export const tokenMatrixTableStyle: CSSProperties = {
@@ -408,6 +412,7 @@ export const tokenMatrixColorFallbackSwatchStyle: CSSProperties = {
 export const tokenMatrixValueInputStyle: CSSProperties = {
   width: "100%",
   minWidth: 0,
+  maxWidth: 116,
   minHeight: 32,
   border: "1px solid #ccd6e3",
   borderRadius: 5,
@@ -501,6 +506,8 @@ export const typographyTableScrollStyle: CSSProperties = {
   border: "1px solid #e0e7f0",
   borderRadius: 6,
   maxHeight: "min(50vh, 520px)",
+  scrollbarWidth: "thin",
+  scrollbarColor: "#aab4c4 #eef2f7",
 };
 
 export const typographyTableStyle: CSSProperties = {
@@ -988,6 +995,10 @@ export const componentMatrixScrollStyle: CSSProperties = {
   maxHeight: "min(60vh, 640px)",
   border: "1px solid #dde5ef",
   borderRadius: 6,
+  scrollbarWidth: "thin",
+  scrollbarColor: "#aab4c4 #eef2f7",
+  scrollbarGutter: "stable",
+  boxShadow: "inset -16px 0 14px -16px rgba(15, 23, 42, 0.28)",
 };
 
 export const componentMatrixTableStyle: CSSProperties = {
@@ -1087,6 +1098,8 @@ export const componentTokenTableScrollStyle: CSSProperties = {
   border: "1px solid #e0e7f0",
   borderRadius: 6,
   maxHeight: "min(48vh, 520px)",
+  scrollbarWidth: "thin",
+  scrollbarColor: "#aab4c4 #eef2f7",
 };
 
 export const componentTokenTableStyle: CSSProperties = {
@@ -1483,22 +1496,38 @@ export const canvasShellStyle: CSSProperties = {
   minWidth: 0,
   minHeight: 0,
   height: "100%",
+  overflow: "auto",
+  padding: 20,
+  boxSizing: "border-box",
+  background: "#e6ebf2",
+  scrollbarWidth: "thin",
+  scrollbarColor: "#aab4c4 #e6ebf2",
+  scrollbarGutter: "stable",
+};
+
+// Stretches to fill the shell so the artboard centers when smaller, and grows
+// to max-content so the shell scrolls (instead of clipping) when the artboard
+// is larger than the available area.
+export const canvasArtboardStageStyle: CSSProperties = {
+  minWidth: "100%",
+  minHeight: "100%",
+  width: "max-content",
+  height: "max-content",
   display: "grid",
-  gridTemplateRows: "minmax(0, 1fr)",
-  overflow: "hidden",
+  placeItems: "center",
+  boxSizing: "border-box",
 };
 
 export const previewFrameStyle: CSSProperties = {
-  width: "100%",
-  height: "100%",
-  minWidth: 0,
-  minHeight: 0,
+  minWidth: 320,
+  minHeight: 320,
   boxSizing: "border-box",
   position: "relative",
   overflow: "hidden",
   border: "1px solid #cfd6e2",
-  borderRadius: 8,
+  borderRadius: 10,
   background: "#ffffff",
+  boxShadow: "0 8px 28px rgba(15, 23, 42, 0.12)",
 };
 
 export const componentShapeStyle: CSSProperties = {
