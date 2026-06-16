@@ -1,4 +1,5 @@
 import { Tldraw, type Editor } from "tldraw";
+import { useRef, useState } from "react";
 import type { Dispatch, DragEvent, MutableRefObject, SetStateAction } from "react";
 import type { ComponentDocument } from "@podo/spec";
 import type { PodoSaveAdapter } from "@podo/edit-core";
@@ -30,6 +31,7 @@ import {
   inspectorStyle,
   legacyGridPanelStyle,
   previewFrameStyle,
+  rowStyle,
   segmentedButtonActiveStyle,
   segmentedButtonStyle,
   segmentedStyle,
@@ -41,6 +43,7 @@ import {
   toolbarStyle,
   viewportPanelStyle,
 } from "./styles.js";
+import { TOKEN_REFERENCE_LIST_ID } from "./token-model.js";
 
 export function CanvasPanelControls({
   state,
@@ -87,6 +90,27 @@ export function CanvasPanelControls({
   adapter: PodoSaveAdapter | undefined;
   enqueueHostWrite: (key: string, task: () => Promise<unknown>) => void;
 }) {
+  const propsTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const [tokenInsert, setTokenInsert] = useState("");
+
+  const insertTokenReference = (): void => {
+    const textarea = propsTextareaRef.current;
+    const reference = tokenInsert.trim();
+    if (!textarea || !reference) {
+      return;
+    }
+    const start = textarea.selectionStart ?? textarea.value.length;
+    const end = textarea.selectionEnd ?? start;
+    const nextValue = textarea.value.slice(0, start) + reference + textarea.value.slice(end);
+    updateSelectedPropsDraft(nextValue);
+    setTokenInsert("");
+    requestAnimationFrame(() => {
+      const caret = start + reference.length;
+      textarea.focus();
+      textarea.setSelectionRange(caret, caret);
+    });
+  };
+
   return (
     <>
       <div style={sidebarTitleStyle}>Canvas</div>
@@ -96,11 +120,36 @@ export function CanvasPanelControls({
           <label style={fieldStyle}>
             Props
             <textarea
+              ref={propsTextareaRef}
               style={textareaStyle}
               value={propsDraftNodeId === selectedNode.id ? propsDraft : ""}
               onBlur={commitSelectedPropsDraft}
               onChange={(event) => updateSelectedPropsDraft(event.currentTarget.value)}
             />
+            <div style={rowStyle}>
+              <input
+                aria-label="Insert token reference"
+                list={TOKEN_REFERENCE_LIST_ID}
+                placeholder="Insert token… {color.primary.base}"
+                style={{ ...inputStyle, flex: 1 }}
+                value={tokenInsert}
+                onChange={(event) => setTokenInsert(event.currentTarget.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    insertTokenReference();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                style={smallButtonStyle}
+                disabled={!tokenInsert.trim()}
+                onClick={insertTokenReference}
+              >
+                Insert
+              </button>
+            </div>
             <button type="button" style={smallButtonStyle} onClick={commitSelectedPropsDraft}>
               Apply
             </button>
