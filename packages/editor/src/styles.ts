@@ -1490,6 +1490,82 @@ export const codeBlockStyle: CSSProperties = {
   padding: 10,
 };
 
+export const tokenPickerWrapStyle: CSSProperties = {
+  position: "relative",
+};
+
+export const tokenPickerDropdownStyle: CSSProperties = {
+  position: "absolute",
+  top: "calc(100% + 4px)",
+  left: 0,
+  right: 0,
+  zIndex: 20,
+  maxHeight: 260,
+  overflowY: "auto",
+  background: "#ffffff",
+  border: "1px solid #ccd6e3",
+  borderRadius: 6,
+  boxShadow: "0 8px 24px rgba(15, 23, 42, 0.16)",
+  scrollbarWidth: "thin",
+  scrollbarColor: "#aab4c4 #eef2f7",
+};
+
+export const tokenPickerOptionStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "16px minmax(0, 1fr) auto",
+  alignItems: "center",
+  gap: 8,
+  width: "100%",
+  border: 0,
+  borderBottom: "1px solid #f0f3f8",
+  background: "transparent",
+  padding: "6px 8px",
+  textAlign: "left",
+  cursor: "pointer",
+};
+
+export const tokenPickerSwatchStyle: CSSProperties = {
+  width: 14,
+  height: 14,
+  borderRadius: 3,
+  border: "1px solid #d8dde6",
+  boxSizing: "border-box",
+};
+
+export const tokenPickerSwatchEmptyStyle: CSSProperties = {
+  width: 14,
+  height: 14,
+  borderRadius: 3,
+  border: "1px dashed #c3cbd8",
+  boxSizing: "border-box",
+};
+
+export const tokenPickerLabelStyle: CSSProperties = {
+  minWidth: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  fontSize: 12,
+  color: "#263241",
+};
+
+export const tokenPickerValueStyle: CSSProperties = {
+  justifySelf: "end",
+  maxWidth: 120,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  fontSize: 11,
+  color: "#5d6775",
+};
+
+export const tokenPickerEmptyStyle: CSSProperties = {
+  padding: "8px",
+  fontSize: 12,
+  color: "#6b7280",
+};
+
 export const canvasShellStyle: CSSProperties = {
   minWidth: 0,
   minHeight: 0,

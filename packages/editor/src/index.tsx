@@ -82,8 +82,9 @@ import {
   topBarStyle,
   workspaceStyle,
 } from "./styles.js";
-import { isTypographyValue } from "./token-lookup.js";
+import { isCssColorValue, isTypographyValue, resolveTokenPath } from "./token-lookup.js";
 export type { TokenLookup } from "./token-lookup.js";
+import type { TokenPickerOption } from "./token-picker.js";
 
 export const packageName = "@podo/editor";
 
@@ -321,6 +322,24 @@ export function PodoEditorApp({
   const previewTokenLookup = useMemo(
     () => createThemedTokenLookup(tokenRecords, effectiveColorScheme),
     [effectiveColorScheme, tokenRecords]
+  );
+  const tokenPickerOptions = useMemo<TokenPickerOption[]>(
+    () =>
+      tokenRecords.map((record) => {
+        const resolved =
+          record.token.$type === "color"
+            ? resolveTokenPath(previewTokenLookup, record.path)
+            : undefined;
+        const swatch =
+          typeof resolved === "string" && isCssColorValue(resolved) ? resolved : undefined;
+        return {
+          ref: `{${record.path}}`,
+          label: record.path,
+          value: serializeEditorTokenValue(record.token.$value),
+          ...(swatch ? { swatch } : {}),
+        };
+      }),
+    [tokenRecords, previewTokenLookup]
   );
   const selectedToken = selectedTokenKey
     ? tokenRecords.find((record) => tokenRecordKey(record) === selectedTokenKey)
@@ -864,6 +883,7 @@ export function PodoEditorApp({
             propsDraftError={propsDraftError}
             commitSelectedPropsDraft={commitSelectedPropsDraft}
             updateSelectedPropsDraft={updateSelectedPropsDraft}
+            tokenPickerOptions={tokenPickerOptions}
             exportPreview={exportPreview}
             setExportPreview={setExportPreview}
             pageIdDraft={pageIdDraft}
