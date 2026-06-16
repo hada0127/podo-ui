@@ -938,7 +938,6 @@ export function PodoEditorApp({
         {effectiveActivePanel === "canvas" ? (
           <CanvasPanelWorkspace
             state={state}
-            frame={frame}
             handleCanvasDrop={handleCanvasDrop}
             editorRef={editorRef}
             syncFromTldraw={syncFromTldraw}

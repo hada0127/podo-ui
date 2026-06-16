@@ -36,6 +36,9 @@ export const panelTabStyle: CSSProperties = {
   borderRadius: 6,
   background: "transparent",
   color: "#4e5968",
+  cursor: "pointer",
+  fontWeight: 600,
+  textTransform: "capitalize",
 };
 
 export const panelTabActiveStyle: CSSProperties = {
@@ -84,6 +87,8 @@ export const schemeButtonStyle: CSSProperties = {
   color: "#4e5968",
   padding: 0,
   fontSize: 12,
+  cursor: "pointer",
+  textTransform: "capitalize",
 };
 
 export const schemeButtonActiveStyle: CSSProperties = {
@@ -117,6 +122,7 @@ export const toolbarButtonStyle: CSSProperties = {
   textAlign: "left",
   padding: "0 11px",
   color: "#263241",
+  cursor: "pointer",
 };
 
 export const listStyle: CSSProperties = {
@@ -295,6 +301,8 @@ export const tokenMatrixPanelStyle: CSSProperties = {
   borderRadius: 8,
   background: "#ffffff",
   display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
+  minWidth: 0,
   gap: 10,
   padding: 12,
   boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
@@ -364,6 +372,7 @@ export const tokenMatrixCellStyle: CSSProperties = {
 export const tokenMatrixColorCellStyle: CSSProperties = {
   minWidth: 120,
   minHeight: 64,
+  boxSizing: "border-box",
   border: "1px solid transparent",
   borderRadius: 6,
   display: "grid",
@@ -374,8 +383,9 @@ export const tokenMatrixColorCellStyle: CSSProperties = {
 };
 
 export const tokenMatrixCellActiveStyle: CSSProperties = {
-  border: "1px solid #7aa7ee",
+  borderColor: "transparent",
   background: "#edf4ff",
+  boxShadow: "0 0 0 2px #7aa7ee",
 };
 
 export const tokenMatrixColorPickerStyle: CSSProperties = {
@@ -652,6 +662,7 @@ export const smallButtonStyle: CSSProperties = {
   padding: "0 10px",
   textAlign: "left",
   color: "#263241",
+  cursor: "pointer",
   boxShadow: "0 1px 1px rgba(15, 23, 42, 0.03)",
 };
 
@@ -673,6 +684,8 @@ export const segmentedButtonStyle: CSSProperties = {
   borderRadius: 6,
   background: "#ffffff",
   padding: 0,
+  cursor: "pointer",
+  textTransform: "capitalize",
 };
 
 export const segmentedButtonActiveStyle: CSSProperties = {
@@ -782,8 +795,10 @@ export const workspaceStyle: CSSProperties = {
 
 export const sectionStyle: CSSProperties = {
   display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
   gap: 12,
   width: "100%",
+  minWidth: 0,
   maxWidth: "none",
 };
 
@@ -824,6 +839,50 @@ export const splitPanelStyle: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
   gap: 16,
+  minHeight: 0,
+  height: "100%",
+  alignItems: "stretch",
+};
+
+export const exportSectionStyle: CSSProperties = {
+  display: "grid",
+  gap: 12,
+  width: "100%",
+  minWidth: 0,
+  minHeight: 0,
+  height: "100%",
+  gridTemplateColumns: "minmax(0, 1fr)",
+  gridTemplateRows: "auto minmax(0, 1fr)",
+};
+
+export const exportJsonPanelStyle: CSSProperties = {
+  border: "1px solid #d4dce8",
+  borderRadius: 8,
+  background: "#ffffff",
+  padding: 12,
+  display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
+  gridTemplateRows: "auto minmax(0, 1fr)",
+  minWidth: 0,
+  minHeight: 0,
+  gap: 10,
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+};
+
+export const exportJsonTextareaStyle: CSSProperties = {
+  width: "100%",
+  height: "100%",
+  minHeight: 0,
+  resize: "none",
+  boxSizing: "border-box",
+  border: "1px solid #ccd6e3",
+  borderRadius: 6,
+  background: "#fbfcfe",
+  color: "#171a20",
+  padding: 10,
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  fontSize: 12,
+  lineHeight: 1.5,
 };
 
 export const cardStyle: CSSProperties = {
@@ -831,7 +890,9 @@ export const cardStyle: CSSProperties = {
   borderRadius: 8,
   background: "#ffffff",
   display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
   alignContent: "start",
+  minWidth: 0,
   gap: 12,
   padding: 12,
   boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
@@ -894,6 +955,8 @@ export const previewPanelStyle: CSSProperties = {
   background: "#ffffff",
   padding: 12,
   display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
+  minWidth: 0,
   gap: 10,
   boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
 };
@@ -906,6 +969,8 @@ export const componentMatrixPanelStyle: CSSProperties = {
   borderTop: "1px solid #e2e7ef",
   paddingTop: 10,
   display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
+  minWidth: 0,
   gap: 8,
 };
 
@@ -1416,13 +1481,23 @@ export const codeBlockStyle: CSSProperties = {
 
 export const canvasShellStyle: CSSProperties = {
   minWidth: 0,
-  overflow: "auto",
+  minHeight: 0,
+  height: "100%",
+  display: "grid",
+  gridTemplateRows: "minmax(0, 1fr)",
+  overflow: "hidden",
 };
 
 export const previewFrameStyle: CSSProperties = {
-  minWidth: 320,
-  minHeight: 320,
+  width: "100%",
+  height: "100%",
+  minWidth: 0,
+  minHeight: 0,
+  boxSizing: "border-box",
+  position: "relative",
+  overflow: "hidden",
   border: "1px solid #cfd6e2",
+  borderRadius: 8,
   background: "#ffffff",
 };
 

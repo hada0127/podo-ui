@@ -242,13 +242,11 @@ export function CanvasPanelControls({
 
 export function CanvasPanelWorkspace({
   state,
-  frame,
   handleCanvasDrop,
   editorRef,
   syncFromTldraw,
 }: {
   state: EditorCanvasState;
-  frame: ResponsiveViewport;
   handleCanvasDrop: (event: DragEvent<HTMLElement>) => void;
   editorRef: MutableRefObject<Editor | null>;
   syncFromTldraw: (editor: Editor) => void;
@@ -262,7 +260,7 @@ export function CanvasPanelWorkspace({
       }}
       onDrop={handleCanvasDrop}
     >
-      <div style={{ ...previewFrameStyle, width: frame.width / 2, height: frame.height / 2 }}>
+      <div style={previewFrameStyle}>
         <Tldraw
           shapeUtils={podoShapeUtils}
           onMount={(editor) => {

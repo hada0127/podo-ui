@@ -2,15 +2,15 @@ import type { TokenDocument } from "@podo/spec";
 import type { EditorCanvasState } from "./canvas.js";
 import type { EditorTokenRecord } from "./spec-editing.js";
 import {
-  previewPanelStyle,
+  exportJsonPanelStyle,
+  exportJsonTextareaStyle,
+  exportSectionStyle,
   sectionHeaderStyle,
   sectionMetaStyle,
-  sectionStyle,
   sectionTitleStyle,
   sidebarTitleStyle,
   splitPanelStyle,
   summaryListStyle,
-  textareaStyle,
 } from "./styles.js";
 
 export function ExportPanelControls({
@@ -40,7 +40,7 @@ export function ExportPanelWorkspace({
   state: EditorCanvasState;
 }) {
   return (
-    <section style={sectionStyle}>
+    <section style={exportSectionStyle}>
       <div style={sectionHeaderStyle}>
         <div>
           <h1 style={sectionTitleStyle}>Export</h1>
@@ -48,18 +48,18 @@ export function ExportPanelWorkspace({
         </div>
       </div>
       <div style={splitPanelStyle}>
-        <div style={previewPanelStyle}>
+        <div style={exportJsonPanelStyle}>
           <strong>Tokens</strong>
           <textarea
-            style={{ ...textareaStyle, minHeight: 420 }}
+            style={exportJsonTextareaStyle}
             readOnly
             value={JSON.stringify(tokenDocumentsState, null, 2)}
           />
         </div>
-        <div style={previewPanelStyle}>
+        <div style={exportJsonPanelStyle}>
           <strong>Components</strong>
           <textarea
-            style={{ ...textareaStyle, minHeight: 420 }}
+            style={exportJsonTextareaStyle}
             readOnly
             value={JSON.stringify(state.components, null, 2)}
           />
