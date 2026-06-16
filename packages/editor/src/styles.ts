@@ -316,13 +316,12 @@ export const inlineHelpStyle: CSSProperties = {
 };
 
 export const tokenMatrixScrollStyle: CSSProperties = {
-  overflow: "auto",
-  maxHeight: "min(64vh, 680px)",
+  overflowX: "auto",
+  overflowY: "visible",
   border: "1px solid #dde5ef",
   borderRadius: 6,
   scrollbarWidth: "thin",
   scrollbarColor: "#aab4c4 #eef2f7",
-  scrollbarGutter: "stable",
   boxShadow: "inset -16px 0 14px -16px rgba(15, 23, 42, 0.28)",
 };
 
@@ -502,10 +501,10 @@ export const typographyTwoColumnStyle: CSSProperties = {
 };
 
 export const typographyTableScrollStyle: CSSProperties = {
-  overflow: "auto",
+  overflowX: "auto",
+  overflowY: "visible",
   border: "1px solid #e0e7f0",
   borderRadius: 6,
-  maxHeight: "min(50vh, 520px)",
   scrollbarWidth: "thin",
   scrollbarColor: "#aab4c4 #eef2f7",
 };
@@ -991,13 +990,12 @@ export const componentMatrixHeaderStyle: CSSProperties = {
 };
 
 export const componentMatrixScrollStyle: CSSProperties = {
-  overflow: "auto",
-  maxHeight: "min(60vh, 640px)",
+  overflowX: "auto",
+  overflowY: "visible",
   border: "1px solid #dde5ef",
   borderRadius: 6,
   scrollbarWidth: "thin",
   scrollbarColor: "#aab4c4 #eef2f7",
-  scrollbarGutter: "stable",
   boxShadow: "inset -16px 0 14px -16px rgba(15, 23, 42, 0.28)",
 };
 
@@ -1094,10 +1092,10 @@ export const componentTokenGroupHeaderStyle: CSSProperties = {
 };
 
 export const componentTokenTableScrollStyle: CSSProperties = {
-  overflow: "auto",
+  overflowX: "auto",
+  overflowY: "visible",
   border: "1px solid #e0e7f0",
   borderRadius: 6,
-  maxHeight: "min(48vh, 520px)",
   scrollbarWidth: "thin",
   scrollbarColor: "#aab4c4 #eef2f7",
 };
