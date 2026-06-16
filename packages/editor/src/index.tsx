@@ -59,6 +59,192 @@ import {
   type EditorTokenRecord,
 } from "./spec-editing.js";
 import { type EditorCapabilities, type PodoSaveAdapter } from "@podo/edit-core";
+import {
+  buttonBasePreviewStyle,
+  canvasShellStyle,
+  cardHeaderStyle,
+  cardStyle,
+  checkboxFieldStyle,
+  codeBlockStyle,
+  codeStyle,
+  compactFieldStyle,
+  compactFormGridStyle,
+  compactSelectStyle,
+  componentDimensionPreviewBarStyle,
+  componentEditModeBarStyle,
+  componentEditModeButtonActiveStyle,
+  componentEditModeButtonStyle,
+  componentListButtonActiveStyle,
+  componentListButtonStyle,
+  componentListIdStyle,
+  componentListNameStyle,
+  componentListStyle,
+  componentMatrixCellStyle,
+  componentMatrixHeaderCellStyle,
+  componentMatrixHeaderStyle,
+  componentMatrixPanelStyle,
+  componentMatrixPreviewButtonActiveStyle,
+  componentMatrixPreviewButtonStyle,
+  componentMatrixPreviewClipStyle,
+  componentMatrixRowHeaderStyle,
+  componentMatrixScrollStyle,
+  componentMatrixTableStyle,
+  componentNumberPreviewFillStyle,
+  componentNumberPreviewTrackStyle,
+  componentPreviewPanelStyle,
+  componentPreviewStageStyle,
+  componentShapeStyle,
+  componentStatRowStyle,
+  componentTokenCellStyle,
+  componentTokenGroupHeaderStyle,
+  componentTokenGroupListStyle,
+  componentTokenGroupStyle,
+  componentTokenHeaderCellStyle,
+  componentTokenPreviewInlineStyle,
+  componentTokenRowHeaderStyle,
+  componentTokenTableScrollStyle,
+  componentTokenTableStyle,
+  dangerButtonStyle,
+  detailPanelBodyStyle,
+  disclosureStyle,
+  editorFormStyle,
+  editorShellStyle,
+  emptyListStyle,
+  emptyStatePanelStyle,
+  errorBannerStyle,
+  errorTextStyle,
+  fieldStyle,
+  fontAssetCellStyle,
+  fontAssetEmptyStyle,
+  fontAssetNameStyle,
+  fontAttachButtonStyle,
+  fontAttachmentActionsStyle,
+  fontAttachmentHeaderStyle,
+  fontAttachmentPanelStyle,
+  fontPreviewMetaStyle,
+  fontPreviewSampleStyle,
+  fontPreviewTextStyle,
+  fontRemoveButtonStyle,
+  fontSizePreviewStyle,
+  fontWeightPreviewStyle,
+  formGridStyle,
+  hiddenFileInputStyle,
+  inlineHelpStyle,
+  inputStyle,
+  inspectorStyle,
+  legacyGridPanelStyle,
+  listStyle,
+  nestedDisclosureStyle,
+  nestedSummaryStyle,
+  panelTabActiveStyle,
+  panelTabStyle,
+  panelTabsStyle,
+  persistErrorStyle,
+  previewAvatarIconStyle,
+  previewAvatarStyle,
+  previewCalendarDayStyle,
+  previewCalendarGridStyle,
+  previewCalendarHeaderStyle,
+  previewChipDeleteStyle,
+  previewChipDotStyle,
+  previewChipStyle,
+  previewChoiceBoxStyle,
+  previewChoiceDotStyle,
+  previewChoiceGroupStyle,
+  previewChoiceStyle,
+  previewControlIconStyle,
+  previewControlRowStyle,
+  previewFieldMessageStyle,
+  previewFieldStyle,
+  previewFrameStyle,
+  previewInlineWrapStyle,
+  previewLabelStyle,
+  previewPaginationStyle,
+  previewPanelStyle,
+  previewPopoverStackStyle,
+  previewTableListStyle,
+  previewToastAccentStyle,
+  previewToastContentStyle,
+  previewTooltipStageStyle,
+  productTitleStyle,
+  rowStyle,
+  schemeButtonActiveStyle,
+  schemeButtonStyle,
+  schemeSegmentedStyle,
+  sectionHeaderStyle,
+  sectionMetaStyle,
+  sectionStyle,
+  sectionTitleStyle,
+  segmentedButtonActiveStyle,
+  segmentedButtonStyle,
+  segmentedStyle,
+  selectStyle,
+  shapeBodyStyle,
+  shapeHeaderStyle,
+  shapeMetaStyle,
+  sidebarStyle,
+  sidebarTitleStyle,
+  slotRowStyle,
+  smallButtonStyle,
+  splitPanelStyle,
+  summaryListStyle,
+  summaryStyle,
+  tableCellMetaStyle,
+  tableCellTextStyle,
+  tableRowActiveStyle,
+  tableRowStyle,
+  tableStyle,
+  textareaStyle,
+  tokenColorInputStyle,
+  tokenColorPreviewStyle,
+  tokenMatrixCellActiveStyle,
+  tokenMatrixCellStyle,
+  tokenMatrixColorCellStyle,
+  tokenMatrixColorFallbackSwatchStyle,
+  tokenMatrixColorPickerStyle,
+  tokenMatrixEmptyCellStyle,
+  tokenMatrixHeaderCellStyle,
+  tokenMatrixInputActiveStyle,
+  tokenMatrixObjectCellStyle,
+  tokenMatrixPanelStyle,
+  tokenMatrixRowHeaderStyle,
+  tokenMatrixScrollStyle,
+  tokenMatrixTableStyle,
+  tokenMatrixValueInputStyle,
+  tokenScaleBoxStyle,
+  tokenScalePreviewStyle,
+  tokenSwatchStyle,
+  tokenTypeButtonActiveStyle,
+  tokenTypeButtonStyle,
+  tokenTypeMetaStyle,
+  tokenTypeNameStyle,
+  tokenTypographyPreviewStyle,
+  tokenValueEditorPlainStyle,
+  tokenValueEditorStyle,
+  toolbarButtonStyle,
+  toolbarStyle,
+  topBarControlLabelStyle,
+  topBarControlStyle,
+  topBarControlValueStyle,
+  topBarStyle,
+  typographyCellStyle,
+  typographyHeaderCellStyle,
+  typographyInlineInputStyle,
+  typographyRowHeaderCellStyle,
+  typographySubHeaderStyle,
+  typographySubPanelStyle,
+  typographyTableScrollStyle,
+  typographyTableStyle,
+  typographyTokenPathButtonActiveStyle,
+  typographyTokenPathButtonStyle,
+  typographyTwoColumnStyle,
+  typographyWideTableStyle,
+  typographyWorkspaceCountStyle,
+  typographyWorkspaceHeaderStyle,
+  typographyWorkspaceStyle,
+  viewportPanelStyle,
+  workspaceStyle,
+} from "./styles.js";
 
 export const packageName = "@podo/editor";
 
@@ -5589,1467 +5775,3 @@ function clampRgb(value: number): number {
 function isDesignTokenLike(value: unknown): value is DesignToken {
   return Boolean(value && typeof value === "object" && "$type" in value && "$value" in value);
 }
-
-const editorShellStyle: CSSProperties = {
-  height: "100vh",
-  display: "grid",
-  gridTemplateRows: "52px minmax(0, 1fr)",
-  gridTemplateColumns: "280px minmax(0, 1fr)",
-  overflow: "hidden",
-  background: "#eef2f7",
-  color: "#171a20",
-  fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
-};
-
-const topBarStyle: CSSProperties = {
-  gridColumn: "1 / -1",
-  borderBottom: "1px solid #d7dee8",
-  background: "#fbfcfe",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 16,
-  padding: "0 14px",
-};
-
-const productTitleStyle: CSSProperties = { fontSize: 15 };
-
-const panelTabsStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(4, minmax(92px, 1fr))",
-  gap: 4,
-};
-
-const panelTabStyle: CSSProperties = {
-  height: 32,
-  border: "1px solid transparent",
-  borderRadius: 6,
-  background: "transparent",
-  color: "#4e5968",
-};
-
-const panelTabActiveStyle: CSSProperties = {
-  border: "1px solid #7aa7ee",
-  background: "#edf4ff",
-  color: "#123b72",
-};
-
-const topBarControlStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "auto auto auto",
-  alignItems: "center",
-  gap: 8,
-  minWidth: 280,
-};
-
-const topBarControlLabelStyle: CSSProperties = {
-  color: "#5d6775",
-  fontSize: 12,
-  fontWeight: 600,
-};
-
-const topBarControlValueStyle: CSSProperties = {
-  minWidth: 42,
-  color: "#3f4a5a",
-  fontSize: 12,
-  textAlign: "right",
-};
-const persistErrorStyle: CSSProperties = {
-  color: "#b42318",
-  fontSize: 12,
-  lineHeight: 1.4,
-};
-
-const schemeSegmentedStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, 54px)",
-  gap: 3,
-};
-
-const schemeButtonStyle: CSSProperties = {
-  height: 28,
-  border: "1px solid #d8dde6",
-  borderRadius: 6,
-  background: "#ffffff",
-  color: "#4e5968",
-  padding: 0,
-  fontSize: 12,
-};
-
-const schemeButtonActiveStyle: CSSProperties = {
-  border: "1px solid #8fb3f4",
-  background: "#eaf1ff",
-  color: "#153e75",
-};
-
-const sidebarStyle: CSSProperties = {
-  minHeight: 0,
-  borderRight: "1px solid #d7dee8",
-  background: "#fbfcfe",
-  padding: 10,
-  display: "grid",
-  alignContent: "start",
-  gap: 10,
-  overflowX: "hidden",
-  overflowY: "auto",
-  overscrollBehavior: "contain",
-};
-
-const sidebarTitleStyle: CSSProperties = { fontWeight: 700, fontSize: 15 };
-
-const toolbarStyle: CSSProperties = { display: "grid", gap: 8 };
-
-const toolbarButtonStyle: CSSProperties = {
-  height: 36,
-  border: "1px solid #ccd6e3",
-  borderRadius: 6,
-  background: "#ffffff",
-  textAlign: "left",
-  padding: "0 11px",
-  color: "#263241",
-};
-
-const listStyle: CSSProperties = {
-  display: "grid",
-  gap: 8,
-};
-
-const emptyListStyle: CSSProperties = {
-  color: "#6b7280",
-  fontSize: 13,
-  lineHeight: 1.45,
-  padding: "8px 2px",
-};
-
-const tokenTypeButtonStyle: CSSProperties = {
-  minHeight: 48,
-  border: "1px solid transparent",
-  borderRadius: 8,
-  background: "transparent",
-  color: "#1f2937",
-  padding: "8px 10px",
-  display: "grid",
-  gap: 3,
-  textAlign: "left",
-};
-
-const tokenTypeButtonActiveStyle: CSSProperties = {
-  border: "1px solid #7aa7ee",
-  background: "#edf4ff",
-  color: "#123b72",
-};
-
-const tokenTypeNameStyle: CSSProperties = {
-  fontWeight: 700,
-  lineHeight: "18px",
-};
-
-const tokenTypeMetaStyle: CSSProperties = {
-  color: "#657386",
-  fontSize: 11,
-  lineHeight: "16px",
-};
-
-const componentListStyle: CSSProperties = {
-  display: "grid",
-  gap: 3,
-};
-
-const componentListButtonStyle: CSSProperties = {
-  minHeight: 38,
-  border: "1px solid transparent",
-  borderRadius: 6,
-  background: "transparent",
-  color: "#171a20",
-  padding: "7px 8px",
-  display: "grid",
-  gap: 2,
-  textAlign: "left",
-};
-
-const componentListButtonActiveStyle: CSSProperties = {
-  border: "1px solid #7aa7ee",
-  background: "#edf4ff",
-};
-
-const componentListNameStyle: CSSProperties = {
-  minWidth: 0,
-  overflowWrap: "anywhere",
-  fontWeight: 600,
-  lineHeight: "18px",
-};
-
-const componentListIdStyle: CSSProperties = {
-  minWidth: 0,
-  overflowWrap: "anywhere",
-  color: "#6b7280",
-  lineHeight: "16px",
-};
-
-const disclosureStyle: CSSProperties = {
-  border: "1px solid #d4dce8",
-  borderRadius: 8,
-  background: "#fbfcfe",
-  padding: 10,
-};
-
-const summaryStyle: CSSProperties = {
-  cursor: "pointer",
-  fontWeight: 700,
-  fontSize: 13,
-};
-
-const nestedDisclosureStyle: CSSProperties = {
-  border: "1px solid #e0e7f0",
-  borderRadius: 6,
-  background: "#ffffff",
-  padding: 8,
-};
-
-const nestedSummaryStyle: CSSProperties = {
-  cursor: "pointer",
-  fontWeight: 700,
-  fontSize: 12,
-  color: "#4e5968",
-};
-
-const detailPanelBodyStyle: CSSProperties = {
-  display: "grid",
-  gap: 12,
-  marginTop: 10,
-};
-
-const compactFormGridStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, minmax(160px, 1fr))",
-  gap: 10,
-  marginTop: 10,
-};
-
-const componentStatRowStyle: CSSProperties = {
-  display: "flex",
-  gap: 8,
-  flexWrap: "wrap",
-  justifyContent: "flex-end",
-  color: "#5d6775",
-  fontSize: 12,
-};
-
-const componentEditModeBarStyle: CSSProperties = {
-  display: "inline-flex",
-  width: "fit-content",
-  border: "1px solid #d8dde6",
-  borderRadius: 8,
-  background: "#ffffff",
-  padding: 3,
-  gap: 3,
-};
-
-const componentEditModeButtonStyle: CSSProperties = {
-  minHeight: 30,
-  border: "1px solid transparent",
-  borderRadius: 6,
-  background: "transparent",
-  color: "#4e5968",
-  padding: "0 10px",
-};
-
-const componentEditModeButtonActiveStyle: CSSProperties = {
-  border: "1px solid #8fb3f4",
-  background: "#eaf1ff",
-  color: "#153e75",
-};
-
-const tokenValueEditorStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "auto minmax(0, 1fr)",
-  alignItems: "stretch",
-  gap: 8,
-};
-
-const tokenValueEditorPlainStyle: CSSProperties = {
-  display: "grid",
-};
-
-const tokenColorInputStyle: CSSProperties = {
-  width: 52,
-  minHeight: 72,
-  border: "1px solid #d8dde6",
-  borderRadius: 6,
-  padding: 4,
-  background: "#ffffff",
-};
-
-const tokenMatrixPanelStyle: CSSProperties = {
-  border: "1px solid #d4dce8",
-  borderRadius: 8,
-  background: "#ffffff",
-  display: "grid",
-  gap: 10,
-  padding: 12,
-  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
-};
-
-const inlineHelpStyle: CSSProperties = {
-  margin: "3px 0 0",
-  color: "#6b7280",
-  fontSize: 12,
-  lineHeight: "16px",
-};
-
-const tokenMatrixScrollStyle: CSSProperties = {
-  overflow: "auto",
-  maxHeight: "min(64vh, 680px)",
-  border: "1px solid #dde5ef",
-  borderRadius: 6,
-};
-
-const tokenMatrixTableStyle: CSSProperties = {
-  width: "max-content",
-  minWidth: "100%",
-  borderCollapse: "separate",
-  borderSpacing: 0,
-};
-
-const tokenMatrixHeaderCellStyle: CSSProperties = {
-  position: "sticky",
-  top: 0,
-  zIndex: 1,
-  minWidth: 132,
-  borderBottom: "1px solid #d8e0ea",
-  borderRight: "1px solid #edf1f6",
-  background: "#f7f9fc",
-  color: "#4e5968",
-  padding: "9px 10px",
-  textAlign: "left",
-  fontSize: 12,
-  fontWeight: 700,
-};
-
-const tokenMatrixRowHeaderStyle: CSSProperties = {
-  position: "sticky",
-  left: 0,
-  zIndex: 1,
-  minWidth: 156,
-  maxWidth: 220,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #d8e0ea",
-  background: "#fbfcfe",
-  color: "#171a20",
-  padding: "10px",
-  textAlign: "left",
-  verticalAlign: "top",
-  overflowWrap: "anywhere",
-  fontSize: 12,
-};
-
-const tokenMatrixCellStyle: CSSProperties = {
-  minWidth: 132,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #edf1f6",
-  padding: 7,
-  verticalAlign: "top",
-};
-
-const tokenMatrixColorCellStyle: CSSProperties = {
-  minWidth: 120,
-  minHeight: 64,
-  border: "1px solid transparent",
-  borderRadius: 6,
-  display: "grid",
-  gridTemplateColumns: "28px minmax(0, 1fr)",
-  gap: 6,
-  alignItems: "center",
-  padding: 4,
-};
-
-const tokenMatrixCellActiveStyle: CSSProperties = {
-  border: "1px solid #7aa7ee",
-  background: "#edf4ff",
-};
-
-const tokenMatrixColorPickerStyle: CSSProperties = {
-  width: 28,
-  height: 42,
-  border: "1px solid #d8dde6",
-  borderRadius: 5,
-  padding: 2,
-  background: "#ffffff",
-};
-
-const tokenMatrixColorFallbackSwatchStyle: CSSProperties = {
-  width: 28,
-  height: 42,
-  border: "1px dashed #b9c2d0",
-  borderRadius: 5,
-  background: "#f6f8fb",
-};
-
-const tokenMatrixValueInputStyle: CSSProperties = {
-  width: "100%",
-  minWidth: 0,
-  minHeight: 32,
-  border: "1px solid #ccd6e3",
-  borderRadius: 5,
-  background: "#fbfcfe",
-  color: "#171a20",
-  padding: "0 6px",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-  fontSize: 11,
-};
-
-const tokenMatrixInputActiveStyle: CSSProperties = {
-  border: "1px solid #7aa7ee",
-  background: "#edf4ff",
-};
-
-const tokenMatrixObjectCellStyle: CSSProperties = {
-  width: "100%",
-  maxWidth: 240,
-  minHeight: 34,
-  border: "1px solid #d8dde6",
-  borderRadius: 5,
-  background: "#ffffff",
-  color: "#4e5968",
-  padding: "6px",
-  textAlign: "left",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-  fontSize: 11,
-};
-
-const tokenMatrixEmptyCellStyle: CSSProperties = {
-  color: "#a1a9b5",
-  fontSize: 12,
-};
-
-const typographyWorkspaceStyle: CSSProperties = {
-  border: "1px solid #d4dce8",
-  borderRadius: 8,
-  background: "#ffffff",
-  display: "grid",
-  gap: 12,
-  padding: 12,
-  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
-};
-
-const typographyWorkspaceHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "start",
-  justifyContent: "space-between",
-  gap: 16,
-};
-
-const typographyWorkspaceCountStyle: CSSProperties = {
-  display: "flex",
-  gap: 6,
-  flexWrap: "wrap",
-  justifyContent: "flex-end",
-  color: "#5d6775",
-  fontSize: 12,
-};
-
-const typographySubPanelStyle: CSSProperties = {
-  border: "1px solid #dde5ef",
-  borderRadius: 8,
-  background: "#fbfcfe",
-  display: "grid",
-  alignContent: "start",
-  gap: 8,
-  padding: 10,
-};
-
-const typographySubHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "baseline",
-  justifyContent: "space-between",
-  gap: 12,
-  color: "#5d6775",
-  fontSize: 12,
-};
-
-const typographyTwoColumnStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: 12,
-};
-
-const typographyTableScrollStyle: CSSProperties = {
-  overflow: "auto",
-  border: "1px solid #e0e7f0",
-  borderRadius: 6,
-  maxHeight: "min(50vh, 520px)",
-};
-
-const typographyTableStyle: CSSProperties = {
-  width: "100%",
-  minWidth: 640,
-  borderCollapse: "separate",
-  borderSpacing: 0,
-};
-
-const typographyWideTableStyle: CSSProperties = {
-  ...typographyTableStyle,
-  minWidth: 1120,
-};
-
-const typographyHeaderCellStyle: CSSProperties = {
-  position: "sticky",
-  top: 0,
-  zIndex: 1,
-  borderBottom: "1px solid #d8e0ea",
-  borderRight: "1px solid #edf1f6",
-  background: "#f7f9fc",
-  color: "#4e5968",
-  padding: "8px",
-  textAlign: "left",
-  fontSize: 12,
-  fontWeight: 700,
-};
-
-const typographyRowHeaderCellStyle: CSSProperties = {
-  minWidth: 180,
-  maxWidth: 260,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #d8e0ea",
-  background: "#ffffff",
-  padding: 6,
-  textAlign: "left",
-  verticalAlign: "middle",
-};
-
-const typographyCellStyle: CSSProperties = {
-  minWidth: 128,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #edf1f6",
-  background: "#ffffff",
-  padding: 6,
-  verticalAlign: "middle",
-};
-
-const typographyTokenPathButtonStyle: CSSProperties = {
-  width: "100%",
-  minHeight: 32,
-  border: "1px solid transparent",
-  borderRadius: 5,
-  background: "transparent",
-  color: "#263241",
-  padding: "5px 6px",
-  textAlign: "left",
-  overflowWrap: "anywhere",
-  fontSize: 12,
-};
-
-const typographyTokenPathButtonActiveStyle: CSSProperties = {
-  border: "1px solid #7aa7ee",
-  background: "#edf4ff",
-  color: "#123b72",
-};
-
-const typographyInlineInputStyle: CSSProperties = {
-  width: "100%",
-  minWidth: 0,
-  height: 32,
-  border: "1px solid #ccd6e3",
-  borderRadius: 5,
-  background: "#fbfcfe",
-  color: "#171a20",
-  padding: "0 7px",
-  fontSize: 12,
-};
-
-const fontAssetCellStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 7,
-  flexWrap: "wrap",
-};
-
-const fontAttachButtonStyle: CSSProperties = {
-  minHeight: 30,
-  border: "1px solid #9fb4cf",
-  borderRadius: 6,
-  background: "#ffffff",
-  color: "#263241",
-  padding: "6px 9px",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  cursor: "pointer",
-  fontSize: 12,
-  fontWeight: 600,
-};
-
-const hiddenFileInputStyle: CSSProperties = {
-  position: "absolute",
-  width: 1,
-  height: 1,
-  opacity: 0,
-  pointerEvents: "none",
-};
-
-const fontAssetNameStyle: CSSProperties = {
-  maxWidth: 180,
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-  color: "#4e5968",
-  fontSize: 12,
-};
-
-const fontAssetEmptyStyle: CSSProperties = {
-  color: "#8a95a3",
-  fontSize: 12,
-};
-
-const fontRemoveButtonStyle: CSSProperties = {
-  minHeight: 28,
-  border: "1px solid #e1b4af",
-  borderRadius: 6,
-  background: "#fff8f7",
-  color: "#a23a32",
-  padding: "0 8px",
-  fontSize: 12,
-};
-
-const fontWeightPreviewStyle: CSSProperties = {
-  display: "inline-block",
-  minWidth: 42,
-  fontSize: 22,
-  lineHeight: "28px",
-};
-
-const fontSizePreviewStyle: CSSProperties = {
-  display: "inline-block",
-  minWidth: 42,
-  lineHeight: 1.2,
-};
-
-const summaryListStyle: CSSProperties = {
-  display: "grid",
-  gap: 8,
-  color: "#4e5968",
-  fontSize: 13,
-};
-
-const smallButtonStyle: CSSProperties = {
-  minHeight: 32,
-  border: "1px solid #ccd6e3",
-  borderRadius: 6,
-  background: "#ffffff",
-  padding: "0 10px",
-  textAlign: "left",
-  color: "#263241",
-  boxShadow: "0 1px 1px rgba(15, 23, 42, 0.03)",
-};
-
-const dangerButtonStyle: CSSProperties = {
-  ...smallButtonStyle,
-  color: "#b42318",
-  border: "1px solid #f0b8b2",
-};
-
-const segmentedStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-  gap: 4,
-};
-
-const segmentedButtonStyle: CSSProperties = {
-  minHeight: 28,
-  border: "1px solid #d8dde6",
-  borderRadius: 6,
-  background: "#ffffff",
-  padding: 0,
-};
-
-const segmentedButtonActiveStyle: CSSProperties = {
-  background: "#eaf1ff",
-  border: "1px solid #8fb3f4",
-};
-
-const inspectorStyle: CSSProperties = {
-  border: "1px solid #d8dde6",
-  borderRadius: 8,
-  padding: 10,
-  display: "grid",
-  gap: 10,
-};
-
-const fieldStyle: CSSProperties = {
-  display: "grid",
-  gap: 6,
-  fontSize: 12,
-  color: "#4e5d70",
-  fontWeight: 600,
-};
-
-const checkboxFieldStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  minHeight: 34,
-  fontSize: 12,
-  color: "#5d6775",
-};
-
-const inputStyle: CSSProperties = {
-  width: "100%",
-  height: 38,
-  border: "1px solid #ccd6e3",
-  borderRadius: 6,
-  padding: "0 10px",
-  fontSize: 13,
-  color: "#171a20",
-  background: "#fbfcfe",
-  boxShadow: "inset 0 1px 1px rgba(15, 23, 42, 0.03)",
-};
-
-const selectStyle: CSSProperties = {
-  ...inputStyle,
-};
-
-const textareaStyle: CSSProperties = {
-  width: "100%",
-  minHeight: 90,
-  border: "1px solid #ccd6e3",
-  borderRadius: 6,
-  padding: 10,
-  resize: "vertical",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-  fontSize: 12,
-  lineHeight: "18px",
-  background: "#fbfcfe",
-  color: "#171a20",
-};
-
-const errorTextStyle: CSSProperties = {
-  color: "#b42318",
-  fontSize: 12,
-  lineHeight: 1.4,
-};
-
-const errorBannerStyle: CSSProperties = {
-  border: "1px solid #f0b8b2",
-  borderRadius: 6,
-  padding: 10,
-  color: "#b42318",
-  background: "#fff4f2",
-  fontSize: 13,
-};
-
-const slotRowStyle: CSSProperties = {
-  display: "grid",
-  gap: 5,
-};
-
-const viewportPanelStyle: CSSProperties = {
-  border: "1px solid #d8dde6",
-  borderRadius: 8,
-  padding: 10,
-  display: "grid",
-  gap: 4,
-};
-
-const legacyGridPanelStyle: CSSProperties = {
-  marginTop: 8,
-  borderTop: "1px solid #e2e7ef",
-  paddingTop: 8,
-  display: "grid",
-  gap: 4,
-  color: "#5d6775",
-  fontSize: 12,
-};
-
-const workspaceStyle: CSSProperties = {
-  minWidth: 0,
-  minHeight: 0,
-  overflow: "auto",
-  padding: 12,
-};
-
-const sectionStyle: CSSProperties = {
-  display: "grid",
-  gap: 12,
-  width: "100%",
-  maxWidth: "none",
-};
-
-const sectionHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "start",
-  justifyContent: "space-between",
-  gap: 16,
-};
-
-const sectionTitleStyle: CSSProperties = {
-  margin: 0,
-  fontSize: 24,
-  lineHeight: 1.2,
-  fontWeight: 700,
-};
-
-const sectionMetaStyle: CSSProperties = {
-  margin: "4px 0 0",
-  color: "#5d6775",
-  fontSize: 13,
-};
-
-const rowStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  flexWrap: "wrap",
-};
-
-const formGridStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, minmax(180px, 1fr))",
-  gap: 10,
-};
-
-const splitPanelStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: 16,
-};
-
-const cardStyle: CSSProperties = {
-  border: "1px solid #d4dce8",
-  borderRadius: 8,
-  background: "#ffffff",
-  display: "grid",
-  alignContent: "start",
-  gap: 12,
-  padding: 12,
-  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
-};
-
-const cardHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 12,
-};
-
-const tableStyle: CSSProperties = {
-  display: "grid",
-  border: "1px solid #dde5ef",
-  borderRadius: 6,
-  overflow: "hidden",
-};
-
-const tableRowStyle: CSSProperties = {
-  minHeight: 36,
-  border: 0,
-  borderBottom: "1px solid #edf1f6",
-  background: "#ffffff",
-  display: "grid",
-  gridTemplateColumns: "minmax(96px, 0.45fr) minmax(0, 1fr)",
-  gap: 8,
-  alignItems: "start",
-  padding: "8px",
-  textAlign: "left",
-};
-
-const tableRowActiveStyle: CSSProperties = {
-  background: "#edf4ff",
-  color: "#123b72",
-};
-
-const tableCellTextStyle: CSSProperties = {
-  minWidth: 0,
-  overflowWrap: "anywhere",
-};
-
-const tableCellMetaStyle: CSSProperties = {
-  minWidth: 0,
-  justifySelf: "end",
-  textAlign: "right",
-  overflowWrap: "anywhere",
-  lineHeight: "16px",
-};
-
-const editorFormStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: 10,
-};
-
-const previewPanelStyle: CSSProperties = {
-  border: "1px solid #d4dce8",
-  borderRadius: 8,
-  background: "#ffffff",
-  padding: 12,
-  display: "grid",
-  gap: 10,
-  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
-};
-
-const componentPreviewPanelStyle: CSSProperties = {
-  ...previewPanelStyle,
-};
-
-const componentMatrixPanelStyle: CSSProperties = {
-  borderTop: "1px solid #e2e7ef",
-  paddingTop: 10,
-  display: "grid",
-  gap: 8,
-};
-
-const componentMatrixHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 8,
-  color: "#5d6775",
-  fontSize: 12,
-};
-
-const componentMatrixScrollStyle: CSSProperties = {
-  overflow: "auto",
-  maxHeight: "min(60vh, 640px)",
-  border: "1px solid #dde5ef",
-  borderRadius: 6,
-};
-
-const componentMatrixTableStyle: CSSProperties = {
-  width: "max-content",
-  minWidth: "100%",
-  borderCollapse: "separate",
-  borderSpacing: 0,
-};
-
-const componentMatrixHeaderCellStyle: CSSProperties = {
-  position: "sticky",
-  top: 0,
-  zIndex: 1,
-  minWidth: 150,
-  borderBottom: "1px solid #d8e0ea",
-  borderRight: "1px solid #edf1f6",
-  background: "#f7f9fc",
-  color: "#4e5968",
-  padding: "8px",
-  textAlign: "left",
-  fontSize: 12,
-  fontWeight: 700,
-};
-
-const componentMatrixRowHeaderStyle: CSSProperties = {
-  position: "sticky",
-  left: 0,
-  zIndex: 1,
-  minWidth: 120,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #d8e0ea",
-  background: "#fbfcfe",
-  color: "#171a20",
-  padding: "8px",
-  textAlign: "left",
-  verticalAlign: "middle",
-  fontSize: 12,
-};
-
-const componentMatrixCellStyle: CSSProperties = {
-  minWidth: 150,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #edf1f6",
-  padding: 6,
-  verticalAlign: "middle",
-};
-
-const componentMatrixPreviewButtonStyle: CSSProperties = {
-  width: "100%",
-  minHeight: 82,
-  border: "1px solid #d7dee8",
-  borderRadius: 6,
-  background: "#fbfcfe",
-  display: "grid",
-  placeItems: "center",
-  padding: 8,
-  cursor: "pointer",
-};
-
-const componentMatrixPreviewButtonActiveStyle: CSSProperties = {
-  border: "1px solid #7aa7ee",
-  background: "#edf4ff",
-};
-
-const componentMatrixPreviewClipStyle: CSSProperties = {
-  maxWidth: 180,
-  maxHeight: 110,
-  overflow: "hidden",
-  display: "grid",
-  placeItems: "center",
-};
-
-const componentTokenGroupListStyle: CSSProperties = {
-  display: "grid",
-  gap: 12,
-};
-
-const componentTokenGroupStyle: CSSProperties = {
-  border: "1px solid #dde5ef",
-  borderRadius: 8,
-  background: "#fbfcfe",
-  display: "grid",
-  gap: 8,
-  padding: 10,
-};
-
-const componentTokenGroupHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  color: "#5d6775",
-  fontSize: 12,
-};
-
-const componentTokenTableScrollStyle: CSSProperties = {
-  overflow: "auto",
-  border: "1px solid #e0e7f0",
-  borderRadius: 6,
-  maxHeight: "min(48vh, 520px)",
-};
-
-const componentTokenTableStyle: CSSProperties = {
-  width: "100%",
-  minWidth: 720,
-  borderCollapse: "separate",
-  borderSpacing: 0,
-};
-
-const componentTokenHeaderCellStyle: CSSProperties = {
-  position: "sticky",
-  top: 0,
-  zIndex: 1,
-  borderBottom: "1px solid #d8e0ea",
-  borderRight: "1px solid #edf1f6",
-  background: "#f7f9fc",
-  color: "#4e5968",
-  padding: "8px",
-  textAlign: "left",
-  fontSize: 12,
-  fontWeight: 700,
-};
-
-const componentTokenRowHeaderStyle: CSSProperties = {
-  minWidth: 260,
-  maxWidth: 360,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #d8e0ea",
-  background: "#ffffff",
-  padding: 6,
-  textAlign: "left",
-  verticalAlign: "middle",
-};
-
-const componentTokenCellStyle: CSSProperties = {
-  minWidth: 160,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #edf1f6",
-  background: "#ffffff",
-  padding: 6,
-  verticalAlign: "middle",
-};
-
-const componentTokenPreviewInlineStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  minWidth: 0,
-};
-
-const componentDimensionPreviewBarStyle: CSSProperties = {
-  display: "block",
-  minWidth: 2,
-  maxWidth: 180,
-  height: 18,
-  border: "1px solid #8fb3f4",
-  background: "#eaf1ff",
-  borderRadius: 4,
-};
-
-const componentNumberPreviewTrackStyle: CSSProperties = {
-  width: 120,
-  height: 8,
-  borderRadius: 999,
-  background: "#e2e8f0",
-  overflow: "hidden",
-};
-
-const componentNumberPreviewFillStyle: CSSProperties = {
-  display: "block",
-  height: "100%",
-  borderRadius: 999,
-  background: "#5b7fd7",
-};
-
-const emptyStatePanelStyle: CSSProperties = {
-  border: "1px dashed #cbd5e1",
-  borderRadius: 8,
-  background: "#f8fafc",
-  padding: 14,
-  color: "#6b7280",
-  fontSize: 13,
-};
-
-const previewControlRowStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  gap: 8,
-  flexWrap: "wrap",
-};
-
-const compactFieldStyle: CSSProperties = {
-  display: "grid",
-  gap: 3,
-  minWidth: 112,
-  fontSize: 11,
-  color: "#5d6775",
-};
-
-const compactSelectStyle: CSSProperties = {
-  height: 30,
-  border: "1px solid #d8dde6",
-  borderRadius: 6,
-  background: "#ffffff",
-  padding: "0 8px",
-  fontSize: 12,
-};
-
-const tokenColorPreviewStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-};
-
-const tokenSwatchStyle: CSSProperties = {
-  width: 56,
-  height: 56,
-  border: "1px solid #d8dde6",
-  borderRadius: 8,
-};
-
-const tokenTypographyPreviewStyle: CSSProperties = {
-  display: "grid",
-  gap: 8,
-};
-
-const fontPreviewSampleStyle: CSSProperties = {
-  minWidth: 0,
-  display: "grid",
-  gap: 4,
-};
-
-const fontPreviewTextStyle: CSSProperties = {
-  display: "block",
-  minWidth: 0,
-  overflowWrap: "anywhere",
-  fontSize: 20,
-  lineHeight: "28px",
-  color: "#171a20",
-};
-
-const fontPreviewMetaStyle: CSSProperties = {
-  minWidth: 0,
-  overflowWrap: "anywhere",
-  color: "#6b7280",
-  fontSize: 11,
-};
-
-const fontAttachmentPanelStyle: CSSProperties = {
-  border: "1px solid #dde5ef",
-  borderRadius: 6,
-  background: "#ffffff",
-  padding: 8,
-  display: "grid",
-  gap: 8,
-};
-
-const fontAttachmentHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 8,
-  color: "#4e5968",
-  fontSize: 12,
-};
-
-const fontAttachmentActionsStyle: CSSProperties = {
-  display: "flex",
-  gap: 8,
-  flexWrap: "wrap",
-};
-
-const tokenScalePreviewStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  minHeight: 80,
-};
-
-const tokenScaleBoxStyle: CSSProperties = {
-  display: "block",
-  minWidth: 2,
-  maxWidth: 240,
-  border: "1px solid #8fb3f4",
-  background: "#eaf1ff",
-};
-
-const previewInlineWrapStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
-const previewAvatarStyle: CSSProperties = {
-  border: "2px solid #e4e4e7",
-  display: "grid",
-  placeItems: "center",
-  overflow: "hidden",
-  fontWeight: 700,
-};
-
-const previewAvatarIconStyle: CSSProperties = {
-  width: "42%",
-  height: "42%",
-  border: "2px solid currentColor",
-  borderRadius: "9999px",
-  boxShadow: "0 13px 0 -4px currentColor",
-  opacity: 0.85,
-};
-
-const previewChoiceGroupStyle: CSSProperties = {
-  display: "flex",
-  gap: 14,
-  alignItems: "start",
-  justifyContent: "center",
-  flexWrap: "wrap",
-};
-
-const previewChoiceStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 8,
-  fontSize: 14,
-  lineHeight: "20px",
-};
-
-const previewChoiceBoxStyle: CSSProperties = {
-  width: 18,
-  height: 18,
-  border: "1px solid #e4e4e7",
-  display: "grid",
-  placeItems: "center",
-  flex: "0 0 auto",
-};
-
-const previewChoiceDotStyle: CSSProperties = {
-  width: 8,
-  height: 8,
-  background: "#ffffff",
-};
-
-const previewChipStyle: CSSProperties = {
-  border: "1px solid #e4e4e7",
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 6,
-};
-
-const previewChipDotStyle: CSSProperties = {
-  width: 7,
-  height: 7,
-  borderRadius: "9999px",
-};
-
-const previewChipDeleteStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: 16,
-  height: 16,
-  opacity: 0.72,
-};
-
-const previewPopoverStackStyle: CSSProperties = {
-  display: "grid",
-  justifyItems: "center",
-  gap: 8,
-};
-
-const previewControlIconStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  minWidth: 20,
-  color: "inherit",
-  opacity: 0.68,
-  fontSize: 11,
-  textTransform: "uppercase",
-};
-
-const previewCalendarHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 8,
-  marginBottom: 10,
-};
-
-const previewCalendarGridStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(7, 1fr)",
-  gap: 4,
-};
-
-const previewCalendarDayStyle: CSSProperties = {
-  width: 32,
-  height: 30,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: 6,
-  fontSize: 12,
-};
-
-const previewFieldStyle: CSSProperties = {
-  width: 340,
-  display: "grid",
-  gap: 6,
-};
-
-const previewFieldMessageStyle: CSSProperties = {
-  fontSize: 12,
-  lineHeight: "18px",
-};
-
-const previewLabelStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 3,
-};
-
-const previewPaginationStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: 6,
-  flexWrap: "wrap",
-};
-
-const previewTableListStyle: CSSProperties = {
-  width: "min(520px, 100%)",
-  display: "grid",
-  gap: 8,
-};
-
-const previewToastAccentStyle: CSSProperties = {
-  display: "block",
-  width: 4,
-  minHeight: 92,
-};
-
-const previewToastContentStyle: CSSProperties = {
-  display: "grid",
-  gap: 4,
-  padding: 14,
-  alignContent: "center",
-};
-
-const previewTooltipStageStyle: CSSProperties = {
-  display: "grid",
-  gap: 8,
-  justifyItems: "center",
-  alignItems: "center",
-};
-
-const componentPreviewStageStyle: CSSProperties = {
-  minHeight: 168,
-  border: "1px solid #dde5ef",
-  borderRadius: 8,
-  background: "#f8fafc",
-  display: "grid",
-  alignContent: "center",
-  justifyItems: "center",
-  gap: 16,
-  padding: 20,
-};
-
-const buttonBasePreviewStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  minWidth: 120,
-  cursor: "default",
-  outline: "none",
-};
-
-const codeStyle: CSSProperties = {
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-  fontSize: 12,
-};
-
-const codeBlockStyle: CSSProperties = {
-  ...codeStyle,
-  display: "block",
-  whiteSpace: "pre-wrap",
-  border: "1px solid #e2e7ef",
-  borderRadius: 6,
-  background: "#f8fafc",
-  padding: 10,
-};
-
-const canvasShellStyle: CSSProperties = {
-  minWidth: 0,
-  overflow: "auto",
-};
-
-const previewFrameStyle: CSSProperties = {
-  minWidth: 320,
-  minHeight: 320,
-  border: "1px solid #cfd6e2",
-  background: "#ffffff",
-};
-
-const componentShapeStyle: CSSProperties = {
-  width: "100%",
-  height: "100%",
-  border: "1px solid #b9c2d0",
-  borderRadius: 8,
-  background: "#ffffff",
-  color: "#171a20",
-  display: "grid",
-  gridTemplateRows: "32px 1fr 32px",
-  overflow: "hidden",
-  boxShadow: "0 2px 8px rgba(15, 23, 42, .08)",
-};
-
-const shapeHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 8,
-  padding: "0 10px",
-  background: "#eef2f7",
-  borderBottom: "1px solid #d8dde6",
-};
-
-const shapeMetaStyle: CSSProperties = {
-  padding: 10,
-  fontSize: 12,
-  color: "#5d6775",
-};
-
-const shapeBodyStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  padding: "0 10px",
-  fontSize: 12,
-  color: "#5d6775",
-};
