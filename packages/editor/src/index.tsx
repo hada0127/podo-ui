@@ -13,7 +13,6 @@ import {
   deleteComponentVariant,
   deleteTokenFromDocuments,
   editorPropKinds,
-  editorTokenTypes,
   flattenTokenDocuments,
   moveTokenInDocuments,
   normalizeEditorTokenDocuments,
@@ -32,7 +31,6 @@ import {
   inferFontFamilyName,
   inferFontFamilyNameFromDraft,
   removeEmbeddedFontAssetExtension,
-  renderFontAttachmentDraftEditor,
   upsertEmbeddedFontAssetExtension,
 } from "./fonts.js";
 export {
@@ -66,13 +64,7 @@ export type {
   TokenMatrixModel,
   TypographyWorkspaceModel,
 } from "./token-model.js";
-import {
-  normalizeTokenPathLabel,
-  renderComponentTokenEditor,
-  renderTokenDraftPreview,
-  renderTokenMatrixEditor,
-  renderTypographyTokenEditor,
-} from "./token-editor.js";
+import { normalizeTokenPathLabel, renderComponentTokenEditor } from "./token-editor.js";
 import { type EditorCapabilities, type PodoSaveAdapter } from "@podo/edit-core";
 import {
   cardHeaderStyle,
@@ -92,24 +84,18 @@ import {
   componentPreviewPanelStyle,
   componentStatRowStyle,
   dangerButtonStyle,
-  detailPanelBodyStyle,
   disclosureStyle,
   editorFormStyle,
   editorShellStyle,
   emptyListStyle,
   errorBannerStyle,
   fieldStyle,
-  formGridStyle,
   inputStyle,
-  listStyle,
-  nestedDisclosureStyle,
-  nestedSummaryStyle,
   panelTabActiveStyle,
   panelTabStyle,
   panelTabsStyle,
   persistErrorStyle,
   previewControlRowStyle,
-  previewPanelStyle,
   productTitleStyle,
   rowStyle,
   schemeButtonActiveStyle,
@@ -130,21 +116,13 @@ import {
   tableRowStyle,
   tableStyle,
   textareaStyle,
-  tokenColorInputStyle,
-  tokenTypeButtonActiveStyle,
-  tokenTypeButtonStyle,
-  tokenTypeMetaStyle,
-  tokenTypeNameStyle,
-  tokenValueEditorPlainStyle,
-  tokenValueEditorStyle,
-  toolbarButtonStyle,
   topBarControlLabelStyle,
   topBarControlStyle,
   topBarControlValueStyle,
   topBarStyle,
   workspaceStyle,
 } from "./styles.js";
-import { isHexColorInputValue, isTypographyValue } from "./token-lookup.js";
+import { isTypographyValue } from "./token-lookup.js";
 export type { TokenLookup } from "./token-lookup.js";
 
 export const packageName = "@podo/editor";
@@ -244,6 +222,7 @@ export {
 } from "./theming.js";
 import { ExportPanelControls, ExportPanelWorkspace } from "./export-panel.js";
 import { CanvasPanelControls, CanvasPanelWorkspace } from "./canvas-panel.js";
+import { TokensPanelControls, TokensPanelWorkspace } from "./tokens-panel.js";
 
 export interface PodoEditorAppProps {
   components: ComponentDocument[];
@@ -911,43 +890,14 @@ export function PodoEditorApp({
       </header>
       <aside style={sidebarStyle}>
         {effectiveActivePanel === "tokens" ? (
-          <>
-            <div style={sidebarTitleStyle}>Tokens</div>
-            <button
-              type="button"
-              style={toolbarButtonStyle}
-              onClick={() => {
-                setSelectedTokenKey(undefined);
-                setTokenDraft(createNewTokenDraft());
-              }}
-            >
-              New token
-            </button>
-            <div style={listStyle}>
-              {tokenGroups.map((group) => {
-                const active =
-                  group.type === "typography"
-                    ? typographyWorkspaceActive
-                    : tokenDraft.type === group.type;
-                return (
-                  <button
-                    key={group.type}
-                    type="button"
-                    style={{
-                      ...tokenTypeButtonStyle,
-                      ...(active ? tokenTypeButtonActiveStyle : {}),
-                    }}
-                    onClick={() => selectTokenType(group.type)}
-                  >
-                    <span style={tokenTypeNameStyle}>{group.label}</span>
-                    <small style={tokenTypeMetaStyle}>
-                      {group.count} tokens / {group.sections.length} groups
-                    </small>
-                  </button>
-                );
-              })}
-            </div>
-          </>
+          <TokensPanelControls
+            tokenGroups={tokenGroups}
+            tokenDraft={tokenDraft}
+            typographyWorkspaceActive={typographyWorkspaceActive}
+            setSelectedTokenKey={setSelectedTokenKey}
+            setTokenDraft={setTokenDraft}
+            selectTokenType={selectTokenType}
+          />
         ) : null}
         {effectiveActivePanel === "components" ? (
           <>
@@ -1014,168 +964,28 @@ export function PodoEditorApp({
       </aside>
       <main style={workspaceStyle}>
         {effectiveActivePanel === "tokens" ? (
-          <section style={sectionStyle}>
-            <div style={sectionHeaderStyle}>
-              <div>
-                <h1 style={sectionTitleStyle}>Tokens</h1>
-                <p style={sectionMetaStyle}>{tokenRecords.length} JSON token specs</p>
-              </div>
-              <div style={rowStyle}>
-                <button type="button" style={smallButtonStyle} onClick={saveTokenDraft}>
-                  Save token
-                </button>
-                <button
-                  type="button"
-                  style={dangerButtonStyle}
-                  disabled={!selectedToken}
-                  onClick={deleteSelectedToken}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-            {typographyWorkspaceActive
-              ? renderTypographyTokenEditor({
-                  model: typographyWorkspace,
-                  selectedTokenKey,
-                  lookup: previewTokenLookup,
-                  onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
-                  onCommitValue: updateTokenMatrixCell,
-                  onCommitTypographyField: updateTypographyTokenField,
-                  onAttachFont: attachFontAssetToRecord,
-                  onRemoveFontAsset: removeFontAssetFromRecord,
-                })
-              : renderTokenMatrixEditor({
-                  matrix: tokenMatrix,
-                  selectedTokenKey,
-                  onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
-                  onCommitValue: updateTokenMatrixCell,
-                })}
-            {tokenDraftError ? <div style={errorBannerStyle}>{tokenDraftError}</div> : null}
-            <details style={disclosureStyle}>
-              <summary style={summaryStyle}>Selected token detail</summary>
-              <div style={detailPanelBodyStyle}>
-                <div style={formGridStyle}>
-                  <label style={fieldStyle}>
-                    Path
-                    <input
-                      style={inputStyle}
-                      value={tokenDraft.path}
-                      onChange={(event) => {
-                        const path = event.currentTarget.value;
-                        setTokenDraft((draft) => ({ ...draft, path }));
-                      }}
-                    />
-                  </label>
-                  <label style={fieldStyle}>
-                    Type
-                    <select
-                      style={selectStyle}
-                      value={tokenDraft.type}
-                      onChange={(event) => {
-                        const type = event.currentTarget.value as EditorTokenDraft["type"];
-                        setTokenDraft((draft) => ({
-                          ...draft,
-                          type,
-                        }));
-                      }}
-                    >
-                      {editorTokenTypes.map((type) => (
-                        <option key={type} value={type}>
-                          {type}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                    Value
-                    <div
-                      style={
-                        tokenDraft.type === "color"
-                          ? tokenValueEditorStyle
-                          : tokenValueEditorPlainStyle
-                      }
-                    >
-                      {tokenDraft.type === "color" ? (
-                        <input
-                          aria-label="Color value"
-                          type="color"
-                          style={tokenColorInputStyle}
-                          value={
-                            isHexColorInputValue(tokenDraft.valueText)
-                              ? tokenDraft.valueText
-                              : "#000000"
-                          }
-                          onChange={(event) => {
-                            const valueText = event.currentTarget.value;
-                            setTokenDraft((draft) => ({ ...draft, valueText }));
-                          }}
-                        />
-                      ) : null}
-                      <textarea
-                        style={{
-                          ...textareaStyle,
-                          minHeight: tokenDraft.type === "typography" ? 120 : 72,
-                        }}
-                        value={tokenDraft.valueText}
-                        onChange={(event) => {
-                          const valueText = event.currentTarget.value;
-                          setTokenDraft((draft) => ({ ...draft, valueText }));
-                        }}
-                      />
-                      {tokenDraft.type === "fontFamily"
-                        ? renderFontAttachmentDraftEditor({
-                            draft: tokenDraft,
-                            onAttach: attachFontAssetToDraft,
-                            onRemove: removeFontAssetFromDraft,
-                          })
-                        : null}
-                    </div>
-                  </label>
-                  <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                    Description
-                    <input
-                      style={inputStyle}
-                      value={tokenDraft.description ?? ""}
-                      onChange={(event) => {
-                        const description = event.currentTarget.value;
-                        setTokenDraft((draft) => ({
-                          ...draft,
-                          description,
-                        }));
-                      }}
-                    />
-                  </label>
-                  <details style={{ ...nestedDisclosureStyle, gridColumn: "1 / -1" }}>
-                    <summary style={nestedSummaryStyle}>Extensions JSON</summary>
-                    <textarea
-                      style={{ ...textareaStyle, minHeight: 120, marginTop: 8 }}
-                      value={tokenDraft.extensionsText ?? ""}
-                      onChange={(event) => {
-                        const extensionsText = event.currentTarget.value;
-                        setTokenDraft((draft) => ({
-                          ...draft,
-                          extensionsText,
-                        }));
-                      }}
-                    />
-                  </details>
-                </div>
-                <div style={previewPanelStyle}>
-                  <strong>Preview</strong>
-                  {renderTokenDraftPreview(tokenDraft, previewTokenLookup)}
-                </div>
-              </div>
-            </details>
-            <details style={disclosureStyle}>
-              <summary style={summaryStyle}>Document JSON</summary>
-              <textarea
-                style={{ ...textareaStyle, minHeight: 220 }}
-                readOnly
-                value={JSON.stringify(tokenDocumentsState, null, 2)}
-              />
-            </details>
-          </section>
+          <TokensPanelWorkspace
+            tokenRecords={tokenRecords}
+            tokenDocumentsState={tokenDocumentsState}
+            tokenDraft={tokenDraft}
+            setTokenDraft={setTokenDraft}
+            tokenDraftError={tokenDraftError}
+            selectedToken={selectedToken}
+            selectedTokenKey={selectedTokenKey}
+            setSelectedTokenKey={setSelectedTokenKey}
+            typographyWorkspaceActive={typographyWorkspaceActive}
+            typographyWorkspace={typographyWorkspace}
+            tokenMatrix={tokenMatrix}
+            previewTokenLookup={previewTokenLookup}
+            saveTokenDraft={saveTokenDraft}
+            deleteSelectedToken={deleteSelectedToken}
+            updateTokenMatrixCell={updateTokenMatrixCell}
+            updateTypographyTokenField={updateTypographyTokenField}
+            attachFontAssetToRecord={attachFontAssetToRecord}
+            removeFontAssetFromRecord={removeFontAssetFromRecord}
+            attachFontAssetToDraft={attachFontAssetToDraft}
+            removeFontAssetFromDraft={removeFontAssetFromDraft}
+          />
         ) : null}
         {effectiveActivePanel === "components" && selectedComponentForSpec ? (
           <section style={sectionStyle}>
