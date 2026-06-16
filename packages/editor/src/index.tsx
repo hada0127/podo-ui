@@ -132,8 +132,6 @@ import {
   sidebarTitleStyle,
   slotRowStyle,
   smallButtonStyle,
-  splitPanelStyle,
-  summaryListStyle,
   summaryStyle,
   tableCellMetaStyle,
   tableCellTextStyle,
@@ -263,6 +261,7 @@ export {
   effectiveEditorColorScheme,
   filterComponentsForEditor,
 } from "./theming.js";
+import { ExportPanelControls, ExportPanelWorkspace } from "./export-panel.js";
 
 export interface PodoEditorAppProps {
   components: ComponentDocument[];
@@ -1157,14 +1156,7 @@ export function PodoEditorApp({
           </>
         ) : null}
         {effectiveActivePanel === "export" ? (
-          <>
-            <div style={sidebarTitleStyle}>Export</div>
-            <div style={summaryListStyle}>
-              <span>{tokenRecords.length} tokens</span>
-              <span>{state.components.length} components</span>
-              <span>{state.nodes.length} canvas nodes</span>
-            </div>
-          </>
+          <ExportPanelControls tokenRecords={tokenRecords} state={state} />
         ) : null}
       </aside>
       <main style={workspaceStyle}>
@@ -1822,32 +1814,7 @@ export function PodoEditorApp({
           </section>
         ) : null}
         {effectiveActivePanel === "export" ? (
-          <section style={sectionStyle}>
-            <div style={sectionHeaderStyle}>
-              <div>
-                <h1 style={sectionTitleStyle}>Export</h1>
-                <p style={sectionMetaStyle}>Current in-memory JSON specs</p>
-              </div>
-            </div>
-            <div style={splitPanelStyle}>
-              <div style={previewPanelStyle}>
-                <strong>Tokens</strong>
-                <textarea
-                  style={{ ...textareaStyle, minHeight: 420 }}
-                  readOnly
-                  value={JSON.stringify(tokenDocumentsState, null, 2)}
-                />
-              </div>
-              <div style={previewPanelStyle}>
-                <strong>Components</strong>
-                <textarea
-                  style={{ ...textareaStyle, minHeight: 420 }}
-                  readOnly
-                  value={JSON.stringify(state.components, null, 2)}
-                />
-              </div>
-            </div>
-          </section>
+          <ExportPanelWorkspace tokenDocumentsState={tokenDocumentsState} state={state} />
         ) : null}
       </main>
     </div>
