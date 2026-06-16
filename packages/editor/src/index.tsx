@@ -107,11 +107,15 @@ export type { EditorColorScheme, ResponsiveViewport, ResponsiveViewportName } fr
 import {
   PODO_COMPONENT_DRAG_TYPE,
   applyEditorStateToTldraw,
+  createComponentNode,
+  createCustomComponentDocument,
   createEditorState,
   dropComponentOnCanvas,
+  exportComponentSpecFromNode,
   parseJsonRecord,
   syncEditorStateFromTldraw,
   updateComponentNodeProps,
+  upsertEditorComponent,
   type ComponentSpecExportFile,
   type EditorCanvasState,
   type EditorComponentNode,
@@ -524,6 +528,35 @@ export function PodoEditorApp({
     const nextState = dropComponentOnCanvas(state, component, position);
     commitState(nextState, nextState.nodes.at(-1));
   };
+  const createCustomLayout = (): void => {
+    let index = state.components.filter((item) => item.category === "layout").length + 1;
+    let id = `layout-${index}`;
+    while (state.components.some((item) => item.id === id)) {
+      index += 1;
+      id = `layout-${index}`;
+    }
+    const component = createCustomComponentDocument({ id, name: `Layout ${index}` });
+    const withComponent = upsertEditorComponent(state, component);
+    const node = createComponentNode(component, {
+      x: 80 + withComponent.nodes.length * 28,
+      y: 80 + withComponent.nodes.length * 28,
+    });
+    commitState(
+      { ...withComponent, nodes: [...withComponent.nodes, node], selectedNodeId: node.id },
+      node
+    );
+  };
+  const saveNodeAsComponent = (nodeId: string): void => {
+    const spec = exportComponentSpecFromNode(state, nodeId);
+    const baseId = `${spec.id}-custom`;
+    let id = baseId;
+    let suffix = 1;
+    while (state.components.some((item) => item.id === id)) {
+      suffix += 1;
+      id = `${baseId}-${suffix}`;
+    }
+    commitState(upsertEditorComponent(state, { ...spec, id, name: `${spec.name} (custom)` }));
+  };
   const handleCanvasDrop = (event: DragEvent<HTMLElement>): void => {
     event.preventDefault();
     const componentId = event.dataTransfer.getData(PODO_COMPONENT_DRAG_TYPE);
@@ -875,6 +908,8 @@ export function PodoEditorApp({
             state={state}
             frame={frame}
             placeComponent={placeComponent}
+            createCustomLayout={createCustomLayout}
+            saveNodeAsComponent={saveNodeAsComponent}
             commitState={commitState}
             selectedNode={selectedNode}
             selectedComponent={selectedComponent}

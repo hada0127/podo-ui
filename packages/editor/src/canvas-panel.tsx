@@ -31,6 +31,7 @@ import {
   inspectorStyle,
   legacyGridPanelStyle,
   previewFrameStyle,
+  rowStyle,
   segmentedButtonActiveStyle,
   segmentedButtonStyle,
   segmentedStyle,
@@ -48,6 +49,8 @@ export function CanvasPanelControls({
   state,
   frame,
   placeComponent,
+  createCustomLayout,
+  saveNodeAsComponent,
   commitState,
   selectedNode,
   selectedComponent,
@@ -71,6 +74,8 @@ export function CanvasPanelControls({
   state: EditorCanvasState;
   frame: ResponsiveViewport;
   placeComponent: (component: ComponentDocument, position: { x: number; y: number }) => void;
+  createCustomLayout: () => void;
+  saveNodeAsComponent: (nodeId: string) => void;
   commitState: (nextState: EditorCanvasState, createdNode?: EditorComponentNode) => void;
   selectedNode: EditorComponentNode | undefined;
   selectedComponent: ComponentDocument | undefined;
@@ -152,18 +157,32 @@ export function CanvasPanelControls({
               </div>
             ))}
           </div>
-          <button
-            type="button"
-            style={toolbarButtonStyle}
-            onClick={() => setExportPreview(createComponentSpecExportFile(state, selectedNode.id))}
-          >
-            Export node
-          </button>
+          <div style={rowStyle}>
+            <button
+              type="button"
+              style={smallButtonStyle}
+              onClick={() => saveNodeAsComponent(selectedNode.id)}
+            >
+              Save as component
+            </button>
+            <button
+              type="button"
+              style={smallButtonStyle}
+              onClick={() =>
+                setExportPreview(createComponentSpecExportFile(state, selectedNode.id))
+              }
+            >
+              Export node
+            </button>
+          </div>
           {exportPreview ? (
             <textarea style={textareaStyle} readOnly value={exportPreview.contents} />
           ) : null}
         </div>
       ) : null}
+      <button type="button" style={toolbarButtonStyle} onClick={createCustomLayout}>
+        + New layout component
+      </button>
       <div style={toolbarStyle}>
         {state.components.map((component) => (
           <button

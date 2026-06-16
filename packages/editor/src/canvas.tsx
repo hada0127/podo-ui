@@ -326,6 +326,50 @@ export function exportComponentSpecFromNode(
   });
 }
 
+/**
+ * Build a blank custom component document (default category "layout") with a
+ * single repeated "content" slot, so users can author their own components /
+ * layouts beyond the bundled ones and compose children into them on the canvas.
+ */
+export function createCustomComponentDocument(input: {
+  id: string;
+  name: string;
+  category?: ComponentDocument["category"];
+}): ComponentDocument {
+  return parseComponentDocument({
+    schemaVersion: PODO_SCHEMA_VERSION,
+    kind: "component",
+    id: input.id,
+    name: input.name,
+    category: input.category ?? "layout",
+    status: "draft",
+    description: "Custom component authored in the editor.",
+    anatomy: [{ name: "root" }, { name: "content" }],
+    slots: [{ name: "content", required: false, repeated: true }],
+    targets: {
+      web: { supported: true },
+      react: { supported: true },
+      hono: { supported: true },
+      native: { supported: true },
+    },
+    accessibility: {},
+  });
+}
+
+/** Add a component to the canvas state, or replace the existing one by id. */
+export function upsertEditorComponent(
+  state: EditorCanvasState,
+  component: ComponentDocument
+): EditorCanvasState {
+  const exists = state.components.some((item) => item.id === component.id);
+  return {
+    ...state,
+    components: exists
+      ? state.components.map((item) => (item.id === component.id ? component : item))
+      : [...state.components, component],
+  };
+}
+
 export function createComponentSpecExportFile(
   state: EditorCanvasState,
   nodeId: string,
