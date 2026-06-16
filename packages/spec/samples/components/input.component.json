@@ -39,8 +39,7 @@
   "tokens": {
     "root.background": "{component.input.background}",
     "root.borderColor": "{component.input.border}",
-    "text.color": "{semantic.color.text.default}",
-    "error.color": "{semantic.color.text.danger}"
+    "text.color": "{semantic.color.text.default}"
   },
   "targets": {
     "web": { "supported": true, "limitations": [] },

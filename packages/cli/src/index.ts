@@ -1223,6 +1223,7 @@ const defaultComponentDocuments: unknown[] = [
     states: [{ name: "invalid" }],
     tokens: {
       "label.color": "{semantic.color.text.default}",
+      "description.color": "{semantic.color.text.default}",
       "error.color": "{semantic.color.text.danger}",
     },
     targets: supportedTargets(),

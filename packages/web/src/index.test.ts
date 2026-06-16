@@ -1,7 +1,12 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it } from "vitest";
-import { podoWebComponentCss, registerPodoElements } from "./index.js";
+import {
+  componentStyleBlock,
+  podoWebComponentCss,
+  registerComponentTokenCss,
+  registerPodoElements,
+} from "./index.js";
 
 describe("@podo/web", () => {
   it("registers standard custom elements once", () => {
@@ -11,6 +16,29 @@ describe("@podo/web", () => {
     expect(customElements.get("podo-button")).toBeDefined();
     expect(customElements.get("podo-input")).toBeDefined();
     expect(podoWebComponentCss).toContain("--podo-component-button-background");
+  });
+
+  it("reads binding-key vars, exposes data-state, and consumes the registered token CSS", () => {
+    registerPodoElements();
+    // base reads the binding-key var (with token-var fallback)
+    expect(podoWebComponentCss).toContain("var(--podo-button-root-background,");
+
+    const layer = '.podo-button[data-variant="soft"] { --podo-button-root-background: red; }';
+    registerComponentTokenCss(layer);
+    expect(componentStyleBlock()).toContain(layer);
+
+    const button = document.createElement("podo-button");
+    button.setAttribute("variant", "soft");
+    button.setAttribute("disabled", "");
+    document.body.append(button);
+    const html = button.shadowRoot?.innerHTML ?? "";
+    // the generated layer is injected into the shadow, and state is exposed
+    expect(html).toContain(layer);
+    expect(html).toContain('data-variant="soft"');
+    expect(html).toContain('data-state="disabled"');
+
+    // reset so other tests/snapshots see the unregistered style block
+    registerComponentTokenCss("");
   });
 
   it("renders button slots, states, and activation event", () => {

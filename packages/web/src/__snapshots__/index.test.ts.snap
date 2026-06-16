@@ -14,15 +14,21 @@ input {
 
 .podo-button {
   align-items: center;
-  background: var(--podo-component-button-background, #5B5BD6);
+  background: var(--podo-button-root-background, var(--podo-component-button-background, #5B5BD6));
   border: 1px solid transparent;
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-component-button-text, #FFFFFF);
+  color: var(--podo-button-label-color, var(--podo-component-button-text, #FFFFFF));
   cursor: pointer;
   display: inline-flex;
   gap: var(--podo-spacing-scale-1, 4px);
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button__icon {
+  align-items: center;
+  color: var(--podo-button-icon-color, var(--podo-button-label-color, currentColor));
+  display: inline-flex;
 }
 
 .podo-button[disabled] {
@@ -31,10 +37,11 @@ input {
 }
 
 .podo-input {
-  background: var(--podo-component-input-background, #FFFFFF);
-  border: 1px solid var(--podo-component-input-border, #14151A);
+  background: var(--podo-input-root-background, var(--podo-component-input-background, #FFFFFF));
+  border: 1px solid
+    var(--podo-input-root-borderColor, var(--podo-component-input-border, #14151A));
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-input-text-color, var(--podo-semantic-color-text-default, #14151A));
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
 }
@@ -49,7 +56,7 @@ input {
 }
 
 .podo-field__label {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-field-label-color, var(--podo-semantic-color-text-default, #14151A));
   font-weight: 600;
 }
 
@@ -59,17 +66,22 @@ input {
   font-size: 0.875em;
 }
 
+.podo-field__description {
+  color: var(--podo-field-description-color, var(--podo-semantic-color-text-default, #14151A));
+}
+
 .podo-field__error {
-  color: var(--podo-semantic-color-text-danger, #D92D20);
+  color: var(--podo-field-error-color, var(--podo-semantic-color-text-danger, #D92D20));
 }
 
 .podo-icon {
+  color: var(--podo-icon-glyph-color, var(--podo-semantic-color-text-default, currentColor));
   font-family: "PodoIcons";
   line-height: 1;
 }
 
 .podo-text {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
   font-family: var(--podo-typography-body-fontFamily, inherit);
   font-size: var(--podo-typography-body-fontSize, 1rem);
   line-height: var(--podo-typography-body-lineHeight, 1.5);
@@ -82,9 +94,9 @@ input {
   line-height: var(--podo-typography-h1-lineHeight, 1.2);
 }</style>
 <button class="podo-button" part="root" data-variant="solid" data-size="md">
-  <slot name="leftIcon"></slot>
+  <span class="podo-button__icon" part="leftIcon"><slot name="leftIcon"></slot></span>
   <span part="label"><slot></slot></span>
-  <slot name="rightIcon"></slot>
+  <span class="podo-button__icon" part="rightIcon"><slot name="rightIcon"></slot></span>
 </button>"
 `;
 
@@ -102,15 +114,21 @@ input {
 
 .podo-button {
   align-items: center;
-  background: var(--podo-component-button-background, #5B5BD6);
+  background: var(--podo-button-root-background, var(--podo-component-button-background, #5B5BD6));
   border: 1px solid transparent;
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-component-button-text, #FFFFFF);
+  color: var(--podo-button-label-color, var(--podo-component-button-text, #FFFFFF));
   cursor: pointer;
   display: inline-flex;
   gap: var(--podo-spacing-scale-1, 4px);
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button__icon {
+  align-items: center;
+  color: var(--podo-button-icon-color, var(--podo-button-label-color, currentColor));
+  display: inline-flex;
 }
 
 .podo-button[disabled] {
@@ -119,10 +137,11 @@ input {
 }
 
 .podo-input {
-  background: var(--podo-component-input-background, #FFFFFF);
-  border: 1px solid var(--podo-component-input-border, #14151A);
+  background: var(--podo-input-root-background, var(--podo-component-input-background, #FFFFFF));
+  border: 1px solid
+    var(--podo-input-root-borderColor, var(--podo-component-input-border, #14151A));
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-input-text-color, var(--podo-semantic-color-text-default, #14151A));
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
 }
@@ -137,7 +156,7 @@ input {
 }
 
 .podo-field__label {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-field-label-color, var(--podo-semantic-color-text-default, #14151A));
   font-weight: 600;
 }
 
@@ -147,17 +166,22 @@ input {
   font-size: 0.875em;
 }
 
+.podo-field__description {
+  color: var(--podo-field-description-color, var(--podo-semantic-color-text-default, #14151A));
+}
+
 .podo-field__error {
-  color: var(--podo-semantic-color-text-danger, #D92D20);
+  color: var(--podo-field-error-color, var(--podo-semantic-color-text-danger, #D92D20));
 }
 
 .podo-icon {
+  color: var(--podo-icon-glyph-color, var(--podo-semantic-color-text-default, currentColor));
   font-family: "PodoIcons";
   line-height: 1;
 }
 
 .podo-text {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
   font-family: var(--podo-typography-body-fontFamily, inherit);
   font-size: var(--podo-typography-body-fontSize, 1rem);
   line-height: var(--podo-typography-body-lineHeight, 1.5);
@@ -169,7 +193,7 @@ input {
   font-weight: var(--podo-typography-h1-fontWeight, 700);
   line-height: var(--podo-typography-h1-lineHeight, 1.2);
 }</style>
-<div class="podo-field" part="root" id="email">
+<div class="podo-field" part="root" id="email" data-state="invalid">
   <label class="podo-field__label" part="label" id="email-label" for="email-control">
     <slot name="label">Label</slot>
   </label>
@@ -197,15 +221,21 @@ input {
 
 .podo-button {
   align-items: center;
-  background: var(--podo-component-button-background, #5B5BD6);
+  background: var(--podo-button-root-background, var(--podo-component-button-background, #5B5BD6));
   border: 1px solid transparent;
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-component-button-text, #FFFFFF);
+  color: var(--podo-button-label-color, var(--podo-component-button-text, #FFFFFF));
   cursor: pointer;
   display: inline-flex;
   gap: var(--podo-spacing-scale-1, 4px);
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button__icon {
+  align-items: center;
+  color: var(--podo-button-icon-color, var(--podo-button-label-color, currentColor));
+  display: inline-flex;
 }
 
 .podo-button[disabled] {
@@ -214,10 +244,11 @@ input {
 }
 
 .podo-input {
-  background: var(--podo-component-input-background, #FFFFFF);
-  border: 1px solid var(--podo-component-input-border, #14151A);
+  background: var(--podo-input-root-background, var(--podo-component-input-background, #FFFFFF));
+  border: 1px solid
+    var(--podo-input-root-borderColor, var(--podo-component-input-border, #14151A));
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-input-text-color, var(--podo-semantic-color-text-default, #14151A));
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
 }
@@ -232,7 +263,7 @@ input {
 }
 
 .podo-field__label {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-field-label-color, var(--podo-semantic-color-text-default, #14151A));
   font-weight: 600;
 }
 
@@ -242,17 +273,22 @@ input {
   font-size: 0.875em;
 }
 
+.podo-field__description {
+  color: var(--podo-field-description-color, var(--podo-semantic-color-text-default, #14151A));
+}
+
 .podo-field__error {
-  color: var(--podo-semantic-color-text-danger, #D92D20);
+  color: var(--podo-field-error-color, var(--podo-semantic-color-text-danger, #D92D20));
 }
 
 .podo-icon {
+  color: var(--podo-icon-glyph-color, var(--podo-semantic-color-text-default, currentColor));
   font-family: "PodoIcons";
   line-height: 1;
 }
 
 .podo-text {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
   font-family: var(--podo-typography-body-fontFamily, inherit);
   font-size: var(--podo-typography-body-fontSize, 1rem);
   line-height: var(--podo-typography-body-lineHeight, 1.5);
@@ -280,15 +316,21 @@ input {
 
 .podo-button {
   align-items: center;
-  background: var(--podo-component-button-background, #5B5BD6);
+  background: var(--podo-button-root-background, var(--podo-component-button-background, #5B5BD6));
   border: 1px solid transparent;
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-component-button-text, #FFFFFF);
+  color: var(--podo-button-label-color, var(--podo-component-button-text, #FFFFFF));
   cursor: pointer;
   display: inline-flex;
   gap: var(--podo-spacing-scale-1, 4px);
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button__icon {
+  align-items: center;
+  color: var(--podo-button-icon-color, var(--podo-button-label-color, currentColor));
+  display: inline-flex;
 }
 
 .podo-button[disabled] {
@@ -297,10 +339,11 @@ input {
 }
 
 .podo-input {
-  background: var(--podo-component-input-background, #FFFFFF);
-  border: 1px solid var(--podo-component-input-border, #14151A);
+  background: var(--podo-input-root-background, var(--podo-component-input-background, #FFFFFF));
+  border: 1px solid
+    var(--podo-input-root-borderColor, var(--podo-component-input-border, #14151A));
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-input-text-color, var(--podo-semantic-color-text-default, #14151A));
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
 }
@@ -315,7 +358,7 @@ input {
 }
 
 .podo-field__label {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-field-label-color, var(--podo-semantic-color-text-default, #14151A));
   font-weight: 600;
 }
 
@@ -325,17 +368,22 @@ input {
   font-size: 0.875em;
 }
 
+.podo-field__description {
+  color: var(--podo-field-description-color, var(--podo-semantic-color-text-default, #14151A));
+}
+
 .podo-field__error {
-  color: var(--podo-semantic-color-text-danger, #D92D20);
+  color: var(--podo-field-error-color, var(--podo-semantic-color-text-danger, #D92D20));
 }
 
 .podo-icon {
+  color: var(--podo-icon-glyph-color, var(--podo-semantic-color-text-default, currentColor));
   font-family: "PodoIcons";
   line-height: 1;
 }
 
 .podo-text {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
   font-family: var(--podo-typography-body-fontFamily, inherit);
   font-size: var(--podo-typography-body-fontSize, 1rem);
   line-height: var(--podo-typography-body-lineHeight, 1.5);
@@ -347,7 +395,7 @@ input {
   font-weight: var(--podo-typography-h1-fontWeight, 700);
   line-height: var(--podo-typography-h1-lineHeight, 1.2);
 }</style>
-<input class="podo-input" part="control" value="hello" placeholder="" aria-invalid="true">"
+<input class="podo-input" part="control" data-state="invalid" value="hello" placeholder="" aria-invalid="true">"
 `;
 
 exports[`@podo/web > renders input, field, icon, and typography components > text 1`] = `
@@ -364,15 +412,21 @@ input {
 
 .podo-button {
   align-items: center;
-  background: var(--podo-component-button-background, #5B5BD6);
+  background: var(--podo-button-root-background, var(--podo-component-button-background, #5B5BD6));
   border: 1px solid transparent;
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-component-button-text, #FFFFFF);
+  color: var(--podo-button-label-color, var(--podo-component-button-text, #FFFFFF));
   cursor: pointer;
   display: inline-flex;
   gap: var(--podo-spacing-scale-1, 4px);
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button__icon {
+  align-items: center;
+  color: var(--podo-button-icon-color, var(--podo-button-label-color, currentColor));
+  display: inline-flex;
 }
 
 .podo-button[disabled] {
@@ -381,10 +435,11 @@ input {
 }
 
 .podo-input {
-  background: var(--podo-component-input-background, #FFFFFF);
-  border: 1px solid var(--podo-component-input-border, #14151A);
+  background: var(--podo-input-root-background, var(--podo-component-input-background, #FFFFFF));
+  border: 1px solid
+    var(--podo-input-root-borderColor, var(--podo-component-input-border, #14151A));
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-input-text-color, var(--podo-semantic-color-text-default, #14151A));
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
 }
@@ -399,7 +454,7 @@ input {
 }
 
 .podo-field__label {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-field-label-color, var(--podo-semantic-color-text-default, #14151A));
   font-weight: 600;
 }
 
@@ -409,17 +464,22 @@ input {
   font-size: 0.875em;
 }
 
+.podo-field__description {
+  color: var(--podo-field-description-color, var(--podo-semantic-color-text-default, #14151A));
+}
+
 .podo-field__error {
-  color: var(--podo-semantic-color-text-danger, #D92D20);
+  color: var(--podo-field-error-color, var(--podo-semantic-color-text-danger, #D92D20));
 }
 
 .podo-icon {
+  color: var(--podo-icon-glyph-color, var(--podo-semantic-color-text-default, currentColor));
   font-family: "PodoIcons";
   line-height: 1;
 }
 
 .podo-text {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
   font-family: var(--podo-typography-body-fontFamily, inherit);
   font-size: var(--podo-typography-body-fontSize, 1rem);
   line-height: var(--podo-typography-body-lineHeight, 1.5);
@@ -430,5 +490,5 @@ input {
   font-size: var(--podo-typography-h1-fontSize, 2rem);
   font-weight: var(--podo-typography-h1-fontWeight, 700);
   line-height: var(--podo-typography-h1-lineHeight, 1.2);
-}</style><span class="podo-text" data-as="h1" part="text"><slot></slot></span>"
+}</style><span class="podo-text podo-typography" data-as="h1" part="text"><slot></slot></span>"
 `;

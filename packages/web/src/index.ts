@@ -58,15 +58,21 @@ input {
 
 .podo-button {
   align-items: center;
-  background: var(--podo-component-button-background, #5B5BD6);
+  background: var(--podo-button-root-background, var(--podo-component-button-background, #5B5BD6));
   border: 1px solid transparent;
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-component-button-text, #FFFFFF);
+  color: var(--podo-button-label-color, var(--podo-component-button-text, #FFFFFF));
   cursor: pointer;
   display: inline-flex;
   gap: var(--podo-spacing-scale-1, 4px);
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
+}
+
+.podo-button__icon {
+  align-items: center;
+  color: var(--podo-button-icon-color, var(--podo-button-label-color, currentColor));
+  display: inline-flex;
 }
 
 .podo-button[disabled] {
@@ -75,10 +81,11 @@ input {
 }
 
 .podo-input {
-  background: var(--podo-component-input-background, #FFFFFF);
-  border: 1px solid var(--podo-component-input-border, #14151A);
+  background: var(--podo-input-root-background, var(--podo-component-input-background, #FFFFFF));
+  border: 1px solid
+    var(--podo-input-root-borderColor, var(--podo-component-input-border, #14151A));
   border-radius: var(--podo-radius-control-md, 8px);
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-input-text-color, var(--podo-semantic-color-text-default, #14151A));
   min-height: 40px;
   padding: 0 var(--podo-spacing-scale-2, 8px);
 }
@@ -93,7 +100,7 @@ input {
 }
 
 .podo-field__label {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-field-label-color, var(--podo-semantic-color-text-default, #14151A));
   font-weight: 600;
 }
 
@@ -103,17 +110,22 @@ input {
   font-size: 0.875em;
 }
 
+.podo-field__description {
+  color: var(--podo-field-description-color, var(--podo-semantic-color-text-default, #14151A));
+}
+
 .podo-field__error {
-  color: var(--podo-semantic-color-text-danger, #D92D20);
+  color: var(--podo-field-error-color, var(--podo-semantic-color-text-danger, #D92D20));
 }
 
 .podo-icon {
+  color: var(--podo-icon-glyph-color, var(--podo-semantic-color-text-default, currentColor));
   font-family: "PodoIcons";
   line-height: 1;
 }
 
 .podo-text {
-  color: var(--podo-semantic-color-text-default, #14151A);
+  color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
   font-family: var(--podo-typography-body-fontFamily, inherit);
   font-size: var(--podo-typography-body-fontSize, 1rem);
   line-height: var(--podo-typography-body-lineHeight, 1.5);
@@ -125,6 +137,26 @@ input {
   font-weight: var(--podo-typography-h1-fontWeight, 700);
   line-height: var(--podo-typography-h1-lineHeight, 1.2);
 }`;
+
+// The spec-driven component token CSS layer (@podo/codegen emitComponentTokenCss,
+// emitted to components.css at build). Consumers register it so per-variant and
+// per-state token overrides apply inside each component's shadow root, which is
+// where the binding-key vars (--podo-<id>-<part>-<prop>) the components read live.
+let registeredComponentTokenCss = "";
+
+export function registerComponentTokenCss(css: string): void {
+  registeredComponentTokenCss = css;
+}
+
+export function getRegisteredComponentTokenCss(): string {
+  return registeredComponentTokenCss;
+}
+
+export function componentStyleBlock(): string {
+  return `<style>${podoWebComponentCss}${
+    registeredComponentTokenCss ? `\n${registeredComponentTokenCss}` : ""
+  }</style>`;
+}
 
 function createButtonElement(): CustomElementConstructor {
   return class PodoButtonElement extends HTMLElement {
@@ -149,16 +181,20 @@ function createButtonElement(): CustomElementConstructor {
       });
       const disabled = behavior.root.disabled ? "disabled" : "";
       const ariaBusy = behavior.root.ariaBusy ? `aria-busy="${behavior.root.ariaBusy}"` : "";
+      // Expose the active state so the generated [data-state] token overrides apply.
+      const stateAttr = this.hasAttribute("disabled")
+        ? 'data-state="disabled"'
+        : this.hasAttribute("loading")
+          ? 'data-state="loading"'
+          : "";
 
-      this.shadow.innerHTML = `<style>${podoWebComponentCss}</style>
-<button class="podo-button" part="root" data-variant="${attr(this, "variant", "solid")}" data-size="${attr(
-        this,
-        "size",
-        "md"
-      )}" ${disabled} ${ariaBusy}>
-  <slot name="leftIcon"></slot>
+      this.shadow.innerHTML = `${componentStyleBlock()}
+<button class="podo-button" part="root" data-variant="${escapeHtml(
+        attr(this, "variant", "solid")
+      )}" data-size="${escapeHtml(attr(this, "size", "md"))}" ${stateAttr} ${disabled} ${ariaBusy}>
+  <span class="podo-button__icon" part="leftIcon"><slot name="leftIcon"></slot></span>
   <span part="label"><slot></slot></span>
-  <slot name="rightIcon"></slot>
+  <span class="podo-button__icon" part="rightIcon"><slot name="rightIcon"></slot></span>
 </button>`;
       this.shadow.querySelector("button")?.addEventListener("click", (event) => {
         if (!behavior.pressable) {
@@ -222,9 +258,15 @@ function createInputElement(): CustomElementConstructor {
       const disabled = behavior.disabled ? "disabled" : "";
       const required = behavior.required ? "required" : "";
       const ariaInvalid = behavior.invalid ? 'aria-invalid="true"' : "";
+      // Expose state so generated [data-state] token overrides apply at runtime.
+      const stateAttr = behavior.invalid
+        ? 'data-state="invalid"'
+        : behavior.disabled
+          ? 'data-state="disabled"'
+          : "";
 
-      this.shadow.innerHTML = `<style>${podoWebComponentCss}</style>
-<input class="podo-input" part="control" ${attrString("id", attr(this, "id", ""))} ${attrString(
+      this.shadow.innerHTML = `${componentStyleBlock()}
+<input class="podo-input" part="control" ${stateAttr} ${attrString("id", attr(this, "id", ""))} ${attrString(
         "name",
         attr(this, "name", "")
       )} value="${escapeHtml(this.value)}" placeholder="${escapeHtml(
@@ -274,16 +316,20 @@ function createFieldElement(): CustomElementConstructor {
         hasError: this.hasAttribute("invalid"),
       });
 
-      this.shadow.innerHTML = `<style>${podoWebComponentCss}</style>
-<div class="podo-field" part="root" id="${a11y.ids.rootId}">
-  <label class="podo-field__label" part="label" id="${a11y.ids.labelId}" for="${a11y.ids.controlId}">
+      const stateAttr = this.hasAttribute("invalid") ? 'data-state="invalid"' : "";
+
+      this.shadow.innerHTML = `${componentStyleBlock()}
+<div class="podo-field" part="root" id="${escapeHtml(a11y.ids.rootId)}" ${stateAttr}>
+  <label class="podo-field__label" part="label" id="${escapeHtml(
+    a11y.ids.labelId
+  )}" for="${escapeHtml(a11y.ids.controlId)}">
     <slot name="label">Label</slot>
   </label>
   <div part="control"><slot></slot></div>
-  <div class="podo-field__description" part="description" id="${a11y.ids.descriptionId}">
+  <div class="podo-field__description" part="description" id="${escapeHtml(a11y.ids.descriptionId)}">
     <slot name="description"></slot>
   </div>
-  <div class="podo-field__error" part="error" id="${a11y.ids.errorId}">
+  <div class="podo-field__error" part="error" id="${escapeHtml(a11y.ids.errorId)}">
     <slot name="error"></slot>
   </div>
 </div>`;
@@ -312,7 +358,7 @@ function createIconElement(): CustomElementConstructor {
       const name = attr(this, "name", "");
       const codepoint = attr(this, "codepoint", defaultWebIconCodepoints[name] ?? "");
       const glyph = codepoint ? `&#x${escapeHtml(codepoint)};` : "";
-      this.shadow.innerHTML = `<style>${podoWebComponentCss}</style><span class="podo-icon podo-icon-${escapeHtml(
+      this.shadow.innerHTML = `${componentStyleBlock()}<span class="podo-icon podo-icon-${escapeHtml(
         name
       )}" part="icon" aria-hidden="true">${glyph}</span>`;
     }
@@ -337,7 +383,9 @@ function createTextElement(): CustomElementConstructor {
 
     private render(): void {
       const as = attr(this, "as", "body");
-      this.shadow.innerHTML = `<style>${podoWebComponentCss}</style><span class="podo-text" data-as="${escapeHtml(
+      // Carry the spec-id class (podo-typography) too so generated component CSS
+      // (.podo-typography ...) matches this element's runtime class (.podo-text).
+      this.shadow.innerHTML = `${componentStyleBlock()}<span class="podo-text podo-typography" data-as="${escapeHtml(
         as
       )}" part="text"><slot></slot></span>`;
     }
