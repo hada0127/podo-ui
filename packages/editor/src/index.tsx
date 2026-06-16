@@ -8,8 +8,6 @@ import {
   type TokenDocument,
 } from "@podo/spec";
 import {
-  componentPropValuesText,
-  componentVariantValuesText,
   createComponentPropType,
   deleteComponentProp,
   deleteComponentVariant,
@@ -23,7 +21,6 @@ import {
   parsePropDefaultInput,
   serializeEditorTokenExtensions,
   serializeEditorTokenValue,
-  serializePropDefaultInput,
   updateComponentMeta,
   upsertComponentProp,
   upsertComponentVariant,
@@ -160,7 +157,7 @@ import {
   viewportPanelStyle,
   workspaceStyle,
 } from "./styles.js";
-import { isHexColorInputValue, isTypographyValue, type TokenLookup } from "./token-lookup.js";
+import { isHexColorInputValue, isTypographyValue } from "./token-lookup.js";
 export type { TokenLookup } from "./token-lookup.js";
 
 export const packageName = "@podo/editor";
@@ -194,8 +191,6 @@ import {
   createComponentSpecExportFile,
   createEditorState,
   createPageDocumentExportFile,
-  defaultPropsForComponent,
-  defaultSlotsForComponent,
   dropComponentOnCanvas,
   editorNodeToTldrawShape,
   parseJsonRecord,
@@ -245,6 +240,29 @@ export type {
   FigmaVariableCollection,
   FigmaVariableExport,
 } from "./figma.js";
+import {
+  componentMetaDraftFromComponent,
+  componentPropDraftFromProp,
+  componentVariantDraftFromVariant,
+  createNewComponentPropDraft,
+  createNewComponentVariantDraft,
+  createNewTokenDraft,
+  normalizeNodeForComponent,
+  tokenDraftFromRecord,
+  type ComponentMetaDraft,
+  type ComponentPropDraft,
+  type ComponentVariantDraft,
+} from "./drafts.js";
+import {
+  createThemedTokenLookup,
+  effectiveEditorColorScheme,
+  filterComponentsForEditor,
+} from "./theming.js";
+export {
+  createThemedTokenLookup,
+  effectiveEditorColorScheme,
+  filterComponentsForEditor,
+} from "./theming.js";
 
 export interface PodoEditorAppProps {
   components: ComponentDocument[];
@@ -269,30 +287,6 @@ export interface PodoEditorAppProps {
 
 type EditorPanel = "tokens" | "components" | "canvas" | "export";
 type ComponentEditMode = "props" | "variants" | "tokens";
-
-interface ComponentMetaDraft {
-  name: string;
-  category: ComponentDocument["category"];
-  status: ComponentDocument["status"];
-  description: string;
-}
-
-interface ComponentPropDraft {
-  name: string;
-  kind: ComponentDocument["props"][number]["type"]["kind"];
-  valuesText: string;
-  defaultValue: string;
-  required: boolean;
-  description: string;
-}
-
-interface ComponentVariantDraft {
-  name: string;
-  valuesText: string;
-  defaultValue: string;
-  description: string;
-  tokensText: string;
-}
 
 const editorPanels: EditorPanel[] = ["tokens", "components", "canvas", "export"];
 const componentCategories: ComponentDocument["category"][] = [
@@ -1858,172 +1852,4 @@ export function PodoEditorApp({
       </main>
     </div>
   );
-}
-
-function createNewTokenDraft(documentIndex = 0): EditorTokenDraft {
-  return {
-    documentIndex,
-    path: "component.example.value",
-    type: "color",
-    valueText: "#3366ff",
-    description: "",
-    extensionsText: "",
-  };
-}
-
-function tokenDraftFromRecord(record: EditorTokenRecord): EditorTokenDraft {
-  return {
-    documentIndex: record.documentIndex,
-    path: record.path,
-    type: record.token.$type,
-    valueText: serializeEditorTokenValue(record.token.$value),
-    description: record.token.$description ?? "",
-    extensionsText: serializeEditorTokenExtensions(record.token.$extensions),
-  };
-}
-
-function componentMetaDraftFromComponent(component?: ComponentDocument): ComponentMetaDraft {
-  return {
-    name: component?.name ?? "",
-    category: component?.category ?? "atom",
-    status: component?.status ?? "draft",
-    description: component?.description ?? "",
-  };
-}
-
-function createNewComponentPropDraft(): ComponentPropDraft {
-  return {
-    name: "label",
-    kind: "string",
-    valuesText: "",
-    defaultValue: "",
-    required: false,
-    description: "",
-  };
-}
-
-function componentPropDraftFromProp(prop: ComponentDocument["props"][number]): ComponentPropDraft {
-  return {
-    name: prop.name,
-    kind: prop.type.kind,
-    valuesText: componentPropValuesText(prop),
-    defaultValue: serializePropDefaultInput(prop.default),
-    required: prop.required,
-    description: prop.description ?? "",
-  };
-}
-
-function createNewComponentVariantDraft(): ComponentVariantDraft {
-  return {
-    name: "tone",
-    valuesText: "default, emphasis",
-    defaultValue: "default",
-    description: "",
-    tokensText: "",
-  };
-}
-
-function componentVariantDraftFromVariant(
-  variant: ComponentDocument["variants"][number]
-): ComponentVariantDraft {
-  return {
-    name: variant.name,
-    valuesText: componentVariantValuesText(variant),
-    defaultValue: variant.default ?? variant.values[0] ?? "",
-    description: variant.description ?? "",
-    tokensText: variant.tokens ? JSON.stringify(variant.tokens, null, 2) : "",
-  };
-}
-
-function normalizeNodeForComponent(
-  node: EditorComponentNode,
-  component: ComponentDocument
-): EditorComponentNode {
-  const allowedProps = new Set(component.props.map((prop) => prop.name));
-  const propDefaults = defaultPropsForComponent(component);
-  const retainedProps = Object.fromEntries(
-    Object.entries(node.props).filter(([propName]) => allowedProps.has(propName))
-  );
-  const variantValues = component.variants.flatMap((variant) => variant.values);
-  const fallbackVariant =
-    component.variants[0]?.default ?? component.variants[0]?.values[0] ?? "default";
-  return {
-    ...node,
-    name: component.name,
-    variant: node.variant && variantValues.includes(node.variant) ? node.variant : fallbackVariant,
-    props: { ...propDefaults, ...retainedProps },
-    slots: {
-      ...defaultSlotsForComponent(component),
-      ...Object.fromEntries(
-        Object.entries(node.slots).filter(([slotName]) =>
-          component.slots.some((slot) => slot.name === slotName)
-        )
-      ),
-    },
-  };
-}
-
-export function effectiveEditorColorScheme(
-  colorScheme: EditorColorScheme,
-  systemColorScheme: "light" | "dark" = "light"
-): "light" | "dark" {
-  return colorScheme === "auto" ? systemColorScheme : colorScheme;
-}
-
-export function filterComponentsForEditor(
-  components: ComponentDocument[],
-  query: string
-): ComponentDocument[] {
-  const normalizedQuery = query.trim().toLowerCase();
-  if (!normalizedQuery) {
-    return components;
-  }
-
-  return components.filter((component) => {
-    const searchableValues = [
-      component.id,
-      component.name,
-      component.category,
-      component.status,
-      component.description ?? "",
-      ...component.anatomy.map((part) => part.name),
-      ...component.slots.map((slot) => slot.name),
-      ...component.props.map((prop) => prop.name),
-      ...component.variants.flatMap((variant) => [variant.name, ...variant.values]),
-      ...component.states.map((state) => state.name),
-    ];
-
-    return searchableValues.some((value) => value.toLowerCase().includes(normalizedQuery));
-  });
-}
-
-export function createThemedTokenLookup(
-  records: EditorTokenRecord[],
-  colorScheme: "light" | "dark"
-): TokenLookup {
-  const projections = records.flatMap((record, order) => {
-    const projection = projectColorSchemeTokenPath(record.path, colorScheme);
-    return projection ? [{ ...projection, order, token: record.token }] : [];
-  });
-  projections.sort((a, b) => a.specificity - b.specificity || a.order - b.order);
-  return new Map(projections.map((projection) => [projection.path, projection.token]));
-}
-
-function projectColorSchemeTokenPath(
-  path: string,
-  colorScheme: "light" | "dark"
-): { path: string; specificity: number } | undefined {
-  const projected: string[] = [];
-  let specificity = 0;
-  for (const segment of path.split(".")) {
-    if (segment === "light" || segment === "dark") {
-      if (segment !== colorScheme) {
-        return undefined;
-      }
-      specificity += 1;
-      continue;
-    }
-    projected.push(segment);
-  }
-  return { path: projected.join("."), specificity };
 }
