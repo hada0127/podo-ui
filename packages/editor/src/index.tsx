@@ -10,26 +10,28 @@ import {
 import {
   createComponentPropType,
   deleteComponentProp,
+  deleteComponentSlot,
   deleteComponentVariant,
   deleteTokenFromDocuments,
   flattenTokenDocuments,
   moveTokenInDocuments,
   normalizeEditorTokenDocuments,
-  parseEditorTokenExtensions,
   parsePropDefaultInput,
   serializeEditorTokenExtensions,
   serializeEditorTokenValue,
   updateComponentMeta,
   upsertComponentProp,
+  upsertComponentSlot,
   upsertComponentVariant,
   type EditorTokenDraft,
   type EditorTokenRecord,
 } from "./spec-editing.js";
 import {
   createEmbeddedFontAssetFromFile,
+  getSupportedFontWeightsFromExtensions,
   inferFontFamilyName,
-  inferFontFamilyNameFromDraft,
   removeEmbeddedFontAssetExtension,
+  setSupportedFontWeightsExtension,
   upsertEmbeddedFontAssetExtension,
 } from "./fonts.js";
 export {
@@ -40,6 +42,7 @@ export {
   upsertEmbeddedFontAssetExtension,
 } from "./fonts.js";
 import {
+  createColorComparisonMatrix,
   createComponentTokenEditorModel,
   createTokenMatrix,
   createTypographyWorkspaceModel,
@@ -52,6 +55,8 @@ import {
   type TypographyTokenField,
 } from "./token-model.js";
 export {
+  colorCounterpartPath,
+  createColorComparisonMatrix,
   createComponentTokenEditorModel,
   createTokenMatrix,
   createTypographyWorkspaceModel,
@@ -59,6 +64,9 @@ export {
   tokenReferenceOptions,
 } from "./token-model.js";
 export type {
+  ColorComparisonCell,
+  ColorComparisonMatrixModel,
+  ColorComparisonRow,
   ComponentTokenEditorModel,
   TokenMatrixModel,
   TypographyWorkspaceModel,
@@ -83,7 +91,8 @@ import {
   workspaceStyle,
 } from "./styles.js";
 import { isCssColorValue, isTypographyValue, resolveTokenPath } from "./token-lookup.js";
-export type { TokenLookup } from "./token-lookup.js";
+export { colorToHex, formatColorValue, hsvToRgb, parseColor, rgbToHsv } from "./token-lookup.js";
+export type { HsvColor, RgbaColor, TokenLookup } from "./token-lookup.js";
 import type { TokenPickerOption } from "./token-picker.js";
 
 export const packageName = "@podo/editor";
@@ -105,6 +114,7 @@ export { editorColorSchemes, editorLegacyGridContract, responsiveViewports } fro
 export type { EditorColorScheme, ResponsiveViewport, ResponsiveViewportName } from "./viewport.js";
 
 import {
+  DEFAULT_NODE_LAYOUT,
   PODO_COMPONENT_DRAG_TYPE,
   applyEditorStateToTldraw,
   createComponentNode,
@@ -113,6 +123,7 @@ import {
   dropComponentOnCanvas,
   exportComponentSpecFromNode,
   parseJsonRecord,
+  renameNodeSlot,
   syncEditorStateFromTldraw,
   updateComponentNodeProps,
   upsertEditorComponent,
@@ -122,6 +133,8 @@ import {
   type PageDocumentExportFile,
 } from "./canvas.js";
 export {
+  DEFAULT_AXIS_SIZING,
+  DEFAULT_NODE_LAYOUT,
   PODO_COMPONENT_SHAPE_TYPE,
   PodoComponentShapeUtil,
   applyEditorStateToTldraw,
@@ -134,15 +147,24 @@ export {
   describeLayoutSpecBoundary,
   dropComponentOnCanvas,
   exportComponentSpecFromNode,
+  flexAlignToCss,
+  flexJustifyToCss,
+  nodeLayout,
+  normalizeAxisSizing,
+  normalizeEditorNodeLayout,
   podoShapeUtils,
+  renameNodeSlot,
   selectResponsivePreview,
   syncEditorStateFromTldraw,
+  updateComponentNodeLayout,
   updateComponentNodeProps,
 } from "./canvas.js";
 export type {
+  AxisSizing,
   ComponentSpecExportFile,
   EditorCanvasState,
   EditorComponentNode,
+  EditorNodeLayout,
   LayoutSpecDecision,
   PageDocumentExportFile,
   PageExportOptions,
@@ -161,8 +183,10 @@ export type {
 import {
   componentMetaDraftFromComponent,
   componentPropDraftFromProp,
+  componentSlotDraftFromSlot,
   componentVariantDraftFromVariant,
   createNewComponentPropDraft,
+  createNewComponentSlotDraft,
   createNewComponentVariantDraft,
   createNewTokenDraft,
   normalizeNodeForComponent,
@@ -170,6 +194,7 @@ import {
   type ComponentEditMode,
   type ComponentMetaDraft,
   type ComponentPropDraft,
+  type ComponentSlotDraft,
   type ComponentVariantDraft,
 } from "./drafts.js";
 import {
@@ -182,10 +207,11 @@ export {
   effectiveEditorColorScheme,
   filterComponentsForEditor,
 } from "./theming.js";
-import { ExportPanelControls, ExportPanelWorkspace } from "./export-panel.js";
+import { BuildPanelControls, BuildPanelWorkspace } from "./build-panel.js";
 import { CanvasPanelControls, CanvasPanelWorkspace } from "./canvas-panel.js";
 import { TokensPanelControls, TokensPanelWorkspace } from "./tokens-panel.js";
 import { ComponentsPanelControls, ComponentsPanelWorkspace } from "./components-panel.js";
+import { ProjectPanelControls, ProjectPanelWorkspace } from "./project-panel.js";
 
 export interface PodoEditorAppProps {
   components: ComponentDocument[];
@@ -206,11 +232,19 @@ export interface PodoEditorAppProps {
   adapter?: PodoSaveAdapter;
   /** Host capability gating; page design (canvas) is installed-project only. */
   capabilities?: EditorCapabilities;
+  /**
+   * Optional controlled active panel. When provided, the host owns panel
+   * navigation (e.g. to sync it with the URL) and must update it via
+   * `onPanelChange`. When omitted, the editor manages the panel internally.
+   */
+  panel?: EditorPanel;
+  /** Fires whenever the active panel changes (tab click or capability gating). */
+  onPanelChange?: (panel: EditorPanel) => void;
 }
 
-type EditorPanel = "tokens" | "components" | "canvas" | "export";
+export type EditorPanel = "tokens" | "components" | "canvas" | "build" | "project";
 
-const editorPanels: EditorPanel[] = ["tokens", "components", "canvas", "export"];
+export const editorPanels: EditorPanel[] = ["tokens", "components", "canvas", "build", "project"];
 
 export function PodoEditorApp({
   components,
@@ -222,6 +256,8 @@ export function PodoEditorApp({
   onSpecsChange,
   adapter,
   capabilities,
+  panel,
+  onPanelChange,
 }: PodoEditorAppProps) {
   const parsedComponents = useMemo(
     () => components.map((component) => parseComponentDocument(component)),
@@ -239,11 +275,19 @@ export function PodoEditorApp({
     [initialState, parsedComponents, viewport]
   );
   const [state, setState] = useState(startingState);
-  const [activePanel, setActivePanel] = useState<EditorPanel>("tokens");
+  // The active panel is controlled when `panel` is provided (host owns URL
+  // routing), otherwise it falls back to internal state.
+  const [internalPanel, setInternalPanel] = useState<EditorPanel>(panel ?? "tokens");
+  const activePanel = panel ?? internalPanel;
+  const setActivePanel = (next: EditorPanel): void => {
+    setInternalPanel(next);
+    onPanelChange?.(next);
+  };
   const [componentSearch, setComponentSearch] = useState("");
   const [tokenDocumentsState, setTokenDocumentsState] = useState(initialTokenDocuments);
   const [selectedTokenKey, setSelectedTokenKey] = useState<string | undefined>();
   const [tokenDraft, setTokenDraft] = useState<EditorTokenDraft>(() => createNewTokenDraft());
+  const [typographyView, setTypographyView] = useState(false);
   const [tokenDraftError, setTokenDraftError] = useState<string | undefined>();
   const [selectedComponentId, setSelectedComponentId] = useState<string | undefined>(
     startingState.components[0]?.id
@@ -263,6 +307,12 @@ export function PodoEditorApp({
   );
   const [variantDraft, setVariantDraft] = useState<ComponentVariantDraft>(() =>
     createNewComponentVariantDraft()
+  );
+  const [selectedSlotName, setSelectedSlotName] = useState<string | undefined>(
+    startingState.components[0]?.slots[0]?.name
+  );
+  const [slotDraft, setSlotDraft] = useState<ComponentSlotDraft>(() =>
+    createNewComponentSlotDraft()
   );
   const [componentPreviewSelections, setComponentPreviewSelections] = useState<
     Record<string, string>
@@ -308,24 +358,47 @@ export function PodoEditorApp({
     [tokenDocumentsState]
   );
   const tokenReferenceList = useMemo(() => tokenReferenceOptions(tokenRecords), [tokenRecords]);
-  const tokenGroups = useMemo(() => groupTokenRecordsByType(tokenRecords), [tokenRecords]);
-  const tokenMatrix = useMemo(
-    () => createTokenMatrix(tokenRecords, tokenDraft.type),
-    [tokenDraft.type, tokenRecords]
-  );
-  const typographyWorkspace = useMemo(
-    () => createTypographyWorkspaceModel(tokenRecords),
+  // Component-scoped tokens (component.*) belong to individual components and are
+  // edited inside the Components panel. The base token editing page shows only
+  // project-wide tokens, so every model that drives it works off this filtered set.
+  const baseTokenRecords = useMemo(
+    () => tokenRecords.filter((record) => !record.path.startsWith("component.")),
     [tokenRecords]
   );
-  const typographyWorkspaceActive = isTypographyWorkspaceType(tokenDraft.type);
+  const tokenGroups = useMemo(() => groupTokenRecordsByType(baseTokenRecords), [baseTokenRecords]);
+  const tokenMatrix = useMemo(
+    () => createTokenMatrix(baseTokenRecords, tokenDraft.type),
+    [tokenDraft.type, baseTokenRecords]
+  );
+  const typographyWorkspace = useMemo(
+    () => createTypographyWorkspaceModel(baseTokenRecords),
+    [baseTokenRecords]
+  );
+  // The typography workspace stays active for the whole "typography" sidebar
+  // group, set when that group is picked — independent of which sub-token
+  // (family/weight/size/style) is currently selected, so selecting, editing,
+  // adding, or deleting a size never flips to the raw dimension matrix.
+  const typographyWorkspaceActive = typographyView;
   const filteredComponents = useMemo(
     () => filterComponentsForEditor(state.components, componentSearch),
     [componentSearch, state.components]
   );
   const effectiveColorScheme = effectiveEditorColorScheme(selectedColorScheme, systemColorScheme);
-  const previewTokenLookup = useMemo(
-    () => createThemedTokenLookup(tokenRecords, effectiveColorScheme),
-    [effectiveColorScheme, tokenRecords]
+  // Light and dark lookups are always available so the token color matrix can
+  // show both schemes side by side, independent of the (canvas-only) Scheme
+  // toggle. previewTokenLookup keeps its existing scheme-driven behavior.
+  const lightTokenLookup = useMemo(
+    () => createThemedTokenLookup(tokenRecords, "light"),
+    [tokenRecords]
+  );
+  const darkTokenLookup = useMemo(
+    () => createThemedTokenLookup(tokenRecords, "dark"),
+    [tokenRecords]
+  );
+  const previewTokenLookup = effectiveColorScheme === "dark" ? darkTokenLookup : lightTokenLookup;
+  const colorComparisonMatrix = useMemo(
+    () => createColorComparisonMatrix(baseTokenRecords),
+    [baseTokenRecords]
   );
   const tokenPickerOptions = useMemo<TokenPickerOption[]>(
     () =>
@@ -345,6 +418,13 @@ export function PodoEditorApp({
       }),
     [tokenRecords, previewTokenLookup]
   );
+  // Color-only reference options for the color matrix token picker. Only tokens
+  // that resolve to a color carry a swatch, which are exactly the references a
+  // color value should be allowed to point at.
+  const colorTokenPickerOptions = useMemo<TokenPickerOption[]>(
+    () => tokenPickerOptions.filter((option) => option.swatch !== undefined),
+    [tokenPickerOptions]
+  );
   const selectedToken = selectedTokenKey
     ? tokenRecords.find((record) => tokenRecordKey(record) === selectedTokenKey)
     : undefined;
@@ -361,9 +441,13 @@ export function PodoEditorApp({
   const selectedVariant = selectedComponentForSpec?.variants.find(
     (variant) => variant.name === selectedVariantName
   );
+  const selectedSlot = selectedComponentForSpec?.slots.find(
+    (slot) => slot.name === selectedSlotName
+  );
   const selectedTokenRecordKey = selectedToken ? tokenRecordKey(selectedToken) : "";
   const selectedPropKey = selectedProp ? JSON.stringify(selectedProp) : "";
   const selectedVariantKey = selectedVariant ? JSON.stringify(selectedVariant) : "";
+  const selectedSlotKey = selectedSlot ? JSON.stringify(selectedSlot) : "";
   const selectedComponentVariantsKey = selectedComponentForSpec
     ? JSON.stringify(selectedComponentForSpec.variants)
     : "";
@@ -418,6 +502,7 @@ export function PodoEditorApp({
     setComponentMetaDraft(componentMetaDraftFromComponent(selectedComponentForSpec));
     setSelectedPropName(selectedComponentForSpec.props[0]?.name);
     setSelectedVariantName(selectedComponentForSpec.variants[0]?.name);
+    setSelectedSlotName(selectedComponentForSpec.slots[0]?.name);
     setComponentDraftError(undefined);
   }, [selectedComponentForSpec?.id]);
 
@@ -443,6 +528,13 @@ export function PodoEditorApp({
     );
     setComponentDraftError(undefined);
   }, [selectedComponentForSpec?.id, selectedVariantName, selectedVariantKey, selectedVariant]);
+
+  useEffect(() => {
+    setSlotDraft(
+      selectedSlot ? componentSlotDraftFromSlot(selectedSlot) : createNewComponentSlotDraft()
+    );
+    setComponentDraftError(undefined);
+  }, [selectedComponentForSpec?.id, selectedSlotName, selectedSlotKey, selectedSlot]);
 
   useEffect(() => {
     setPropsDraft(selectedNode ? JSON.stringify(selectedNode.props, null, 2) : "");
@@ -504,13 +596,24 @@ export function PodoEditorApp({
       enqueueHostWrite("tokens", () => saveTokenDocuments(nextDocuments));
     }
   };
-  const commitComponentSpec = (component: ComponentDocument): void => {
+  const commitComponentSpec = (
+    component: ComponentDocument,
+    options?: { slotRename?: { from: string; to: string } }
+  ): void => {
     const parsed = parseComponentDocument(component);
     const nextComponents = state.components.map((item) => (item.id === parsed.id ? parsed : item));
+    // On a slot rename, migrate canvas children from the old slot to the new one
+    // BEFORE normalization filters node.slots to the declared set (otherwise the
+    // children composed into the old slot would be silently dropped).
+    const rename = options?.slotRename;
+    const baseNodes =
+      rename && rename.from !== rename.to
+        ? renameNodeSlot(state.nodes, parsed.id, rename.from, rename.to)
+        : state.nodes;
     const nextState = {
       ...state,
       components: nextComponents,
-      nodes: state.nodes.map((node) =>
+      nodes: baseNodes.map((node) =>
         node.componentId === parsed.id ? normalizeNodeForComponent(node, parsed) : node
       ),
     };
@@ -537,10 +640,16 @@ export function PodoEditorApp({
     }
     const component = createCustomComponentDocument({ id, name: `Layout ${index}` });
     const withComponent = upsertEditorComponent(state, component);
-    const node = createComponentNode(component, {
-      x: 80 + withComponent.nodes.length * 28,
-      y: 80 + withComponent.nodes.length * 28,
-    });
+    // New layout containers default to a vertical auto-layout frame so the
+    // "content" slot stacks its children (matches Figma/pencil frame behavior).
+    const node = createComponentNode(
+      component,
+      {
+        x: 80 + withComponent.nodes.length * 28,
+        y: 80 + withComponent.nodes.length * 28,
+      },
+      { layout: { ...DEFAULT_NODE_LAYOUT, mode: "vertical" } }
+    );
     commitState(
       { ...withComponent, nodes: [...withComponent.nodes, node], selectedNodeId: node.id },
       node
@@ -597,27 +706,73 @@ export function PodoEditorApp({
     setPropsDraftError(undefined);
     commitState(updateComponentNodeProps(state, selectedNode.id, parsed.value));
   };
-  const saveTokenDraft = (): void => {
+  // Create the missing light/dark counterpart for a color token, seeded from
+  // the sibling that already exists (same document, same value). Used by the
+  // "+ Add light/dark" affordance in the color comparison matrix.
+  const createColorCounterpart = (targetPath: string, seedRecord: EditorTokenRecord): void => {
     try {
-      const documentIndex = tokenDraft.documentIndex ?? selectedToken?.documentIndex ?? 0;
-      const normalizedPath = normalizeTokenPathLabel(tokenDraft.path);
+      const documentIndex = seedRecord.documentIndex;
+      const normalizedPath = normalizeTokenPathLabel(targetPath);
       const nextDocuments = moveTokenInDocuments(tokenDocumentsState, {
         documentIndex,
-        ...(selectedToken ? { fromPath: selectedToken.path } : {}),
-        toDraft: { ...tokenDraft, documentIndex, path: normalizedPath },
+        toDraft: {
+          documentIndex,
+          path: normalizedPath,
+          type: "color",
+          valueText: serializeEditorTokenValue(seedRecord.token.$value),
+          description: seedRecord.token.$description ?? "",
+          extensionsText: serializeEditorTokenExtensions(seedRecord.token.$extensions),
+        },
       });
       commitTokenDocuments(nextDocuments);
       setSelectedTokenKey(`${documentIndex}:${normalizedPath}`);
       setTokenDraftError(undefined);
     } catch (error) {
-      setTokenDraftError(error instanceof Error ? error.message : "Token draft is invalid.");
+      setTokenDraftError(
+        error instanceof Error ? error.message : "Color counterpart could not be created."
+      );
+    }
+  };
+  // Create a new token (used by the Project panel base roles and, later, the
+  // typography scale/weight add actions). Adds into the first token document.
+  const createTypographyToken = (input: {
+    type: DesignToken["$type"];
+    path: string;
+    valueText: string;
+  }): void => {
+    try {
+      // Co-locate the new token with an existing sibling of the same type so it
+      // lands in the right category document (e.g. spacing -> primitive), instead
+      // of always falling into document 0. Falls back to doc 0 when none exists.
+      const documentIndex =
+        baseTokenRecords.find((record) => record.token.$type === input.type)?.documentIndex ??
+        tokenRecords[0]?.documentIndex ??
+        0;
+      const normalizedPath = normalizeTokenPathLabel(input.path);
+      const nextDocuments = moveTokenInDocuments(tokenDocumentsState, {
+        documentIndex,
+        toDraft: {
+          documentIndex,
+          path: normalizedPath,
+          type: input.type,
+          valueText: input.valueText,
+          description: "",
+          extensionsText: "",
+        },
+      });
+      commitTokenDocuments(nextDocuments);
+      setSelectedTokenKey(`${documentIndex}:${normalizedPath}`);
+      setTokenDraftError(undefined);
+    } catch (error) {
+      setTokenDraftError(error instanceof Error ? error.message : "Token could not be created.");
     }
   };
   const selectTokenType = (type: DesignToken["$type"]): void => {
+    setTypographyView(isTypographyWorkspaceType(type));
     const firstRecord =
       type === "typography"
-        ? tokenRecords.find(isTypographyWorkspaceTokenRecord)
-        : tokenRecords.find((record) => record.token.$type === type);
+        ? baseTokenRecords.find(isTypographyWorkspaceTokenRecord)
+        : baseTokenRecords.find((record) => record.token.$type === type);
     if (firstRecord) {
       setSelectedTokenKey(tokenRecordKey(firstRecord));
       return;
@@ -706,53 +861,61 @@ export function PodoEditorApp({
       ),
     });
   };
-  const attachFontAssetToDraft = async (file: File): Promise<void> => {
-    try {
-      const family = inferFontFamilyNameFromDraft(tokenDraft);
-      const asset = await createEmbeddedFontAssetFromFile(file, family);
-      const extensions = parseEditorTokenExtensions(tokenDraft.extensionsText);
-      setTokenDraft((draft) => ({
-        ...draft,
-        valueText: family,
-        extensionsText: serializeEditorTokenExtensions(
-          upsertEmbeddedFontAssetExtension(extensions, asset)
-        ),
-      }));
-      setTokenDraftError(undefined);
-    } catch (error) {
-      setTokenDraftError(error instanceof Error ? error.message : "Font file could not be read.");
-    }
+  // Toggle whether a font family supports a given numeric weight, persisting the
+  // set on the family token's podo extensions. When the family has no explicit
+  // set yet, `defaultWeights` (the currently defined weight tokens) is the start.
+  const toggleFamilyWeight = (
+    record: EditorTokenRecord,
+    weightValue: number,
+    defaultWeights: number[]
+  ): void => {
+    const current =
+      getSupportedFontWeightsFromExtensions(record.token.$extensions) ?? defaultWeights;
+    const next = current.includes(weightValue)
+      ? current.filter((value) => value !== weightValue)
+      : [...current, weightValue];
+    commitTokenRecordDraft(record, {
+      valueText: serializeEditorTokenValue(record.token.$value),
+      extensionsText: serializeEditorTokenExtensions(
+        setSupportedFontWeightsExtension(record.token.$extensions, next)
+      ),
+    });
   };
-  const removeFontAssetFromDraft = (): void => {
-    try {
-      const extensions = parseEditorTokenExtensions(tokenDraft.extensionsText);
-      setTokenDraft((draft) => ({
-        ...draft,
-        extensionsText: serializeEditorTokenExtensions(
-          removeEmbeddedFontAssetExtension(extensions)
-        ),
-      }));
-      setTokenDraftError(undefined);
-    } catch (error) {
-      setTokenDraftError(error instanceof Error ? error.message : "Font attachment is invalid.");
-    }
-  };
-  const deleteSelectedToken = (): void => {
-    if (!selectedToken) {
-      return;
-    }
+  const deleteTokenRecord = (record: EditorTokenRecord): void => {
     try {
       const nextDocuments = deleteTokenFromDocuments(
         tokenDocumentsState,
-        selectedToken.documentIndex,
-        selectedToken.path
+        record.documentIndex,
+        record.path
       );
       commitTokenDocuments(nextDocuments);
-      setSelectedTokenKey(undefined);
-      setTokenDraft(createNewTokenDraft());
+      if (selectedTokenKey === tokenRecordKey(record)) {
+        setSelectedTokenKey(undefined);
+      }
       setTokenDraftError(undefined);
     } catch (error) {
       setTokenDraftError(error instanceof Error ? error.message : "Token could not be deleted.");
+    }
+  };
+  // Delete several tokens in one document transform (e.g. a color variation's
+  // light + dark pair) so the second delete never runs against stale state.
+  const deleteTokenRecords = (records: EditorTokenRecord[]): void => {
+    if (!records.length) {
+      return;
+    }
+    try {
+      const nextDocuments = records.reduce(
+        (documents, record) =>
+          deleteTokenFromDocuments(documents, record.documentIndex, record.path),
+        tokenDocumentsState
+      );
+      commitTokenDocuments(nextDocuments);
+      if (records.some((record) => selectedTokenKey === tokenRecordKey(record))) {
+        setSelectedTokenKey(undefined);
+      }
+      setTokenDraftError(undefined);
+    } catch (error) {
+      setTokenDraftError(error instanceof Error ? error.message : "Tokens could not be deleted.");
     }
   };
   const saveComponentMetaDraft = (): void => {
@@ -833,6 +996,41 @@ export function PodoEditorApp({
       );
     }
   };
+  const saveSlotDraft = (): void => {
+    if (!selectedComponentForSpec) {
+      return;
+    }
+    try {
+      const name = slotDraft.name.trim();
+      const isRename = Boolean(selectedSlotName) && selectedSlotName !== name;
+      const baseComponent =
+        isRename && selectedSlotName
+          ? deleteComponentSlot(selectedComponentForSpec, selectedSlotName)
+          : selectedComponentForSpec;
+      commitComponentSpec(
+        upsertComponentSlot(baseComponent, slotDraft),
+        isRename && selectedSlotName
+          ? { slotRename: { from: selectedSlotName, to: name } }
+          : undefined
+      );
+      setSelectedSlotName(name);
+      setComponentDraftError(undefined);
+    } catch (error) {
+      setComponentDraftError(error instanceof Error ? error.message : "Slot draft is invalid.");
+    }
+  };
+  const deleteSelectedSlot = (): void => {
+    if (!selectedComponentForSpec || !selectedSlotName) {
+      return;
+    }
+    try {
+      commitComponentSpec(deleteComponentSlot(selectedComponentForSpec, selectedSlotName));
+      setSelectedSlotName(undefined);
+      setComponentDraftError(undefined);
+    } catch (error) {
+      setComponentDraftError(error instanceof Error ? error.message : "Slot could not be deleted.");
+    }
+  };
 
   return (
     <div style={editorShellStyle}>
@@ -858,25 +1056,27 @@ export function PodoEditorApp({
             </button>
           ))}
         </div>
-        <div style={topBarControlStyle}>
-          <span style={topBarControlLabelStyle}>Scheme</span>
-          <div style={schemeSegmentedStyle}>
-            {editorColorSchemes.map((scheme) => (
-              <button
-                key={scheme}
-                type="button"
-                style={{
-                  ...schemeButtonStyle,
-                  ...(selectedColorScheme === scheme ? schemeButtonActiveStyle : {}),
-                }}
-                onClick={() => setSelectedColorScheme(scheme)}
-              >
-                {scheme}
-              </button>
-            ))}
+        {effectiveActivePanel === "canvas" ? (
+          <div style={topBarControlStyle}>
+            <span style={topBarControlLabelStyle}>Scheme</span>
+            <div style={schemeSegmentedStyle}>
+              {editorColorSchemes.map((scheme) => (
+                <button
+                  key={scheme}
+                  type="button"
+                  style={{
+                    ...schemeButtonStyle,
+                    ...(selectedColorScheme === scheme ? schemeButtonActiveStyle : {}),
+                  }}
+                  onClick={() => setSelectedColorScheme(scheme)}
+                >
+                  {scheme}
+                </button>
+              ))}
+            </div>
+            <span style={topBarControlValueStyle}>{effectiveColorScheme}</span>
           </div>
-          <span style={topBarControlValueStyle}>{effectiveColorScheme}</span>
-        </div>
+        ) : null}
         {persistError ? (
           <span role="alert" style={persistErrorStyle}>
             {persistError}
@@ -889,8 +1089,6 @@ export function PodoEditorApp({
             tokenGroups={tokenGroups}
             tokenDraft={tokenDraft}
             typographyWorkspaceActive={typographyWorkspaceActive}
-            setSelectedTokenKey={setSelectedTokenKey}
-            setTokenDraft={setTokenDraft}
             selectTokenType={selectTokenType}
           />
         ) : null}
@@ -931,33 +1129,38 @@ export function PodoEditorApp({
             enqueueHostWrite={enqueueHostWrite}
           />
         ) : null}
-        {effectiveActivePanel === "export" ? (
-          <ExportPanelControls tokenRecords={tokenRecords} state={state} />
+        {effectiveActivePanel === "build" ? (
+          <BuildPanelControls tokenRecords={tokenRecords} state={state} />
+        ) : null}
+        {effectiveActivePanel === "project" ? (
+          <ProjectPanelControls typographyWorkspace={typographyWorkspace} />
         ) : null}
       </aside>
       <main style={workspaceStyle}>
         {effectiveActivePanel === "tokens" ? (
           <TokensPanelWorkspace
-            tokenRecords={tokenRecords}
-            tokenDocumentsState={tokenDocumentsState}
+            tokenRecords={baseTokenRecords}
             tokenDraft={tokenDraft}
-            setTokenDraft={setTokenDraft}
             tokenDraftError={tokenDraftError}
-            selectedToken={selectedToken}
             selectedTokenKey={selectedTokenKey}
             setSelectedTokenKey={setSelectedTokenKey}
             typographyWorkspaceActive={typographyWorkspaceActive}
             typographyWorkspace={typographyWorkspace}
             tokenMatrix={tokenMatrix}
+            colorComparisonMatrix={colorComparisonMatrix}
+            colorTokenPickerOptions={colorTokenPickerOptions}
             previewTokenLookup={previewTokenLookup}
-            saveTokenDraft={saveTokenDraft}
-            deleteSelectedToken={deleteSelectedToken}
+            lightTokenLookup={lightTokenLookup}
+            darkTokenLookup={darkTokenLookup}
             updateTokenMatrixCell={updateTokenMatrixCell}
+            createColorCounterpart={createColorCounterpart}
             updateTypographyTokenField={updateTypographyTokenField}
             attachFontAssetToRecord={attachFontAssetToRecord}
             removeFontAssetFromRecord={removeFontAssetFromRecord}
-            attachFontAssetToDraft={attachFontAssetToDraft}
-            removeFontAssetFromDraft={removeFontAssetFromDraft}
+            createTypographyToken={createTypographyToken}
+            deleteTokenRecord={deleteTokenRecord}
+            deleteTokenRecords={deleteTokenRecords}
+            toggleFamilyWeight={toggleFamilyWeight}
           />
         ) : null}
         {effectiveActivePanel === "components" && selectedComponentForSpec ? (
@@ -981,6 +1184,12 @@ export function PodoEditorApp({
             setSelectedVariantName={setSelectedVariantName}
             saveVariantDraft={saveVariantDraft}
             deleteSelectedVariant={deleteSelectedVariant}
+            slotDraft={slotDraft}
+            setSlotDraft={setSlotDraft}
+            selectedSlotName={selectedSlotName}
+            setSelectedSlotName={setSelectedSlotName}
+            saveSlotDraft={saveSlotDraft}
+            deleteSelectedSlot={deleteSelectedSlot}
             selectedComponentTokenModel={selectedComponentTokenModel}
             selectedTokenKey={selectedTokenKey}
             setSelectedTokenKey={setSelectedTokenKey}
@@ -999,8 +1208,21 @@ export function PodoEditorApp({
             syncFromTldraw={syncFromTldraw}
           />
         ) : null}
-        {effectiveActivePanel === "export" ? (
-          <ExportPanelWorkspace tokenDocumentsState={tokenDocumentsState} state={state} />
+        {effectiveActivePanel === "build" ? (
+          <BuildPanelWorkspace tokenDocumentsState={tokenDocumentsState} state={state} />
+        ) : null}
+        {effectiveActivePanel === "project" ? (
+          <ProjectPanelWorkspace
+            typographyWorkspace={typographyWorkspace}
+            previewTokenLookup={previewTokenLookup}
+            selectedTokenKey={selectedTokenKey}
+            setSelectedTokenKey={setSelectedTokenKey}
+            updateTokenMatrixCell={updateTokenMatrixCell}
+            updateTypographyTokenField={updateTypographyTokenField}
+            attachFontAssetToRecord={attachFontAssetToRecord}
+            removeFontAssetFromRecord={removeFontAssetFromRecord}
+            createTypographyToken={createTypographyToken}
+          />
         ) : null}
       </main>
     </div>

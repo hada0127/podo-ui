@@ -1,81 +1,50 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { DesignToken, TokenDocument } from "@podo/spec";
-import { editorTokenTypes, type EditorTokenDraft, type EditorTokenRecord } from "./spec-editing.js";
-import { createNewTokenDraft } from "./drafts.js";
+import type { DesignToken } from "@podo/spec";
+import { type EditorTokenDraft, type EditorTokenRecord } from "./spec-editing.js";
 import {
   groupTokenRecordsByType,
   tokenRecordKey,
+  type ColorComparisonMatrixModel,
   type TokenMatrixModel,
   type TypographyTokenField,
   type TypographyWorkspaceModel,
 } from "./token-model.js";
-import { isHexColorInputValue, type TokenLookup } from "./token-lookup.js";
+import { type TokenLookup } from "./token-lookup.js";
+import type { TokenPickerOption } from "./token-picker.js";
 import {
-  renderTokenDraftPreview,
+  renderColorComparisonMatrix,
+  renderScalarScaleEditor,
   renderTokenMatrixEditor,
   renderTypographyTokenEditor,
 } from "./token-editor.js";
-import { renderFontAttachmentDraftEditor } from "./fonts.js";
 import {
-  dangerButtonStyle,
-  detailPanelBodyStyle,
-  disclosureStyle,
   errorBannerStyle,
-  fieldStyle,
-  formGridStyle,
-  inputStyle,
   listStyle,
-  nestedDisclosureStyle,
-  nestedSummaryStyle,
-  previewPanelStyle,
-  rowStyle,
   sectionHeaderStyle,
   sectionMetaStyle,
   sectionStyle,
   sectionTitleStyle,
-  selectStyle,
   sidebarTitleStyle,
-  smallButtonStyle,
-  summaryStyle,
-  textareaStyle,
-  tokenColorInputStyle,
   tokenTypeButtonActiveStyle,
   tokenTypeButtonStyle,
   tokenTypeMetaStyle,
   tokenTypeNameStyle,
-  tokenValueEditorPlainStyle,
-  tokenValueEditorStyle,
-  toolbarButtonStyle,
 } from "./styles.js";
 
 export function TokensPanelControls({
   tokenGroups,
   tokenDraft,
   typographyWorkspaceActive,
-  setSelectedTokenKey,
-  setTokenDraft,
   selectTokenType,
 }: {
   tokenGroups: ReturnType<typeof groupTokenRecordsByType>;
   tokenDraft: EditorTokenDraft;
   typographyWorkspaceActive: boolean;
-  setSelectedTokenKey: Dispatch<SetStateAction<string | undefined>>;
-  setTokenDraft: Dispatch<SetStateAction<EditorTokenDraft>>;
   selectTokenType: (type: DesignToken["$type"]) => void;
 }) {
   return (
     <>
       <div style={sidebarTitleStyle}>Tokens</div>
-      <button
-        type="button"
-        style={toolbarButtonStyle}
-        onClick={() => {
-          setSelectedTokenKey(undefined);
-          setTokenDraft(createNewTokenDraft());
-        }}
-      >
-        New token
-      </button>
       <div style={listStyle}>
         {tokenGroups.map((group) => {
           const active =
@@ -106,41 +75,43 @@ export function TokensPanelControls({
 
 export function TokensPanelWorkspace({
   tokenRecords,
-  tokenDocumentsState,
   tokenDraft,
-  setTokenDraft,
   tokenDraftError,
-  selectedToken,
   selectedTokenKey,
   setSelectedTokenKey,
   typographyWorkspaceActive,
   typographyWorkspace,
   tokenMatrix,
+  colorComparisonMatrix,
+  colorTokenPickerOptions,
   previewTokenLookup,
-  saveTokenDraft,
-  deleteSelectedToken,
+  lightTokenLookup,
+  darkTokenLookup,
   updateTokenMatrixCell,
+  createColorCounterpart,
   updateTypographyTokenField,
   attachFontAssetToRecord,
   removeFontAssetFromRecord,
-  attachFontAssetToDraft,
-  removeFontAssetFromDraft,
+  createTypographyToken,
+  deleteTokenRecord,
+  deleteTokenRecords,
+  toggleFamilyWeight,
 }: {
   tokenRecords: EditorTokenRecord[];
-  tokenDocumentsState: TokenDocument[];
   tokenDraft: EditorTokenDraft;
-  setTokenDraft: Dispatch<SetStateAction<EditorTokenDraft>>;
   tokenDraftError: string | undefined;
-  selectedToken: EditorTokenRecord | undefined;
   selectedTokenKey: string | undefined;
   setSelectedTokenKey: Dispatch<SetStateAction<string | undefined>>;
   typographyWorkspaceActive: boolean;
   typographyWorkspace: TypographyWorkspaceModel;
   tokenMatrix: TokenMatrixModel;
+  colorComparisonMatrix: ColorComparisonMatrixModel;
+  colorTokenPickerOptions: TokenPickerOption[];
   previewTokenLookup: TokenLookup;
-  saveTokenDraft: () => void;
-  deleteSelectedToken: () => void;
+  lightTokenLookup: TokenLookup;
+  darkTokenLookup: TokenLookup;
   updateTokenMatrixCell: (record: EditorTokenRecord, valueText: string) => void;
+  createColorCounterpart: (targetPath: string, seedRecord: EditorTokenRecord) => void;
   updateTypographyTokenField: (
     record: EditorTokenRecord,
     field: TypographyTokenField,
@@ -148,28 +119,27 @@ export function TokensPanelWorkspace({
   ) => void;
   attachFontAssetToRecord: (record: EditorTokenRecord, file: File) => Promise<void>;
   removeFontAssetFromRecord: (record: EditorTokenRecord) => void;
-  attachFontAssetToDraft: (file: File) => Promise<void>;
-  removeFontAssetFromDraft: () => void;
+  createTypographyToken: (input: {
+    type: DesignToken["$type"];
+    path: string;
+    valueText: string;
+  }) => void;
+  deleteTokenRecord: (record: EditorTokenRecord) => void;
+  deleteTokenRecords: (records: EditorTokenRecord[]) => void;
+  toggleFamilyWeight: (
+    record: EditorTokenRecord,
+    weightValue: number,
+    defaultWeights: number[]
+  ) => void;
 }) {
+  const scalarLabel = tokenDraft.type === "radius" ? "Radius" : "Spacing";
+  const scalarRecords = tokenRecords.filter((record) => record.token.$type === tokenDraft.type);
   return (
     <section style={sectionStyle}>
       <div style={sectionHeaderStyle}>
         <div>
           <h1 style={sectionTitleStyle}>Tokens</h1>
           <p style={sectionMetaStyle}>{tokenRecords.length} JSON token specs</p>
-        </div>
-        <div style={rowStyle}>
-          <button type="button" style={smallButtonStyle} onClick={saveTokenDraft}>
-            Save token
-          </button>
-          <button
-            type="button"
-            style={dangerButtonStyle}
-            disabled={!selectedToken}
-            onClick={deleteSelectedToken}
-          >
-            Delete
-          </button>
         </div>
       </div>
       {typographyWorkspaceActive
@@ -182,133 +152,42 @@ export function TokensPanelWorkspace({
             onCommitTypographyField: updateTypographyTokenField,
             onAttachFont: attachFontAssetToRecord,
             onRemoveFontAsset: removeFontAssetFromRecord,
+            onCreateToken: createTypographyToken,
+            onDeleteToken: deleteTokenRecord,
+            onToggleFamilyWeight: toggleFamilyWeight,
           })
-        : renderTokenMatrixEditor({
-            matrix: tokenMatrix,
-            selectedTokenKey,
-            onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
-            onCommitValue: updateTokenMatrixCell,
-          })}
+        : tokenDraft.type === "color"
+          ? renderColorComparisonMatrix({
+              model: colorComparisonMatrix,
+              lightLookup: lightTokenLookup,
+              darkLookup: darkTokenLookup,
+              tokenOptions: colorTokenPickerOptions,
+              selectedTokenKey,
+              onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
+              onCommitValue: updateTokenMatrixCell,
+              onCreateCounterpart: createColorCounterpart,
+              onCreateToken: createTypographyToken,
+              onDeleteVariation: deleteTokenRecords,
+            })
+          : tokenDraft.type === "spacing" || tokenDraft.type === "radius"
+            ? renderScalarScaleEditor({
+                type: tokenDraft.type,
+                label: scalarLabel,
+                records: scalarRecords,
+                lookup: previewTokenLookup,
+                selectedTokenKey,
+                onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
+                onCommitValue: updateTokenMatrixCell,
+                onCreateToken: createTypographyToken,
+                onDeleteToken: deleteTokenRecord,
+              })
+            : renderTokenMatrixEditor({
+                matrix: tokenMatrix,
+                selectedTokenKey,
+                onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
+                onCommitValue: updateTokenMatrixCell,
+              })}
       {tokenDraftError ? <div style={errorBannerStyle}>{tokenDraftError}</div> : null}
-      <details style={disclosureStyle}>
-        <summary style={summaryStyle}>Selected token detail</summary>
-        <div style={detailPanelBodyStyle}>
-          <div style={formGridStyle}>
-            <label style={fieldStyle}>
-              Path
-              <input
-                style={inputStyle}
-                value={tokenDraft.path}
-                onChange={(event) => {
-                  const path = event.currentTarget.value;
-                  setTokenDraft((draft) => ({ ...draft, path }));
-                }}
-              />
-            </label>
-            <label style={fieldStyle}>
-              Type
-              <select
-                style={selectStyle}
-                value={tokenDraft.type}
-                onChange={(event) => {
-                  const type = event.currentTarget.value as EditorTokenDraft["type"];
-                  setTokenDraft((draft) => ({
-                    ...draft,
-                    type,
-                  }));
-                }}
-              >
-                {editorTokenTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-              Value
-              <div
-                style={
-                  tokenDraft.type === "color" ? tokenValueEditorStyle : tokenValueEditorPlainStyle
-                }
-              >
-                {tokenDraft.type === "color" ? (
-                  <input
-                    aria-label="Color value"
-                    type="color"
-                    style={tokenColorInputStyle}
-                    value={
-                      isHexColorInputValue(tokenDraft.valueText) ? tokenDraft.valueText : "#000000"
-                    }
-                    onChange={(event) => {
-                      const valueText = event.currentTarget.value;
-                      setTokenDraft((draft) => ({ ...draft, valueText }));
-                    }}
-                  />
-                ) : null}
-                <textarea
-                  style={{
-                    ...textareaStyle,
-                    minHeight: tokenDraft.type === "typography" ? 120 : 72,
-                  }}
-                  value={tokenDraft.valueText}
-                  onChange={(event) => {
-                    const valueText = event.currentTarget.value;
-                    setTokenDraft((draft) => ({ ...draft, valueText }));
-                  }}
-                />
-                {tokenDraft.type === "fontFamily"
-                  ? renderFontAttachmentDraftEditor({
-                      draft: tokenDraft,
-                      onAttach: attachFontAssetToDraft,
-                      onRemove: removeFontAssetFromDraft,
-                    })
-                  : null}
-              </div>
-            </label>
-            <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-              Description
-              <input
-                style={inputStyle}
-                value={tokenDraft.description ?? ""}
-                onChange={(event) => {
-                  const description = event.currentTarget.value;
-                  setTokenDraft((draft) => ({
-                    ...draft,
-                    description,
-                  }));
-                }}
-              />
-            </label>
-            <details style={{ ...nestedDisclosureStyle, gridColumn: "1 / -1" }}>
-              <summary style={nestedSummaryStyle}>Extensions JSON</summary>
-              <textarea
-                style={{ ...textareaStyle, minHeight: 120, marginTop: 8 }}
-                value={tokenDraft.extensionsText ?? ""}
-                onChange={(event) => {
-                  const extensionsText = event.currentTarget.value;
-                  setTokenDraft((draft) => ({
-                    ...draft,
-                    extensionsText,
-                  }));
-                }}
-              />
-            </details>
-          </div>
-          <div style={previewPanelStyle}>
-            <strong>Preview</strong>
-            {renderTokenDraftPreview(tokenDraft, previewTokenLookup)}
-          </div>
-        </div>
-      </details>
-      <details style={disclosureStyle}>
-        <summary style={summaryStyle}>Document JSON</summary>
-        <textarea
-          style={{ ...textareaStyle, minHeight: 220 }}
-          readOnly
-          value={JSON.stringify(tokenDocumentsState, null, 2)}
-        />
-      </details>
     </section>
   );
 }

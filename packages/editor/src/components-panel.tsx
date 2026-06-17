@@ -3,10 +3,12 @@ import type { ComponentDocument } from "@podo/spec";
 import { editorPropKinds, type EditorTokenRecord } from "./spec-editing.js";
 import {
   createNewComponentPropDraft,
+  createNewComponentSlotDraft,
   createNewComponentVariantDraft,
   type ComponentEditMode,
   type ComponentMetaDraft,
   type ComponentPropDraft,
+  type ComponentSlotDraft,
   type ComponentVariantDraft,
 } from "./drafts.js";
 import { tokenRecordKey, type ComponentTokenEditorModel } from "./token-model.js";
@@ -139,6 +141,12 @@ export function ComponentsPanelWorkspace({
   setSelectedVariantName,
   saveVariantDraft,
   deleteSelectedVariant,
+  slotDraft,
+  setSlotDraft,
+  selectedSlotName,
+  setSelectedSlotName,
+  saveSlotDraft,
+  deleteSelectedSlot,
   selectedComponentTokenModel,
   selectedTokenKey,
   setSelectedTokenKey,
@@ -166,6 +174,12 @@ export function ComponentsPanelWorkspace({
   setSelectedVariantName: Dispatch<SetStateAction<string | undefined>>;
   saveVariantDraft: () => void;
   deleteSelectedVariant: () => void;
+  slotDraft: ComponentSlotDraft;
+  setSlotDraft: Dispatch<SetStateAction<ComponentSlotDraft>>;
+  selectedSlotName: string | undefined;
+  setSelectedSlotName: Dispatch<SetStateAction<string | undefined>>;
+  saveSlotDraft: () => void;
+  deleteSelectedSlot: () => void;
   selectedComponentTokenModel: ComponentTokenEditorModel;
   selectedTokenKey: string | undefined;
   setSelectedTokenKey: Dispatch<SetStateAction<string | undefined>>;
@@ -334,7 +348,7 @@ export function ComponentsPanelWorkspace({
         })}
       </div>
       <div style={componentEditModeBarStyle}>
-        {(["props", "variants", "tokens"] as const).map((mode) => (
+        {(["props", "variants", "slots", "tokens"] as const).map((mode) => (
           <button
             key={mode}
             type="button"
@@ -346,6 +360,7 @@ export function ComponentsPanelWorkspace({
           >
             {mode === "props" ? `Props (${selectedComponentForSpec.props.length})` : null}
             {mode === "variants" ? `Variants (${selectedComponentForSpec.variants.length})` : null}
+            {mode === "slots" ? `Slots (${selectedComponentForSpec.slots.length})` : null}
             {mode === "tokens" ? `Tokens (${selectedComponentTokenModel.records.length})` : null}
           </button>
         ))}
@@ -596,6 +611,114 @@ export function ComponentsPanelWorkspace({
                 style={dangerButtonStyle}
                 disabled={!selectedVariantName}
                 onClick={deleteSelectedVariant}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {componentEditMode === "slots" ? (
+        <div style={cardStyle}>
+          <div style={cardHeaderStyle}>
+            <strong>Slots</strong>
+            <button
+              type="button"
+              style={smallButtonStyle}
+              onClick={() => {
+                setSelectedSlotName(undefined);
+                setSlotDraft(createNewComponentSlotDraft());
+              }}
+            >
+              New slot
+            </button>
+          </div>
+          <div style={tableStyle}>
+            {selectedComponentForSpec.slots.map((slot) => (
+              <button
+                key={slot.name}
+                type="button"
+                style={{
+                  ...tableRowStyle,
+                  ...(selectedSlotName === slot.name ? tableRowActiveStyle : {}),
+                }}
+                onClick={() => setSelectedSlotName(slot.name)}
+              >
+                <span style={tableCellTextStyle}>{slot.name}</span>
+                <small style={tableCellMetaStyle}>
+                  {[
+                    slot.required ? "required" : "optional",
+                    slot.repeated ? "repeated" : "single",
+                  ].join(" · ")}
+                </small>
+              </button>
+            ))}
+          </div>
+          <div style={editorFormStyle}>
+            <label style={fieldStyle}>
+              Name
+              <input
+                style={inputStyle}
+                value={slotDraft.name}
+                onChange={(event) => {
+                  const name = event.currentTarget.value;
+                  setSlotDraft((draft) => ({ ...draft, name }));
+                }}
+              />
+            </label>
+            <label style={checkboxFieldStyle}>
+              <input
+                type="checkbox"
+                checked={slotDraft.required}
+                onChange={(event) => {
+                  const required = event.currentTarget.checked;
+                  setSlotDraft((draft) => ({ ...draft, required }));
+                }}
+              />
+              Required
+            </label>
+            <label style={checkboxFieldStyle}>
+              <input
+                type="checkbox"
+                checked={slotDraft.repeated}
+                onChange={(event) => {
+                  const repeated = event.currentTarget.checked;
+                  setSlotDraft((draft) => ({ ...draft, repeated }));
+                }}
+              />
+              Repeated
+            </label>
+            <label style={fieldStyle}>
+              Fallback
+              <input
+                style={inputStyle}
+                value={slotDraft.fallback}
+                onChange={(event) => {
+                  const fallback = event.currentTarget.value;
+                  setSlotDraft((draft) => ({ ...draft, fallback }));
+                }}
+              />
+            </label>
+            <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+              Description
+              <input
+                style={inputStyle}
+                value={slotDraft.description}
+                onChange={(event) => {
+                  const description = event.currentTarget.value;
+                  setSlotDraft((draft) => ({ ...draft, description }));
+                }}
+              />
+            </label>
+            <div style={rowStyle}>
+              <button type="button" style={smallButtonStyle} onClick={saveSlotDraft}>
+                Save slot
+              </button>
+              <button
+                type="button"
+                style={dangerButtonStyle}
+                disabled={!selectedSlotName}
+                onClick={deleteSelectedSlot}
               >
                 Delete
               </button>

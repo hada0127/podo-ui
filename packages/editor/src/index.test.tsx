@@ -13,12 +13,23 @@ import {
   type EditorCanvasState,
   createComponentNode,
   createComponentSpecExportFile,
+  colorCounterpartPath,
+  colorToHex,
+  createColorComparisonMatrix,
+  formatColorValue,
+  hsvToRgb,
+  parseColor,
+  rgbToHsv,
   createComponentTokenEditorModel,
   createEmbeddedFontAsset,
   createThemedTokenLookup,
   createEditorState,
   createTokenMatrix,
   createTypographyWorkspaceModel,
+  DEFAULT_NODE_LAYOUT,
+  normalizeEditorNodeLayout,
+  renameNodeSlot,
+  updateComponentNodeLayout,
   componentPreviewKind,
   describeLayoutSpecBoundary,
   dropComponentOnCanvas,
@@ -378,6 +389,60 @@ describe("@podo/editor", () => {
     );
   });
 
+  it("excludes component tokens from the base page and edits spacing as a scale list", () => {
+    const { container } = render(
+      <PodoEditorApp components={legacyComponents} tokenDocuments={legacyTokenDocuments} />
+    );
+    const spacingTab = screen
+      .getAllByRole("button")
+      .find(
+        (button) =>
+          /^spacing/i.test(button.textContent ?? "") && /groups/.test(button.textContent ?? "")
+      );
+    expect(spacingTab).toBeTruthy();
+    fireEvent.click(spacingTab!);
+
+    // The scale list (not the dense matrix) renders with an add affordance, and a
+    // base spacing token is editable inline.
+    expect(screen.getByRole("button", { name: "+ New spacing" })).toBeTruthy();
+    expect(screen.getByLabelText("spacing.scale.2 value")).toBeTruthy();
+
+    const valueInputs = (): HTMLInputElement[] =>
+      Array.from(container.querySelectorAll('input[aria-label$=" value"]'));
+    // Component-scoped spacing tokens (paddingX/paddingY) never appear on the base page.
+    expect(
+      valueInputs().some((input) =>
+        (input.getAttribute("aria-label") ?? "").startsWith("component.")
+      )
+    ).toBe(false);
+
+    // Adding appends a unique spacing.scale.* row; deleting removes it.
+    const before = valueInputs().length;
+    fireEvent.click(screen.getByRole("button", { name: "+ New spacing" }));
+    expect(valueInputs().length).toBe(before + 1);
+    cleanup();
+  });
+
+  it("toggles a font family's supported weights on and off", () => {
+    render(<PodoEditorApp components={legacyComponents} tokenDocuments={legacyTokenDocuments} />);
+    const typoTab = screen
+      .getAllByRole("button")
+      .find(
+        (button) =>
+          /^typography/i.test(button.textContent ?? "") && /groups/.test(button.textContent ?? "")
+      );
+    fireEvent.click(typoTab!);
+
+    // A weight that is not in the defined weight set (100/thin) starts off.
+    fireEvent.click(screen.getByLabelText(/thin 100 off/i));
+    expect(screen.getByLabelText(/thin 100 on/i)).toBeTruthy();
+
+    // A defined weight (700/bold) starts on; toggling removes it from the set.
+    fireEvent.click(screen.getByLabelText(/bold 700 on/i));
+    expect(screen.getByLabelText(/bold 700 off/i)).toBeTruthy();
+    cleanup();
+  });
+
   it("builds typography workspace groups and preserves attached font extensions", () => {
     const records = flattenTokenDocuments(legacyTokenDocuments);
     const workspace = createTypographyWorkspaceModel(records);
@@ -616,6 +681,208 @@ describe("@podo/editor", () => {
     expect(boundary.layoutSpecOwns).toContain("slot composition");
     expect(githubSyncStrategy.decision).toBe("ci-managed-sync");
     expect(githubSyncStrategy.checks).toContain("pnpm check");
+  });
+
+  it("pairs light and dark color tokens into one comparison row", () => {
+    const records = flattenTokenDocuments(legacyTokenDocuments);
+    const matrix = createColorComparisonMatrix(records);
+    const primary = matrix.rows.find((row) => row.id === "color.primary");
+
+    expect(primary?.label).toBe("primary");
+    expect(primary?.cells.hover?.light?.path).toBe("color.primary.hover");
+    expect(primary?.cells.hover?.dark?.path).toBe("dark.color.primary.hover");
+    // light and dark collapse into one row (no separate "dark.color.primary" row)
+    expect(matrix.rows.some((row) => row.id === "dark.color.primary")).toBe(false);
+    // component-scoped color tokens are excluded from the global comparison
+    expect(matrix.rows.some((row) => row.id.startsWith("component."))).toBe(false);
+  });
+
+  it("validates and coerces editor node auto-layout values", () => {
+    expect(
+      normalizeEditorNodeLayout({
+        mode: "vertical",
+        gap: "{spacing.2}",
+        align: "center",
+        justify: "space-between",
+        wrap: true,
+      })
+    ).toEqual({
+      mode: "vertical",
+      gap: "{spacing.2}",
+      padding: "",
+      align: "center",
+      justify: "space-between",
+      wrap: true,
+    });
+    // unknown enums fall back to defaults; wrap is forced off when mode is none
+    expect(normalizeEditorNodeLayout({ mode: "bogus", align: "weird", wrap: true })).toEqual(
+      DEFAULT_NODE_LAYOUT
+    );
+  });
+
+  it("updates a node's auto-layout through the reducer and selects it", () => {
+    const node = createComponentNode(layoutComponent, { x: 0, y: 0 }, { id: "n1" });
+    const state = createEditorState({ components: [layoutComponent], nodes: [node] });
+    const next = updateComponentNodeLayout(state, "n1", {
+      layout: { mode: "horizontal", gap: "{spacing.1}" },
+      widthSizing: "fill",
+    });
+
+    expect(next.nodes[0]?.layout?.mode).toBe("horizontal");
+    expect(next.nodes[0]?.layout?.gap).toBe("{spacing.1}");
+    expect(next.nodes[0]?.widthSizing).toBe("fill");
+    expect(next.selectedNodeId).toBe("n1");
+  });
+
+  it("persists node auto-layout through the tldraw sync loop", () => {
+    const shapes = new Map<PodoComponentShapeInput["id"], PodoComponentShapeInput>();
+    const writer: PodoTldrawStateWriter = {
+      createShape(shape) {
+        shapes.set(shape.id, shape);
+      },
+      updateShapes(nextShapes) {
+        for (const shape of nextShapes) {
+          shapes.set(shape.id, shape);
+        }
+      },
+    };
+    const initial = createEditorState({ components: [layoutComponent] });
+    const node = createComponentNode(
+      layoutComponent,
+      { x: 0, y: 0 },
+      {
+        id: "stack-node",
+        layout: { ...DEFAULT_NODE_LAYOUT, mode: "vertical", gap: "{spacing.2}", align: "center" },
+        widthSizing: "fill",
+      }
+    );
+    const dropped = { ...initial, nodes: [node], selectedNodeId: node.id };
+    applyEditorStateToTldraw(writer, initial, dropped, node);
+
+    const shapeList = [...shapes.values()];
+    const fakeEditor = {
+      getCurrentPageShapes: () => shapeList,
+      getSelectedShapeIds: () => (shapeList[0] ? [shapeList[0].id] : []),
+    } as Parameters<typeof syncEditorStateFromTldraw>[1];
+    const synced = syncEditorStateFromTldraw(dropped, fakeEditor);
+
+    expect(synced.nodes[0]?.layout?.mode).toBe("vertical");
+    expect(synced.nodes[0]?.layout?.gap).toBe("{spacing.2}");
+    expect(synced.nodes[0]?.layout?.align).toBe("center");
+    expect(synced.nodes[0]?.widthSizing).toBe("fill");
+  });
+
+  it("exports a layout-category auto-layout node as a flex LayoutNode", () => {
+    const stack = createComponentNode(
+      layoutComponent,
+      { x: 0, y: 0 },
+      {
+        id: "stack",
+        slots: { content: ["btn"] },
+        layout: {
+          ...DEFAULT_NODE_LAYOUT,
+          mode: "vertical",
+          gap: "{spacing.2}",
+          justify: "space-between",
+        },
+      }
+    );
+    const child = createComponentNode(buttonComponent, { x: 0, y: 0 }, { id: "btn" });
+    const state: EditorCanvasState = {
+      ...createEditorState({ components: [layoutComponent, buttonComponent] }),
+      nodes: [stack, child],
+    };
+    const page = createPageDocumentFromCanvas(state, { id: "home", name: "Home" });
+    if (page.root.type !== "layout") {
+      throw new Error("expected a layout root");
+    }
+    const stackNode = page.root.children[0];
+    if (stackNode?.type !== "layout") {
+      throw new Error("expected the stack to export as a layout node");
+    }
+    expect(stackNode.layout.mode).toBe("flex");
+    expect(stackNode.layout.direction).toBe("column");
+    expect(stackNode.layout.gap).toBe("{spacing.2}");
+    expect(stackNode.layout.justify).toBe("space-between");
+    // default align (stretch) is not emitted
+    expect(stackNode.layout.align).toBeUndefined();
+    expect(stackNode.children[0]?.type).toBe("component-instance");
+  });
+
+  it("keeps the page export byte-identical for canvases without auto-layout", () => {
+    const placed = dropComponentOnCanvas(
+      createEditorState({ components: [buttonComponent] }),
+      buttonComponent,
+      { x: 0, y: 0 }
+    );
+    const file = createPageDocumentExportFile(placed, { id: "landing", name: "Landing" });
+    if (file.document.root.type !== "layout") {
+      throw new Error("expected a layout root");
+    }
+    // a non-layout, non-auto-layout node still exports under a plain flex root
+    expect(file.document.root.layout).toEqual({ mode: "flex" });
+    expect(file.document.root.children[0]?.type).toBe("component-instance");
+  });
+
+  it("derives the light and dark counterpart color paths", () => {
+    expect(colorCounterpartPath("color.primary.base", "dark")).toBe("dark.color.primary.base");
+    expect(colorCounterpartPath("color.primary.base", "light")).toBe("color.primary.base");
+  });
+
+  it("parses and formats colors with alpha for the color picker", () => {
+    expect(parseColor("#7c3aed")).toEqual({ r: 124, g: 58, b: 237, a: 1 });
+    expect(parseColor("rgba(124, 58, 237, 0.3)")).toEqual({ r: 124, g: 58, b: 237, a: 0.3 });
+    expect(parseColor("{color.primary.base}")).toBeUndefined();
+    // the native picker shows the opaque hex regardless of alpha
+    expect(colorToHex({ r: 124, g: 58, b: 237, a: 0.3 })).toBe("#7c3aed");
+    // opaque -> hex; translucent -> rgba(); round-trips a token-style value
+    expect(formatColorValue({ r: 124, g: 58, b: 237, a: 1 })).toBe("#7c3aed");
+    expect(formatColorValue({ r: 124, g: 58, b: 237, a: 0.3 })).toBe("rgba(124, 58, 237, 0.3)");
+  });
+
+  it("round-trips RGB through HSV for the inline color picker", () => {
+    expect(hsvToRgb({ h: 0, s: 1, v: 1 })).toEqual({ r: 255, g: 0, b: 0 });
+    expect(hsvToRgb({ h: 120, s: 1, v: 1 })).toEqual({ r: 0, g: 255, b: 0 });
+    for (const rgb of [
+      { r: 124, g: 58, b: 237 },
+      { r: 24, g: 144, b: 255 },
+      { r: 0, g: 0, b: 0 },
+      { r: 255, g: 255, b: 255 },
+    ]) {
+      expect(hsvToRgb(rgbToHsv(rgb))).toEqual(rgb);
+    }
+  });
+
+  it("migrates canvas slot children when a slot is renamed", () => {
+    const nodes = [
+      {
+        id: "p",
+        componentId: "gnb",
+        name: "P",
+        x: 0,
+        y: 0,
+        w: 10,
+        h: 10,
+        props: {},
+        slots: { primary: ["c"] },
+      },
+      {
+        id: "c",
+        componentId: "button",
+        name: "C",
+        x: 0,
+        y: 0,
+        w: 10,
+        h: 10,
+        props: {},
+        slots: {},
+      },
+    ];
+    const migrated = renameNodeSlot(nodes, "gnb", "primary", "main");
+    expect(migrated[0]?.slots.main).toEqual(["c"]);
+    expect(migrated[0]?.slots.primary).toBeUndefined();
+    // a node of a different component keeps its slots untouched
+    expect(migrated[1]?.slots).toEqual({});
   });
 });
 
@@ -920,6 +1187,22 @@ describe("PodoEditorApp host wiring", () => {
     expect(screen.queryByRole("button", { name: "canvas" })).toBeNull();
   });
 
+  // The generic "Save token" button was removed in favour of per-category inline
+  // CRUD; adding a token (here via "+ New color") is the representative edit that
+  // exercises the host token write path.
+  const colorTokenDocuments = () =>
+    moveTokenInDocuments([createEmptyTokenDocument()], {
+      documentIndex: 0,
+      toDraft: {
+        documentIndex: 0,
+        path: "color.brand.base",
+        type: "color",
+        valueText: "#3366ff",
+        description: "",
+        extensionsText: "",
+      },
+    });
+
   it("persists token edits through the injected save adapter", async () => {
     let saved = 0;
     const base = createInMemoryAdapter();
@@ -930,8 +1213,14 @@ describe("PodoEditorApp host wiring", () => {
         return base.saveTokenDocuments!(documents);
       },
     };
-    render(<PodoEditorApp components={[buttonComponent]} adapter={adapter} />);
-    fireEvent.click(screen.getByRole("button", { name: "Save token" }));
+    render(
+      <PodoEditorApp
+        components={[buttonComponent]}
+        tokenDocuments={colorTokenDocuments()}
+        adapter={adapter}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "+ New color" }));
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(saved).toBeGreaterThan(0);
   });
@@ -945,14 +1234,108 @@ describe("PodoEditorApp host wiring", () => {
         throw new Error("boom"); // synchronous failure
       },
     };
-    render(<PodoEditorApp components={[buttonComponent]} adapter={adapter} />);
-    const save = screen.getByRole("button", { name: "Save token" });
-    fireEvent.click(save);
+    render(
+      <PodoEditorApp
+        components={[buttonComponent]}
+        tokenDocuments={colorTokenDocuments()}
+        adapter={adapter}
+      />
+    );
+    const add = screen.getByRole("button", { name: "+ New color" });
+    fireEvent.click(add);
     await new Promise((resolve) => setTimeout(resolve, 0));
     // If the queue were wedged (inFlight stuck true) the second write would never run.
-    fireEvent.click(save);
+    fireEvent.click(add);
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(calls).toBeGreaterThanOrEqual(2);
+  });
+
+  it("exposes a build panel tab renamed from export", () => {
+    render(<PodoEditorApp components={[buttonComponent]} />);
+    expect(screen.getByRole("button", { name: "build" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "export" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "build" }));
+    expect(screen.getByRole("heading", { name: "Build" })).toBeTruthy();
+  });
+
+  it("hides the Scheme control on every non-canvas panel", () => {
+    // The Scheme toggle is gated to the canvas panel; the tokens panel now
+    // compares light/dark inline so the global toggle is unnecessary elsewhere.
+    // (The canvas panel mounts tldraw, which jsdom cannot render, so this asserts
+    // the negative across the panels that do render.)
+    render(
+      <PodoEditorApp
+        components={[buttonComponent]}
+        capabilities={{ pageDesign: true, writeMode: "overrides" }}
+      />
+    );
+    expect(screen.queryByText("Scheme")).toBeNull(); // default tokens panel
+    fireEvent.click(screen.getByRole("button", { name: "components" }));
+    expect(screen.queryByText("Scheme")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "build" }));
+    expect(screen.queryByText("Scheme")).toBeNull();
+  });
+
+  it("offers a slots editor in the components panel", () => {
+    render(<PodoEditorApp components={[buttonComponent]} />);
+    fireEvent.click(screen.getByRole("button", { name: "components" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Slots \(/ }));
+    expect(screen.getByRole("button", { name: "Save slot" })).toBeTruthy();
+  });
+
+  it("shows a referenced color as 'value (token name)' in the matrix field", () => {
+    let documents = moveTokenInDocuments([createEmptyTokenDocument()], {
+      documentIndex: 0,
+      toDraft: {
+        documentIndex: 0,
+        path: "color.info.base",
+        type: "color",
+        valueText: "#1890ff",
+      },
+    });
+    documents = moveTokenInDocuments(documents, {
+      documentIndex: 0,
+      toDraft: {
+        documentIndex: 0,
+        path: "color.brand.base",
+        type: "color",
+        valueText: "{color.info.base}",
+      },
+    });
+    render(<PodoEditorApp components={[buttonComponent]} tokenDocuments={documents} />);
+    const field = screen.getByLabelText("color.brand.base value") as HTMLInputElement;
+    // resolved value first, token name in parentheses (raw alias only while editing)
+    expect(field.value).toBe("#1890ff (color.info.base)");
+  });
+
+  it("resolves a non-hex dark color swatch in the comparison matrix", () => {
+    // Light is a plain hex; dark is a non-hex (rgba) value. The dark swatch must
+    // resolve via the scheme-neutral path against the dark lookup, not the raw
+    // "dark.color.*" record path (which the dark lookup never keys).
+    let documents = moveTokenInDocuments([createEmptyTokenDocument()], {
+      documentIndex: 0,
+      toDraft: {
+        documentIndex: 0,
+        path: "color.brand.base",
+        type: "color",
+        valueText: "#112233",
+      },
+    });
+    documents = moveTokenInDocuments(documents, {
+      documentIndex: 0,
+      toDraft: {
+        documentIndex: 0,
+        path: "dark.color.brand.base",
+        type: "color",
+        valueText: "rgba(1, 2, 3, 0.5)",
+      },
+    });
+    const { container } = render(
+      <PodoEditorApp components={[buttonComponent]} tokenDocuments={documents} />
+    );
+    // light swatch resolves the hex, dark swatch resolves the rgba (non-hex)
+    expect(container.querySelector('[data-color-swatch="#112233"]')).not.toBeNull();
+    expect(container.querySelector('[data-color-swatch="rgba(1, 2, 3, 0.5)"]')).not.toBeNull();
   });
 });
 
@@ -1035,5 +1418,23 @@ const gnbComponent: ComponentDocument = {
   tokens: { "root.background": "{color.brand}" },
   targets: supportedTargets,
   accessibility: { role: "navigation", aria: ["aria-label"], keyboard: ["Tab"] },
+  examples: [],
+};
+
+const layoutComponent: ComponentDocument = {
+  schemaVersion: PODO_SCHEMA_VERSION,
+  kind: "component",
+  id: "stack",
+  name: "Stack",
+  category: "layout",
+  status: "draft",
+  anatomy: [{ name: "root" }, { name: "content" }],
+  slots: [{ name: "content", required: false, repeated: true }],
+  props: [],
+  variants: [],
+  states: [],
+  tokens: {},
+  targets: supportedTargets,
+  accessibility: { aria: [], keyboard: [] },
   examples: [],
 };

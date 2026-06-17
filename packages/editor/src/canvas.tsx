@@ -19,10 +19,118 @@ import {
   type PageDocument,
 } from "@podo/spec";
 import { type ResponsiveViewportName } from "./viewport.js";
-import { componentShapeStyle, shapeBodyStyle, shapeHeaderStyle, shapeMetaStyle } from "./styles.js";
+import {
+  autoLayoutFrameStyle,
+  componentShapeStyle,
+  shapeBodyStyle,
+  shapeHeaderStyle,
+  shapeLayoutBadgeStyle,
+  shapeMetaStyle,
+  slotDropZoneEmptyStyle,
+  slotDropZoneLabelStyle,
+  slotDropZoneStyle,
+} from "./styles.js";
 
 export const PODO_COMPONENT_SHAPE_TYPE = "podo-component" as const;
 export const PODO_COMPONENT_DRAG_TYPE = "application/x-podo-component";
+
+/** Per-axis resize behavior, mirroring Figma/pencil hug/fill/fixed. */
+export type AxisSizing = "fixed" | "hug" | "fill";
+
+/**
+ * Auto-layout (flex/stack) configuration for a canvas node, modeled on
+ * Figma auto layout and pencil.dev frame layout. `mode: "none"` is the default
+ * and reproduces today's absolute box. `gap`/`padding` are token-reference
+ * strings (e.g. "{spacing.2}") or "" so page export stays token-only.
+ */
+export interface EditorNodeLayout {
+  mode: "none" | "horizontal" | "vertical";
+  gap: string;
+  padding: string;
+  align: "start" | "center" | "end" | "stretch" | "baseline";
+  justify: "start" | "center" | "end" | "space-between" | "space-around";
+  wrap: boolean;
+}
+
+export const DEFAULT_NODE_LAYOUT: EditorNodeLayout = {
+  mode: "none",
+  gap: "",
+  padding: "",
+  align: "stretch",
+  justify: "start",
+  wrap: false,
+};
+
+export const DEFAULT_AXIS_SIZING: AxisSizing = "fixed";
+
+const LAYOUT_MODE_VALUES: readonly EditorNodeLayout["mode"][] = ["none", "horizontal", "vertical"];
+const LAYOUT_ALIGN_VALUES: readonly EditorNodeLayout["align"][] = [
+  "start",
+  "center",
+  "end",
+  "stretch",
+  "baseline",
+];
+const LAYOUT_JUSTIFY_VALUES: readonly EditorNodeLayout["justify"][] = [
+  "start",
+  "center",
+  "end",
+  "space-between",
+  "space-around",
+];
+const AXIS_SIZING_VALUES: readonly AxisSizing[] = ["fixed", "hug", "fill"];
+
+function oneOf<T extends string>(allowed: readonly T[], value: unknown, fallback: T): T {
+  return typeof value === "string" && (allowed as readonly string[]).includes(value)
+    ? (value as T)
+    : fallback;
+}
+
+/**
+ * Validate and coerce an untrusted layout value (e.g. parsed from a tldraw shape
+ * prop) into a well-formed EditorNodeLayout, filling defaults for any missing or
+ * out-of-range field. `wrap` is forced off when the node is not a flex container.
+ */
+export function normalizeEditorNodeLayout(value: unknown): EditorNodeLayout {
+  const record = value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+  const mode = oneOf(LAYOUT_MODE_VALUES, record.mode, "none");
+  return {
+    mode,
+    gap: typeof record.gap === "string" ? record.gap : "",
+    padding: typeof record.padding === "string" ? record.padding : "",
+    align: oneOf(LAYOUT_ALIGN_VALUES, record.align, "stretch"),
+    justify: oneOf(LAYOUT_JUSTIFY_VALUES, record.justify, "start"),
+    wrap: mode === "none" ? false : record.wrap === true,
+  };
+}
+
+export function normalizeAxisSizing(value: unknown): AxisSizing {
+  return oneOf(AXIS_SIZING_VALUES, value, "fixed");
+}
+
+/** Map the layout `align` enum to a CSS align-items value. */
+export function flexAlignToCss(align: EditorNodeLayout["align"]): string {
+  switch (align) {
+    case "start":
+      return "flex-start";
+    case "end":
+      return "flex-end";
+    default:
+      return align; // center | stretch | baseline are valid CSS as-is
+  }
+}
+
+/** Map the layout `justify` enum to a CSS justify-content value. */
+export function flexJustifyToCss(justify: EditorNodeLayout["justify"]): string {
+  switch (justify) {
+    case "start":
+      return "flex-start";
+    case "end":
+      return "flex-end";
+    default:
+      return justify; // center | space-between | space-around are valid CSS as-is
+  }
+}
 
 export interface EditorComponentNode {
   id: string;
@@ -35,6 +143,16 @@ export interface EditorComponentNode {
   variant?: string;
   props: Record<string, unknown>;
   slots: Record<string, string[]>;
+  // Auto-layout config. Optional so legacy nodes (and test fixtures) without a
+  // layout keep behaving as absolute boxes; consumers default via DEFAULT_*.
+  layout?: EditorNodeLayout;
+  widthSizing?: AxisSizing;
+  heightSizing?: AxisSizing;
+}
+
+/** Read a node's effective layout, falling back to the absolute-box default. */
+export function nodeLayout(node: EditorComponentNode): EditorNodeLayout {
+  return node.layout ?? DEFAULT_NODE_LAYOUT;
 }
 
 export interface EditorCanvasState {
@@ -64,6 +182,7 @@ export interface PodoComponentShapeProps {
   variant: string;
   propsJson: string;
   slotsJson: string;
+  layoutJson: string;
 }
 
 declare module "tldraw" {
@@ -85,6 +204,7 @@ export class PodoComponentShapeUtil extends ShapeUtil<PodoComponentShape> {
     variant: T.string,
     propsJson: T.string,
     slotsJson: T.string,
+    layoutJson: T.string,
   };
 
   getDefaultProps(): PodoComponentShape["props"] {
@@ -96,6 +216,7 @@ export class PodoComponentShapeUtil extends ShapeUtil<PodoComponentShape> {
       variant: "default",
       propsJson: "{}",
       slotsJson: "{}",
+      layoutJson: "{}",
     };
   }
 
@@ -122,16 +243,48 @@ export class PodoComponentShapeUtil extends ShapeUtil<PodoComponentShape> {
   component(shape: PodoComponentShape) {
     const props = safeParseRecord(shape.props.propsJson);
     const slots = safeParseRecord(shape.props.slotsJson);
+    const layout = normalizeEditorNodeLayout(safeParseRecord(shape.props.layoutJson).layout);
+    const slotEntries = Object.entries(slots);
+    const isAutoLayout = layout.mode !== "none";
     return (
       <HTMLContainer style={componentShapeStyle}>
         <div style={shapeHeaderStyle}>
           <strong>{shape.props.label}</strong>
           <span>{shape.props.variant}</span>
         </div>
-        <div style={shapeMetaStyle}>{shape.props.componentId}</div>
+        {isAutoLayout ? (
+          <div
+            style={{
+              ...autoLayoutFrameStyle,
+              flexDirection: layout.mode === "horizontal" ? "row" : "column",
+              alignItems: flexAlignToCss(layout.align),
+              justifyContent: flexJustifyToCss(layout.justify),
+              flexWrap: layout.wrap ? "wrap" : "nowrap",
+              gap: layout.gap ? 10 : 6,
+            }}
+          >
+            {slotEntries.length ? (
+              slotEntries.map(([name, children]) => (
+                <div key={name} style={slotDropZoneStyle}>
+                  <span style={slotDropZoneLabelStyle}>{name}</span>
+                  <span>{Array.isArray(children) ? children.length : 0} child</span>
+                </div>
+              ))
+            ) : (
+              <span style={slotDropZoneEmptyStyle}>auto-layout · add a slot</span>
+            )}
+          </div>
+        ) : (
+          <div style={shapeMetaStyle}>{shape.props.componentId}</div>
+        )}
         <div style={shapeBodyStyle}>
           <span>{Object.keys(props).length} props</span>
-          <span>{Object.keys(slots).length} slots</span>
+          <span>{slotEntries.length} slots</span>
+          {isAutoLayout ? (
+            <span style={shapeLayoutBadgeStyle}>
+              {layout.mode === "horizontal" ? "→ row" : "↓ column"}
+            </span>
+          ) : null}
         </div>
       </HTMLContainer>
     );
@@ -162,7 +315,12 @@ export function createEditorState(input: {
 export function createComponentNode(
   component: ComponentDocument,
   position: { x: number; y: number },
-  input: Partial<Pick<EditorComponentNode, "id" | "w" | "h" | "variant" | "props" | "slots">> = {}
+  input: Partial<
+    Pick<
+      EditorComponentNode,
+      "id" | "w" | "h" | "variant" | "props" | "slots" | "layout" | "widthSizing" | "heightSizing"
+    >
+  > = {}
 ): EditorComponentNode {
   const parsed = parseComponentDocument(component);
   const defaultVariant = parsed.variants[0]?.default ?? parsed.variants[0]?.values[0] ?? "default";
@@ -177,6 +335,9 @@ export function createComponentNode(
     variant: input.variant ?? defaultVariant,
     props: input.props ?? defaultPropsForComponent(parsed),
     slots: input.slots ?? defaultSlotsForComponent(parsed),
+    layout: input.layout ?? DEFAULT_NODE_LAYOUT,
+    widthSizing: input.widthSizing ?? DEFAULT_AXIS_SIZING,
+    heightSizing: input.heightSizing ?? DEFAULT_AXIS_SIZING,
   };
 }
 
@@ -205,6 +366,63 @@ export function updateComponentNodeProps(
     ),
     selectedNodeId: nodeId,
   };
+}
+
+/** Update a node's auto-layout config (validated/normalized) and select it. */
+export function updateComponentNodeLayout(
+  state: EditorCanvasState,
+  nodeId: string,
+  update: {
+    layout?: Partial<EditorNodeLayout>;
+    widthSizing?: AxisSizing;
+    heightSizing?: AxisSizing;
+  }
+): EditorCanvasState {
+  return {
+    ...state,
+    nodes: state.nodes.map((node) => {
+      if (node.id !== nodeId) {
+        return node;
+      }
+      return {
+        ...node,
+        layout: normalizeEditorNodeLayout({ ...nodeLayout(node), ...update.layout }),
+        widthSizing: normalizeAxisSizing(
+          update.widthSizing ?? node.widthSizing ?? DEFAULT_AXIS_SIZING
+        ),
+        heightSizing: normalizeAxisSizing(
+          update.heightSizing ?? node.heightSizing ?? DEFAULT_AXIS_SIZING
+        ),
+      };
+    }),
+    selectedNodeId: nodeId,
+  };
+}
+
+/**
+ * Migrate canvas slot fills from an old slot name to a new one for every node of
+ * a component, so renaming a slot declaration does not orphan children that were
+ * already composed into the old slot.
+ */
+export function renameNodeSlot(
+  nodes: EditorComponentNode[],
+  componentId: string,
+  fromName: string,
+  toName: string
+): EditorComponentNode[] {
+  if (fromName === toName) {
+    return nodes;
+  }
+  return nodes.map((node) => {
+    if (node.componentId !== componentId || !(fromName in node.slots)) {
+      return node;
+    }
+    const { [fromName]: moved, ...rest } = node.slots;
+    return {
+      ...node,
+      slots: { ...rest, [toName]: [...(node.slots[toName] ?? []), ...(moved ?? [])] },
+    };
+  });
 }
 
 export function composeSlot(
@@ -401,6 +619,34 @@ export interface PageDocumentExportFile {
  * become nested component-instance children. Page design is installed-project
  * only (report.md §8). Style values stay token-driven (no raw layout values).
  */
+/**
+ * Project a node's editor auto-layout onto a page LayoutNode `layout` object,
+ * emitting only non-default keys in a fixed order so default canvases stay
+ * byte-stable. `gap`/`padding` are passed through as token-reference strings.
+ */
+function pageLayoutFromNode(layout: EditorNodeLayout): Record<string, unknown> {
+  const result: Record<string, unknown> = {
+    mode: "flex",
+    direction: layout.mode === "horizontal" ? "row" : "column",
+  };
+  if (layout.gap) {
+    result.gap = layout.gap;
+  }
+  if (layout.padding) {
+    result.padding = layout.padding;
+  }
+  if (layout.align !== "stretch") {
+    result.align = layout.align;
+  }
+  if (layout.justify !== "start") {
+    result.justify = layout.justify;
+  }
+  if (layout.wrap) {
+    result.wrap = true;
+  }
+  return result;
+}
+
 export function createPageDocumentFromCanvas(
   state: EditorCanvasState,
   options: PageExportOptions
@@ -432,6 +678,23 @@ export function createPageDocumentFromCanvas(
     }
     reached.add(node.id);
     const nextAncestors = new Set(ancestors).add(node.id);
+    // A custom layout-category container with auto-layout becomes a flex/grid
+    // LayoutNode whose children are its (ordered) slot fills. Regular components
+    // stay component-instances so their slot structure is preserved.
+    const layout = nodeLayout(node);
+    const component = state.components.find((item) => item.id === node.componentId);
+    if (component?.category === "layout" && layout.mode !== "none") {
+      const children = Object.values(node.slots)
+        .flat()
+        .map((childId) => nodeById.get(childId))
+        .filter((child): child is EditorComponentNode => Boolean(child))
+        .map((child) => buildNode(child, nextAncestors));
+      return {
+        type: "layout",
+        layout: pageLayoutFromNode(layout),
+        children,
+      };
+    }
     const slots: Record<string, unknown[]> = {};
     for (const [slotName, childIds] of Object.entries(node.slots)) {
       const children = childIds
@@ -522,6 +785,11 @@ export function editorNodeToTldrawShape(node: EditorComponentNode): PodoComponen
       variant: node.variant ?? "default",
       propsJson: JSON.stringify(node.props),
       slotsJson: JSON.stringify(node.slots),
+      layoutJson: JSON.stringify({
+        layout: nodeLayout(node),
+        widthSizing: node.widthSizing ?? DEFAULT_AXIS_SIZING,
+        heightSizing: node.heightSizing ?? DEFAULT_AXIS_SIZING,
+      }),
     },
   };
 }
@@ -534,6 +802,7 @@ function tldrawShapeToEditorNode(
   shape: PodoComponentShape,
   previous?: EditorComponentNode
 ): EditorComponentNode {
+  const layoutRecord = safeParseRecord(shape.props.layoutJson);
   return {
     id: shapeIdToNodeId(shape.id),
     componentId: shape.props.componentId,
@@ -545,6 +814,9 @@ function tldrawShapeToEditorNode(
     variant: shape.props.variant,
     props: safeParseRecord(shape.props.propsJson),
     slots: normalizeSlotRecord(safeParseRecord(shape.props.slotsJson)),
+    layout: normalizeEditorNodeLayout(layoutRecord.layout),
+    widthSizing: normalizeAxisSizing(layoutRecord.widthSizing),
+    heightSizing: normalizeAxisSizing(layoutRecord.heightSizing),
     ...(previous?.componentId === shape.props.componentId ? { name: previous.name } : {}),
   };
 }
@@ -587,7 +859,10 @@ function hasEditorNodeShapeChanged(
     previous.h !== next.h ||
     previous.variant !== next.variant ||
     JSON.stringify(previous.props) !== JSON.stringify(next.props) ||
-    JSON.stringify(previous.slots) !== JSON.stringify(next.slots)
+    JSON.stringify(previous.slots) !== JSON.stringify(next.slots) ||
+    JSON.stringify(nodeLayout(previous)) !== JSON.stringify(nodeLayout(next)) ||
+    (previous.widthSizing ?? DEFAULT_AXIS_SIZING) !== (next.widthSizing ?? DEFAULT_AXIS_SIZING) ||
+    (previous.heightSizing ?? DEFAULT_AXIS_SIZING) !== (next.heightSizing ?? DEFAULT_AXIS_SIZING)
   );
 }
 

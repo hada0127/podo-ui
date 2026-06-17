@@ -5,17 +5,23 @@ import type { ComponentDocument } from "@podo/spec";
 import type { PodoSaveAdapter } from "@podo/edit-core";
 import {
   PODO_COMPONENT_DRAG_TYPE,
+  DEFAULT_AXIS_SIZING,
   composeSlot,
   createComponentSpecExportFile,
   createPageDocumentExportFile,
   editorNodeToTldrawShape,
+  nodeLayout,
   podoShapeUtils,
   selectResponsivePreview,
+  updateComponentNodeLayout,
+  type AxisSizing,
   type ComponentSpecExportFile,
   type EditorCanvasState,
   type EditorComponentNode,
+  type EditorNodeLayout,
   type PageDocumentExportFile,
 } from "./canvas.js";
+import { TOKEN_REFERENCE_LIST_ID } from "./token-model.js";
 import {
   editorLegacyGridContract,
   responsiveViewports,
@@ -25,6 +31,7 @@ import {
 import {
   canvasArtboardStageStyle,
   canvasShellStyle,
+  checkboxFieldStyle,
   errorTextStyle,
   fieldStyle,
   inputStyle,
@@ -35,6 +42,7 @@ import {
   segmentedButtonActiveStyle,
   segmentedButtonStyle,
   segmentedStyle,
+  selectStyle,
   sidebarTitleStyle,
   slotRowStyle,
   smallButtonStyle,
@@ -44,6 +52,194 @@ import {
   viewportPanelStyle,
 } from "./styles.js";
 import { TokenPicker, type TokenPickerOption } from "./token-picker.js";
+
+const LAYOUT_MODE_OPTIONS: Array<{ value: EditorNodeLayout["mode"]; label: string }> = [
+  { value: "none", label: "none (absolute)" },
+  { value: "horizontal", label: "horizontal (row)" },
+  { value: "vertical", label: "vertical (column)" },
+];
+const LAYOUT_ALIGN_OPTIONS: EditorNodeLayout["align"][] = [
+  "start",
+  "center",
+  "end",
+  "stretch",
+  "baseline",
+];
+const LAYOUT_JUSTIFY_OPTIONS: EditorNodeLayout["justify"][] = [
+  "start",
+  "center",
+  "end",
+  "space-between",
+  "space-around",
+];
+const AXIS_SIZING_OPTIONS: AxisSizing[] = ["fixed", "hug", "fill"];
+
+type NodeLayoutUpdate = {
+  layout?: Partial<EditorNodeLayout>;
+  widthSizing?: AxisSizing;
+  heightSizing?: AxisSizing;
+};
+
+/** Auto-layout (flex/stack) + per-axis sizing controls for the selected node. */
+function NodeLayoutInspector({
+  node,
+  onApply,
+}: {
+  node: EditorComponentNode;
+  onApply: (update: NodeLayoutUpdate) => void;
+}) {
+  const layout = nodeLayout(node);
+  const widthSizing = node.widthSizing ?? DEFAULT_AXIS_SIZING;
+  const heightSizing = node.heightSizing ?? DEFAULT_AXIS_SIZING;
+  const isAutoLayout = layout.mode !== "none";
+  return (
+    <div style={fieldStyle}>
+      <span>Auto layout</span>
+      <select
+        aria-label="Auto layout mode"
+        style={selectStyle}
+        value={layout.mode}
+        onChange={(event) =>
+          onApply({ layout: { mode: event.currentTarget.value as EditorNodeLayout["mode"] } })
+        }
+      >
+        {LAYOUT_MODE_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {isAutoLayout ? (
+        <>
+          <div style={rowStyle}>
+            <label style={fieldStyle}>
+              align
+              <select
+                aria-label="Align items"
+                style={selectStyle}
+                value={layout.align}
+                onChange={(event) =>
+                  onApply({
+                    layout: { align: event.currentTarget.value as EditorNodeLayout["align"] },
+                  })
+                }
+              >
+                {LAYOUT_ALIGN_OPTIONS.map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label style={fieldStyle}>
+              justify
+              <select
+                aria-label="Justify content"
+                style={selectStyle}
+                value={layout.justify}
+                onChange={(event) =>
+                  onApply({
+                    layout: { justify: event.currentTarget.value as EditorNodeLayout["justify"] },
+                  })
+                }
+              >
+                {LAYOUT_JUSTIFY_OPTIONS.map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div style={rowStyle}>
+            <label style={fieldStyle}>
+              gap
+              <input
+                key={`${node.id}:gap:${layout.gap}`}
+                aria-label="Layout gap"
+                style={inputStyle}
+                list={TOKEN_REFERENCE_LIST_ID}
+                defaultValue={layout.gap}
+                placeholder="{spacing.2}"
+                onBlur={(event) => {
+                  if (event.currentTarget.value !== layout.gap) {
+                    onApply({ layout: { gap: event.currentTarget.value } });
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.currentTarget.blur();
+                  }
+                }}
+              />
+            </label>
+            <label style={fieldStyle}>
+              padding
+              <input
+                key={`${node.id}:padding:${layout.padding}`}
+                aria-label="Layout padding"
+                style={inputStyle}
+                list={TOKEN_REFERENCE_LIST_ID}
+                defaultValue={layout.padding}
+                placeholder="{spacing.2}"
+                onBlur={(event) => {
+                  if (event.currentTarget.value !== layout.padding) {
+                    onApply({ layout: { padding: event.currentTarget.value } });
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.currentTarget.blur();
+                  }
+                }}
+              />
+            </label>
+          </div>
+          <label style={checkboxFieldStyle}>
+            <input
+              type="checkbox"
+              checked={layout.wrap}
+              onChange={(event) => onApply({ layout: { wrap: event.currentTarget.checked } })}
+            />
+            wrap
+          </label>
+        </>
+      ) : null}
+      <div style={rowStyle}>
+        <label style={fieldStyle}>
+          width
+          <select
+            aria-label="Width sizing"
+            style={selectStyle}
+            value={widthSizing}
+            onChange={(event) => onApply({ widthSizing: event.currentTarget.value as AxisSizing })}
+          >
+            {AXIS_SIZING_OPTIONS.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label style={fieldStyle}>
+          height
+          <select
+            aria-label="Height sizing"
+            style={selectStyle}
+            value={heightSizing}
+            onChange={(event) => onApply({ heightSizing: event.currentTarget.value as AxisSizing })}
+          >
+            {AXIS_SIZING_OPTIONS.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+    </div>
+  );
+}
 
 export function CanvasPanelControls({
   state,
@@ -137,26 +333,41 @@ export function CanvasPanelControls({
           </label>
           <div style={fieldStyle}>
             <span>Slots</span>
-            {selectedComponent.slots.map((slot) => (
-              <div key={slot.name} style={slotRowStyle}>
-                <span>{slot.name}</span>
-                {state.nodes
-                  .filter((node) => node.id !== selectedNode.id)
-                  .map((child) => (
-                    <button
-                      key={child.id}
-                      type="button"
-                      style={smallButtonStyle}
-                      onClick={() =>
-                        commitState(composeSlot(state, selectedNode.id, slot.name, child.id))
-                      }
-                    >
-                      + {child.name}
-                    </button>
-                  ))}
-              </div>
-            ))}
+            {selectedComponent.slots.length ? (
+              selectedComponent.slots.map((slot) => (
+                <div key={slot.name} style={slotRowStyle}>
+                  <span>
+                    {slot.name}
+                    {slot.repeated ? " *" : ""} ({selectedNode.slots[slot.name]?.length ?? 0})
+                  </span>
+                  {state.nodes
+                    .filter((node) => node.id !== selectedNode.id)
+                    .map((child) => (
+                      <button
+                        key={child.id}
+                        type="button"
+                        style={smallButtonStyle}
+                        onClick={() =>
+                          commitState(composeSlot(state, selectedNode.id, slot.name, child.id))
+                        }
+                      >
+                        + {child.name}
+                      </button>
+                    ))}
+                </div>
+              ))
+            ) : (
+              <span style={errorTextStyle}>
+                This component declares no slots. Add slots in the Components panel.
+              </span>
+            )}
           </div>
+          <NodeLayoutInspector
+            node={selectedNode}
+            onApply={(update) =>
+              commitState(updateComponentNodeLayout(state, selectedNode.id, update))
+            }
+          />
           <div style={rowStyle}>
             <button
               type="button"

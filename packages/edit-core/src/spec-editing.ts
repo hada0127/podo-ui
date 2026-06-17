@@ -323,6 +323,48 @@ export function deleteComponentVariant(
   });
 }
 
+export function upsertComponentSlot(
+  component: ComponentDocument,
+  input: {
+    name: string;
+    required?: boolean;
+    repeated?: boolean;
+    fallback?: string;
+    description?: string;
+  }
+): ComponentDocument {
+  const name = input.name.trim();
+  if (!name) {
+    throw new Error("Slot name is required.");
+  }
+  const existing = component.slots.find((item) => item.name === name);
+  const slot: ComponentDocument["slots"][number] = {
+    name,
+    required: input.required ?? false,
+    repeated: input.repeated ?? false,
+    ...(input.fallback?.trim() ? { fallback: input.fallback.trim() } : {}),
+    ...(input.description?.trim() ? { description: input.description.trim() } : {}),
+    // Preserve target-specific slot metadata (e.g. web/react/native element
+    // mappings) that the editor draft cannot express, so editing a slot's
+    // name/flags never silently drops codegen-relevant `targets`.
+    ...(existing?.targets ? { targets: existing.targets } : {}),
+  };
+  const slots = existing
+    ? component.slots.map((item) => (item.name === slot.name ? slot : item))
+    : [...component.slots, slot];
+  return parseComponentDocument({ ...component, slots });
+}
+
+export function deleteComponentSlot(
+  component: ComponentDocument,
+  slotName: string
+): ComponentDocument {
+  return parseComponentDocument({
+    ...component,
+    slots: component.slots.filter((slot) => slot.name !== slotName),
+  });
+}
+
 export function componentVariantValuesText(variant: ComponentDocument["variants"][number]): string {
   return variant.values.join(", ");
 }

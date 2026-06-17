@@ -13,7 +13,7 @@ import {
   summaryListStyle,
 } from "./styles.js";
 
-export function ExportPanelControls({
+export function BuildPanelControls({
   tokenRecords,
   state,
 }: {
@@ -22,7 +22,7 @@ export function ExportPanelControls({
 }) {
   return (
     <>
-      <div style={sidebarTitleStyle}>Export</div>
+      <div style={sidebarTitleStyle}>Build</div>
       <div style={summaryListStyle}>
         <span>{tokenRecords.length} tokens</span>
         <span>{state.components.length} components</span>
@@ -32,7 +32,7 @@ export function ExportPanelControls({
   );
 }
 
-export function ExportPanelWorkspace({
+export function BuildPanelWorkspace({
   tokenDocumentsState,
   state,
 }: {
@@ -43,8 +43,10 @@ export function ExportPanelWorkspace({
     <section style={exportSectionStyle}>
       <div style={sectionHeaderStyle}>
         <div>
-          <h1 style={sectionTitleStyle}>Export</h1>
-          <p style={sectionMetaStyle}>Current in-memory JSON specs</p>
+          <h1 style={sectionTitleStyle}>Build</h1>
+          <p style={sectionMetaStyle}>
+            JSON spec artifacts that feed the build (reproducible source of truth)
+          </p>
         </div>
       </div>
       <div style={splitPanelStyle}>

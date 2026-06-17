@@ -45,6 +45,12 @@ export interface LayoutNode {
     gap?: string | undefined;
     padding?: string | undefined;
     columns?: number | undefined;
+    // Flex alignment. `align` maps to CSS align-items (counter axis); `justify`
+    // maps to CSS justify-content (primary axis). Token-free enums keep codegen a
+    // direct passthrough. Optional so existing layout nodes serialize unchanged.
+    align?: "start" | "center" | "end" | "stretch" | "baseline" | undefined;
+    justify?: "start" | "center" | "end" | "space-between" | "space-around" | undefined;
+    wrap?: boolean | undefined;
   };
   children: PageNode[];
 }
@@ -75,6 +81,9 @@ const layoutNodeSchema = z.object({
     gap: aliasReferenceSchema.optional(),
     padding: aliasReferenceSchema.optional(),
     columns: z.number().int().positive().optional(),
+    align: z.enum(["start", "center", "end", "stretch", "baseline"]).optional(),
+    justify: z.enum(["start", "center", "end", "space-between", "space-around"]).optional(),
+    wrap: z.boolean().optional(),
   }),
   children: z.array(z.lazy(() => pageNodeSchema)).default([]),
 });

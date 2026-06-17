@@ -4,6 +4,8 @@ import {
   createEditStore,
   createInMemoryAdapter,
   createStudioHttpAdapter,
+  deleteComponentSlot,
+  upsertComponentSlot,
   validateWorkspace,
 } from "./index.js";
 
@@ -252,5 +254,49 @@ describe("createStudioHttpAdapter", () => {
     });
     const adapter = createStudioHttpAdapter({ fetch });
     await expect(adapter.validate()).rejects.toThrow(/Studio validate failed/);
+  });
+});
+
+describe("component slot editing", () => {
+  it("adds, updates, and removes slots", () => {
+    const withSlot = upsertComponentSlot(demoComponent, {
+      name: "content",
+      repeated: true,
+      description: "Body",
+    });
+    expect(withSlot.slots).toHaveLength(1);
+    expect(withSlot.slots[0]).toMatchObject({
+      name: "content",
+      required: false,
+      repeated: true,
+      description: "Body",
+    });
+
+    const updated = upsertComponentSlot(withSlot, {
+      name: "content",
+      required: true,
+      repeated: false,
+    });
+    expect(updated.slots).toHaveLength(1);
+    expect(updated.slots[0]).toMatchObject({ name: "content", required: true, repeated: false });
+
+    const removed = deleteComponentSlot(updated, "content");
+    expect(removed.slots).toHaveLength(0);
+  });
+
+  it("rejects an empty slot name", () => {
+    expect(() => upsertComponentSlot(demoComponent, { name: "  " })).toThrow();
+  });
+
+  it("preserves target-specific slot metadata on update", () => {
+    const targeted = parseComponentDocument({
+      ...demoComponent,
+      slots: [
+        { name: "content", required: false, repeated: true, targets: { web: { name: "div" } } },
+      ],
+    });
+    const updated = upsertComponentSlot(targeted, { name: "content", required: true });
+    expect(updated.slots[0]?.required).toBe(true);
+    expect(updated.slots[0]?.targets).toEqual({ web: { name: "div" } });
   });
 });

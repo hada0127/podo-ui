@@ -35,6 +35,88 @@ export interface TypographyWorkspaceModel {
   styles: EditorTokenRecord[];
 }
 
+/**
+ * A single color variation paired across color schemes so the editor can render
+ * light (left) and dark (right) next to each other for easy comparison. Either
+ * side may be missing (a light-only or dark-only token).
+ */
+export interface ColorComparisonCell {
+  light?: EditorTokenRecord;
+  dark?: EditorTokenRecord;
+}
+
+export interface ColorComparisonRow {
+  /** Neutralized (scheme-stripped) parent path, e.g. "color.bg". */
+  id: string;
+  /** Display label with the leading "color." removed, e.g. "bg". */
+  label: string;
+  cells: Record<string, ColorComparisonCell>;
+}
+
+export interface ColorComparisonMatrixModel {
+  columns: string[];
+  rows: ColorComparisonRow[];
+  totalRecords: number;
+}
+
+/**
+ * Build a single matrix where each color variation pairs its light and dark
+ * records into one cell. Light tokens live at `color.*`; dark tokens live at
+ * `dark.color.*`. Both project to the same neutral path (the `dark.` prefix is
+ * stripped) so they line up in the same row/column. See report.md theming model.
+ */
+export function createColorComparisonMatrix(
+  records: EditorTokenRecord[]
+): ColorComparisonMatrixModel {
+  const columns: string[] = [];
+  const rows = new Map<string, ColorComparisonRow>();
+  let totalRecords = 0;
+  for (const record of records) {
+    if (record.token.$type !== "color") {
+      continue;
+    }
+    const isDark = record.path.startsWith("dark.color.");
+    const isLight = record.path.startsWith("color.");
+    if (!isDark && !isLight) {
+      continue;
+    }
+    const neutralPath = isDark ? record.path.slice("dark.".length) : record.path;
+    const parentPath = tokenParentPath(neutralPath);
+    const column = tokenVariationName(neutralPath);
+    if (!columns.includes(column)) {
+      columns.push(column);
+    }
+    const row = rows.get(parentPath) ?? {
+      id: parentPath,
+      label: colorComparisonRowLabel(parentPath),
+      cells: {},
+    };
+    const cell = row.cells[column] ?? {};
+    if (isDark) {
+      cell.dark = record;
+    } else {
+      cell.light = record;
+    }
+    row.cells[column] = cell;
+    rows.set(parentPath, row);
+    totalRecords += 1;
+  }
+  return {
+    columns: sortTokenMatrixColumns(columns, "color"),
+    rows: [...rows.values()],
+    totalRecords,
+  };
+}
+
+/** Derive the dark counterpart path for a light color path (and vice versa). */
+export function colorCounterpartPath(neutralColorPath: string, scheme: "light" | "dark"): string {
+  return scheme === "dark" ? `dark.${neutralColorPath}` : neutralColorPath;
+}
+
+function colorComparisonRowLabel(parentPath: string): string {
+  return parentPath.startsWith("color.") ? parentPath.slice("color.".length) : parentPath;
+}
+
 export interface ComponentTokenEditorModel {
   componentId: string;
   records: EditorTokenRecord[];

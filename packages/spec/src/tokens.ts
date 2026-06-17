@@ -87,6 +87,9 @@ export const podoTokenExtensionSchema = z.object({
   fontAsset: embeddedFontAssetSchema.optional(),
   themeable: z.boolean().optional(),
   roles: z.array(z.string().min(1)).optional(),
+  // For a fontFamily token: the numeric font weights this family ships/supports
+  // (e.g. [400, 700]). Lets each font enable/disable weights independently.
+  weights: z.array(z.number().int().min(1).max(1000)).optional(),
   scope: tokenScopeSchema.optional(),
   deprecated: z
     .union([

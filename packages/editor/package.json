@@ -26,7 +26,8 @@
   "dependencies": {
     "@podo/edit-core": "workspace:*",
     "@podo/spec": "workspace:*",
-    "tldraw": "^5.1.0"
+    "tldraw": "^5.1.0",
+    "woff2-encoder": "^2.0.0"
   },
   "peerDependencies": {
     "react": ">=18",

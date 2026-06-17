@@ -14,7 +14,7 @@ import {
   type EditorComponentNode,
 } from "./canvas.js";
 
-export type ComponentEditMode = "props" | "variants" | "tokens";
+export type ComponentEditMode = "props" | "variants" | "slots" | "tokens";
 
 export interface ComponentMetaDraft {
   name: string;
@@ -38,6 +38,14 @@ export interface ComponentVariantDraft {
   defaultValue: string;
   description: string;
   tokensText: string;
+}
+
+export interface ComponentSlotDraft {
+  name: string;
+  required: boolean;
+  repeated: boolean;
+  fallback: string;
+  description: string;
 }
 
 export function createNewTokenDraft(documentIndex = 0): EditorTokenDraft {
@@ -114,6 +122,28 @@ export function componentVariantDraftFromVariant(
     defaultValue: variant.default ?? variant.values[0] ?? "",
     description: variant.description ?? "",
     tokensText: variant.tokens ? JSON.stringify(variant.tokens, null, 2) : "",
+  };
+}
+
+export function createNewComponentSlotDraft(): ComponentSlotDraft {
+  return {
+    name: "content",
+    required: false,
+    repeated: true,
+    fallback: "",
+    description: "",
+  };
+}
+
+export function componentSlotDraftFromSlot(
+  slot: ComponentDocument["slots"][number]
+): ComponentSlotDraft {
+  return {
+    name: slot.name,
+    required: slot.required,
+    repeated: slot.repeated,
+    fallback: slot.fallback ?? "",
+    description: slot.description ?? "",
   };
 }
 

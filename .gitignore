@@ -13,3 +13,5 @@ test-results/
 # Podo generated project output
 .podo/cache/
 .podo/generated/
+
+.scratch/

@@ -65,6 +65,33 @@ describe("pageDocumentSchema", () => {
     ).toThrow();
   });
 
+  it("accepts flex alignment fields and rejects invalid enum values", () => {
+    const flexPage = {
+      schemaVersion: PODO_SCHEMA_VERSION,
+      kind: "page" as const,
+      id: "flex",
+      name: "Flex",
+      root: {
+        type: "layout" as const,
+        layout: {
+          mode: "flex" as const,
+          direction: "row" as const,
+          align: "center",
+          justify: "space-between",
+          wrap: true,
+        },
+        children: [],
+      },
+    };
+    expect(() => parsePageDocument(flexPage)).not.toThrow();
+    expect(() =>
+      parsePageDocument({
+        ...flexPage,
+        root: { ...flexPage.root, layout: { mode: "flex", align: "bogus" } },
+      })
+    ).toThrow();
+  });
+
   it("passes validation when every component instance resolves", () => {
     expect(validatePageComponents(page, [button])).toEqual([]);
   });

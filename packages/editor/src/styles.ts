@@ -26,7 +26,7 @@ export const productTitleStyle: CSSProperties = { fontSize: 15 };
 
 export const panelTabsStyle: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(4, minmax(92px, 1fr))",
+  gridTemplateColumns: "repeat(5, minmax(82px, 1fr))",
   gap: 4,
 };
 
@@ -214,27 +214,6 @@ export const summaryStyle: CSSProperties = {
   fontWeight: 700,
   fontSize: 13,
 };
-
-export const nestedDisclosureStyle: CSSProperties = {
-  border: "1px solid #e0e7f0",
-  borderRadius: 6,
-  background: "#ffffff",
-  padding: 8,
-};
-
-export const nestedSummaryStyle: CSSProperties = {
-  cursor: "pointer",
-  fontWeight: 700,
-  fontSize: 12,
-  color: "#4e5968",
-};
-
-export const detailPanelBodyStyle: CSSProperties = {
-  display: "grid",
-  gap: 12,
-  marginTop: 10,
-};
-
 export const compactFormGridStyle: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "repeat(3, minmax(160px, 1fr))",
@@ -275,27 +254,6 @@ export const componentEditModeButtonActiveStyle: CSSProperties = {
   background: "#eaf1ff",
   color: "#153e75",
 };
-
-export const tokenValueEditorStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "auto minmax(0, 1fr)",
-  alignItems: "stretch",
-  gap: 8,
-};
-
-export const tokenValueEditorPlainStyle: CSSProperties = {
-  display: "grid",
-};
-
-export const tokenColorInputStyle: CSSProperties = {
-  width: 52,
-  minHeight: 72,
-  border: "1px solid #d8dde6",
-  borderRadius: 6,
-  padding: 4,
-  background: "#ffffff",
-};
-
 export const tokenMatrixPanelStyle: CSSProperties = {
   border: "1px solid #d4dce8",
   borderRadius: 8,
@@ -449,6 +407,312 @@ export const tokenMatrixEmptyCellStyle: CSSProperties = {
   fontSize: 12,
 };
 
+// --- Color comparison matrix (light left / dark right) ---------------------
+
+const checkerboardBackground: CSSProperties = {
+  backgroundImage:
+    "linear-gradient(45deg, #d9dee7 25%, transparent 25%), linear-gradient(-45deg, #d9dee7 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d9dee7 75%), linear-gradient(-45deg, transparent 75%, #d9dee7 75%)",
+  backgroundSize: "10px 10px",
+  backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0",
+  backgroundColor: "#ffffff",
+};
+
+export const colorSchemeLegendStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  color: "#5d6775",
+  fontSize: 11,
+  fontWeight: 600,
+};
+
+export const colorSchemeLegendSwatchLightStyle: CSSProperties = {
+  width: 12,
+  height: 12,
+  borderRadius: 3,
+  border: "1px solid #d8dde6",
+  background: "#ffffff",
+};
+
+export const colorSchemeLegendSwatchDarkStyle: CSSProperties = {
+  width: 12,
+  height: 12,
+  borderRadius: 3,
+  border: "1px solid #2c2c31",
+  background: "#18181b",
+};
+
+// Groups (primary, default, …) lay out as responsive cards; inside each card,
+// variations (base, hover, …) stack as rows and only light|dark split into two
+// columns. table-layout:fixed + min-width:0 keep inputs inside narrow cards
+// (no horizontal scroll).
+export const colorComparisonGridStyle: CSSProperties = {
+  // One group card per row: full width is clearer than a multi-column wall of
+  // cards, and gives each light/dark value input room to show its full value.
+  display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
+  gap: 12,
+  minWidth: 0,
+};
+
+export const colorGroupCardStyle: CSSProperties = {
+  border: "1px solid #e3e9f2",
+  borderRadius: 10,
+  background: "#ffffff",
+  padding: "12px 16px 6px",
+  minWidth: 0,
+  maxWidth: 1040,
+  display: "grid",
+  gap: 6,
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+};
+
+export const colorGroupHeaderStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "baseline",
+  justifyContent: "space-between",
+  gap: 8,
+  paddingBottom: 4,
+  borderBottom: "1px solid #eef2f7",
+  color: "#171a20",
+  fontSize: 14,
+  fontWeight: 700,
+};
+
+export const colorGroupCountStyle: CSSProperties = {
+  color: "#8a93a3",
+  fontSize: 11,
+  fontWeight: 600,
+};
+
+export const colorGroupTableStyle: CSSProperties = {
+  width: "100%",
+  tableLayout: "fixed",
+  borderCollapse: "separate",
+  borderSpacing: 0,
+};
+
+export const colorGroupColHeadStyle: CSSProperties = {
+  textAlign: "left",
+  padding: "4px 4px 6px 0",
+  color: "#8a93a3",
+  fontSize: 9,
+  fontWeight: 700,
+  textTransform: "uppercase",
+  letterSpacing: "0.06em",
+};
+
+export const colorGroupCornerStyle: CSSProperties = {
+  width: 70,
+};
+
+export const colorVariationHeadStyle: CSSProperties = {
+  width: 70,
+  textAlign: "left",
+  verticalAlign: "middle",
+  padding: "7px 8px 7px 0",
+  color: "#4e5968",
+  fontSize: 12,
+  fontWeight: 600,
+  overflowWrap: "anywhere",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 6,
+};
+
+export const colorVariationRowActiveStyle: CSSProperties = {
+  background: "#f3f7ff",
+};
+
+export const colorSideCellStyle: CSSProperties = {
+  padding: "5px 16px 5px 0",
+  verticalAlign: "middle",
+  borderTop: "1px solid #f2f5fa",
+};
+
+export const colorSideStyle: CSSProperties = {
+  display: "grid",
+  gap: 4,
+  minWidth: 0,
+};
+
+export const colorSideRowStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "40px minmax(0, 1fr) auto",
+  gap: 8,
+  alignItems: "center",
+  minWidth: 0,
+};
+// Swatch-triggered color+alpha picker popover (native color input has no alpha,
+// so alpha is a slider here and the value recombines to hex / rgba()).
+export const colorPickerWrapStyle: CSSProperties = {
+  position: "relative",
+  width: 40,
+  height: 32,
+};
+
+export const colorSwatchTriggerStyle: CSSProperties = {
+  width: 40,
+  height: 32,
+  borderRadius: 7,
+  border: "1px solid #d3dae6",
+  boxShadow: "inset 0 0 0 1px rgba(255, 255, 255, 0.45)",
+  overflow: "hidden",
+  cursor: "pointer",
+  padding: 0,
+  ...checkerboardBackground,
+};
+
+export const colorPickerBackdropStyle: CSSProperties = {
+  position: "fixed",
+  inset: 0,
+  zIndex: 40,
+};
+
+export const colorPickerPopoverStyle: CSSProperties = {
+  position: "absolute",
+  top: "calc(100% + 6px)",
+  left: 0,
+  zIndex: 41,
+  width: 216,
+  boxSizing: "border-box",
+  background: "#ffffff",
+  border: "1px solid #d8dde6",
+  borderRadius: 10,
+  boxShadow: "0 12px 28px rgba(15, 23, 42, 0.18)",
+  padding: 12,
+  display: "grid",
+  gap: 10,
+};
+export const colorPickerPreviewStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  fontSize: 11,
+  color: "#171a20",
+  overflowWrap: "anywhere",
+};
+
+export const colorPickerPreviewSwatchStyle: CSSProperties = {
+  width: 18,
+  height: 18,
+  borderRadius: 4,
+  border: "1px solid #d8dde6",
+  flex: "0 0 auto",
+  ...checkerboardBackground,
+};
+
+// Inline (single-step) HSV color picker: saturation/value 2D area + hue bar +
+// alpha bar, all pointer-driven (no nested OS color dialog).
+export const colorPickerSvStyle: CSSProperties = {
+  position: "relative",
+  width: "100%",
+  height: 132,
+  borderRadius: 8,
+  border: "1px solid #d8dde6",
+  cursor: "crosshair",
+  touchAction: "none",
+};
+
+export const colorPickerSvThumbStyle: CSSProperties = {
+  position: "absolute",
+  width: 14,
+  height: 14,
+  borderRadius: "50%",
+  border: "2px solid #ffffff",
+  boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.35)",
+  transform: "translate(-50%, -50%)",
+  pointerEvents: "none",
+};
+
+export const colorPickerHueStyle: CSSProperties = {
+  position: "relative",
+  width: "100%",
+  height: 14,
+  borderRadius: 7,
+  cursor: "pointer",
+  touchAction: "none",
+  background:
+    "linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)",
+};
+
+export const colorPickerBarThumbStyle: CSSProperties = {
+  position: "absolute",
+  top: "50%",
+  width: 16,
+  height: 16,
+  borderRadius: "50%",
+  border: "2px solid #ffffff",
+  boxShadow: "0 0 0 1px rgba(0, 0, 0, 0.35)",
+  transform: "translate(-50%, -50%)",
+  pointerEvents: "none",
+};
+
+export const colorPickerAlphaTrackStyle: CSSProperties = {
+  position: "relative",
+  width: "100%",
+  height: 14,
+  borderRadius: 7,
+  overflow: "hidden",
+  cursor: "pointer",
+  touchAction: "none",
+  ...checkerboardBackground,
+};
+
+export const colorPickerAlphaOverlayStyle: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  borderRadius: 7,
+  pointerEvents: "none",
+};
+
+export const colorPickerStackStyle: CSSProperties = {
+  display: "grid",
+  gap: 10,
+};
+export const colorSideInputStyle: CSSProperties = {
+  width: "100%",
+  minWidth: 0,
+  minHeight: 32,
+  boxSizing: "border-box",
+  border: "1px solid #dde3ec",
+  borderRadius: 7,
+  background: "#fbfcfe",
+  color: "#171a20",
+  padding: "0 10px",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  fontSize: 12,
+};
+
+export const colorTokenToggleStyle: CSSProperties = {
+  height: 32,
+  border: "1px solid #dde3ec",
+  borderRadius: 7,
+  background: "#f4f7fc",
+  color: "#6b7686",
+  cursor: "pointer",
+  fontSize: 11,
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  padding: "0 10px",
+  whiteSpace: "nowrap",
+};
+
+export const colorSideEmptyButtonStyle: CSSProperties = {
+  width: "100%",
+  minWidth: 0,
+  minHeight: 26,
+  boxSizing: "border-box",
+  border: "1px dashed #b9c2d0",
+  borderRadius: 5,
+  background: "#f6f8fb",
+  color: "#6b7280",
+  fontSize: 11,
+  fontWeight: 600,
+  cursor: "pointer",
+};
+
 export const typographyWorkspaceStyle: CSSProperties = {
   border: "1px solid #d4dce8",
   borderRadius: 8,
@@ -474,87 +738,386 @@ export const typographyWorkspaceCountStyle: CSSProperties = {
   color: "#5d6775",
   fontSize: 12,
 };
+// --- Typography workspace redesign (foundations / scale ramp / style cards) ---
 
-export const typographySubPanelStyle: CSSProperties = {
+export const typographyCardStyle: CSSProperties = {
   border: "1px solid #dde5ef",
-  borderRadius: 8,
+  borderRadius: 10,
   background: "#fbfcfe",
+  padding: 14,
   display: "grid",
-  alignContent: "start",
-  gap: 8,
-  padding: 10,
+  gap: 12,
+  minWidth: 0,
 };
 
-export const typographySubHeaderStyle: CSSProperties = {
+export const typographyCardHeaderStyle: CSSProperties = {
   display: "flex",
   alignItems: "baseline",
   justifyContent: "space-between",
   gap: 12,
-  color: "#5d6775",
-  fontSize: 12,
+  textTransform: "uppercase",
+  letterSpacing: "0.04em",
+  fontSize: 11,
+  fontWeight: 700,
+  color: "#4e5968",
 };
 
-export const typographyTwoColumnStyle: CSSProperties = {
+export const typographyCardMetaStyle: CSSProperties = {
+  color: "#8a95a3",
+  fontWeight: 600,
+};
+export const fontSpecimenBadgeStyle: CSSProperties = {
+  position: "absolute",
+  top: 10,
+  right: 10,
+  width: 8,
+  height: 8,
+  borderRadius: "50%",
+  background: "#2f9e6b",
+};
+
+export const fontSpecimenFieldStyle: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gap: 3,
+  minWidth: 0,
+};
+
+export const fontSpecimenAssetRowStyle: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 6,
+  alignItems: "center",
+};
+export const familyListStyle: CSSProperties = {
+  display: "grid",
   gap: 12,
 };
 
-export const typographyTableScrollStyle: CSSProperties = {
-  overflowX: "auto",
-  overflowY: "visible",
+export const familyCardStyle: CSSProperties = {
+  position: "relative",
+  display: "grid",
+  gridTemplateColumns: "minmax(180px, 240px) minmax(0, 1fr)",
+  gap: 18,
+  alignItems: "start",
   border: "1px solid #e0e7f0",
-  borderRadius: 6,
-  scrollbarWidth: "thin",
-  scrollbarColor: "#aab4c4 #eef2f7",
+  borderRadius: 12,
+  background: "#ffffff",
+  padding: 16,
 };
 
-export const typographyTableStyle: CSSProperties = {
+export const familyCardSpecimenStyle: CSSProperties = {
+  position: "relative",
+  display: "grid",
+  gap: 8,
+  alignContent: "start",
+  paddingRight: 18,
+  borderRight: "1px solid #eef2f7",
+  minWidth: 0,
+};
+
+export const familyCardBodyStyle: CSSProperties = {
+  display: "grid",
+  gap: 12,
+  minWidth: 0,
+};
+
+export const familyAddButtonStyle: CSSProperties = {
+  marginTop: 12,
   width: "100%",
-  minWidth: 640,
-  borderCollapse: "separate",
-  borderSpacing: 0,
+  border: "1px dashed #c5d0e0",
+  borderRadius: 10,
+  background: "#fbfcfe",
+  color: "#2f6df6",
+  fontSize: 13,
+  fontWeight: 600,
+  cursor: "pointer",
+  padding: "12px",
 };
 
-export const typographyWideTableStyle: CSSProperties = {
-  ...typographyTableStyle,
-  minWidth: 1120,
+export const familyWeightToggleLabelStyle: CSSProperties = {
+  display: "block",
+  marginTop: 10,
+  marginBottom: 4,
+  fontSize: 10,
+  fontWeight: 600,
+  letterSpacing: 0.3,
+  textTransform: "uppercase",
+  color: "#8a93a3",
 };
 
-export const typographyHeaderCellStyle: CSSProperties = {
-  position: "sticky",
-  top: 0,
-  zIndex: 1,
-  borderBottom: "1px solid #d8e0ea",
-  borderRight: "1px solid #edf1f6",
-  background: "#f7f9fc",
-  color: "#4e5968",
-  padding: "8px",
-  textAlign: "left",
+export const familyWeightToggleRowStyle: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 4,
+};
+
+export const familyWeightChipStyle: CSSProperties = {
+  minWidth: 34,
+  padding: "3px 6px",
+  borderRadius: 6,
+  fontSize: 11,
+  cursor: "pointer",
+  lineHeight: 1.2,
+  textAlign: "center",
+};
+
+export const familyWeightChipOnStyle: CSSProperties = {
+  border: "1px solid #2f6df6",
+  background: "#eef4ff",
+  color: "#1b3f8f",
+};
+
+export const familyWeightChipOffStyle: CSSProperties = {
+  border: "1px solid #e3e7ee",
+  background: "#ffffff",
+  color: "#aab2c0",
+};
+
+export const styleCardHeaderActionsStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+  flex: "0 0 auto",
+};
+
+export const colorMatrixHeaderActionsStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+};
+
+export const colorVariationDeleteStyle: CSSProperties = {
+  flex: "0 0 auto",
+  width: 18,
+  height: 18,
+  lineHeight: "14px",
+  border: "1px solid #e6c9c9",
+  borderRadius: 5,
+  background: "#fdf3f3",
+  color: "#b4231f",
   fontSize: 12,
+  cursor: "pointer",
+  padding: 0,
+};
+
+export const typographyAddButtonStyle: CSSProperties = {
+  border: "1px solid #c5d4ee",
+  borderRadius: 7,
+  background: "#edf4ff",
+  color: "#123b72",
+  padding: "4px 10px",
+  fontSize: 11,
+  fontWeight: 600,
+  cursor: "pointer",
+  textTransform: "none",
+  letterSpacing: "normal",
+};
+
+export const typographyDeleteButtonStyle: CSSProperties = {
+  border: "1px solid #e6c9c9",
+  borderRadius: 6,
+  background: "#fdf3f3",
+  color: "#b4231f",
+  padding: "3px 8px",
+  fontSize: 10,
+  fontWeight: 600,
+  cursor: "pointer",
+};
+
+export const scaleRampDeleteStyle: CSSProperties = {
+  flex: "0 0 auto",
+  width: 26,
+  height: 26,
+  border: "1px solid #e6c9c9",
+  borderRadius: 6,
+  background: "#fdf3f3",
+  color: "#b4231f",
+  fontSize: 13,
+  lineHeight: "22px",
+  cursor: "pointer",
+  padding: 0,
+};
+
+export const scaleRampStyle: CSSProperties = {
+  display: "grid",
+  gap: 0,
+  border: "1px solid #e0e7f0",
+  borderRadius: 8,
+  overflow: "hidden",
+  background: "#ffffff",
+};
+
+export const scaleRampRowStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "flex-end",
+  justifyContent: "space-between",
+  gap: 16,
+  padding: "8px 12px",
+  borderBottom: "1px solid #f1f4f8",
+  minWidth: 0,
+};
+
+export const scaleRampSpecimenStyle: CSSProperties = {
+  flex: 1,
+  minWidth: 0,
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  color: "#171a20",
+  lineHeight: 1.1,
+};
+
+export const scaleRampRailStyle: CSSProperties = {
+  flex: "0 0 auto",
+  width: 208,
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  justifyContent: "flex-end",
+};
+
+export const scaleChipLabelStyle: CSSProperties = {
+  fontSize: 11,
+  color: "#6b7280",
+  textTransform: "uppercase",
+  whiteSpace: "nowrap",
+};
+
+// Scalar (spacing / radius) ramp specimen: a left-aligned visual proportional to
+// the token's resolved value — a bar for spacing, a rounded box for radius.
+export const scalarSpecimenStyle: CSSProperties = {
+  flex: 1,
+  minWidth: 0,
+  display: "flex",
+  alignItems: "center",
+  height: 32,
+  overflow: "hidden",
+};
+
+export const scalarSpecimenBarStyle: CSSProperties = {
+  height: 14,
+  borderRadius: 3,
+  background: "#3b82f6",
+  flex: "0 0 auto",
+};
+
+export const scalarSpecimenBoxStyle: CSSProperties = {
+  width: 44,
+  height: 28,
+  background: "#eef4ff",
+  border: "2px solid #3b82f6",
+  flex: "0 0 auto",
+};
+
+export const scalarSpecimenEmptyStyle: CSSProperties = {
+  fontSize: 12,
+  color: "#9aa3b2",
+  padding: "10px 4px",
+};
+
+export const styleCardGridStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+  gap: 14,
+  minWidth: 0,
+};
+
+export const styleCardStyle: CSSProperties = {
+  border: "1px solid #dde5ef",
+  borderRadius: 10,
+  background: "#ffffff",
+  padding: 14,
+  display: "grid",
+  gap: 12,
+  minWidth: 0,
+};
+
+export const styleCardHeaderStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "baseline",
+  justifyContent: "space-between",
+  gap: 12,
+  minWidth: 0,
+};
+
+export const styleCardTitleStyle: CSSProperties = {
+  display: "grid",
+  gap: 2,
+  minWidth: 0,
+};
+
+export const styleCardNameStyle: CSSProperties = {
+  fontSize: 13,
   fontWeight: 700,
+  color: "#171a20",
+  overflowWrap: "anywhere",
 };
 
-export const typographyRowHeaderCellStyle: CSSProperties = {
-  minWidth: 180,
-  maxWidth: 260,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #d8e0ea",
-  background: "#ffffff",
-  padding: 6,
-  textAlign: "left",
-  verticalAlign: "middle",
+export const typographyStyleSummaryStyle: CSSProperties = {
+  fontSize: 11,
+  color: "#6b7280",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
 };
 
-export const typographyCellStyle: CSSProperties = {
-  minWidth: 128,
-  borderBottom: "1px solid #edf1f6",
-  borderRight: "1px solid #edf1f6",
-  background: "#ffffff",
-  padding: 6,
-  verticalAlign: "middle",
+export const styleSpecimenStyle: CSSProperties = {
+  border: "1px solid #eef2f7",
+  borderRadius: 8,
+  background: "#fcfdff",
+  padding: 12,
+  minHeight: 72,
+  overflow: "hidden",
 };
 
+export const styleFieldsGridStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+  gap: 8,
+  minWidth: 0,
+};
+
+export const styleFieldStyle: CSSProperties = {
+  display: "grid",
+  gap: 3,
+  minWidth: 0,
+};
+
+export const styleFieldWideStyle: CSSProperties = {
+  display: "grid",
+  gap: 3,
+  minWidth: 0,
+  gridColumn: "1 / -1",
+};
+
+export const styleFieldLabelStyle: CSSProperties = {
+  fontSize: 10,
+  letterSpacing: "0.04em",
+  textTransform: "uppercase",
+  color: "#8a95a3",
+};
+
+export const projectRoleAddCardStyle: CSSProperties = {
+  border: "1px dashed #c5d0e0",
+  borderRadius: 10,
+  background: "#fbfcfe",
+  padding: 14,
+  minHeight: 120,
+  display: "grid",
+  gap: 8,
+  alignContent: "center",
+  justifyItems: "start",
+  color: "#4e5968",
+};
+
+export const projectRoleAddButtonStyle: CSSProperties = {
+  border: "1px solid #c5d4ee",
+  borderRadius: 7,
+  background: "#edf4ff",
+  color: "#123b72",
+  padding: "8px 12px",
+  fontSize: 12,
+  fontWeight: 600,
+  cursor: "pointer",
+};
 export const typographyTokenPathButtonStyle: CSSProperties = {
   width: "100%",
   minHeight: 32,
@@ -585,14 +1148,6 @@ export const typographyInlineInputStyle: CSSProperties = {
   padding: "0 7px",
   fontSize: 12,
 };
-
-export const fontAssetCellStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 7,
-  flexWrap: "wrap",
-};
-
 export const fontAttachButtonStyle: CSSProperties = {
   minHeight: 30,
   border: "1px solid #9fb4cf",
@@ -639,20 +1194,6 @@ export const fontRemoveButtonStyle: CSSProperties = {
   padding: "0 8px",
   fontSize: 12,
 };
-
-export const fontWeightPreviewStyle: CSSProperties = {
-  display: "inline-block",
-  minWidth: 42,
-  fontSize: 22,
-  lineHeight: "28px",
-};
-
-export const fontSizePreviewStyle: CSSProperties = {
-  display: "inline-block",
-  minWidth: 42,
-  lineHeight: 1.2,
-};
-
 export const summaryListStyle: CSSProperties = {
   display: "grid",
   gap: 8,
@@ -834,13 +1375,6 @@ export const rowStyle: CSSProperties = {
   gap: 8,
   flexWrap: "wrap",
 };
-
-export const formGridStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, minmax(180px, 1fr))",
-  gap: 10,
-};
-
 export const splitPanelStyle: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
@@ -1206,25 +1740,6 @@ export const compactSelectStyle: CSSProperties = {
   padding: "0 8px",
   fontSize: 12,
 };
-
-export const tokenColorPreviewStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-};
-
-export const tokenSwatchStyle: CSSProperties = {
-  width: 56,
-  height: 56,
-  border: "1px solid #d8dde6",
-  borderRadius: 8,
-};
-
-export const tokenTypographyPreviewStyle: CSSProperties = {
-  display: "grid",
-  gap: 8,
-};
-
 export const fontPreviewSampleStyle: CSSProperties = {
   minWidth: 0,
   display: "grid",
@@ -1246,46 +1761,6 @@ export const fontPreviewMetaStyle: CSSProperties = {
   color: "#6b7280",
   fontSize: 11,
 };
-
-export const fontAttachmentPanelStyle: CSSProperties = {
-  border: "1px solid #dde5ef",
-  borderRadius: 6,
-  background: "#ffffff",
-  padding: 8,
-  display: "grid",
-  gap: 8,
-};
-
-export const fontAttachmentHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 8,
-  color: "#4e5968",
-  fontSize: 12,
-};
-
-export const fontAttachmentActionsStyle: CSSProperties = {
-  display: "flex",
-  gap: 8,
-  flexWrap: "wrap",
-};
-
-export const tokenScalePreviewStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  minHeight: 80,
-};
-
-export const tokenScaleBoxStyle: CSSProperties = {
-  display: "block",
-  minWidth: 2,
-  maxWidth: 240,
-  border: "1px solid #8fb3f4",
-  background: "#eaf1ff",
-};
-
 export const previewInlineWrapStyle: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
@@ -1479,17 +1954,6 @@ export const codeStyle: CSSProperties = {
   fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
   fontSize: 12,
 };
-
-export const codeBlockStyle: CSSProperties = {
-  ...codeStyle,
-  display: "block",
-  whiteSpace: "pre-wrap",
-  border: "1px solid #e2e7ef",
-  borderRadius: 6,
-  background: "#f8fafc",
-  padding: 10,
-};
-
 export const tokenPickerWrapStyle: CSSProperties = {
   position: "relative",
 };
@@ -1640,4 +2104,56 @@ export const shapeBodyStyle: CSSProperties = {
   padding: "0 10px",
   fontSize: 12,
   color: "#5d6775",
+};
+
+export const shapeLayoutBadgeStyle: CSSProperties = {
+  marginLeft: 8,
+  padding: "1px 6px",
+  borderRadius: 999,
+  background: "#e7efff",
+  color: "#2f4d86",
+  fontSize: 10,
+  fontWeight: 700,
+};
+
+// Auto-layout frame rendered inside a node shape when layout.mode !== "none".
+export const autoLayoutFrameStyle: CSSProperties = {
+  display: "flex",
+  minHeight: 0,
+  margin: 8,
+  padding: 8,
+  border: "1px dashed #9bb4dd",
+  borderRadius: 6,
+  background: "#f5f8ff",
+  overflow: "hidden",
+};
+
+export const slotDropZoneStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 2,
+  flex: "0 0 auto",
+  minWidth: 56,
+  minHeight: 36,
+  padding: "6px 8px",
+  border: "1px solid #c5d4ee",
+  borderRadius: 5,
+  background: "#ffffff",
+  fontSize: 11,
+  color: "#3f5275",
+};
+
+export const slotDropZoneLabelStyle: CSSProperties = {
+  fontWeight: 700,
+  fontSize: 10,
+  textTransform: "uppercase",
+  letterSpacing: "0.03em",
+};
+
+export const slotDropZoneEmptyStyle: CSSProperties = {
+  margin: "auto",
+  fontSize: 11,
+  color: "#6b7280",
 };

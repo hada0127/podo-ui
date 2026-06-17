@@ -6,56 +6,7 @@ import {
   type EditorTokenRecord,
 } from "./spec-editing.js";
 import { tokenVariationName } from "./token-lookup.js";
-import {
-  fontAttachButtonStyle,
-  fontAttachmentActionsStyle,
-  fontAttachmentHeaderStyle,
-  fontAttachmentPanelStyle,
-  fontPreviewMetaStyle,
-  fontPreviewSampleStyle,
-  fontPreviewTextStyle,
-  fontRemoveButtonStyle,
-  hiddenFileInputStyle,
-} from "./styles.js";
-
-export function renderFontAttachmentDraftEditor(input: {
-  draft: EditorTokenDraft;
-  onAttach(file: File): Promise<void>;
-  onRemove(): void;
-}) {
-  const asset = getEmbeddedFontAssetFromDraft(input.draft);
-  return (
-    <div style={fontAttachmentPanelStyle}>
-      <div style={fontAttachmentHeaderStyle}>
-        <span>{asset ? asset.fileName : "No font file attached"}</span>
-        {asset ? <small>{asset.format}</small> : null}
-      </div>
-      <div style={fontAttachmentActionsStyle}>
-        <label style={fontAttachButtonStyle}>
-          Attach font file
-          <input
-            aria-label="Attach font file"
-            type="file"
-            accept={FONT_FILE_ACCEPT}
-            style={hiddenFileInputStyle}
-            onChange={(event) => {
-              const file = event.currentTarget.files?.[0];
-              event.currentTarget.value = "";
-              if (file) {
-                void input.onAttach(file);
-              }
-            }}
-          />
-        </label>
-        {asset ? (
-          <button type="button" style={fontRemoveButtonStyle} onClick={input.onRemove}>
-            Remove
-          </button>
-        ) : null}
-      </div>
-    </div>
-  );
-}
+import { fontPreviewMetaStyle, fontPreviewSampleStyle, fontPreviewTextStyle } from "./styles.js";
 
 export function getEmbeddedFontAssetFromDraft(
   draft: EditorTokenDraft
@@ -159,6 +110,32 @@ export function getEmbeddedFontAssetFromExtensions(
   return isEmbeddedFontAsset(asset) ? asset : undefined;
 }
 
+/** The numeric font weights a fontFamily token declares it ships, if any. */
+export function getSupportedFontWeightsFromExtensions(
+  extensions: DesignToken["$extensions"] | undefined
+): number[] | undefined {
+  const weights = extensions?.podo?.weights;
+  if (!Array.isArray(weights)) {
+    return undefined;
+  }
+  return weights.filter((value): value is number => typeof value === "number");
+}
+
+/** Write the supported-weight set onto a fontFamily token's podo extensions. */
+export function setSupportedFontWeightsExtension(
+  extensions: DesignToken["$extensions"] | undefined,
+  weights: number[]
+): DesignToken["$extensions"] {
+  const sorted = [...new Set(weights)].sort((a, b) => a - b);
+  return {
+    ...(extensions ?? {}),
+    podo: {
+      ...(extensions?.podo ?? {}),
+      weights: sorted,
+    },
+  };
+}
+
 export function findEmbeddedFontAssetForFamily(
   records: EditorTokenRecord[],
   family: string
@@ -190,12 +167,28 @@ export async function createEmbeddedFontAssetFromFile(
   file: File,
   family: string
 ): Promise<EmbeddedFontAsset> {
-  fontFormatFromFileName(file.name);
+  const sourceFormat = fontFormatFromFileName(file.name);
+  // Auto-convert SFNT fonts (ttf/otf) to woff2 so the embedded asset is the
+  // web-optimal, smallest format. Files that are already woff2 (or the rarer
+  // woff, which isn't SFNT and can't be re-compressed here) are embedded as-is.
+  if (sourceFormat === "truetype" || sourceFormat === "opentype") {
+    try {
+      const { compress } = await import("woff2-encoder");
+      const sfnt = new Uint8Array(await file.arrayBuffer());
+      // Copy into a fresh ArrayBuffer-backed view so it satisfies BlobPart.
+      const woff2 = new Uint8Array(await compress(sfnt));
+      const fileName = `${file.name.replace(/\.(ttf|otf)$/i, "")}.woff2`;
+      const dataUrl = await readFileAsDataUrl(new File([woff2], fileName, { type: "font/woff2" }));
+      return createEmbeddedFontAsset({ family, fileName, mimeType: "font/woff2", dataUrl });
+    } catch {
+      // Conversion unavailable (e.g. encoder failed to load) — embed the original.
+    }
+  }
   const dataUrl = await readFileAsDataUrl(file);
   return createEmbeddedFontAsset({
     family,
     fileName: file.name,
-    mimeType: file.type || mimeTypeForFontFormat(fontFormatFromFileName(file.name)),
+    mimeType: file.type || mimeTypeForFontFormat(sourceFormat),
     dataUrl,
   });
 }
