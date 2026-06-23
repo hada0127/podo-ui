@@ -25,6 +25,10 @@ export const componentCategorySchema = z.enum([
 
 export const componentStatusSchema = z.enum(["draft", "experimental", "stable", "deprecated"]);
 
+// An appearance binding value: a `{token.path}` alias OR a raw CSS value (e.g.
+// "42px") for properties that need not be tokenized (height, border-width, …).
+export const componentBindingValueSchema = z.union([aliasReferenceSchema, z.string().min(1)]);
+
 export const propTypeSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("boolean") }),
   z.object({ kind: z.literal("string") }),
@@ -64,6 +68,9 @@ export const componentSlotSchema = z.object({
 
 export const anatomyPartSchema = z.object({
   name: identifierSchema,
+  // Optional hierarchy: the name of the parent anatomy part (Figma-style layer
+  // nesting). The array stays flat + ordered; the tree is derived from `parent`.
+  parent: identifierSchema.optional(),
   description: z.string().optional(),
   targets: z.partialRecord(targetNameSchema, z.string().min(1)).optional(),
 });
@@ -76,11 +83,13 @@ export const componentVariantSchema = z
     description: z.string().optional(),
     // Variant-level token bindings (apply across the whole variant axis). Keys
     // are dotted binding paths (part.prop) so they emit valid CSS custom props.
-    tokens: z.record(dottedPathSchema, aliasReferenceSchema).optional(),
+    tokens: z.record(dottedPathSchema, componentBindingValueSchema).optional(),
     // Per-value token bindings: value -> part.prop -> token alias, so a specific
     // variant value (e.g. "soft") can re-bind component tokens. Enables
     // spec-driven per-variant styling in codegen (report.md §3.2 / §6).
-    valueTokens: z.record(z.string(), z.record(dottedPathSchema, aliasReferenceSchema)).optional(),
+    valueTokens: z
+      .record(z.string(), z.record(dottedPathSchema, componentBindingValueSchema))
+      .optional(),
   })
   .superRefine((variant, ctx) => {
     for (const value of Object.keys(variant.valueTokens ?? {})) {
@@ -89,6 +98,7 @@ export const componentVariantSchema = z
           code: "custom",
           message: `valueTokens key "${value}" is not a declared value of variant "${variant.name}".`,
           path: ["valueTokens", value],
+          params: { i18n: "spec.variantValueToken", value, variant: variant.name },
         });
       }
     }
@@ -108,7 +118,7 @@ export const componentStateSchema = z.object({
   ]),
   description: z.string().optional(),
   selector: z.string().optional(),
-  tokens: z.record(dottedPathSchema, aliasReferenceSchema).optional(),
+  tokens: z.record(dottedPathSchema, componentBindingValueSchema).optional(),
 });
 
 export const targetSupportSchema = z.object({
@@ -129,29 +139,79 @@ export const componentExampleSchema = z.object({
   code: z.string().min(1),
 });
 
-export const componentDocumentSchema = z.object({
-  schemaVersion: schemaVersionSchema,
-  kind: z.literal("component"),
-  id: identifierSchema,
-  name: z.string().min(1),
-  category: componentCategorySchema,
-  status: componentStatusSchema,
-  description: z.string().optional(),
-  anatomy: z.array(anatomyPartSchema).min(1),
-  slots: z.array(componentSlotSchema).default([]),
-  props: z.array(componentPropSchema).default([]),
-  variants: z.array(componentVariantSchema).default([]),
-  states: z.array(componentStateSchema).default([]),
-  tokens: z.record(dottedPathSchema, aliasReferenceSchema).default({}),
-  targets: z.object({
-    web: targetSupportSchema,
-    react: targetSupportSchema,
-    hono: targetSupportSchema,
-    native: targetSupportSchema,
-  }),
-  accessibility: accessibilitySpecSchema,
-  examples: z.array(componentExampleSchema).default([]),
-});
+export const componentDocumentSchema = z
+  .object({
+    schemaVersion: schemaVersionSchema,
+    kind: z.literal("component"),
+    id: identifierSchema,
+    name: z.string().min(1),
+    category: componentCategorySchema,
+    status: componentStatusSchema,
+    description: z.string().optional(),
+    anatomy: z.array(anatomyPartSchema).min(1),
+    slots: z.array(componentSlotSchema).default([]),
+    props: z.array(componentPropSchema).default([]),
+    variants: z.array(componentVariantSchema).default([]),
+    states: z.array(componentStateSchema).default([]),
+    tokens: z.record(dottedPathSchema, componentBindingValueSchema).default({}),
+    targets: z.object({
+      web: targetSupportSchema,
+      react: targetSupportSchema,
+      hono: targetSupportSchema,
+      native: targetSupportSchema,
+    }),
+    accessibility: accessibilitySpecSchema,
+    examples: z.array(componentExampleSchema).default([]),
+  })
+  .superRefine((component, ctx) => {
+    const names = new Set<string>();
+    for (const [index, part] of component.anatomy.entries()) {
+      if (names.has(part.name)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["anatomy", index, "name"],
+          message: `Anatomy part name "${part.name}" must be unique.`,
+          params: { i18n: "spec.anatomyUnique", name: part.name },
+        });
+      }
+      names.add(part.name);
+    }
+    const parentOf = new Map(component.anatomy.map((item) => [item.name, item.parent]));
+    for (const [index, part] of component.anatomy.entries()) {
+      if (!part.parent) continue;
+      if (part.parent === part.name) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["anatomy", index, "parent"],
+          message: `Anatomy part "${part.name}" cannot be its own parent.`,
+          params: { i18n: "spec.anatomySelfParent", name: part.name },
+        });
+      } else if (!names.has(part.parent)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["anatomy", index, "parent"],
+          message: `Parent "${part.parent}" for "${part.name}" does not exist.`,
+          params: { i18n: "spec.anatomyParentMissing", parent: part.parent, name: part.name },
+        });
+      }
+      // Walk up the parent chain to reject cycles.
+      const seen = new Set<string>([part.name]);
+      let cursor: string | undefined = part.parent;
+      while (cursor) {
+        if (seen.has(cursor)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["anatomy", index, "parent"],
+            message: `Anatomy hierarchy for "${part.name}" forms a cycle.`,
+            params: { i18n: "spec.anatomyCycle", name: part.name },
+          });
+          break;
+        }
+        seen.add(cursor);
+        cursor = parentOf.get(cursor);
+      }
+    }
+  });
 
 export type ComponentDocument = z.infer<typeof componentDocumentSchema>;
 
@@ -194,6 +254,10 @@ export function validateComponentTokenBindings(
   const issues: ValidationIssue[] = [];
 
   for (const [bindingPath, reference] of collectComponentTokenBindings(component)) {
+    // Raw CSS values (not {token}/JSON-pointer aliases) bind no token — skip them.
+    if (!/^\{.+\}$/.test(reference) && !reference.startsWith("#/")) {
+      continue;
+    }
     // Normalize both `{token.path}` and `#/token/path/$value` alias forms.
     const tokenPath = normalizeAliasReference(reference);
     if (!tokenPaths.has(tokenPath)) {

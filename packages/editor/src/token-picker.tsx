@@ -11,6 +11,7 @@ import {
   tokenPickerValueStyle,
   tokenPickerWrapStyle,
 } from "./styles.js";
+import { useT } from "./i18n/context.js";
 
 export interface TokenPickerOption {
   /** Insertable reference, e.g. `{color.primary.base}`. */
@@ -21,6 +22,8 @@ export interface TokenPickerOption {
   value: string;
   /** Resolved color (css color string) when the token is a color, else undefined. */
   swatch?: string;
+  /** The token's `$type` (color, spacing, radius, typography, …) for filtering. */
+  type?: string;
 }
 
 /**
@@ -31,12 +34,18 @@ export interface TokenPickerOption {
 export function TokenPicker({
   options,
   onPick,
-  placeholder = "Insert token…",
+  onCancel,
+  placeholder,
+  autoFocus = false,
 }: {
   options: TokenPickerOption[];
   onPick: (reference: string) => void;
+  /** Fires on Escape / blur-away so the host can close an inline picker. */
+  onCancel?: () => void;
   placeholder?: string;
+  autoFocus?: boolean;
 }) {
+  const t = useT();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -55,8 +64,9 @@ export function TokenPicker({
     <div style={tokenPickerWrapStyle}>
       <div style={rowStyle}>
         <input
-          aria-label="Insert token reference"
-          placeholder={placeholder}
+          aria-label={t("tokenPicker.ariaLabel")}
+          placeholder={placeholder ?? t("tokenPicker.placeholder")}
+          autoFocus={autoFocus}
           style={{ ...inputStyle, flex: 1 }}
           value={query}
           onChange={(event) => {
@@ -64,7 +74,18 @@ export function TokenPicker({
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          onBlur={() => window.setTimeout(() => setOpen(false), 150)}
+          onBlur={() =>
+            window.setTimeout(() => {
+              setOpen(false);
+              onCancel?.();
+            }, 150)
+          }
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              setOpen(false);
+              onCancel?.();
+            }
+          }}
         />
       </div>
       {open ? (
@@ -93,7 +114,7 @@ export function TokenPicker({
               </button>
             ))
           ) : (
-            <div style={tokenPickerEmptyStyle}>No tokens match.</div>
+            <div style={tokenPickerEmptyStyle}>{t("tokenPicker.empty")}</div>
           )}
         </div>
       ) : null}

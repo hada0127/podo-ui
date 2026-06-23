@@ -1,3 +1,4 @@
+import { PodoEditError } from "@podo/spec";
 import type { ComponentDocument, TokenDocument, ValidationIssue } from "@podo/spec";
 import {
   deleteComponentProp,
@@ -107,7 +108,11 @@ export function createEditStore(init: EditStoreInit = {}): EditStore {
   function findComponent(componentId: string): ComponentDocument {
     const component = present.components.find((item) => item.id === componentId);
     if (!component) {
-      throw new Error(`Component "${componentId}" was not found.`);
+      throw new PodoEditError(
+        "editCore.componentNotFound",
+        `Component "${componentId}" was not found.`,
+        { id: componentId }
+      );
     }
     return component;
   }

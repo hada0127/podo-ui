@@ -4,9 +4,11 @@ import { join } from "node:path";
 import { FontAssetType, generateFonts } from "fantasticon";
 import { optimize, type Config } from "svgo";
 import { compress } from "wawoff2";
+import { buildIconFontWoff2 } from "@podo/icon-build";
 import {
   parseIconManifest,
   validateIconManifest,
+  validateInlineSvg,
   type IconManifest,
   type ValidationIssue,
 } from "@podo/spec";
@@ -47,41 +49,9 @@ export function validateIconBuild(manifest: IconManifest): ValidationIssue[] {
 }
 
 export function validateSvgSource(iconName: string, svg: string): SvgRuleResult {
-  const issues: ValidationIssue[] = [];
-  const rootTag = svg.match(/<svg\b[^>]*>/i)?.[0] ?? "";
-
-  if (!rootTag) {
-    issues.push({
-      code: "icon.svg.missingRoot",
-      path: iconName,
-      message: `Icon "${iconName}" must contain an <svg> root.`,
-    });
-  }
-
-  if (!/\bviewBox=/i.test(rootTag)) {
-    issues.push({
-      code: "icon.svg.missingViewBox",
-      path: iconName,
-      message: `Icon "${iconName}" must define a viewBox.`,
-    });
-  }
-
-  if (/\bwidth=/i.test(rootTag) || /\bheight=/i.test(rootTag)) {
-    issues.push({
-      code: "icon.svg.fixedSize",
-      path: iconName,
-      message: `Icon "${iconName}" must not define fixed width or height on the root <svg>.`,
-    });
-  }
-
-  if (!/currentColor/.test(svg)) {
-    issues.push({
-      code: "icon.svg.missingCurrentColor",
-      path: iconName,
-      message: `Icon "${iconName}" must use currentColor for paint.`,
-    });
-  }
-
+  // Delegates to the shared inline-svg rules in @podo/spec so the browser editor
+  // and this Node build validate against one source of truth.
+  const issues = validateInlineSvg(iconName, svg);
   return { valid: issues.length === 0, issues };
 }
 
@@ -130,8 +100,25 @@ export async function buildIconAssets(options: IconBuildOptions): Promise<IconBu
   }
 
   const prefix = options.prefix ?? "podo-icon";
-  const fontTypes = options.fontTypes ?? ["woff", "woff2"];
   const iconNames = selectIconNames(options.manifest, options.groups);
+
+  // Inline manifests (the browser editor's output) are built with the shared
+  // deterministic @podo/icon-build pipeline so the on-disk woff2 is byte-identical
+  // to the editor-embedded font (a single source of bytes). The fantasticon path
+  // below stays for legacy file-path manifests with arbitrary SVG sources. A
+  // manifest must be entirely one kind; reject a partial mix with a clear error.
+  const inlineNames = iconNames.filter((name) => options.manifest.icons[name]?.svg != null);
+  if (inlineNames.length > 0) {
+    const fileNames = iconNames.filter((name) => options.manifest.icons[name]?.svg == null);
+    if (fileNames.length > 0) {
+      throw new Error(
+        `Icon manifest mixes inline and file-path icons; file-path icons: ${fileNames.join(", ")}.`
+      );
+    }
+    return buildInlineIconAssets(options, iconNames, prefix);
+  }
+
+  const fontTypes = options.fontTypes ?? ["woff", "woff2"];
   const inputDir = await mkdtemp(join(tmpdir(), "podo-icons-"));
   await mkdir(options.outDir, { recursive: true });
 
@@ -139,6 +126,9 @@ export async function buildIconAssets(options: IconBuildOptions): Promise<IconBu
     const icon = options.manifest.icons[iconName];
     if (!icon) {
       throw new Error(`Icon "${iconName}" does not exist.`);
+    }
+    if (icon.source == null) {
+      throw new Error(`Icon "${iconName}" has neither inline svg nor a source file.`);
     }
 
     const rawSvg = await readFile(join(options.svgRoot, icon.source), "utf8");
@@ -197,6 +187,64 @@ export async function buildIconAssets(options: IconBuildOptions): Promise<IconBu
     codepoints: result.codepoints,
     woff2: fontTypes.includes("woff2"),
   };
+
+  await writeFile(join(options.outDir, `${options.manifest.fontFamily}.css`), css);
+  await writeFile(join(options.outDir, `${options.manifest.fontFamily}.icons.ts`), types);
+  await writeFile(join(options.outDir, `${options.manifest.fontFamily}.native.ts`), native);
+  await writeFile(
+    join(options.outDir, `${options.manifest.fontFamily}.metadata.json`),
+    `${JSON.stringify(metadata, null, 2)}\n`
+  );
+
+  return {
+    fontFamily: options.manifest.fontFamily,
+    icons: iconNames,
+    css,
+    types,
+    native,
+    metadata,
+  };
+}
+
+/**
+ * Build an inline (browser-editor) icon manifest to disk using the shared
+ * deterministic @podo/icon-build pipeline. The emitted woff2 is byte-identical to
+ * the manifest's embedded `fontAsset`, and only woff2 is produced (the always-woff2
+ * artifact). Inline SVGs are already normalized single-path sources.
+ */
+async function buildInlineIconAssets(
+  options: IconBuildOptions,
+  iconNames: string[],
+  prefix: string
+): Promise<IconBuildResult> {
+  const glyphs = iconNames.map((name) => {
+    const icon = options.manifest.icons[name];
+    if (!icon || icon.svg == null) {
+      throw new Error(`Cannot build a mix of inline and file-path icons ("${name}").`);
+    }
+    return { name, codepoint: icon.codepoint, svg: icon.svg };
+  });
+
+  const { woff2 } = await buildIconFontWoff2({
+    fontFamily: options.manifest.fontFamily,
+    glyphs,
+  });
+
+  await mkdir(options.outDir, { recursive: true });
+  await writeFile(join(options.outDir, `${options.manifest.fontFamily}.woff2`), woff2);
+
+  const fontTypes: Array<"woff" | "woff2"> = ["woff2"];
+  const css = emitIconCss(options.manifest, { icons: iconNames, prefix, fontTypes });
+  const types = emitIconTypes(iconNames);
+  const native = emitNativeGlyphMap(options.manifest, iconNames);
+  const codepoints: Record<string, number> = {};
+  for (const name of iconNames) {
+    const icon = options.manifest.icons[name];
+    if (icon) {
+      codepoints[name] = Number.parseInt(icon.codepoint, 16);
+    }
+  }
+  const metadata = { fontFiles: ["woff2"], codepoints, woff2: true };
 
   await writeFile(join(options.outDir, `${options.manifest.fontFamily}.css`), css);
   await writeFile(join(options.outDir, `${options.manifest.fontFamily}.icons.ts`), types);

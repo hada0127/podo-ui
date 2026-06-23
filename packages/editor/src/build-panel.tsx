@@ -1,5 +1,6 @@
 import type { TokenDocument } from "@podo/spec";
 import type { EditorCanvasState } from "./canvas.js";
+import { useT } from "./i18n/context.js";
 import type { EditorTokenRecord } from "./spec-editing.js";
 import {
   exportJsonPanelStyle,
@@ -20,13 +21,14 @@ export function BuildPanelControls({
   tokenRecords: EditorTokenRecord[];
   state: EditorCanvasState;
 }) {
+  const t = useT();
   return (
     <>
-      <div style={sidebarTitleStyle}>Build</div>
+      <div style={sidebarTitleStyle}>{t("buildPanel.title")}</div>
       <div style={summaryListStyle}>
-        <span>{tokenRecords.length} tokens</span>
-        <span>{state.components.length} components</span>
-        <span>{state.nodes.length} canvas nodes</span>
+        <span>{t("buildPanel.tokensCount", { count: tokenRecords.length })}</span>
+        <span>{t("buildPanel.componentsCount", { count: state.components.length })}</span>
+        <span>{t("buildPanel.canvasNodesCount", { count: state.nodes.length })}</span>
       </div>
     </>
   );
@@ -39,19 +41,18 @@ export function BuildPanelWorkspace({
   tokenDocumentsState: TokenDocument[];
   state: EditorCanvasState;
 }) {
+  const t = useT();
   return (
     <section style={exportSectionStyle}>
       <div style={sectionHeaderStyle}>
         <div>
-          <h1 style={sectionTitleStyle}>Build</h1>
-          <p style={sectionMetaStyle}>
-            JSON spec artifacts that feed the build (reproducible source of truth)
-          </p>
+          <h1 style={sectionTitleStyle}>{t("buildPanel.title")}</h1>
+          <p style={sectionMetaStyle}>{t("buildPanel.workspaceMeta")}</p>
         </div>
       </div>
       <div style={splitPanelStyle}>
         <div style={exportJsonPanelStyle}>
-          <strong>Tokens</strong>
+          <strong>{t("buildPanel.tokensLabel")}</strong>
           <textarea
             style={exportJsonTextareaStyle}
             readOnly
@@ -59,7 +60,7 @@ export function BuildPanelWorkspace({
           />
         </div>
         <div style={exportJsonPanelStyle}>
-          <strong>Components</strong>
+          <strong>{t("buildPanel.componentsLabel")}</strong>
           <textarea
             style={exportJsonTextareaStyle}
             readOnly

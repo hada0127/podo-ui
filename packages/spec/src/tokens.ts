@@ -163,6 +163,7 @@ export const designTokenSchema = z
         code: "custom",
         path: ["$value"],
         message: "Alias references must use {token.path} format.",
+        params: { i18n: "spec.aliasFormat" },
       });
       return;
     }
@@ -171,12 +172,13 @@ export const designTokenSchema = z
       return;
     }
 
-    const requireString = (message: string): boolean => {
+    const requireString = (message: string, params: Record<string, string | number>): boolean => {
       if (typeof token.$value !== "string") {
         ctx.addIssue({
           code: "custom",
           path: ["$value"],
           message,
+          params,
         });
         return false;
       }
@@ -184,7 +186,11 @@ export const designTokenSchema = z
     };
 
     if (token.$type === "color") {
-      if (!requireString("Color tokens must use a color value or alias reference.")) {
+      if (
+        !requireString("Color tokens must use a color value or alias reference.", {
+          i18n: "spec.colorValue",
+        })
+      ) {
         return;
       }
 
@@ -193,13 +199,19 @@ export const designTokenSchema = z
           code: "custom",
           path: ["$value"],
           message: "Color tokens must use a color value or alias reference.",
+          params: { i18n: "spec.colorValue" },
         });
       }
       return;
     }
 
     if (["dimension", "spacing", "radius", "duration"].includes(token.$type)) {
-      if (!requireString(`${token.$type} tokens must use an allowed unit or alias reference.`)) {
+      if (
+        !requireString(`${token.$type} tokens must use an allowed unit or alias reference.`, {
+          i18n: "spec.unitValue",
+          type: token.$type,
+        })
+      ) {
         return;
       }
 
@@ -208,6 +220,7 @@ export const designTokenSchema = z
           code: "custom",
           path: ["$value"],
           message: `${token.$type} tokens must use an allowed unit or alias reference.`,
+          params: { i18n: "spec.unitValue", type: token.$type },
         });
       }
       return;
@@ -220,6 +233,7 @@ export const designTokenSchema = z
           path: ["$value"],
           message:
             "Typography tokens must include fontFamily, fontSize, lineHeight, fontWeight, letterSpacing, and optional paragraphSpacing.",
+          params: { i18n: "spec.typographyInclude" },
         });
       }
       return;
@@ -231,6 +245,7 @@ export const designTokenSchema = z
           code: "custom",
           path: ["$value"],
           message: "Shadow tokens must include x, y, blur, optional spread, and color.",
+          params: { i18n: "spec.shadowInclude" },
         });
       }
       return;
@@ -242,6 +257,7 @@ export const designTokenSchema = z
           code: "custom",
           path: ["$value"],
           message: "Cubic bezier tokens must be an array of four numbers between 0 and 1.",
+          params: { i18n: "spec.cubicBezier" },
         });
       }
       return;
@@ -253,6 +269,7 @@ export const designTokenSchema = z
           code: "custom",
           path: ["$value"],
           message: "Border tokens must include color, width, and style.",
+          params: { i18n: "spec.borderInclude" },
         });
       }
       return;
@@ -264,6 +281,7 @@ export const designTokenSchema = z
           code: "custom",
           path: ["$value"],
           message: "Motion tokens must include duration, easing, and optional delay.",
+          params: { i18n: "spec.motionInclude" },
         });
       }
       return;
@@ -274,6 +292,7 @@ export const designTokenSchema = z
         code: "custom",
         path: ["$value"],
         message: "Number tokens must use a numeric value or alias reference.",
+        params: { i18n: "spec.numberValue" },
       });
       return;
     }
@@ -284,6 +303,7 @@ export const designTokenSchema = z
           code: "custom",
           path: ["$value"],
           message: "Font weight tokens must use a number, string, or alias reference.",
+          params: { i18n: "spec.fontWeightValue" },
         });
       }
       return;
@@ -297,6 +317,7 @@ export const designTokenSchema = z
         code: "custom",
         path: ["$value"],
         message: `${token.$type} tokens must use a string value or alias reference.`,
+        params: { i18n: "spec.stringValue", type: token.$type },
       });
     }
   });

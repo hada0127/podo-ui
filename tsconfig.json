@@ -4,6 +4,7 @@
     { "path": "./packages/spec" },
     { "path": "./packages/edit-core" },
     { "path": "./packages/tokens" },
+    { "path": "./packages/icon-build" },
     { "path": "./packages/icons" },
     { "path": "./packages/core" },
     { "path": "./packages/web" },

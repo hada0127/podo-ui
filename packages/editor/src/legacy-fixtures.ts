@@ -413,30 +413,29 @@ const fontSizeScale = {
   "60": "60px",
 } as const;
 
+// Tuple layout: [name, fontSize, fontWeight, mobileFontSize, lineHeight].
+// Display ships the v1 display scale; paragraph ships the v1 p1~p5 (+semibold)
+// scale so components can bind to the same typography v1 uses. Headings stay
+// project-set (see the Typography tokens screen).
 const typographyMixins = {
-  heading: [
-    ["h1", "54px", 600, "24px"],
-    ["h2", "42px", 600, "18px"],
-    ["h3", "36px", 600, "16px"],
-  ],
   display: [
-    ["display1", "60px", 600, "36px"],
-    ["display2", "54px", 600, "32px"],
-    ["display3", "48px", 600, "28px"],
-    ["display4", "42px", 600, "24px"],
-    ["display5", "36px", 600, "20px"],
-    ["display6", "24px", 600, "18px"],
-    ["display7", "20px", 600, "16px"],
+    ["display1", "60px", 600, "36px", "72px"],
+    ["display2", "54px", 600, "32px", "66px"],
+    ["display3", "48px", 600, "28px", "60px"],
+    ["display4", "42px", 600, "24px", "50px"],
+    ["display5", "36px", 600, "20px", "44px"],
+    ["display6", "24px", 600, "18px", "32px"],
+    ["display7", "20px", 600, "16px", "28px"],
   ],
   paragraph: [
-    ["p1", "24px", 400, "20px"],
-    ["p2", "20px", 400, "16px"],
-    ["p3", "16px", 400, "14px"],
-    ["p3-semibold", "16px", 600, "14px"],
-    ["p4", "14px", 400, "12px"],
-    ["p4-semibold", "14px", 600, "12px"],
-    ["p5", "12px", 400, "12px"],
-    ["p5-semibold", "12px", 600, "12px"],
+    ["p1", "24px", 400, "20px", "1.4"],
+    ["p2", "20px", 400, "16px", "1.6"],
+    ["p3", "16px", 400, "14px", "1.6"],
+    ["p3-semibold", "16px", 600, "14px", "1.6"],
+    ["p4", "14px", 400, "12px", "1.6"],
+    ["p4-semibold", "14px", 600, "12px", "1.6"],
+    ["p5", "12px", 400, "12px", "1.6"],
+    ["p5-semibold", "12px", 600, "12px", "1.6"],
   ],
 } as const;
 
@@ -902,14 +901,14 @@ export const legacyTokenDocuments: TokenDocument[] = [
         Object.entries(typographyMixins).map(([group, entries]) => [
           group,
           Object.fromEntries(
-            entries.map(([name, size, weight, mobile]) => [
+            entries.map(([name, size, weight, mobile, lineHeight]) => [
               name,
               {
                 $type: "typography",
                 $value: {
                   fontFamily: "Pretendard",
                   fontSize: size,
-                  lineHeight: lineHeightForFontSize(size),
+                  lineHeight,
                   fontWeight: weight,
                   letterSpacing: "0px",
                   paragraphSpacing: "0px",
@@ -962,7 +961,10 @@ export const legacyComponents: ComponentDocument[] = [
     states: [{ name: "hover", selector: ":hover" }],
     tokens: {
       ...legacyBaseComponentTokens(),
-      "root.size": "{spacing.scale.9}",
+      // v1 icon/text avatars: border-token background, text-sub foreground. Pixel
+      // size is driven by the `size` variant (default 56), not a token.
+      "root.background": "{color.border.base}",
+      "root.color": "{color.text.sub}",
       "root.radius": "{radius.scale.full}",
       "activity-ring.color": "{color.primary.base}",
     },
@@ -1072,9 +1074,9 @@ export const legacyComponents: ComponentDocument[] = [
         description: "Uses v1 -hover color tokens for the selected theme and variant.",
         selector: ":hover",
         tokens: {
-          "root.background": "{component.button.theme.default.solid.hover.background}",
-          "root.color": "{component.button.theme.default.solid.hover.color}",
-          "root.borderColor": "{component.button.theme.default.solid.hover.border}",
+          "root.background": "{color.default.hover}",
+          "root.color": "{color.default.reverse}",
+          "root.borderColor": "{color.default.base}",
         },
       },
       {
@@ -1082,9 +1084,9 @@ export const legacyComponents: ComponentDocument[] = [
         description: "Uses v1 -pressed color tokens for the selected theme and variant.",
         selector: ":active",
         tokens: {
-          "root.background": "{component.button.theme.default.solid.active.background}",
-          "root.color": "{component.button.theme.default.solid.active.color}",
-          "root.borderColor": "{component.button.theme.default.solid.active.border}",
+          "root.background": "{color.default.pressed}",
+          "root.color": "{color.default.reverse}",
+          "root.borderColor": "{color.default.base}",
         },
       },
       {
@@ -1092,8 +1094,8 @@ export const legacyComponents: ComponentDocument[] = [
         description: "Uses v1 4px outline ring token.",
         selector: ":focus-visible:not(:disabled)",
         tokens: {
-          "focus.outlineWidth": "{component.button.focusWidth}",
-          "focus.outlineColor": "{component.button.theme.default.outline}",
+          "focus.outlineWidth": "4px",
+          "focus.outlineColor": "{color.default.outline}",
         },
       },
       {
@@ -1101,32 +1103,32 @@ export const legacyComponents: ComponentDocument[] = [
         description: "Uses v1 disabled background/text/border tokens.",
         selector: ":disabled",
         tokens: {
-          "root.background": "{component.button.disabled.solid.background}",
-          "root.color": "{component.button.disabled.solid.color}",
-          "root.borderColor": "{component.button.disabled.solid.border}",
+          "root.background": "{color.bg.disabled}",
+          "root.color": "{color.text.action-disabled}",
+          "root.borderColor": "{color.bg.disabled}",
         },
       },
       {
         name: "loading",
         description: "Shows pending state while preserving button size.",
         tokens: {
-          "root.opacity": "{component.button.loading.opacity}",
+          "root.opacity": "0.72",
         },
       },
     ],
     tokens: {
-      "root.background": "{component.button.theme.default.solid.background}",
-      "root.color": "{component.button.theme.default.solid.color}",
-      "root.borderColor": "{component.button.theme.default.solid.border}",
-      "root.borderWidth": "{component.button.borderWidth}",
-      "root.height": "{component.button.size.sm.height}",
-      "root.paddingX": "{component.button.size.sm.paddingX}",
-      "root.paddingY": "{component.button.size.sm.paddingY}",
-      "root.radius": "{component.button.size.sm.radius}",
-      "root.gap": "{component.button.gap}",
-      "root.typography": "{component.button.size.sm.typography}",
-      "focus.outlineWidth": "{component.button.focusWidth}",
-      "focus.outlineColor": "{component.button.theme.default.outline}",
+      "root.background": "{color.default.base}",
+      "root.color": "{color.default.reverse}",
+      "root.borderColor": "{color.default.base}",
+      "root.borderWidth": "1px",
+      "root.height": "42px",
+      "root.paddingX": "{spacing.scale.3}",
+      "root.paddingY": "{spacing.scale.0}",
+      "root.radius": "{radius.scale.3}",
+      "root.gap": "{spacing.scale.2}",
+      "root.typography": "{typography.paragraph.p3}",
+      "focus.outlineWidth": "4px",
+      "focus.outlineColor": "{color.default.outline}",
     },
     targets,
     accessibility: {
@@ -1171,7 +1173,8 @@ export const legacyComponents: ComponentDocument[] = [
       { name: "layout", values: ["horizontal", "vertical"], default: "horizontal" },
     ],
     states: [
-      { name: "checked", tokens: { "control.background": "{color.primary.base}" } },
+      // v1 checked control uses info blue (#1890ff), not primary purple.
+      { name: "checked", tokens: { "control.background": "{color.info.base}" } },
       { name: "disabled", tokens: { "root.color": "{color.text.action-disabled}" } },
       { name: "focusVisible", tokens: { "control.borderColor": "{color.primary.focus}" } },
     ],
@@ -1227,10 +1230,12 @@ export const legacyComponents: ComponentDocument[] = [
     states: [{ name: "hover", selector: ":hover" }],
     tokens: {
       ...legacyBaseComponentTokens(),
-      "root.background": "{color.default.fill}",
+      // v1 default chip is a dark solid fill (color('default-deep')), not a light fill.
+      "root.background": "{color.default-deep.base}",
+      "root.color": "{color.default-deep.reverse}",
       "root.paddingX": "{spacing.scale.3}",
       "root.radius": "{radius.scale.3}",
-      "label.typography": "{typography.paragraph.p4}",
+      "label.typography": "{typography.paragraph.p3}",
     },
     examples: [
       { target: "react", title: "Chip", code: '<Chip theme="blue" type="fill">Status</Chip>' },
@@ -1281,8 +1286,10 @@ export const legacyComponents: ComponentDocument[] = [
     ],
     tokens: {
       ...legacyBaseComponentTokens(),
+      // v1 datepicker trigger surface is bg-block; the calendar popover stays modal.
+      "root.background": "{color.bg.block}",
       "calendar.background": "{color.bg.modal}",
-      "calendar.borderColor": "{color.border.base}",
+      "calendar.borderColor": "{color.bg.modal}",
       "selected.background": "{color.primary.base}",
       "selected.color": "{color.primary.reverse}",
     },
@@ -1313,7 +1320,7 @@ export const legacyComponents: ComponentDocument[] = [
     states: [{ name: "selected", tokens: { "tab.color": "{color.primary.base}" } }],
     tokens: {
       ...legacyBaseComponentTokens(),
-      "tab.typography": "{typography.paragraph.p4-semibold}",
+      "tab.typography": "{typography.paragraph.p3}",
       "panel.padding": "{spacing.scale.5}",
     },
     accessibility: {
@@ -1388,10 +1395,11 @@ export const legacyComponents: ComponentDocument[] = [
     ],
     states: [{ name: "invalid", tokens: { "message.color": "{color.danger.base}" } }],
     tokens: {
-      "root.gap": "{spacing.scale.2}",
-      "label.typography": "{typography.paragraph.p4-semibold}",
+      // v1 Field column gap is s(3)=8px.
+      "root.gap": "{spacing.scale.3}",
+      "label.typography": "{typography.paragraph.p4}",
       "label.color": "{color.text.body}",
-      "message.typography": "{typography.paragraph.p5}",
+      "message.typography": "{typography.paragraph.p4}",
       "message.color": "{color.text.sub}",
     },
     accessibility: { aria: ["aria-describedby", "aria-invalid", "aria-required"], keyboard: [] },
@@ -1417,8 +1425,12 @@ export const legacyComponents: ComponentDocument[] = [
     ],
     tokens: {
       ...legacyBaseComponentTokens(),
-      "button.background": "{color.default.base}",
-      "button.typography": "{typography.paragraph.p4-semibold}",
+      // v1 file surface is bg-block with a faint border; the selector button is dark deep.
+      "root.background": "{color.bg.block}",
+      "root.borderColor": "{color.border.disabled}",
+      "button.background": "{color.default-deep.base}",
+      "button.color": "{color.default-deep.reverse}",
+      "button.typography": "{typography.paragraph.p3}",
     },
     accessibility: { aria: ["aria-disabled"], keyboard: ["Enter opens file picker"] },
     examples: [{ target: "react", title: "File", code: '<File accept="image/*" multiple />' }],
@@ -1446,18 +1458,23 @@ export const legacyComponents: ComponentDocument[] = [
       booleanProp("invalid", { default: false }),
       eventProp("onChange"),
     ],
+    variants: [
+      { name: "style", values: ["border", "fill", "text", "underline"], default: "border" },
+      { name: "size", values: ["sm", "md", "lg"], default: "sm" },
+    ],
     states: [
-      { name: "focusVisible", tokens: { "root.borderColor": "{color.border.focus}" } },
+      { name: "focusVisible", tokens: { "root.borderColor": "{color.primary.base}" } },
       { name: "disabled", tokens: { "root.background": "{color.bg.disabled}" } },
       { name: "invalid", tokens: { "root.borderColor": "{color.danger.base}" } },
     ],
     tokens: {
-      "root.background": "{color.bg.modal}",
+      // v1 input: bg-block surface, faint border-disabled outline, height-driven padding.
+      "root.background": "{color.bg.block}",
       "root.color": "{color.text.body}",
-      "root.borderColor": "{color.border.base}",
+      "root.borderColor": "{color.border.disabled}",
       "root.radius": "{radius.scale.3}",
       "root.paddingX": "{spacing.scale.4}",
-      "root.paddingY": "{spacing.scale.3}",
+      "root.paddingY": "{spacing.scale.0}",
       "root.typography": "{typography.paragraph.p3}",
     },
     accessibility: { aria: ["aria-invalid", "aria-required"], keyboard: ["Tab focuses input"] },
@@ -1481,6 +1498,7 @@ export const legacyComponents: ComponentDocument[] = [
     variants: [
       { name: "size", values: ["lg", "md", "sm"], default: "md" },
       { name: "weight", values: ["regular", "semibold"], default: "regular" },
+      { name: "required", values: ["false", "true"], default: "false" },
     ],
     states: [{ name: "disabled", tokens: { "root.color": "{color.text.action-disabled}" } }],
     tokens: {
@@ -1513,8 +1531,8 @@ export const legacyComponents: ComponentDocument[] = [
     tokens: {
       ...legacyBaseComponentTokens(),
       "page-button.size": "{spacing.scale.8}",
-      "page-button.radius": "{radius.scale.3}",
-      "page-button.typography": "{typography.paragraph.p4}",
+      "page-button.radius": "{radius.scale.2}",
+      "page-button.typography": "{typography.paragraph.p3}",
     },
     accessibility: {
       role: "navigation",
@@ -1551,6 +1569,8 @@ export const legacyComponents: ComponentDocument[] = [
     ],
     tokens: {
       ...legacyBaseComponentTokens(),
+      // v1 select trigger surface is bg-block; the option list stays modal-white.
+      "root.background": "{color.bg.block}",
       "trigger.paddingX": "{spacing.scale.4}",
       "option-list.background": "{color.bg.modal}",
       "option.selected.background": "{color.primary.fill}",
@@ -1589,7 +1609,7 @@ export const legacyComponents: ComponentDocument[] = [
     tokens: {
       ...legacyBaseComponentTokens(),
       "tab.paddingX": "{spacing.scale.5}",
-      "tab.typography": "{typography.paragraph.p4-semibold}",
+      "tab.typography": "{typography.paragraph.p3}",
       "panel.padding": "{spacing.scale.5}",
     },
     accessibility: {
@@ -1625,7 +1645,7 @@ export const legacyComponents: ComponentDocument[] = [
     tokens: {
       ...legacyBaseComponentTokens(),
       "header.background": "{color.bg.elevation}",
-      "header.typography": "{typography.paragraph.p4-semibold}",
+      "header.typography": "{typography.paragraph.p3}",
       "cell.paddingX": "{spacing.scale.4}",
       "cell.paddingY": "{spacing.scale.3}",
     },
@@ -1664,6 +1684,8 @@ export const legacyComponents: ComponentDocument[] = [
     ],
     tokens: {
       ...legacyBaseComponentTokens(),
+      // v1 textarea surface is bg-block.
+      "root.background": "{color.bg.block}",
       "root.minHeight": "{spacing.scale.13}",
       "root.paddingX": "{spacing.scale.4}",
       "root.paddingY": "{spacing.scale.3}",
@@ -1731,15 +1753,17 @@ export const legacyComponents: ComponentDocument[] = [
         default: "top-right",
       },
       { name: "length", values: ["default", "long"], default: "default" },
+      { name: "border", values: ["none", "border"], default: "none" },
     ],
-    states: [{ name: "open", tokens: { "toast.background": "{color.bg.modal}" } }],
+    states: [{ name: "open", tokens: { "toast.background": "{color.default.fill}" } }],
     tokens: {
       ...legacyBaseComponentTokens(),
-      "toast.background": "{color.bg.modal}",
-      "toast.borderColor": "{color.border.base}",
+      // v1 default toast surface is color('default-fill'), not the modal surface.
+      "toast.background": "{color.default.fill}",
+      "toast.borderColor": "{color.default.pressed}",
       "toast.shadowColor": "{color.border.alpha}",
-      "header.typography": "{typography.paragraph.p4-semibold}",
-      "message.typography": "{typography.paragraph.p4}",
+      "header.typography": "{typography.paragraph.p3-semibold}",
+      "message.typography": "{typography.paragraph.p3}",
     },
     accessibility: {
       role: "status",
@@ -1768,7 +1792,8 @@ export const legacyComponents: ComponentDocument[] = [
     ],
     variants: [{ name: "label", values: ["hidden", "visible"], default: "visible" }],
     states: [
-      { name: "checked", tokens: { "track.background": "{color.primary.base}" } },
+      // v1 checked track uses info blue (#1890ff), not primary purple.
+      { name: "checked", tokens: { "track.background": "{color.info.base}" } },
       { name: "disabled", tokens: { "track.background": "{color.bg.disabled}" } },
       { name: "focusVisible", tokens: { "track.borderColor": "{color.primary.focus}" } },
     ],
@@ -1875,11 +1900,3 @@ export const legacyComponents: ComponentDocument[] = [
     ],
   }),
 ];
-
-function lineHeightForFontSize(size: string): string {
-  const numeric = Number.parseInt(size, 10);
-  if (numeric >= 48) return `${numeric + 12}px`;
-  if (numeric >= 32) return `${numeric + 8}px`;
-  if (numeric >= 20) return `${numeric + 8}px`;
-  return `${numeric + 6}px`;
-}

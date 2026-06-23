@@ -1,12 +1,30 @@
-import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type DragEvent,
+  type SetStateAction,
+} from "react";
 import type { Editor } from "tldraw";
 import "tldraw/tldraw.css";
 import {
   parseComponentDocument,
+  validateIconManifest,
   type ComponentDocument,
   type DesignToken,
+  type EmbeddedFontAsset,
+  type IconManifest,
   type TokenDocument,
 } from "@podo/spec";
+import { buildIconFontWoff2, normalizeIconSvg } from "@podo/icon-build";
+import {
+  collectTokenUsages,
+  renameTokenGroupInDocuments,
+  rewriteTokenReferences,
+  type TokenUsage,
+} from "./token-usage.js";
 import {
   createComponentPropType,
   deleteComponentProp,
@@ -18,11 +36,19 @@ import {
   normalizeEditorTokenDocuments,
   parsePropDefaultInput,
   serializeEditorTokenExtensions,
+  addComponentAnatomyPart,
+  moveComponentAnatomyPart,
+  removeComponentAnatomyPart,
+  reorderComponentAnatomyPart,
+  reparentComponentAnatomyPart,
+  renameComponentAnatomyPart,
   serializeEditorTokenValue,
   updateComponentMeta,
   upsertComponentProp,
   upsertComponentSlot,
+  upsertComponentTokenBinding,
   upsertComponentVariant,
+  upsertComponentVariantValueTokenBinding,
   type EditorTokenDraft,
   type EditorTokenRecord,
 } from "./spec-editing.js";
@@ -71,7 +97,7 @@ export type {
   TokenMatrixModel,
   TypographyWorkspaceModel,
 } from "./token-model.js";
-import { normalizeTokenPathLabel } from "./token-editor.js";
+import { TokenDeleteDialog, normalizeTokenPathLabel } from "./token-editor.js";
 import { type EditorCapabilities, type PodoSaveAdapter } from "@podo/edit-core";
 import {
   editorShellStyle,
@@ -81,6 +107,9 @@ import {
   persistErrorStyle,
   productTitleStyle,
   schemeButtonActiveStyle,
+  localeControlStyle,
+  localeSegmentedStyle,
+  localeButtonStyle,
   schemeButtonStyle,
   schemeSegmentedStyle,
   sidebarStyle,
@@ -212,10 +241,50 @@ import { CanvasPanelControls, CanvasPanelWorkspace } from "./canvas-panel.js";
 import { TokensPanelControls, TokensPanelWorkspace } from "./tokens-panel.js";
 import { ComponentsPanelControls, ComponentsPanelWorkspace } from "./components-panel.js";
 import { ProjectPanelControls, ProjectPanelWorkspace } from "./project-panel.js";
+import { IconsPanelControls, IconsPanelWorkspace, type IconBuildStatus } from "./icons-panel.js";
+import {
+  addIcon,
+  createGroup,
+  deleteGroup,
+  deleteIcon,
+  fromIconManifest,
+  iconGlyphsFromModel,
+  iconSetHash,
+  renameIcon,
+  replaceIconSvg,
+  setIconGroupMembership,
+  toIconManifest,
+  updateIconDescription,
+  updateIconTags,
+  type EditorIconManifest,
+} from "./icons-model.js";
+import { DEFAULT_ICON_CODEPOINT_FLOOR, DEFAULT_ICON_MANIFEST } from "./default-icons.generated.js";
+import { LocaleProvider, translate, type Translate } from "./i18n/context.js";
+import {
+  detectLocale,
+  writeStoredLocale,
+  LOCALES,
+  LOCALE_LABELS,
+  type Locale,
+} from "./i18n/locale.js";
+import { localizeError } from "./i18n/errors.js";
+export {
+  fromIconManifest,
+  toIconManifest,
+  addIcon,
+  renameIcon,
+  deleteIcon,
+  nextFreeCodepoint,
+} from "./icons-model.js";
+export type { EditorIcon, EditorIconManifest } from "./icons-model.js";
 
 export interface PodoEditorAppProps {
   components: ComponentDocument[];
   tokenDocuments?: TokenDocument[];
+  /** Icon set to edit. Defaults to the v1-derived default manifest. */
+  iconManifest?: IconManifest;
+  /** Fires with the rebuilt, validated manifest whenever the icon font is saved. */
+  onIconsChange?: (manifest: IconManifest) => void;
   initialState?: EditorCanvasState;
   viewport?: ResponsiveViewportName;
   colorScheme?: EditorColorScheme;
@@ -240,15 +309,56 @@ export interface PodoEditorAppProps {
   panel?: EditorPanel;
   /** Fires whenever the active panel changes (tab click or capability gating). */
   onPanelChange?: (panel: EditorPanel) => void;
+  /**
+   * Optional controlled selected component id. When provided, the host owns the
+   * component selection (e.g. to keep it in the URL) and updates it via
+   * `onSelectComponent`. When omitted, the editor manages it internally.
+   */
+  selectedComponentId?: string;
+  /** Fires whenever the selected component in the list changes. */
+  onSelectComponent?: (componentId: string) => void;
+  /**
+   * Optional controlled UI language. When provided, the host owns the locale.
+   * When omitted, the editor resolves it from a stored choice, then the browser
+   * language, and manages it internally via the in-header toggle.
+   */
+  locale?: Locale;
+  /** Fires whenever the UI language changes (toggle click). */
+  onLocaleChange?: (locale: Locale) => void;
 }
 
-export type EditorPanel = "tokens" | "components" | "canvas" | "build" | "project";
+export type EditorPanel = "tokens" | "icons" | "components" | "canvas" | "build" | "project";
 
-export const editorPanels: EditorPanel[] = ["tokens", "components", "canvas", "build", "project"];
+export const editorPanels: EditorPanel[] = [
+  "tokens",
+  "icons",
+  "components",
+  "canvas",
+  "build",
+  "project",
+];
+
+/** A token deletion awaiting a replacement choice because it is still in use. */
+interface TokenDeleteState {
+  /** color-variation / color-group, or a single scalar (spacing/radius) token. */
+  kind: "color-variation" | "color-group" | "scalar";
+  tokenType: DesignToken["$type"];
+  /** Display label (the leaf path / the group id). */
+  label: string;
+  /** Records to remove once references are repointed. */
+  records: EditorTokenRecord[];
+  /** Logical token paths being removed (e.g. `color.primary.base`). */
+  targets: string[];
+  usages: TokenUsage[];
+  /** Replacement: a leaf path (variation/scalar) or a group id (color set). */
+  replacement: string;
+}
 
 export function PodoEditorApp({
   components,
   tokenDocuments = [],
+  iconManifest = DEFAULT_ICON_MANIFEST,
+  onIconsChange,
   initialState,
   viewport = "desktop",
   colorScheme = "light",
@@ -258,6 +368,10 @@ export function PodoEditorApp({
   capabilities,
   panel,
   onPanelChange,
+  selectedComponentId: selectedComponentIdProp,
+  onSelectComponent,
+  locale: localeProp,
+  onLocaleChange,
 }: PodoEditorAppProps) {
   const parsedComponents = useMemo(
     () => components.map((component) => parseComponentDocument(component)),
@@ -283,15 +397,37 @@ export function PodoEditorApp({
     setInternalPanel(next);
     onPanelChange?.(next);
   };
+  // UI language is controlled when `localeProp` is provided (host owns it),
+  // otherwise it falls back to a stored/browser-detected internal value.
+  const [internalLocale, setInternalLocale] = useState<Locale>(() => localeProp ?? detectLocale());
+  const locale = localeProp ?? internalLocale;
+  const setLocale = (next: Locale): void => {
+    setInternalLocale(next);
+    writeStoredLocale(next);
+    onLocaleChange?.(next);
+  };
+  // PodoEditorApp sits ABOVE its own LocaleProvider, so it cannot read the
+  // context here — bind `t` directly to the active locale instead.
+  const t = useMemo<Translate>(() => (key, params) => translate(locale, key, params), [locale]);
   const [componentSearch, setComponentSearch] = useState("");
   const [tokenDocumentsState, setTokenDocumentsState] = useState(initialTokenDocuments);
   const [selectedTokenKey, setSelectedTokenKey] = useState<string | undefined>();
   const [tokenDraft, setTokenDraft] = useState<EditorTokenDraft>(() => createNewTokenDraft());
   const [typographyView, setTypographyView] = useState(false);
   const [tokenDraftError, setTokenDraftError] = useState<string | undefined>();
-  const [selectedComponentId, setSelectedComponentId] = useState<string | undefined>(
-    startingState.components[0]?.id
-  );
+  // Selection is controlled when `selectedComponentIdProp` is provided (host owns
+  // URL routing), otherwise it falls back to internal state.
+  const [internalSelectedComponentId, setInternalSelectedComponentId] = useState<
+    string | undefined
+  >(selectedComponentIdProp ?? startingState.components[0]?.id);
+  const selectedComponentId = selectedComponentIdProp ?? internalSelectedComponentId;
+  const setSelectedComponentId: Dispatch<SetStateAction<string | undefined>> = (action) => {
+    const next = typeof action === "function" ? action(selectedComponentId) : action;
+    setInternalSelectedComponentId(next);
+    if (next) {
+      onSelectComponent?.(next);
+    }
+  };
   const [componentMetaDraft, setComponentMetaDraft] = useState<ComponentMetaDraft>(() =>
     componentMetaDraftFromComponent(startingState.components[0])
   );
@@ -328,6 +464,24 @@ export function PodoEditorApp({
   const [propsDraftNodeId, setPropsDraftNodeId] = useState<string | undefined>();
   const [propsDraftError, setPropsDraftError] = useState<string | undefined>();
   const [persistError, setPersistError] = useState<string | undefined>();
+  // Pending usage-checked token deletion: a referenced token must be repointed
+  // to a replacement before it is removed.
+  const [tokenDelete, setTokenDelete] = useState<TokenDeleteState | undefined>(undefined);
+  const [iconModel, setIconModel] = useState<EditorIconManifest>(() =>
+    fromIconManifest(iconManifest)
+  );
+  const [selectedIconName, setSelectedIconName] = useState<string | undefined>(
+    () => Object.keys(iconModel.icons)[0]
+  );
+  const [iconSearch, setIconSearch] = useState("");
+  const [activeIconGroup, setActiveIconGroup] = useState<string | undefined>();
+  const [iconBuildStatus, setIconBuildStatus] = useState<IconBuildStatus>("ready");
+  const [iconBuildError, setIconBuildError] = useState<string | undefined>();
+  const [iconDraftError, setIconDraftError] = useState<string | undefined>();
+  const [iconDrawTarget, setIconDrawTarget] = useState<
+    { mode: "new" } | { mode: "edit"; name: string } | undefined
+  >();
+  const iconModelRef = useRef<EditorIconManifest>(iconModel);
   const editorRef = useRef<Editor | null>(null);
   const isApplyingStateToTldrawRef = useRef(false);
   const stateRef = useRef(startingState);
@@ -338,9 +492,15 @@ export function PodoEditorApp({
   // Page design (the canvas) is an installed-project capability only. When a
   // host declares capabilities without page design, hide the canvas panel.
   const pageDesignEnabled = capabilities ? capabilities.pageDesign : true;
+  // Icon editing is a host capability; the dev app (no capabilities) enables it.
+  const iconEditingEnabled = capabilities ? (capabilities.iconEditing ?? false) : true;
   const availablePanels = useMemo(
-    () => (pageDesignEnabled ? editorPanels : editorPanels.filter((panel) => panel !== "canvas")),
-    [pageDesignEnabled]
+    () =>
+      editorPanels.filter(
+        (item) =>
+          (item !== "canvas" || pageDesignEnabled) && (item !== "icons" || iconEditingEnabled)
+      ),
+    [pageDesignEnabled, iconEditingEnabled]
   );
   // Resolve the panel to render this frame so a now-unavailable panel (e.g. the
   // canvas after page design is revoked) is never rendered, even before the
@@ -413,6 +573,7 @@ export function PodoEditorApp({
           ref: `{${record.path}}`,
           label: record.path,
           value: serializeEditorTokenValue(record.token.$value),
+          type: record.token.$type,
           ...(swatch ? { swatch } : {}),
         };
       }),
@@ -498,7 +659,9 @@ export function PodoEditorApp({
     if (!selectedComponentForSpec) {
       return;
     }
-    setSelectedComponentId(selectedComponentForSpec.id);
+    if (selectedComponentForSpec.id !== selectedComponentId) {
+      setSelectedComponentId(selectedComponentForSpec.id);
+    }
     setComponentMetaDraft(componentMetaDraftFromComponent(selectedComponentForSpec));
     setSelectedPropName(selectedComponentForSpec.props[0]?.name);
     setSelectedVariantName(selectedComponentForSpec.variants[0]?.name);
@@ -578,8 +741,7 @@ export function PodoEditorApp({
         .then(next)
         .then(
           () => setPersistError(undefined),
-          (error: unknown) =>
-            setPersistError(error instanceof Error ? error.message : "Save to host failed.")
+          (error: unknown) => setPersistError(localizeError(error, t, "chrome.error.saveFailed"))
         )
         .finally(() => {
           current.inFlight = false;
@@ -728,9 +890,7 @@ export function PodoEditorApp({
       setSelectedTokenKey(`${documentIndex}:${normalizedPath}`);
       setTokenDraftError(undefined);
     } catch (error) {
-      setTokenDraftError(
-        error instanceof Error ? error.message : "Color counterpart could not be created."
-      );
+      setTokenDraftError(localizeError(error, t, "chrome.error.colorCounterpart"));
     }
   };
   // Create a new token (used by the Project panel base roles and, later, the
@@ -764,7 +924,7 @@ export function PodoEditorApp({
       setSelectedTokenKey(`${documentIndex}:${normalizedPath}`);
       setTokenDraftError(undefined);
     } catch (error) {
-      setTokenDraftError(error instanceof Error ? error.message : "Token could not be created.");
+      setTokenDraftError(localizeError(error, t, "chrome.error.tokenCreate"));
     }
   };
   const selectTokenType = (type: DesignToken["$type"]): void => {
@@ -806,7 +966,7 @@ export function PodoEditorApp({
       setSelectedTokenKey(tokenRecordKey(record));
       setTokenDraftError(undefined);
     } catch (error) {
-      setTokenDraftError(error instanceof Error ? error.message : "Token cell value is invalid.");
+      setTokenDraftError(localizeError(error, t, "chrome.error.tokenCellValue"));
     }
   };
   const updateTokenMatrixCell = (record: EditorTokenRecord, valueText: string): void => {
@@ -818,7 +978,7 @@ export function PodoEditorApp({
     valueText: string
   ): void => {
     if (!isTypographyValue(record.token.$value)) {
-      setTokenDraftError("Typography token values must be structured before field editing.");
+      setTokenDraftError(t("chrome.error.typographyStructure"));
       return;
     }
     const nextValue = { ...record.token.$value };
@@ -850,7 +1010,7 @@ export function PodoEditorApp({
         ),
       });
     } catch (error) {
-      setTokenDraftError(error instanceof Error ? error.message : "Font file could not be read.");
+      setTokenDraftError(localizeError(error, t, "chrome.error.fontRead"));
     }
   };
   const removeFontAssetFromRecord = (record: EditorTokenRecord): void => {
@@ -894,7 +1054,7 @@ export function PodoEditorApp({
       }
       setTokenDraftError(undefined);
     } catch (error) {
-      setTokenDraftError(error instanceof Error ? error.message : "Token could not be deleted.");
+      setTokenDraftError(localizeError(error, t, "chrome.error.tokenDelete"));
     }
   };
   // Delete several tokens in one document transform (e.g. a color variation's
@@ -915,7 +1075,242 @@ export function PodoEditorApp({
       }
       setTokenDraftError(undefined);
     } catch (error) {
-      setTokenDraftError(error instanceof Error ? error.message : "Tokens could not be deleted.");
+      setTokenDraftError(localizeError(error, t, "chrome.error.tokensDelete"));
+    }
+  };
+  // --- token usage-checked deletion / color set CRUD ------------------------
+  // Commit a rewrite that may touch token documents, components, and canvas
+  // nodes (a color set rename, or a usage-checked deletion that repoints refs —
+  // spacing/radius are referenced by node gap/padding, so nodes change too).
+  const commitTokenRewrite = (
+    nextDocuments: TokenDocument[],
+    nextComponents: ComponentDocument[],
+    nextNodes?: EditorComponentNode[]
+  ): void => {
+    const previousComponents = stateRef.current.components;
+    commitState({
+      ...stateRef.current,
+      components: nextComponents,
+      ...(nextNodes ? { nodes: nextNodes } : {}),
+    });
+    setTokenDocumentsState(nextDocuments);
+    onSpecsChange?.({ components: nextComponents, tokenDocuments: nextDocuments });
+    if (adapter?.saveTokenDocuments) {
+      const saveTokenDocuments = adapter.saveTokenDocuments.bind(adapter);
+      enqueueHostWrite("tokens", () => saveTokenDocuments(nextDocuments));
+    }
+    if (adapter?.saveComponent) {
+      const saveComponent = adapter.saveComponent.bind(adapter);
+      for (const component of nextComponents) {
+        const previous = previousComponents.find((item) => item.id === component.id);
+        if (!previous || JSON.stringify(previous) !== JSON.stringify(component)) {
+          enqueueHostWrite(`component:${component.id}`, () => saveComponent(component));
+        }
+      }
+    }
+  };
+  // Light colors live at `color.*`; their dark counterparts at `dark.color.*`.
+  // The matrix groups both under one neutral path, so the CRUD handlers below
+  // operate on neutral paths for references and on both physical paths for the
+  // actual token records. See createColorComparisonMatrix.
+  const neutralColorPath = (path: string): string =>
+    path.startsWith("dark.color.") ? path.slice("dark.".length) : path;
+  const colorRecordsForGroup = (groupId: string): EditorTokenRecord[] =>
+    tokenRecords.filter(
+      (record) =>
+        record.token.$type === "color" &&
+        (record.path === groupId ||
+          record.path.startsWith(`${groupId}.`) ||
+          record.path === `dark.${groupId}` ||
+          record.path.startsWith(`dark.${groupId}.`))
+    );
+  // Neutral (scheme-stripped, deduped) color leaf paths and group ids — the form
+  // used by references and by the replacement picker.
+  const colorLeafPaths = (): string[] => [
+    ...new Set(
+      tokenRecords
+        .filter((record) => record.token.$type === "color")
+        .map((record) => neutralColorPath(record.path))
+    ),
+  ];
+  const colorGroupIds = (): string[] => [
+    ...new Set(
+      colorLeafPaths()
+        .map((path) => path.slice(0, path.lastIndexOf(".")))
+        .filter((id) => id)
+    ),
+  ];
+  // Leaf paths of a flat scalar scale (spacing/radius), used as replacements.
+  // Only base scale tokens — component-scoped tokens aren't offered.
+  const tokenLeafPaths = (type: DesignToken["$type"]): string[] => [
+    ...new Set(baseTokenRecords.filter((record) => record.token.$type === type).map((r) => r.path)),
+  ];
+  // A delete request: removes immediately if unused, otherwise opens the
+  // replacement dialog so references can be repointed first.
+  const requestDeleteColorVariation = (records: EditorTokenRecord[]): void => {
+    if (!records.length) {
+      return;
+    }
+    const targets = [...new Set(records.map((record) => neutralColorPath(record.path)))];
+    const usages = collectTokenUsages({
+      targets,
+      documents: tokenDocumentsState,
+      components: stateRef.current.components,
+      excludeOwners: records.map((record) => record.path),
+    });
+    if (!usages.length) {
+      deleteTokenRecords(records);
+      return;
+    }
+    const replacement = colorLeafPaths().find((path) => !targets.includes(path)) ?? "";
+    setTokenDelete({
+      kind: "color-variation",
+      tokenType: "color",
+      label: targets[0] ?? "color",
+      records,
+      targets,
+      usages,
+      replacement,
+    });
+  };
+  const requestDeleteColorGroup = (groupId: string): void => {
+    const records = colorRecordsForGroup(groupId);
+    if (!records.length) {
+      return;
+    }
+    const targets = [...new Set(records.map((record) => neutralColorPath(record.path)))];
+    const usages = collectTokenUsages({
+      targets,
+      documents: tokenDocumentsState,
+      components: stateRef.current.components,
+      excludeOwners: records.map((record) => record.path),
+    });
+    if (!usages.length) {
+      deleteTokenRecords(records);
+      return;
+    }
+    const replacement = colorGroupIds().find((id) => id !== groupId) ?? "";
+    setTokenDelete({
+      kind: "color-group",
+      tokenType: "color",
+      label: groupId,
+      records,
+      targets,
+      usages,
+      replacement,
+    });
+  };
+  // Spacing/radius (flat scalar) deletion — also scans canvas node gap/padding.
+  const requestDeleteScalarToken = (record: EditorTokenRecord): void => {
+    const usages = collectTokenUsages({
+      targets: [record.path],
+      documents: tokenDocumentsState,
+      components: stateRef.current.components,
+      nodes: stateRef.current.nodes,
+      excludeOwners: [record.path],
+    });
+    if (!usages.length) {
+      deleteTokenRecord(record);
+      return;
+    }
+    const replacement =
+      tokenLeafPaths(record.token.$type).find((path) => path !== record.path) ?? "";
+    setTokenDelete({
+      kind: "scalar",
+      tokenType: record.token.$type,
+      label: record.path,
+      records: [record],
+      targets: [record.path],
+      usages,
+      replacement,
+    });
+  };
+  const confirmTokenDelete = (): void => {
+    const request = tokenDelete;
+    if (!request || !request.replacement) {
+      return;
+    }
+    const mapping = new Map<string, string>();
+    if (request.kind === "color-group") {
+      const replacementLeaves = colorLeafPaths()
+        .filter((path) => path.startsWith(`${request.replacement}.`))
+        .map((path) => path.slice(request.replacement.length + 1));
+      const replacementVars = new Set(replacementLeaves);
+      const fallback = replacementVars.has("base") ? "base" : replacementLeaves[0];
+      for (const target of request.targets) {
+        const variation = target.slice(target.lastIndexOf(".") + 1);
+        const useVar = replacementVars.has(variation) ? variation : fallback;
+        mapping.set(target, useVar ? `${request.replacement}.${useVar}` : request.replacement);
+      }
+    } else {
+      for (const target of request.targets) {
+        mapping.set(target, request.replacement);
+      }
+    }
+    try {
+      const rewritten = rewriteTokenReferences<EditorComponentNode>({
+        mapping,
+        documents: tokenDocumentsState,
+        components: stateRef.current.components,
+        nodes: stateRef.current.nodes,
+      });
+      let nextDocuments = rewritten.documents;
+      for (const record of request.records) {
+        nextDocuments = deleteTokenFromDocuments(nextDocuments, record.documentIndex, record.path);
+      }
+      commitTokenRewrite(nextDocuments, rewritten.components, rewritten.nodes);
+      if (request.records.some((record) => selectedTokenKey === tokenRecordKey(record))) {
+        setSelectedTokenKey(undefined);
+      }
+      setTokenDraftError(undefined);
+      setTokenDelete(undefined);
+    } catch (error) {
+      setTokenDraftError(localizeError(error, t, "chrome.error.tokenDelete"));
+    }
+  };
+  const renameColorGroup = (groupId: string, rawName: string): void => {
+    const newName = rawName.trim();
+    const currentName = groupId.slice(groupId.lastIndexOf(".") + 1);
+    if (!newName || newName === currentName) {
+      return;
+    }
+    const parent = groupId.slice(0, groupId.lastIndexOf("."));
+    const newGroupId = parent ? `${parent}.${newName}` : newName;
+    const records = colorRecordsForGroup(groupId);
+    if (!records.length) {
+      return;
+    }
+    if (colorGroupIds().includes(newGroupId)) {
+      setTokenDraftError(t("chrome.error.colorSetExists", { name: newName }));
+      return;
+    }
+    try {
+      // Rename the group key in place in both the light (`color.*`) and dark
+      // (`dark.color.*`) documents (preserves matrix order), then repoint the
+      // neutral `{color.<old>.x}` references to `{color.<new>.x}`.
+      const neutralLeaves = [...new Set(records.map((record) => neutralColorPath(record.path)))];
+      const mapping = new Map<string, string>(
+        neutralLeaves.map((path) => [path, `${newGroupId}${path.slice(groupId.length)}`])
+      );
+      let nextDocuments = renameTokenGroupInDocuments({
+        documents: tokenDocumentsState,
+        fromPath: groupId,
+        toPath: newGroupId,
+      });
+      nextDocuments = renameTokenGroupInDocuments({
+        documents: nextDocuments,
+        fromPath: `dark.${groupId}`,
+        toPath: `dark.${newGroupId}`,
+      });
+      const rewritten = rewriteTokenReferences({
+        mapping,
+        documents: nextDocuments,
+        components: stateRef.current.components,
+      });
+      commitTokenRewrite(rewritten.documents, rewritten.components);
+      setTokenDraftError(undefined);
+    } catch (error) {
+      setTokenDraftError(localizeError(error, t, "chrome.error.colorSetRename"));
     }
   };
   const saveComponentMetaDraft = (): void => {
@@ -926,9 +1321,89 @@ export function PodoEditorApp({
       commitComponentSpec(updateComponentMeta(selectedComponentForSpec, componentMetaDraft));
       setComponentDraftError(undefined);
     } catch (error) {
-      setComponentDraftError(error instanceof Error ? error.message : "Component meta is invalid.");
+      setComponentDraftError(localizeError(error, t, "chrome.error.componentMeta"));
     }
   };
+  // Design editor: set/clear a `<part>.<property>` appearance binding and commit
+  // so the live preview re-renders (bridged onto v1 CSS vars in previews.tsx).
+  const updateComponentTokenBinding = (key: string, reference: string): void => {
+    if (!selectedComponentForSpec) {
+      return;
+    }
+    try {
+      commitComponentSpec(upsertComponentTokenBinding(selectedComponentForSpec, key, reference));
+      setComponentDraftError(undefined);
+    } catch (error) {
+      setComponentDraftError(localizeError(error, t, "chrome.error.appearanceBinding"));
+    }
+  };
+  // Writes an appearance binding into a specific variant value's overrides
+  // (variant.valueTokens[value]) so one variant can be styled independently.
+  const updateComponentVariantValueTokenBinding = (
+    variantName: string,
+    value: string,
+    key: string,
+    reference: string
+  ): void => {
+    if (!selectedComponentForSpec) {
+      return;
+    }
+    try {
+      commitComponentSpec(
+        upsertComponentVariantValueTokenBinding(
+          selectedComponentForSpec,
+          variantName,
+          value,
+          key,
+          reference
+        )
+      );
+      setComponentDraftError(undefined);
+    } catch (error) {
+      setComponentDraftError(localizeError(error, t, "chrome.error.variantBinding"));
+    }
+  };
+  // Figma-style layer rename: renames an anatomy part + migrates its token keys.
+  const renameAnatomyPart = (fromName: string, toName: string): void => {
+    if (!selectedComponentForSpec) {
+      return;
+    }
+    try {
+      commitComponentSpec(renameComponentAnatomyPart(selectedComponentForSpec, fromName, toName));
+      setComponentDraftError(undefined);
+    } catch (error) {
+      setComponentDraftError(localizeError(error, t, "chrome.error.layerName"));
+    }
+  };
+  // Figma-style layer tree operations (add child, delete, reorder, nest).
+  const runAnatomyEdit = (next: (component: ComponentDocument) => ComponentDocument): void => {
+    if (!selectedComponentForSpec) {
+      return;
+    }
+    try {
+      commitComponentSpec(next(selectedComponentForSpec));
+      setComponentDraftError(undefined);
+    } catch (error) {
+      setComponentDraftError(localizeError(error, t, "chrome.error.layerEdit"));
+    }
+  };
+  const addAnatomyPart = (name: string, parent?: string): void =>
+    runAnatomyEdit((component) => addComponentAnatomyPart(component, name, parent));
+  const removeAnatomyPart = (partName: string): void =>
+    runAnatomyEdit((component) => removeComponentAnatomyPart(component, partName));
+  const reorderAnatomyPart = (partName: string, beforeName: string | null): void =>
+    runAnatomyEdit((component) => reorderComponentAnatomyPart(component, partName, beforeName));
+  const reparentAnatomyPart = (partName: string, newParent: string | null): void =>
+    runAnatomyEdit((component) => reparentComponentAnatomyPart(component, partName, newParent));
+  // Single-commit reparent+reorder for drag-drop (avoids stale-state clobbering).
+  const moveAnatomyPart = (
+    partName: string,
+    newParent: string | null,
+    beforeName: string | null
+  ): void =>
+    runAnatomyEdit((component) =>
+      moveComponentAnatomyPart(component, partName, newParent, beforeName)
+    );
   const savePropDraft = (): void => {
     if (!selectedComponentForSpec) {
       return;
@@ -950,7 +1425,7 @@ export function PodoEditorApp({
       setSelectedPropName(prop.name);
       setComponentDraftError(undefined);
     } catch (error) {
-      setComponentDraftError(error instanceof Error ? error.message : "Prop draft is invalid.");
+      setComponentDraftError(localizeError(error, t, "chrome.error.propDraft"));
     }
   };
   const deleteSelectedProp = (): void => {
@@ -962,7 +1437,7 @@ export function PodoEditorApp({
       setSelectedPropName(undefined);
       setComponentDraftError(undefined);
     } catch (error) {
-      setComponentDraftError(error instanceof Error ? error.message : "Prop could not be deleted.");
+      setComponentDraftError(localizeError(error, t, "chrome.error.propDelete"));
     }
   };
   const saveVariantDraft = (): void => {
@@ -970,8 +1445,20 @@ export function PodoEditorApp({
       return;
     }
     try {
+      const nextName = variantDraft.name.trim();
+      const isRename = Boolean(selectedVariantName) && selectedVariantName !== nextName;
+      // Both the add path (no selection) and a rename can collide with an existing
+      // variant. upsertComponentVariant replaces by name, so guard against silently
+      // overwriting a different variant.
+      if (
+        nextName !== selectedVariantName &&
+        selectedComponentForSpec.variants.some((variant) => variant.name === nextName)
+      ) {
+        setComponentDraftError(t("chrome.error.variantExists", { name: nextName }));
+        return;
+      }
       const baseComponent =
-        selectedVariantName && selectedVariantName !== variantDraft.name.trim()
+        isRename && selectedVariantName
           ? deleteComponentVariant(selectedComponentForSpec, selectedVariantName)
           : selectedComponentForSpec;
       const nextComponent = upsertComponentVariant(baseComponent, variantDraft);
@@ -979,7 +1466,7 @@ export function PodoEditorApp({
       setSelectedVariantName(variantDraft.name.trim());
       setComponentDraftError(undefined);
     } catch (error) {
-      setComponentDraftError(error instanceof Error ? error.message : "Variant draft is invalid.");
+      setComponentDraftError(localizeError(error, t, "chrome.error.variantDraft"));
     }
   };
   const deleteSelectedVariant = (): void => {
@@ -991,9 +1478,7 @@ export function PodoEditorApp({
       setSelectedVariantName(undefined);
       setComponentDraftError(undefined);
     } catch (error) {
-      setComponentDraftError(
-        error instanceof Error ? error.message : "Variant could not be deleted."
-      );
+      setComponentDraftError(localizeError(error, t, "chrome.error.variantDelete"));
     }
   };
   const saveSlotDraft = (): void => {
@@ -1016,7 +1501,7 @@ export function PodoEditorApp({
       setSelectedSlotName(name);
       setComponentDraftError(undefined);
     } catch (error) {
-      setComponentDraftError(error instanceof Error ? error.message : "Slot draft is invalid.");
+      setComponentDraftError(localizeError(error, t, "chrome.error.slotDraft"));
     }
   };
   const deleteSelectedSlot = (): void => {
@@ -1028,203 +1513,446 @@ export function PodoEditorApp({
       setSelectedSlotName(undefined);
       setComponentDraftError(undefined);
     } catch (error) {
-      setComponentDraftError(error instanceof Error ? error.message : "Slot could not be deleted.");
+      setComponentDraftError(localizeError(error, t, "chrome.error.slotDelete"));
     }
   };
 
+  const applyIconModel = (model: EditorIconManifest): void => {
+    iconModelRef.current = model;
+    setIconModel(model);
+  };
+  const addIconFromSvg = (rawSvg: string, name?: string): void => {
+    void (async () => {
+      try {
+        const normalized = await normalizeIconSvg(rawSvg);
+        const result = addIcon(iconModelRef.current, {
+          name: name && name.trim() ? name : "icon",
+          svg: normalized,
+          floor: DEFAULT_ICON_CODEPOINT_FLOOR,
+        });
+        applyIconModel(result.model);
+        setSelectedIconName(result.name);
+        setIconDraftError(undefined);
+      } catch (error) {
+        setIconDraftError(localizeError(error, t, "chrome.error.svgAdd"));
+      }
+    })();
+  };
+  const renameSelectedIcon = (to: string): void => {
+    if (!selectedIconName) {
+      return;
+    }
+    const result = renameIcon(iconModelRef.current, selectedIconName, to);
+    applyIconModel(result.model);
+    setSelectedIconName(result.name);
+  };
+  const replaceSelectedIconSvg = (rawSvg: string): void => {
+    if (!selectedIconName) {
+      return;
+    }
+    const name = selectedIconName;
+    void (async () => {
+      try {
+        const normalized = await normalizeIconSvg(rawSvg);
+        applyIconModel(replaceIconSvg(iconModelRef.current, name, normalized));
+        setIconDraftError(undefined);
+      } catch (error) {
+        setIconDraftError(localizeError(error, t, "chrome.error.svgReplace"));
+      }
+    })();
+  };
+  const updateSelectedIconTags = (tags: string[]): void => {
+    if (!selectedIconName) {
+      return;
+    }
+    applyIconModel(updateIconTags(iconModelRef.current, selectedIconName, tags));
+  };
+  const updateSelectedIconDescription = (description: string): void => {
+    if (!selectedIconName) {
+      return;
+    }
+    applyIconModel(updateIconDescription(iconModelRef.current, selectedIconName, description));
+  };
+  const deleteSelectedIcon = (): void => {
+    if (!selectedIconName) {
+      return;
+    }
+    applyIconModel(deleteIcon(iconModelRef.current, selectedIconName));
+    setSelectedIconName(undefined);
+  };
+  const createIconGroup = (label: string): void => {
+    const result = createGroup(iconModelRef.current, label);
+    applyIconModel(result.model);
+    setActiveIconGroup(result.name);
+  };
+  const deleteIconGroup = (name: string): void => {
+    applyIconModel(deleteGroup(iconModelRef.current, name));
+  };
+  const toggleIconGroupMembership = (group: string, name: string, member: boolean): void => {
+    applyIconModel(setIconGroupMembership(iconModelRef.current, group, name, member));
+  };
+  const openIconDrawNew = (): void => setIconDrawTarget({ mode: "new" });
+  const openIconDrawEdit = (name: string): void => setIconDrawTarget({ mode: "edit", name });
+  const closeIconDraw = (): void => setIconDrawTarget(undefined);
+  const applyIconDraw = (svg: string): void => {
+    // The drawing canvas already emits canonical, safe SVG (single geometry path),
+    // so it is stored directly without re-normalizing.
+    if (iconDrawTarget?.mode === "edit") {
+      applyIconModel(replaceIconSvg(iconModelRef.current, iconDrawTarget.name, svg));
+      setSelectedIconName(iconDrawTarget.name);
+    } else {
+      const result = addIcon(iconModelRef.current, {
+        name: "icon",
+        svg,
+        floor: DEFAULT_ICON_CODEPOINT_FLOOR,
+      });
+      applyIconModel(result.model);
+      setSelectedIconName(result.name);
+    }
+    setIconDrawTarget(undefined);
+    setIconDraftError(undefined);
+  };
+  const saveIconFont = (): void => {
+    const model = iconModelRef.current;
+    setIconBuildStatus("building");
+    void (async () => {
+      try {
+        const result = await buildIconFontWoff2({
+          fontFamily: model.fontFamily,
+          glyphs: iconGlyphsFromModel(model),
+        });
+        const fontAsset: EmbeddedFontAsset = {
+          kind: "font",
+          source: "embedded",
+          family: model.fontFamily,
+          fileName: `${model.fontFamily}.woff2`,
+          format: "woff2",
+          mimeType: "font/woff2",
+          dataUrl: result.dataUrl,
+        };
+        const manifest = toIconManifest(model, fontAsset);
+        const issues = validateIconManifest(manifest);
+        if (issues.length > 0) {
+          throw new Error(issues.map((issue) => issue.message).join("; "));
+        }
+        const builtHash = manifest.fontBuild?.iconsHash;
+        // If the icon set changed while this async build ran, the snapshot font and
+        // manifest no longer match the latest edits. Keep the new font as a preview
+        // but leave the set marked stale and DON'T persist a behind-by-one manifest;
+        // a re-save rebuilds and persists the complete set (font + manifest stay
+        // derived from one identical icon set).
+        const stillCurrent = iconSetHash(iconModelRef.current) === iconSetHash(model);
+        applyIconModel({
+          ...iconModelRef.current,
+          fontAsset,
+          ...(stillCurrent && builtHash ? { builtHash } : {}),
+        });
+        setIconBuildStatus("ready");
+        setIconBuildError(undefined);
+        if (stillCurrent) {
+          onIconsChange?.(manifest);
+          if (adapter?.saveIconManifest) {
+            const saveIconManifest = adapter.saveIconManifest.bind(adapter);
+            enqueueHostWrite("icons", () => saveIconManifest(manifest));
+          }
+        }
+      } catch (error) {
+        setIconBuildStatus("error");
+        setIconBuildError(localizeError(error, t, "chrome.error.iconBuildFailed"));
+      }
+    })();
+  };
+
   return (
-    <div style={editorShellStyle}>
-      <datalist id={TOKEN_REFERENCE_LIST_ID}>
-        {tokenReferenceList.map((reference) => (
-          <option key={reference} value={reference} />
-        ))}
-      </datalist>
-      <header style={topBarStyle}>
-        <strong style={productTitleStyle}>Podo Editor</strong>
-        <div style={panelTabsStyle}>
-          {availablePanels.map((panel) => (
-            <button
-              key={panel}
-              type="button"
-              style={{
-                ...panelTabStyle,
-                ...(effectiveActivePanel === panel ? panelTabActiveStyle : {}),
-              }}
-              onClick={() => setActivePanel(panel)}
-            >
-              {panel}
-            </button>
+    <LocaleProvider locale={locale} setLocale={setLocale}>
+      <div style={editorShellStyle}>
+        <datalist id={TOKEN_REFERENCE_LIST_ID}>
+          {tokenReferenceList.map((reference) => (
+            <option key={reference} value={reference} />
           ))}
-        </div>
-        {effectiveActivePanel === "canvas" ? (
-          <div style={topBarControlStyle}>
-            <span style={topBarControlLabelStyle}>Scheme</span>
-            <div style={schemeSegmentedStyle}>
-              {editorColorSchemes.map((scheme) => (
+        </datalist>
+        {tokenDelete ? (
+          <TokenDeleteDialog
+            kind={tokenDelete.kind}
+            tokenType={tokenDelete.tokenType}
+            label={tokenDelete.label}
+            usages={tokenDelete.usages}
+            options={
+              tokenDelete.kind === "color-group"
+                ? colorGroupIds().filter((id) => id !== tokenDelete.label)
+                : tokenDelete.kind === "color-variation"
+                  ? colorLeafPaths().filter((path) => !tokenDelete.targets.includes(path))
+                  : tokenLeafPaths(tokenDelete.tokenType).filter(
+                      (path) => !tokenDelete.targets.includes(path)
+                    )
+            }
+            replacement={tokenDelete.replacement}
+            onChangeReplacement={(value) =>
+              setTokenDelete((current) => (current ? { ...current, replacement: value } : current))
+            }
+            onCancel={() => setTokenDelete(undefined)}
+            onConfirm={confirmTokenDelete}
+          />
+        ) : null}
+        <header style={topBarStyle}>
+          <strong style={productTitleStyle}>{t("chrome.product")}</strong>
+          <div style={panelTabsStyle}>
+            {availablePanels.map((panel) => (
+              <button
+                key={panel}
+                type="button"
+                style={{
+                  ...panelTabStyle,
+                  ...(effectiveActivePanel === panel ? panelTabActiveStyle : {}),
+                }}
+                onClick={() => setActivePanel(panel)}
+              >
+                {t(`chrome.panel.${panel}`)}
+              </button>
+            ))}
+          </div>
+          {effectiveActivePanel === "canvas" ? (
+            <div style={topBarControlStyle}>
+              <span style={topBarControlLabelStyle}>{t("chrome.scheme")}</span>
+              <div style={schemeSegmentedStyle}>
+                {editorColorSchemes.map((scheme) => (
+                  <button
+                    key={scheme}
+                    type="button"
+                    style={{
+                      ...schemeButtonStyle,
+                      ...(selectedColorScheme === scheme ? schemeButtonActiveStyle : {}),
+                    }}
+                    onClick={() => setSelectedColorScheme(scheme)}
+                  >
+                    {t(`chrome.scheme.${scheme}`)}
+                  </button>
+                ))}
+              </div>
+              <span style={topBarControlValueStyle}>
+                {t(`chrome.scheme.${effectiveColorScheme}`)}
+              </span>
+            </div>
+          ) : null}
+          <div style={localeControlStyle}>
+            <span style={topBarControlLabelStyle}>{t("chrome.language")}</span>
+            <div style={localeSegmentedStyle}>
+              {LOCALES.map((loc) => (
                 <button
-                  key={scheme}
+                  key={loc}
                   type="button"
+                  aria-pressed={locale === loc}
                   style={{
-                    ...schemeButtonStyle,
-                    ...(selectedColorScheme === scheme ? schemeButtonActiveStyle : {}),
+                    ...localeButtonStyle,
+                    ...(locale === loc ? schemeButtonActiveStyle : {}),
                   }}
-                  onClick={() => setSelectedColorScheme(scheme)}
+                  onClick={() => setLocale(loc)}
                 >
-                  {scheme}
+                  {LOCALE_LABELS[loc]}
                 </button>
               ))}
             </div>
-            <span style={topBarControlValueStyle}>{effectiveColorScheme}</span>
           </div>
-        ) : null}
-        {persistError ? (
-          <span role="alert" style={persistErrorStyle}>
-            {persistError}
-          </span>
-        ) : null}
-      </header>
-      <aside style={sidebarStyle}>
-        {effectiveActivePanel === "tokens" ? (
-          <TokensPanelControls
-            tokenGroups={tokenGroups}
-            tokenDraft={tokenDraft}
-            typographyWorkspaceActive={typographyWorkspaceActive}
-            selectTokenType={selectTokenType}
-          />
-        ) : null}
-        {effectiveActivePanel === "components" ? (
-          <ComponentsPanelControls
-            componentSearch={componentSearch}
-            setComponentSearch={setComponentSearch}
-            filteredComponents={filteredComponents}
-            selectedComponentForSpec={selectedComponentForSpec}
-            setSelectedComponentId={setSelectedComponentId}
-          />
-        ) : null}
-        {effectiveActivePanel === "canvas" ? (
-          <CanvasPanelControls
-            state={state}
-            frame={frame}
-            placeComponent={placeComponent}
-            createCustomLayout={createCustomLayout}
-            saveNodeAsComponent={saveNodeAsComponent}
-            commitState={commitState}
-            selectedNode={selectedNode}
-            selectedComponent={selectedComponent}
-            propsDraftNodeId={propsDraftNodeId}
-            propsDraft={propsDraft}
-            propsDraftError={propsDraftError}
-            commitSelectedPropsDraft={commitSelectedPropsDraft}
-            updateSelectedPropsDraft={updateSelectedPropsDraft}
-            tokenPickerOptions={tokenPickerOptions}
-            exportPreview={exportPreview}
-            setExportPreview={setExportPreview}
-            pageIdDraft={pageIdDraft}
-            setPageIdDraft={setPageIdDraft}
-            pagePreview={pagePreview}
-            setPagePreview={setPagePreview}
-            pageExportError={pageExportError}
-            setPageExportError={setPageExportError}
-            adapter={adapter}
-            enqueueHostWrite={enqueueHostWrite}
-          />
-        ) : null}
-        {effectiveActivePanel === "build" ? (
-          <BuildPanelControls tokenRecords={tokenRecords} state={state} />
-        ) : null}
-        {effectiveActivePanel === "project" ? (
-          <ProjectPanelControls typographyWorkspace={typographyWorkspace} />
-        ) : null}
-      </aside>
-      <main style={workspaceStyle}>
-        {effectiveActivePanel === "tokens" ? (
-          <TokensPanelWorkspace
-            tokenRecords={baseTokenRecords}
-            tokenDraft={tokenDraft}
-            tokenDraftError={tokenDraftError}
-            selectedTokenKey={selectedTokenKey}
-            setSelectedTokenKey={setSelectedTokenKey}
-            typographyWorkspaceActive={typographyWorkspaceActive}
-            typographyWorkspace={typographyWorkspace}
-            tokenMatrix={tokenMatrix}
-            colorComparisonMatrix={colorComparisonMatrix}
-            colorTokenPickerOptions={colorTokenPickerOptions}
-            previewTokenLookup={previewTokenLookup}
-            lightTokenLookup={lightTokenLookup}
-            darkTokenLookup={darkTokenLookup}
-            updateTokenMatrixCell={updateTokenMatrixCell}
-            createColorCounterpart={createColorCounterpart}
-            updateTypographyTokenField={updateTypographyTokenField}
-            attachFontAssetToRecord={attachFontAssetToRecord}
-            removeFontAssetFromRecord={removeFontAssetFromRecord}
-            createTypographyToken={createTypographyToken}
-            deleteTokenRecord={deleteTokenRecord}
-            deleteTokenRecords={deleteTokenRecords}
-            toggleFamilyWeight={toggleFamilyWeight}
-          />
-        ) : null}
-        {effectiveActivePanel === "components" && selectedComponentForSpec ? (
-          <ComponentsPanelWorkspace
-            selectedComponentForSpec={selectedComponentForSpec}
-            componentEditMode={componentEditMode}
-            setComponentEditMode={setComponentEditMode}
-            componentMetaDraft={componentMetaDraft}
-            setComponentMetaDraft={setComponentMetaDraft}
-            componentDraftError={componentDraftError}
-            saveComponentMetaDraft={saveComponentMetaDraft}
-            propDraft={propDraft}
-            setPropDraft={setPropDraft}
-            selectedPropName={selectedPropName}
-            setSelectedPropName={setSelectedPropName}
-            savePropDraft={savePropDraft}
-            deleteSelectedProp={deleteSelectedProp}
-            variantDraft={variantDraft}
-            setVariantDraft={setVariantDraft}
-            selectedVariantName={selectedVariantName}
-            setSelectedVariantName={setSelectedVariantName}
-            saveVariantDraft={saveVariantDraft}
-            deleteSelectedVariant={deleteSelectedVariant}
-            slotDraft={slotDraft}
-            setSlotDraft={setSlotDraft}
-            selectedSlotName={selectedSlotName}
-            setSelectedSlotName={setSelectedSlotName}
-            saveSlotDraft={saveSlotDraft}
-            deleteSelectedSlot={deleteSelectedSlot}
-            selectedComponentTokenModel={selectedComponentTokenModel}
-            selectedTokenKey={selectedTokenKey}
-            setSelectedTokenKey={setSelectedTokenKey}
-            updateTokenMatrixCell={updateTokenMatrixCell}
-            previewTokenLookup={previewTokenLookup}
-            effectiveComponentPreviewSelections={effectiveComponentPreviewSelections}
-            setComponentPreviewSelections={setComponentPreviewSelections}
-          />
-        ) : null}
-        {effectiveActivePanel === "canvas" ? (
-          <CanvasPanelWorkspace
-            state={state}
-            frame={frame}
-            handleCanvasDrop={handleCanvasDrop}
-            editorRef={editorRef}
-            syncFromTldraw={syncFromTldraw}
-          />
-        ) : null}
-        {effectiveActivePanel === "build" ? (
-          <BuildPanelWorkspace tokenDocumentsState={tokenDocumentsState} state={state} />
-        ) : null}
-        {effectiveActivePanel === "project" ? (
-          <ProjectPanelWorkspace
-            typographyWorkspace={typographyWorkspace}
-            previewTokenLookup={previewTokenLookup}
-            selectedTokenKey={selectedTokenKey}
-            setSelectedTokenKey={setSelectedTokenKey}
-            updateTokenMatrixCell={updateTokenMatrixCell}
-            updateTypographyTokenField={updateTypographyTokenField}
-            attachFontAssetToRecord={attachFontAssetToRecord}
-            removeFontAssetFromRecord={removeFontAssetFromRecord}
-            createTypographyToken={createTypographyToken}
-          />
-        ) : null}
-      </main>
-    </div>
+          {persistError ? (
+            <span role="alert" style={persistErrorStyle}>
+              {persistError}
+            </span>
+          ) : null}
+        </header>
+        <aside style={sidebarStyle}>
+          {effectiveActivePanel === "tokens" ? (
+            <TokensPanelControls
+              tokenGroups={tokenGroups}
+              tokenDraft={tokenDraft}
+              typographyWorkspaceActive={typographyWorkspaceActive}
+              selectTokenType={selectTokenType}
+            />
+          ) : null}
+          {effectiveActivePanel === "icons" ? (
+            <IconsPanelControls
+              model={iconModel}
+              selectedIconName={selectedIconName}
+              setSelectedIconName={setSelectedIconName}
+              activeGroup={activeIconGroup}
+              setActiveGroup={setActiveIconGroup}
+              buildStatus={iconBuildStatus}
+              buildError={iconBuildError}
+              createIconGroup={createIconGroup}
+              deleteIconGroup={deleteIconGroup}
+              saveIconFont={saveIconFont}
+            />
+          ) : null}
+          {effectiveActivePanel === "components" ? (
+            <ComponentsPanelControls
+              componentSearch={componentSearch}
+              setComponentSearch={setComponentSearch}
+              filteredComponents={filteredComponents}
+              selectedComponentForSpec={selectedComponentForSpec}
+              setSelectedComponentId={setSelectedComponentId}
+            />
+          ) : null}
+          {effectiveActivePanel === "canvas" ? (
+            <CanvasPanelControls
+              state={state}
+              frame={frame}
+              placeComponent={placeComponent}
+              createCustomLayout={createCustomLayout}
+              saveNodeAsComponent={saveNodeAsComponent}
+              commitState={commitState}
+              selectedNode={selectedNode}
+              selectedComponent={selectedComponent}
+              propsDraftNodeId={propsDraftNodeId}
+              propsDraft={propsDraft}
+              propsDraftError={propsDraftError}
+              commitSelectedPropsDraft={commitSelectedPropsDraft}
+              updateSelectedPropsDraft={updateSelectedPropsDraft}
+              tokenPickerOptions={tokenPickerOptions}
+              exportPreview={exportPreview}
+              setExportPreview={setExportPreview}
+              pageIdDraft={pageIdDraft}
+              setPageIdDraft={setPageIdDraft}
+              pagePreview={pagePreview}
+              setPagePreview={setPagePreview}
+              pageExportError={pageExportError}
+              setPageExportError={setPageExportError}
+              adapter={adapter}
+              enqueueHostWrite={enqueueHostWrite}
+            />
+          ) : null}
+          {effectiveActivePanel === "build" ? (
+            <BuildPanelControls tokenRecords={tokenRecords} state={state} />
+          ) : null}
+          {effectiveActivePanel === "project" ? (
+            <ProjectPanelControls typographyWorkspace={typographyWorkspace} />
+          ) : null}
+        </aside>
+        <main style={workspaceStyle}>
+          {effectiveActivePanel === "tokens" ? (
+            <TokensPanelWorkspace
+              tokenRecords={baseTokenRecords}
+              tokenDraft={tokenDraft}
+              tokenDraftError={tokenDraftError}
+              selectedTokenKey={selectedTokenKey}
+              setSelectedTokenKey={setSelectedTokenKey}
+              typographyWorkspaceActive={typographyWorkspaceActive}
+              typographyWorkspace={typographyWorkspace}
+              tokenMatrix={tokenMatrix}
+              colorComparisonMatrix={colorComparisonMatrix}
+              colorTokenPickerOptions={colorTokenPickerOptions}
+              previewTokenLookup={previewTokenLookup}
+              lightTokenLookup={lightTokenLookup}
+              darkTokenLookup={darkTokenLookup}
+              updateTokenMatrixCell={updateTokenMatrixCell}
+              createColorCounterpart={createColorCounterpart}
+              updateTypographyTokenField={updateTypographyTokenField}
+              attachFontAssetToRecord={attachFontAssetToRecord}
+              removeFontAssetFromRecord={removeFontAssetFromRecord}
+              createTypographyToken={createTypographyToken}
+              deleteTokenRecord={deleteTokenRecord}
+              requestDeleteColorVariation={requestDeleteColorVariation}
+              requestDeleteColorGroup={requestDeleteColorGroup}
+              requestDeleteScalarToken={requestDeleteScalarToken}
+              renameColorGroup={renameColorGroup}
+              toggleFamilyWeight={toggleFamilyWeight}
+            />
+          ) : null}
+          {effectiveActivePanel === "icons" ? (
+            <IconsPanelWorkspace
+              model={iconModel}
+              selectedIconName={selectedIconName}
+              setSelectedIconName={setSelectedIconName}
+              activeGroup={activeIconGroup}
+              setActiveGroup={setActiveIconGroup}
+              iconSearch={iconSearch}
+              setIconSearch={setIconSearch}
+              draftError={iconDraftError}
+              addIconFromSvg={addIconFromSvg}
+              renameSelectedIcon={renameSelectedIcon}
+              replaceSelectedIconSvg={replaceSelectedIconSvg}
+              updateSelectedIconTags={updateSelectedIconTags}
+              updateSelectedIconDescription={updateSelectedIconDescription}
+              deleteSelectedIcon={deleteSelectedIcon}
+              toggleIconGroupMembership={toggleIconGroupMembership}
+              drawTarget={iconDrawTarget}
+              openDrawNew={openIconDrawNew}
+              openDrawEdit={openIconDrawEdit}
+              applyDraw={applyIconDraw}
+              closeDraw={closeIconDraw}
+            />
+          ) : null}
+          {effectiveActivePanel === "components" && selectedComponentForSpec ? (
+            <ComponentsPanelWorkspace
+              selectedComponentForSpec={selectedComponentForSpec}
+              componentEditMode={componentEditMode}
+              setComponentEditMode={setComponentEditMode}
+              componentMetaDraft={componentMetaDraft}
+              setComponentMetaDraft={setComponentMetaDraft}
+              componentDraftError={componentDraftError}
+              saveComponentMetaDraft={saveComponentMetaDraft}
+              propDraft={propDraft}
+              setPropDraft={setPropDraft}
+              selectedPropName={selectedPropName}
+              setSelectedPropName={setSelectedPropName}
+              savePropDraft={savePropDraft}
+              deleteSelectedProp={deleteSelectedProp}
+              variantDraft={variantDraft}
+              setVariantDraft={setVariantDraft}
+              selectedVariantName={selectedVariantName}
+              setSelectedVariantName={setSelectedVariantName}
+              saveVariantDraft={saveVariantDraft}
+              deleteSelectedVariant={deleteSelectedVariant}
+              slotDraft={slotDraft}
+              setSlotDraft={setSlotDraft}
+              selectedSlotName={selectedSlotName}
+              setSelectedSlotName={setSelectedSlotName}
+              saveSlotDraft={saveSlotDraft}
+              deleteSelectedSlot={deleteSelectedSlot}
+              selectedComponentTokenModel={selectedComponentTokenModel}
+              selectedTokenKey={selectedTokenKey}
+              setSelectedTokenKey={setSelectedTokenKey}
+              updateTokenMatrixCell={updateTokenMatrixCell}
+              updateComponentTokenBinding={updateComponentTokenBinding}
+              updateComponentVariantValueTokenBinding={updateComponentVariantValueTokenBinding}
+              renameAnatomyPart={renameAnatomyPart}
+              addAnatomyPart={addAnatomyPart}
+              removeAnatomyPart={removeAnatomyPart}
+              reorderAnatomyPart={reorderAnatomyPart}
+              reparentAnatomyPart={reparentAnatomyPart}
+              moveAnatomyPart={moveAnatomyPart}
+              tokenPickerOptions={tokenPickerOptions}
+              previewTokenLookup={previewTokenLookup}
+              effectiveComponentPreviewSelections={effectiveComponentPreviewSelections}
+              setComponentPreviewSelections={setComponentPreviewSelections}
+            />
+          ) : null}
+          {effectiveActivePanel === "canvas" ? (
+            <CanvasPanelWorkspace
+              state={state}
+              frame={frame}
+              handleCanvasDrop={handleCanvasDrop}
+              editorRef={editorRef}
+              syncFromTldraw={syncFromTldraw}
+              lookup={previewTokenLookup}
+            />
+          ) : null}
+          {effectiveActivePanel === "build" ? (
+            <BuildPanelWorkspace tokenDocumentsState={tokenDocumentsState} state={state} />
+          ) : null}
+          {effectiveActivePanel === "project" ? (
+            <ProjectPanelWorkspace
+              typographyWorkspace={typographyWorkspace}
+              previewTokenLookup={previewTokenLookup}
+              selectedTokenKey={selectedTokenKey}
+              setSelectedTokenKey={setSelectedTokenKey}
+              updateTokenMatrixCell={updateTokenMatrixCell}
+              updateTypographyTokenField={updateTypographyTokenField}
+              attachFontAssetToRecord={attachFontAssetToRecord}
+              removeFontAssetFromRecord={removeFontAssetFromRecord}
+              createTypographyToken={createTypographyToken}
+            />
+          ) : null}
+        </main>
+      </div>
+    </LocaleProvider>
   );
 }

@@ -2,6 +2,7 @@ import { useState, type Dispatch, type SetStateAction } from "react";
 import type { DesignToken } from "@podo/spec";
 import type { EditorTokenRecord } from "./spec-editing.js";
 import { inferFontFamilyName } from "./fonts.js";
+import { useT } from "./i18n/context.js";
 import { tokenVariationName, type TokenLookup } from "./token-lookup.js";
 import { renderTypographyStyleCard, type TypographyEditorInput } from "./token-editor.js";
 import {
@@ -74,18 +75,30 @@ export function ProjectPanelControls({
 }: {
   typographyWorkspace: TypographyWorkspaceModel;
 }) {
+  const t = useT();
   const definedRoles = BASE_ROLES.filter((entry) =>
     Boolean(baseRoleRecord(typographyWorkspace, entry.role))
   ).length;
   return (
     <>
-      <div style={sidebarTitleStyle}>Project</div>
+      <div style={sidebarTitleStyle}>{t("projectPanel.title")}</div>
       <div style={summaryListStyle}>
         <span>
-          {definedRoles}/{BASE_ROLES.length} base styles
+          {t("projectPanel.baseStylesCount", {
+            defined: definedRoles,
+            total: BASE_ROLES.length,
+          })}
         </span>
-        <span>{typographyWorkspace.families.length} font families</span>
-        <span>{typographyWorkspace.styles.length} text styles</span>
+        <span>
+          {t("projectPanel.fontFamiliesCount", {
+            count: typographyWorkspace.families.length,
+          })}
+        </span>
+        <span>
+          {t("projectPanel.textStylesCount", {
+            count: typographyWorkspace.styles.length,
+          })}
+        </span>
       </div>
     </>
   );
@@ -102,12 +115,14 @@ export function ProjectPanelWorkspace({
   removeFontAssetFromRecord,
   createTypographyToken,
 }: ProjectPanelData) {
+  const t = useT();
   const families = typographyWorkspace.families.map((record) =>
     inferFontFamilyName(record.token.$value, record.path)
   );
   const [defaultFamily, setDefaultFamily] = useState(families[0] ?? "Inter");
 
   const typographyInput: TypographyEditorInput = {
+    t,
     model: typographyWorkspace,
     selectedTokenKey,
     lookup: previewTokenLookup,
@@ -148,26 +163,25 @@ export function ProjectPanelWorkspace({
     <section style={sectionStyle}>
       <div style={sectionHeaderStyle}>
         <div>
-          <h1 style={sectionTitleStyle}>Project defaults</h1>
-          <p style={sectionMetaStyle}>
-            Project-wide base text styles (h1–h3, body, caption). Component-specific typography is
-            set inside each component.
-          </p>
+          <h1 style={sectionTitleStyle}>{t("projectPanel.defaultsHeading")}</h1>
+          <p style={sectionMetaStyle}>{t("projectPanel.defaultsMeta")}</p>
         </div>
       </div>
 
       <section style={typographyCardStyle}>
         <div style={typographyCardHeaderStyle}>
-          <span>Default font family</span>
+          <span>{t("projectPanel.defaultFontFamily")}</span>
           <span style={typographyCardMetaStyle}>
-            {typographyWorkspace.families.length} available
+            {t("projectPanel.familiesAvailable", {
+              count: typographyWorkspace.families.length,
+            })}
           </span>
         </div>
         <label style={fieldStyle}>
-          Family
+          {t("projectPanel.familyLabel")}
           {families.length ? (
             <select
-              aria-label="Default font family"
+              aria-label={t("projectPanel.defaultFontFamily")}
               style={selectStyle}
               value={defaultFamily}
               onChange={(event) => applyDefaultFamily(event.currentTarget.value)}
@@ -179,17 +193,15 @@ export function ProjectPanelWorkspace({
               ))}
             </select>
           ) : (
-            <span style={inlineHelpStyle}>
-              Add a font family in Tokens → typography first, then pick it here.
-            </span>
+            <span style={inlineHelpStyle}>{t("projectPanel.addFamilyHelp")}</span>
           )}
         </label>
       </section>
 
       <section style={typographyCardStyle}>
         <div style={typographyCardHeaderStyle}>
-          <span>Base text styles</span>
-          <span style={typographyCardMetaStyle}>h1 · h2 · h3 · body · caption</span>
+          <span>{t("projectPanel.baseTextStyles")}</span>
+          <span style={typographyCardMetaStyle}>{t("projectPanel.baseTextStylesMeta")}</span>
         </div>
         <div style={styleCardGridStyle}>
           {BASE_ROLES.map((entry) => {
@@ -208,7 +220,7 @@ export function ProjectPanelWorkspace({
                   style={projectRoleAddButtonStyle}
                   onClick={() => createRole(entry)}
                 >
-                  + Add {entry.role}
+                  {t("projectPanel.addRole", { role: entry.role })}
                 </button>
               </div>
             );

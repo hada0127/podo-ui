@@ -1,0 +1,30 @@
+{
+  "name": "@podo/icon-build",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Deterministic, isomorphic SVG-to-woff2 icon font builder shared by the Podo editor and Node icon build.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@podo/spec": "workspace:*",
+    "opentype.js": "2.0.0",
+    "svgpath": "2.6.0",
+    "woff2-encoder": "2.0.0"
+  }
+}

@@ -3,6 +3,8 @@ import { mkdtemp, readFile, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { buildIconFontWoff2 } from "@podo/icon-build";
+import { computeIconsHash, parseIconManifest } from "@podo/spec";
 import {
   buildIconAssets,
   emitIconCss,
@@ -83,6 +85,65 @@ describe("@podo/icons", () => {
     expect(result.metadata.woff2).toBe(true);
     expect(metadata.fontFiles).toEqual(["woff", "woff2"]);
     expect(css).toContain(".podo-icon-chevron-left::before");
+  });
+
+  it("builds inline manifests as woff2 via the shared pipeline, byte-identical to the editor", async () => {
+    const icons = {
+      box: {
+        svg: '<svg viewBox="0 0 1000 1000"><path d="M100 100H900V900H100Z" fill="currentColor"/></svg>',
+        codepoint: "E900",
+        tags: [],
+      },
+      bar: {
+        svg: '<svg viewBox="0 0 1000 1000"><path d="M100 400H900V600H100Z" fill="currentColor"/></svg>',
+        codepoint: "E901",
+        tags: [],
+      },
+    };
+    const built = await buildIconFontWoff2({
+      fontFamily: "PodoIcons",
+      glyphs: Object.entries(icons).map(([name, def]) => ({
+        name,
+        codepoint: def.codepoint,
+        svg: def.svg,
+      })),
+    });
+    const base = parseIconManifest({
+      schemaVersion: "2.0.0",
+      kind: "icons",
+      fontFamily: "PodoIcons",
+      icons,
+      groups: { all: ["box", "bar"] },
+      codepointLock: { box: "E900", bar: "E901" },
+    });
+    const manifest = {
+      ...base,
+      fontAsset: {
+        kind: "font" as const,
+        source: "embedded" as const,
+        family: "PodoIcons",
+        fileName: "PodoIcons.woff2",
+        format: "woff2" as const,
+        mimeType: "font/woff2",
+        dataUrl: built.dataUrl,
+      },
+      fontBuild: {
+        iconsHash: computeIconsHash(base),
+        unitsPerEm: 1000,
+        glyphCount: built.glyphCount,
+      },
+    };
+
+    const outDir = await mkdtemp(join(tmpdir(), "podo-icons-inline-"));
+    const result = await buildIconAssets({ manifest, svgRoot, outDir });
+
+    // Only the always-woff2 artifact is emitted (no legacy woff).
+    await expect(stat(join(outDir, "PodoIcons.woff"))).rejects.toThrow();
+    const writtenWoff2 = await readFile(join(outDir, "PodoIcons.woff2"));
+    // The Node build's bytes match the editor's @podo/icon-build output exactly.
+    expect(Buffer.compare(writtenWoff2, Buffer.from(built.woff2))).toBe(0);
+    expect(result.metadata.fontFiles).toEqual(["woff2"]);
+    expect(result.metadata.woff2).toBe(true);
   });
 });
 

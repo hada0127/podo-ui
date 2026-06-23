@@ -8,5 +8,5 @@
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"],
-  "references": [{ "path": "../spec" }, { "path": "../edit-core" }]
+  "references": [{ "path": "../spec" }, { "path": "../edit-core" }, { "path": "../icon-build" }]
 }

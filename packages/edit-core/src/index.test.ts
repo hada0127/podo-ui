@@ -1,11 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { PODO_SCHEMA_VERSION, parseComponentDocument, parseTokenDocument } from "@podo/spec";
 import {
+  addComponentAnatomyPart,
   createEditStore,
   createInMemoryAdapter,
   createStudioHttpAdapter,
   deleteComponentSlot,
+  deleteComponentVariant,
+  moveComponentAnatomyPart,
+  removeComponentAnatomyPart,
+  renameComponentAnatomyPart,
+  reorderComponentAnatomyPart,
+  reparentComponentAnatomyPart,
   upsertComponentSlot,
+  upsertComponentTokenBinding,
+  upsertComponentVariant,
+  upsertComponentVariantValueTokenBinding,
   validateWorkspace,
 } from "./index.js";
 
@@ -298,5 +308,173 @@ describe("component slot editing", () => {
     const updated = upsertComponentSlot(targeted, { name: "content", required: true });
     expect(updated.slots[0]?.required).toBe(true);
     expect(updated.slots[0]?.targets).toEqual({ web: { name: "div" } });
+  });
+});
+
+describe("component variant editing", () => {
+  it("adds, updates, and removes variants with a valid default", () => {
+    const withVariant = upsertComponentVariant(demoComponent, {
+      name: "tone",
+      valuesText: "default, emphasis",
+      defaultValue: "emphasis",
+    });
+    expect(withVariant.variants).toHaveLength(1);
+    expect(withVariant.variants[0]).toMatchObject({
+      name: "tone",
+      values: ["default", "emphasis"],
+      default: "emphasis",
+    });
+
+    const removed = deleteComponentVariant(withVariant, "tone");
+    expect(removed.variants).toHaveLength(0);
+  });
+
+  it("rejects empty values, duplicate values, and an out-of-range default", () => {
+    expect(() =>
+      upsertComponentVariant(demoComponent, { name: "tone", valuesText: " " })
+    ).toThrow();
+    expect(() =>
+      upsertComponentVariant(demoComponent, { name: "tone", valuesText: "a, a" })
+    ).toThrow(/duplicate/i);
+    expect(() =>
+      upsertComponentVariant(demoComponent, {
+        name: "tone",
+        valuesText: "a, b",
+        defaultValue: "c",
+      })
+    ).toThrow(/default/i);
+  });
+});
+
+const hierarchyComponent = parseComponentDocument({
+  schemaVersion: PODO_SCHEMA_VERSION,
+  kind: "component",
+  id: "hier",
+  name: "Hier",
+  category: "atom",
+  status: "stable",
+  anatomy: [{ name: "root" }, { name: "icon", parent: "root" }, { name: "dot", parent: "icon" }],
+  variants: [{ name: "tone", values: ["a", "b"], default: "a" }],
+  states: [{ name: "hover" }],
+  targets: {
+    web: { supported: true },
+    react: { supported: true },
+    hono: { supported: true },
+    native: { supported: true },
+  },
+  accessibility: {},
+  tokens: { "root.background": "{color.bg}", "icon.color": "{color.icon}" },
+});
+
+describe("component anatomy + token-binding editing", () => {
+  it("adds a part and disambiguates duplicate names", () => {
+    const once = addComponentAnatomyPart(demoComponent, "label");
+    expect(once.anatomy.map((p) => p.name)).toContain("label");
+    const twice = addComponentAnatomyPart(once, "label");
+    expect(twice.anatomy.map((p) => p.name)).toEqual(["root", "label", "label-2"]);
+  });
+
+  it("adds a nested child under a parent", () => {
+    const next = addComponentAnatomyPart(hierarchyComponent, "ring", "icon");
+    expect(next.anatomy.find((p) => p.name === "ring")?.parent).toBe("icon");
+  });
+
+  it("renames a part: migrates token keys + child parent refs", () => {
+    const next = renameComponentAnatomyPart(hierarchyComponent, "icon", "glyph");
+    expect(next.tokens["glyph.color"]).toBe("{color.icon}");
+    expect(next.tokens["icon.color"]).toBeUndefined();
+    expect(next.anatomy.find((p) => p.name === "dot")?.parent).toBe("glyph");
+  });
+
+  it("rejects renaming to an existing layer name", () => {
+    expect(() => renameComponentAnatomyPart(hierarchyComponent, "icon", "root")).toThrow(
+      /already exists/i
+    );
+  });
+
+  it("removes a part with its descendants and their bindings", () => {
+    const next = removeComponentAnatomyPart(hierarchyComponent, "icon");
+    expect(next.anatomy.map((p) => p.name)).toEqual(["root"]);
+    expect(next.tokens["icon.color"]).toBeUndefined();
+    expect(next.tokens["root.background"]).toBe("{color.bg}");
+  });
+
+  it("reparent rejects nesting a layer into its own descendant", () => {
+    const next = reparentComponentAnatomyPart(hierarchyComponent, "root", "dot");
+    expect(next.anatomy.find((p) => p.name === "root")?.parent).toBeUndefined();
+  });
+
+  it("reorders a sibling and moves (reparent+reorder) atomically", () => {
+    const reordered = reorderComponentAnatomyPart(hierarchyComponent, "root", null);
+    expect(reordered.anatomy.map((p) => p.name)).toEqual(["icon", "dot", "root"]);
+    const moved = moveComponentAnatomyPart(hierarchyComponent, "dot", null, "root");
+    expect(moved.anatomy.find((p) => p.name === "dot")?.parent).toBeUndefined();
+    expect(moved.anatomy[0]?.name).toBe("dot");
+  });
+
+  it("upserts and deletes base token bindings", () => {
+    const set = upsertComponentTokenBinding(hierarchyComponent, "root.radius", "{radius.md}");
+    expect(set.tokens["root.radius"]).toBe("{radius.md}");
+    const cleared = upsertComponentTokenBinding(set, "root.radius", "");
+    expect(cleared.tokens["root.radius"]).toBeUndefined();
+  });
+
+  it("writes a per-variant value token binding", () => {
+    const next = upsertComponentVariantValueTokenBinding(
+      hierarchyComponent,
+      "tone",
+      "b",
+      "root.background",
+      "{color.accent}"
+    );
+    expect(next.variants[0]?.valueTokens?.b?.["root.background"]).toBe("{color.accent}");
+  });
+});
+
+describe("anatomy hierarchy schema validation", () => {
+  const base = {
+    schemaVersion: PODO_SCHEMA_VERSION,
+    kind: "component" as const,
+    id: "v",
+    name: "V",
+    category: "atom" as const,
+    status: "stable" as const,
+    targets: {
+      web: { supported: true },
+      react: { supported: true },
+      hono: { supported: true },
+      native: { supported: true },
+    },
+    accessibility: {},
+  };
+
+  it("rejects duplicate part names", () => {
+    expect(() =>
+      parseComponentDocument({ ...base, anatomy: [{ name: "root" }, { name: "root" }] })
+    ).toThrow(/unique/i);
+  });
+
+  it("rejects a missing parent", () => {
+    expect(() =>
+      parseComponentDocument({ ...base, anatomy: [{ name: "root", parent: "ghost" }] })
+    ).toThrow(/does not exist/i);
+  });
+
+  it("rejects a self-parent", () => {
+    expect(() =>
+      parseComponentDocument({ ...base, anatomy: [{ name: "root", parent: "root" }] })
+    ).toThrow(/own parent/i);
+  });
+
+  it("rejects a parent cycle", () => {
+    expect(() =>
+      parseComponentDocument({
+        ...base,
+        anatomy: [
+          { name: "a", parent: "b" },
+          { name: "b", parent: "a" },
+        ],
+      })
+    ).toThrow(/cycle/i);
   });
 });

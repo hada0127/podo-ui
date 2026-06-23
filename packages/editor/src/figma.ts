@@ -1,5 +1,6 @@
 import {
   PODO_SCHEMA_VERSION,
+  PodoEditError,
   parseTokenDocument,
   type DesignToken,
   type TokenDocument,
@@ -35,7 +36,10 @@ export function importFigmaVariables(input: FigmaVariableCollection): TokenDocum
   const tokens: TokenTree = {};
   const defaultMode = input.modes[0]?.modeId;
   if (!defaultMode) {
-    throw new Error("Figma variable collection must include at least one mode.");
+    throw new PodoEditError(
+      "figma.collectionMode",
+      "Figma variable collection must include at least one mode."
+    );
   }
 
   const aliases = new Map(
@@ -165,7 +169,11 @@ function convertFigmaValue(
   if (isFigmaAlias(value)) {
     const alias = aliases.get(value.id);
     if (!alias) {
-      throw new Error(`Figma alias "${value.id}" does not point to an imported variable.`);
+      throw new PodoEditError(
+        "figma.aliasUnresolved",
+        `Figma alias "${value.id}" does not point to an imported variable.`,
+        { id: value.id }
+      );
     }
     return `{${alias}}`;
   }
@@ -184,19 +192,27 @@ function convertFigmaValue(
 function setTokenAtPath(target: TokenTree, path: string[], token: DesignToken): void {
   const [head, ...tail] = path;
   if (!head) {
-    throw new Error("Token path cannot be empty.");
+    throw new PodoEditError("figma.tokenPathEmpty", "Token path cannot be empty.");
   }
   if (tail.length === 0) {
     const existing = target[head];
     if (existing && !isDesignTokenLike(existing)) {
-      throw new Error(`Figma variable path "${path.join(".")}" conflicts with a token group.`);
+      throw new PodoEditError(
+        "figma.pathGroupConflict",
+        `Figma variable path "${path.join(".")}" conflicts with a token group.`,
+        { path: path.join(".") }
+      );
     }
     target[head] = token;
     return;
   }
   const current = target[head];
   if (isDesignTokenLike(current)) {
-    throw new Error(`Figma variable path "${path.join(".")}" conflicts with token "${head}".`);
+    throw new PodoEditError(
+      "figma.pathTokenConflict",
+      `Figma variable path "${path.join(".")}" conflicts with token "${head}".`,
+      { path: path.join("."), head }
+    );
   }
   if (!current || Array.isArray(current)) {
     target[head] = {};

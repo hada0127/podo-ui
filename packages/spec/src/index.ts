@@ -1,3 +1,4 @@
+export * from "./error.js";
 export * from "./shared.js";
 export * from "./tokens.js";
 export * from "./components.js";

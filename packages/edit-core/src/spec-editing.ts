@@ -1,5 +1,6 @@
 import {
   PODO_SCHEMA_VERSION,
+  PodoEditError,
   parseComponentDocument,
   parseTokenDocument,
   type ComponentDocument,
@@ -129,7 +130,11 @@ export function deleteTokenFromDocuments(
 ): TokenDocument[] {
   const document = documents[documentIndex];
   if (!document) {
-    throw new Error(`Token document "${documentIndex}" was not found.`);
+    throw new PodoEditError(
+      "editCore.tokenDocNotFound",
+      `Token document "${documentIndex}" was not found.`,
+      { index: documentIndex }
+    );
   }
   const nextTokens = cloneTokenTree(document.tokens);
   deleteTokenAtPath(nextTokens, parseEditorPath(path));
@@ -154,21 +159,21 @@ export function parseEditorTokenExtensions(
   try {
     const parsed = JSON.parse(trimmed) as unknown;
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      throw new Error("Token extensions must be a JSON object.");
+      throw new PodoEditError("editCore.tokenExtObject", "Token extensions must be a JSON object.");
     }
     return parsed as DesignToken["$extensions"];
   } catch (error) {
     if (error instanceof Error && error.message === "Token extensions must be a JSON object.") {
       throw error;
     }
-    throw new Error("Token extensions must be valid JSON.");
+    throw new PodoEditError("editCore.tokenExtJson", "Token extensions must be valid JSON.");
   }
 }
 
 export function parseEditorTokenValue(type: DesignToken["$type"], valueText: string): unknown {
   const trimmed = valueText.trim();
   if (!trimmed) {
-    throw new Error("Token value is required.");
+    throw new PodoEditError("editCore.tokenValueRequired", "Token value is required.");
   }
 
   if (["number", "fontWeight"].includes(type) && /^-?\d+(?:\.\d+)?$/.test(trimmed)) {
@@ -185,7 +190,11 @@ export function parseEditorTokenValue(type: DesignToken["$type"], valueText: str
       if (/^\{[^}]+\}$/.test(trimmed)) {
         return trimmed;
       }
-      throw new Error(`${type} token values must be valid JSON or a valid token alias.`);
+      throw new PodoEditError(
+        "editCore.tokenValueInvalid",
+        `${type} token values must be valid JSON or a valid token alias.`,
+        { type }
+      );
     }
   }
   return trimmed;
@@ -204,6 +213,268 @@ export function updateComponentMeta(
   });
 }
 
+/**
+ * Sets (or clears, when `reference` is empty) a `<part>.<property>` appearance
+ * binding in a component's base token map. Powers the Figma-style design editor.
+ */
+export function upsertComponentTokenBinding(
+  component: ComponentDocument,
+  key: string,
+  reference: string
+): ComponentDocument {
+  const tokens = { ...component.tokens };
+  if (reference.trim()) {
+    tokens[key] = reference.trim();
+  } else {
+    delete tokens[key];
+  }
+  return parseComponentDocument({ ...component, tokens });
+}
+
+export function deleteComponentTokenBinding(
+  component: ComponentDocument,
+  key: string
+): ComponentDocument {
+  const tokens = { ...component.tokens };
+  delete tokens[key];
+  return parseComponentDocument({ ...component, tokens });
+}
+
+/**
+ * Sets (or clears) a per-variant-VALUE appearance binding, i.e.
+ * `variant.valueTokens[value][<part>.<prop>] = reference`. Lets the design editor
+ * style one variant (e.g. theme=primary) without touching base tokens.
+ */
+export function upsertComponentVariantValueTokenBinding(
+  component: ComponentDocument,
+  variantName: string,
+  value: string,
+  key: string,
+  reference: string
+): ComponentDocument {
+  const variants = (component.variants ?? []).map((variant) => {
+    if (variant.name !== variantName) return variant;
+    const valueTokens: Record<string, Record<string, string>> = { ...(variant.valueTokens ?? {}) };
+    const bucket: Record<string, string> = { ...(valueTokens[value] ?? {}) };
+    if (reference.trim()) {
+      bucket[key] = reference.trim();
+    } else {
+      delete bucket[key];
+    }
+    if (Object.keys(bucket).length) {
+      valueTokens[value] = bucket;
+    } else {
+      delete valueTokens[value];
+    }
+    return { ...variant, valueTokens };
+  });
+  return parseComponentDocument({ ...component, variants });
+}
+
+// Migrates `<part>.<prop>` keys from one part name to another, across every
+// token-bearing map (used by rename so no binding is orphaned).
+function migrateBindingKeys<T>(
+  tokens: Record<string, T> | undefined,
+  fromName: string,
+  toName: string
+): Record<string, T> {
+  const out: Record<string, T> = {};
+  for (const [key, value] of Object.entries(tokens ?? {})) {
+    const dot = key.indexOf(".");
+    const part = dot < 0 ? key : key.slice(0, dot);
+    out[part === fromName && dot >= 0 ? `${toName}${key.slice(dot)}` : key] = value;
+  }
+  return out;
+}
+
+// Applies token-key migration to base tokens + every variant.tokens/valueTokens +
+// state.tokens for a part rename.
+function migrateComponentBindings(
+  component: ComponentDocument,
+  fromName: string,
+  toName: string
+): Pick<ComponentDocument, "tokens" | "variants" | "states"> {
+  return {
+    tokens: migrateBindingKeys(component.tokens as Record<string, string>, fromName, toName),
+    variants: (component.variants ?? []).map((variant) => ({
+      ...variant,
+      ...(variant.tokens ? { tokens: migrateBindingKeys(variant.tokens, fromName, toName) } : {}),
+      ...(variant.valueTokens
+        ? {
+            valueTokens: Object.fromEntries(
+              Object.entries(variant.valueTokens).map(([value, map]) => [
+                value,
+                migrateBindingKeys(map, fromName, toName),
+              ])
+            ),
+          }
+        : {}),
+    })),
+    states: (component.states ?? []).map((state) => ({
+      ...state,
+      ...(state.tokens ? { tokens: migrateBindingKeys(state.tokens, fromName, toName) } : {}),
+    })),
+  } as Pick<ComponentDocument, "tokens" | "variants" | "states">;
+}
+
+/**
+ * Renames an anatomy part (layer): migrates its `<part>.<prop>` token keys across
+ * all maps and repoints any child parts whose `parent` referenced it.
+ */
+export function renameComponentAnatomyPart(
+  component: ComponentDocument,
+  fromName: string,
+  toName: string
+): ComponentDocument {
+  const next = toName.trim();
+  if (!next || next === fromName) {
+    return component;
+  }
+  // Reject a rename that collides with another existing layer name.
+  if (component.anatomy.some((entry) => entry.name === next)) {
+    throw new PodoEditError("editCore.layerExists", `A layer named "${next}" already exists.`, {
+      name: next,
+    });
+  }
+  const anatomy = component.anatomy.map((entry) => {
+    const renamed = entry.name === fromName ? { ...entry, name: next } : entry;
+    return renamed.parent === fromName ? { ...renamed, parent: next } : renamed;
+  });
+  return parseComponentDocument({
+    ...component,
+    anatomy,
+    ...migrateComponentBindings(component, fromName, next),
+  });
+}
+
+/** Adds a new anatomy part (layer), optionally nested under `parent`. */
+export function addComponentAnatomyPart(
+  component: ComponentDocument,
+  name: string,
+  parent?: string
+): ComponentDocument {
+  const base = name.trim();
+  if (!base) {
+    return component;
+  }
+  // Ensure a unique name so repeated "add child"/"duplicate" never silently no-op.
+  const existing = new Set(component.anatomy.map((entry) => entry.name));
+  let partName = base;
+  for (let suffix = 2; existing.has(partName); suffix += 1) {
+    partName = `${base}-${suffix}`;
+  }
+  const part = parent ? { name: partName, parent } : { name: partName };
+  return parseComponentDocument({ ...component, anatomy: [...component.anatomy, part] });
+}
+
+/** Removes an anatomy part and its descendants, deleting their token bindings. */
+export function removeComponentAnatomyPart(
+  component: ComponentDocument,
+  partName: string
+): ComponentDocument {
+  // Collect the part + all descendants.
+  const doomed = new Set<string>([partName]);
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const entry of component.anatomy) {
+      if (entry.parent && doomed.has(entry.parent) && !doomed.has(entry.name)) {
+        doomed.add(entry.name);
+        grew = true;
+      }
+    }
+  }
+  const anatomy = component.anatomy.filter((entry) => !doomed.has(entry.name));
+  if (!anatomy.length) {
+    return component; // never leave a component with zero layers
+  }
+  const dropKeys = (tokens: Record<string, string> | undefined): Record<string, string> =>
+    Object.fromEntries(
+      Object.entries(tokens ?? {}).filter(([key]) => {
+        const dot = key.indexOf(".");
+        return !(dot >= 0 && doomed.has(key.slice(0, dot)));
+      })
+    );
+  return parseComponentDocument({
+    ...component,
+    anatomy,
+    tokens: dropKeys(component.tokens as Record<string, string>),
+    variants: (component.variants ?? []).map((variant) => ({
+      ...variant,
+      ...(variant.tokens ? { tokens: dropKeys(variant.tokens) } : {}),
+      ...(variant.valueTokens
+        ? {
+            valueTokens: Object.fromEntries(
+              Object.entries(variant.valueTokens).map(([value, map]) => [value, dropKeys(map)])
+            ),
+          }
+        : {}),
+    })),
+    states: (component.states ?? []).map((state) => ({
+      ...state,
+      ...(state.tokens ? { tokens: dropKeys(state.tokens) } : {}),
+    })),
+  });
+}
+
+/** Reparents (nests) a layer under `newParent`, or to the top level when null. */
+export function reparentComponentAnatomyPart(
+  component: ComponentDocument,
+  partName: string,
+  newParent: string | null
+): ComponentDocument {
+  const names = new Set(component.anatomy.map((entry) => entry.name));
+  if (!names.has(partName)) return component;
+  if (newParent === partName) return component;
+  if (newParent) {
+    if (!names.has(newParent)) return component;
+    // Reject nesting into own descendant (cycle).
+    const parentOf = new Map(component.anatomy.map((entry) => [entry.name, entry.parent]));
+    let cursor: string | undefined = newParent;
+    while (cursor) {
+      if (cursor === partName) return component;
+      cursor = parentOf.get(cursor);
+    }
+  }
+  const anatomy = component.anatomy.map((entry) => {
+    if (entry.name !== partName) return entry;
+    const rest = { ...entry };
+    delete (rest as { parent?: string }).parent;
+    return newParent ? { ...rest, parent: newParent } : rest;
+  });
+  return parseComponentDocument({ ...component, anatomy });
+}
+
+/**
+ * Reparents AND reorders a layer in a single derivation, so a drag-drop commit
+ * applies both moves to the same spec (avoids one update clobbering the other via
+ * stale React state).
+ */
+export function moveComponentAnatomyPart(
+  component: ComponentDocument,
+  partName: string,
+  newParent: string | null,
+  beforeName: string | null
+): ComponentDocument {
+  const reparented = reparentComponentAnatomyPart(component, partName, newParent);
+  return reorderComponentAnatomyPart(reparented, partName, beforeName);
+}
+
+/** Reorders a layer to just before `beforeName` (or to the end when null). */
+export function reorderComponentAnatomyPart(
+  component: ComponentDocument,
+  partName: string,
+  beforeName: string | null
+): ComponentDocument {
+  const moving = component.anatomy.find((entry) => entry.name === partName);
+  if (!moving || partName === beforeName) return component;
+  const rest = component.anatomy.filter((entry) => entry.name !== partName);
+  const index = beforeName ? rest.findIndex((entry) => entry.name === beforeName) : -1;
+  const anatomy =
+    index >= 0 ? [...rest.slice(0, index), moving, ...rest.slice(index)] : [...rest, moving];
+  return parseComponentDocument({ ...component, anatomy });
+}
+
 export function createComponentPropType(
   kind: ComponentDocument["props"][number]["type"]["kind"],
   valuesText = ""
@@ -211,7 +482,11 @@ export function createComponentPropType(
   if (kind === "enum" || kind === "union") {
     const values = parseCsv(valuesText);
     if (!values.length) {
-      throw new Error(`${kind} props require at least one value.`);
+      throw new PodoEditError(
+        "editCore.propValuesRequired",
+        `${kind} props require at least one value.`,
+        { kind }
+      );
     }
     return { kind, values };
   }
@@ -237,21 +512,21 @@ export function parsePropDefaultInput(
   }
   if (kind === "boolean") {
     if (trimmed !== "true" && trimmed !== "false") {
-      throw new Error("Boolean defaults must be true or false.");
+      throw new PodoEditError("editCore.boolDefault", "Boolean defaults must be true or false.");
     }
     return trimmed === "true";
   }
   if (kind === "number") {
     const value = Number(trimmed);
     if (!Number.isFinite(value)) {
-      throw new Error("Number defaults must be numeric.");
+      throw new PodoEditError("editCore.numberDefault", "Number defaults must be numeric.");
     }
     return value;
   }
   if (kind === "object") {
     const parsed = JSON.parse(trimmed) as unknown;
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      throw new Error("Object defaults must be JSON objects.");
+      throw new PodoEditError("editCore.objectDefault", "Object defaults must be JSON objects.");
     }
     return parsed;
   }
@@ -297,13 +572,31 @@ export function upsertComponentVariant(
 ): ComponentDocument {
   const values = parseCsv(input.valuesText);
   if (!values.length) {
-    throw new Error("Variants require at least one value.");
+    throw new PodoEditError(
+      "editCore.variantValuesRequired",
+      "Variants require at least one value."
+    );
+  }
+  const duplicate = values.find((value, index) => values.indexOf(value) !== index);
+  if (duplicate) {
+    throw new PodoEditError(
+      "editCore.variantDuplicate",
+      `Duplicate variant value "${duplicate}".`,
+      { value: duplicate }
+    );
   }
   const defaultValue = input.defaultValue?.trim();
+  if (defaultValue && !values.includes(defaultValue)) {
+    throw new PodoEditError(
+      "editCore.variantDefaultInvalid",
+      `Default "${defaultValue}" is not one of the variant values.`,
+      { value: defaultValue }
+    );
+  }
   const variant: ComponentDocument["variants"][number] = {
     name: input.name.trim(),
     values,
-    default: defaultValue && values.includes(defaultValue) ? defaultValue : values[0],
+    default: defaultValue ? defaultValue : values[0],
     ...(input.description?.trim() ? { description: input.description.trim() } : {}),
     ...parseVariantTokensInput(input.tokensText),
   };
@@ -335,7 +628,7 @@ export function upsertComponentSlot(
 ): ComponentDocument {
   const name = input.name.trim();
   if (!name) {
-    throw new Error("Slot name is required.");
+    throw new PodoEditError("editCore.slotNameRequired", "Slot name is required.");
   }
   const existing = component.slots.find((item) => item.name === name);
   const slot: ComponentDocument["slots"][number] = {
@@ -389,7 +682,7 @@ function parseEditorPath(path: string): string[] {
     .map((part) => part.trim())
     .filter(Boolean);
   if (!parts.length) {
-    throw new Error("Token path is required.");
+    throw new PodoEditError("editCore.tokenPathRequired", "Token path is required.");
   }
   return parts;
 }
@@ -409,7 +702,10 @@ function parseVariantTokensInput(tokensText = ""): {
   }
   const parsed = JSON.parse(tokensText) as unknown;
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-    throw new Error("Variant token bindings must be a JSON object.");
+    throw new PodoEditError(
+      "editCore.variantBindingObject",
+      "Variant token bindings must be a JSON object."
+    );
   }
   return { tokens: parsed as ComponentDocument["variants"][number]["tokens"] };
 }
@@ -435,7 +731,7 @@ function collectEditorTokens(
 function setTokenAtPath(target: TokenTree, path: string[], token: DesignToken): void {
   const [head, ...tail] = path;
   if (!head) {
-    throw new Error("Token path is required.");
+    throw new PodoEditError("editCore.tokenPathRequired", "Token path is required.");
   }
   if (tail.length === 0) {
     target[head] = token;
@@ -443,7 +739,11 @@ function setTokenAtPath(target: TokenTree, path: string[], token: DesignToken): 
   }
   const current = target[head];
   if (isDesignTokenLike(current)) {
-    throw new Error(`Token path "${path.join(".")}" conflicts with existing token "${head}".`);
+    throw new PodoEditError(
+      "editCore.tokenPathConflict",
+      `Token path "${path.join(".")}" conflicts with existing token "${head}".`,
+      { path: path.join("."), head }
+    );
   }
   if (!current) {
     target[head] = {};

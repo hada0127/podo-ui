@@ -3,3 +3,13 @@ dist
 coverage
 .turbo
 pnpm-lock.yaml
+
+# Deterministically generated; format is controlled by the generator script,
+# not Prettier (see packages/editor/scripts/generate-default-icons.mts).
+packages/editor/src/default-icons.generated.ts
+packages/editor/scripts/vendor
+
+# Vendored verbatim from the main branch (v1 editor) and generated CSS; both are
+# derived artifacts, not hand-maintained source.
+packages/editor/src/vendor
+packages/editor/src/v1-components.generated.css

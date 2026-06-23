@@ -16,6 +16,7 @@ import {
   validateIconManifest,
   validatePageComponents,
   type ComponentDocument,
+  type IconDefinition,
   type IconManifest,
   type PageDocument,
   type PodoConfig,
@@ -122,7 +123,7 @@ export interface StudioComponentSummary {
 
 export interface StudioIconSummary {
   fontFamily: string;
-  icons: Array<{ name: string; codepoint: string; source: string; tags: string[] }>;
+  icons: Array<IconDefinition & { name: string }>;
   groups: Record<string, string[]>;
 }
 

@@ -1,6 +1,8 @@
 import { useState, type PointerEvent } from "react";
 import type { DesignToken } from "@podo/spec";
+import { useLocale, useT, type Translate } from "./i18n/context.js";
 import { EditorTokenRecord, serializeEditorTokenValue } from "./spec-editing.js";
+import type { TokenUsage } from "./token-usage.js";
 import { TokenPicker, type TokenPickerOption } from "./token-picker.js";
 import {
   formatColorValue,
@@ -58,6 +60,19 @@ import {
   styleCardHeaderActionsStyle,
   colorMatrixHeaderActionsStyle,
   colorVariationDeleteStyle,
+  colorVariationDeleteCellStyle,
+  colorGroupActionsStyle,
+  colorGroupRenameButtonStyle,
+  colorGroupRenameInputStyle,
+  colorDeleteOverlayStyle,
+  colorDeleteDialogStyle,
+  colorDeleteTitleStyle,
+  colorDeleteUsageListStyle,
+  colorDeleteFieldLabelStyle,
+  colorDeleteSelectStyle,
+  colorDeleteActionsStyle,
+  colorDeleteCancelStyle,
+  colorDeleteConfirmStyle,
   typographyAddButtonStyle,
   typographyDeleteButtonStyle,
   scaleRampStyle,
@@ -85,7 +100,6 @@ import {
   colorGroupCardStyle,
   colorGroupColHeadStyle,
   colorGroupCornerStyle,
-  colorGroupCountStyle,
   colorGroupHeaderStyle,
   colorGroupTableStyle,
   colorPickerAlphaOverlayStyle,
@@ -110,6 +124,8 @@ import {
   colorSideStyle,
   colorSwatchTriggerStyle,
   colorTokenToggleStyle,
+  colorTokenPickerAnchorStyle,
+  colorTokenPickerPopoverStyle,
   colorVariationHeadStyle,
   colorVariationRowActiveStyle,
   codeStyle,
@@ -155,6 +171,7 @@ import {
 } from "./styles.js";
 
 export interface TypographyEditorInput {
+  t: Translate;
   model: TypographyWorkspaceModel;
   selectedTokenKey: string | undefined;
   lookup: TokenLookup;
@@ -243,6 +260,7 @@ function renderScalarSpecimen(type: DesignToken["$type"], px: number) {
 }
 
 export interface ScalarScaleEditorInput {
+  t: Translate;
   type: DesignToken["$type"];
   label: string;
   records: EditorTokenRecord[];
@@ -269,7 +287,9 @@ export function renderScalarScaleEditor(input: ScalarScaleEditorInput) {
         <div style={typographyCardHeaderStyle}>
           <span>{input.label}</span>
           <span style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <span style={typographyCardMetaStyle}>{input.records.length} tokens</span>
+            <span style={typographyCardMetaStyle}>
+              {input.t("tokenEditor.tokenCount", { count: input.records.length })}
+            </span>
             {input.onCreateToken ? (
               <button
                 type="button"
@@ -281,7 +301,7 @@ export function renderScalarScaleEditor(input: ScalarScaleEditorInput) {
                   })
                 }
               >
-                + New {input.label.toLowerCase()}
+                {input.t("tokenEditor.newScalar", { label: input.label.toLowerCase() })}
               </button>
             ) : null}
           </span>
@@ -303,8 +323,8 @@ export function renderScalarScaleEditor(input: ScalarScaleEditorInput) {
                       <button
                         type="button"
                         style={scaleRampDeleteStyle}
-                        aria-label={`Delete ${record.path}`}
-                        title={`Delete ${record.path}`}
+                        aria-label={input.t("tokenEditor.deleteAria", { path: record.path })}
+                        title={input.t("tokenEditor.deleteAria", { path: record.path })}
                         onClick={() => input.onDeleteToken?.(record)}
                       >
                         ×
@@ -316,7 +336,9 @@ export function renderScalarScaleEditor(input: ScalarScaleEditorInput) {
             })}
           </div>
         ) : (
-          <p style={scalarSpecimenEmptyStyle}>No {input.label.toLowerCase()} tokens yet.</p>
+          <p style={scalarSpecimenEmptyStyle}>
+            {input.t("tokenEditor.emptyScalar", { label: input.label.toLowerCase() })}
+          </p>
         )}
       </section>
     </div>
@@ -402,23 +424,23 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
     <div style={typographyWorkspaceStyle}>
       <div style={typographyWorkspaceHeaderStyle}>
         <div>
-          <strong>Typography</strong>
-          <p style={inlineHelpStyle}>
-            Edit font families, weights, the size scale, and text styles as live specimens.
-          </p>
+          <strong>{input.t("tokenEditor.typographyTitle")}</strong>
+          <p style={inlineHelpStyle}>{input.t("tokenEditor.typographyHelp")}</p>
         </div>
         <div style={typographyWorkspaceCountStyle}>
-          <span>{model.families.length} families</span>
-          <span>{model.sizes.length} sizes</span>
-          <span>{model.styles.length} styles</span>
+          <span>{input.t("tokenEditor.familiesCount", { count: model.families.length })}</span>
+          <span>{input.t("tokenEditor.sizesCount", { count: model.sizes.length })}</span>
+          <span>{input.t("tokenEditor.stylesCount", { count: model.styles.length })}</span>
         </div>
       </div>
 
       {model.families.length || input.onCreateToken ? (
         <section style={typographyCardStyle}>
           <div style={typographyCardHeaderStyle}>
-            <span>Font families</span>
-            <span style={typographyCardMetaStyle}>{model.families.length} families</span>
+            <span>{input.t("tokenEditor.fontFamilies")}</span>
+            <span style={typographyCardMetaStyle}>
+              {input.t("tokenEditor.familiesCount", { count: model.families.length })}
+            </span>
           </div>
           <div style={familyListStyle}>
             {model.families.map((record) => {
@@ -437,10 +459,10 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
                   </div>
                   <div style={familyCardBodyStyle}>
                     <label style={fontSpecimenFieldStyle}>
-                      <span style={styleFieldLabelStyle}>family</span>
+                      <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldFamily")}</span>
                       <input
                         key={`${record.path}:${valueText}`}
-                        aria-label={`${record.path} family`}
+                        aria-label={input.t("tokenEditor.familyNameAria", { path: record.path })}
                         style={typographyInlineInputStyle}
                         defaultValue={valueText}
                         onFocus={() => input.onSelect(record)}
@@ -458,9 +480,9 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
                     </label>
                     <div style={fontSpecimenAssetRowStyle}>
                       <label style={fontAttachButtonStyle}>
-                        Attach
+                        {input.t("tokenEditor.attach")}
                         <input
-                          aria-label={`${record.path} font file`}
+                          aria-label={input.t("tokenEditor.familyFileAria", { path: record.path })}
                           type="file"
                           accept={FONT_FILE_ACCEPT}
                           style={hiddenFileInputStyle}
@@ -481,11 +503,11 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
                             style={fontRemoveButtonStyle}
                             onClick={() => input.onRemoveFontAsset(record)}
                           >
-                            Remove
+                            {input.t("tokenEditor.remove")}
                           </button>
                         </>
                       ) : (
-                        <span style={fontAssetEmptyStyle}>No file</span>
+                        <span style={fontAssetEmptyStyle}>{input.t("tokenEditor.noFile")}</span>
                       )}
                       {input.onDeleteToken ? (
                         <button
@@ -493,13 +515,15 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
                           style={typographyDeleteButtonStyle}
                           onClick={() => input.onDeleteToken?.(record)}
                         >
-                          Delete
+                          {input.t("tokenEditor.delete")}
                         </button>
                       ) : null}
                     </div>
                     {input.onToggleFamilyWeight ? (
                       <div>
-                        <span style={familyWeightToggleLabelStyle}>supported weights</span>
+                        <span style={familyWeightToggleLabelStyle}>
+                          {input.t("tokenEditor.supportedWeights")}
+                        </span>
                         <div style={familyWeightToggleRowStyle}>
                           {STANDARD_WEIGHTS.map((weight) => {
                             const on = supported.includes(weight.value);
@@ -508,10 +532,18 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
                                 key={weight.value}
                                 type="button"
                                 aria-pressed={on}
-                                aria-label={`${family} ${weight.label} ${weight.value} ${
-                                  on ? "on" : "off"
-                                }`}
-                                title={`${weight.label} ${weight.value}`}
+                                aria-label={input.t("tokenEditor.weightToggleAria", {
+                                  family,
+                                  label: weight.label,
+                                  value: weight.value,
+                                  state: on
+                                    ? input.t("tokenEditor.weightToggleOn")
+                                    : input.t("tokenEditor.weightToggleOff"),
+                                })}
+                                title={input.t("tokenEditor.weightToggleTitle", {
+                                  label: weight.label,
+                                  value: weight.value,
+                                })}
                                 style={{
                                   ...familyWeightChipStyle,
                                   ...(on ? familyWeightChipOnStyle : familyWeightChipOffStyle),
@@ -548,7 +580,7 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
                 })
               }
             >
-              + New family
+              {input.t("tokenEditor.newFamily")}
             </button>
           ) : null}
         </section>
@@ -557,9 +589,11 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
       {model.sizes.length || input.onCreateToken ? (
         <section style={typographyCardStyle}>
           <div style={typographyCardHeaderStyle}>
-            <span>Scale</span>
+            <span>{input.t("tokenEditor.scale")}</span>
             <span style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <span style={typographyCardMetaStyle}>{model.sizes.length} sizes</span>
+              <span style={typographyCardMetaStyle}>
+                {input.t("tokenEditor.sizesCount", { count: model.sizes.length })}
+              </span>
               {input.onCreateToken ? (
                 <button
                   type="button"
@@ -571,7 +605,7 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
                     })
                   }
                 >
-                  + New size
+                  {input.t("tokenEditor.newSize")}
                 </button>
               ) : null}
             </span>
@@ -583,7 +617,7 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
               return (
                 <div key={tokenRecordKey(record)} style={scaleRampRowStyle}>
                   <span style={{ ...scaleRampSpecimenStyle, fontSize: String(resolved) }}>
-                    The quick brown fox jumps over the lazy dog
+                    {input.t("tokenEditor.specimenText")}
                   </span>
                   <div style={scaleRampRailStyle}>
                     <span style={scaleChipLabelStyle}>
@@ -594,8 +628,8 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
                       <button
                         type="button"
                         style={scaleRampDeleteStyle}
-                        aria-label={`Delete ${record.path}`}
-                        title={`Delete ${record.path}`}
+                        aria-label={input.t("tokenEditor.deleteAria", { path: record.path })}
+                        title={input.t("tokenEditor.deleteAria", { path: record.path })}
                         onClick={() => input.onDeleteToken?.(record)}
                       >
                         ×
@@ -612,9 +646,11 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
       {model.styles.length || input.onCreateToken ? (
         <section style={typographyCardStyle}>
           <div style={typographyCardHeaderStyle}>
-            <span>Styles</span>
+            <span>{input.t("tokenEditor.styles")}</span>
             <span style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <span style={typographyCardMetaStyle}>{model.styles.length} styles</span>
+              <span style={typographyCardMetaStyle}>
+                {input.t("tokenEditor.stylesCount", { count: model.styles.length })}
+              </span>
               {input.onCreateToken ? (
                 <button
                   type="button"
@@ -626,7 +662,7 @@ export function renderTypographyTokenEditor(input: TypographyEditorInput) {
                     })
                   }
                 >
-                  + New style
+                  {input.t("tokenEditor.newStyle")}
                 </button>
               ) : null}
             </span>
@@ -683,12 +719,12 @@ function renderTokenPathButton(
 function renderScalarTypographyInput(
   record: EditorTokenRecord,
   valueText: string,
-  input: Pick<Parameters<typeof renderTypographyTokenEditor>[0], "onSelect" | "onCommitValue">
+  input: Pick<Parameters<typeof renderTypographyTokenEditor>[0], "t" | "onSelect" | "onCommitValue">
 ) {
   return (
     <input
       key={`${record.path}:${valueText}`}
-      aria-label={`${record.path} value`}
+      aria-label={input.t("tokenEditor.valueAria", { path: record.path })}
       style={typographyInlineInputStyle}
       defaultValue={valueText}
       onFocus={() => input.onSelect(record)}
@@ -712,13 +748,13 @@ function renderTypographyFieldInput(
   valueText: string,
   input: Pick<
     Parameters<typeof renderTypographyTokenEditor>[0],
-    "onSelect" | "onCommitTypographyField"
+    "t" | "onSelect" | "onCommitTypographyField"
   >
 ) {
   return (
     <input
       key={`${record.path}:${field}:${valueText}`}
-      aria-label={`${record.path} ${field}`}
+      aria-label={input.t("tokenEditor.fieldAria", { path: record.path, field })}
       style={typographyInlineInputStyle}
       defaultValue={valueText}
       onFocus={() => input.onSelect(record)}
@@ -760,10 +796,10 @@ export function renderTypographyStyleCard(record: EditorTokenRecord, input: Typo
             <button
               type="button"
               style={typographyDeleteButtonStyle}
-              aria-label={`Delete ${record.path}`}
+              aria-label={input.t("tokenEditor.deleteAria", { path: record.path })}
               onClick={() => input.onDeleteToken?.(record)}
             >
-              Delete
+              {input.t("tokenEditor.delete")}
             </button>
           ) : null}
         </div>
@@ -774,26 +810,26 @@ export function renderTypographyStyleCard(record: EditorTokenRecord, input: Typo
             <FontPreviewSample
               family={typography.fontFamily}
               asset={asset}
-              text="The quick brown fox jumps over the lazy dog"
+              text={input.t("tokenEditor.specimenText")}
               style={typographyToCss(typography)}
               showMeta={false}
             />
           </div>
           <div style={styleFieldsGridStyle}>
             <label style={styleFieldWideStyle}>
-              <span style={styleFieldLabelStyle}>family</span>
+              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldFamily")}</span>
               {renderTypographyFieldInput(record, "fontFamily", typography.fontFamily, input)}
             </label>
             <label style={styleFieldStyle}>
-              <span style={styleFieldLabelStyle}>size</span>
+              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldSize")}</span>
               {renderTypographyFieldInput(record, "fontSize", typography.fontSize, input)}
             </label>
             <label style={styleFieldStyle}>
-              <span style={styleFieldLabelStyle}>line</span>
+              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldLine")}</span>
               {renderTypographyFieldInput(record, "lineHeight", typography.lineHeight, input)}
             </label>
             <label style={styleFieldStyle}>
-              <span style={styleFieldLabelStyle}>weight</span>
+              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldWeight")}</span>
               {renderTypographyFieldInput(
                 record,
                 "fontWeight",
@@ -802,11 +838,11 @@ export function renderTypographyStyleCard(record: EditorTokenRecord, input: Typo
               )}
             </label>
             <label style={styleFieldStyle}>
-              <span style={styleFieldLabelStyle}>letter</span>
+              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldLetter")}</span>
               {renderTypographyFieldInput(record, "letterSpacing", typography.letterSpacing, input)}
             </label>
             <label style={styleFieldStyle}>
-              <span style={styleFieldLabelStyle}>paragraph</span>
+              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldParagraph")}</span>
               {renderTypographyFieldInput(
                 record,
                 "paragraphSpacing",
@@ -817,15 +853,14 @@ export function renderTypographyStyleCard(record: EditorTokenRecord, input: Typo
           </div>
         </>
       ) : (
-        <span style={inlineHelpStyle}>
-          This value isn’t a typography object yet. Delete it and add a new style.
-        </span>
+        <span style={inlineHelpStyle}>{input.t("tokenEditor.styleNotTypography")}</span>
       )}
     </article>
   );
 }
 
 export function renderComponentTokenEditor(input: {
+  t: Translate;
   model: ComponentTokenEditorModel;
   selectedTokenKey: string | undefined;
   lookup: TokenLookup;
@@ -836,10 +871,8 @@ export function renderComponentTokenEditor(input: {
     <div style={cardStyle}>
       <div style={cardHeaderStyle}>
         <div>
-          <strong>Component tokens</strong>
-          <p style={inlineHelpStyle}>
-            Edit local dimension and number values that belong to this component.
-          </p>
+          <strong>{input.t("tokenEditor.componentTokens")}</strong>
+          <p style={inlineHelpStyle}>{input.t("tokenEditor.componentTokensHelp")}</p>
         </div>
       </div>
       {input.model.groups.length ? (
@@ -848,15 +881,21 @@ export function renderComponentTokenEditor(input: {
             <section key={group.type} style={componentTokenGroupStyle}>
               <div style={componentTokenGroupHeaderStyle}>
                 <strong>{group.type}</strong>
-                <span>{group.records.length} tokens</span>
+                <span>{input.t("tokenEditor.tokenCount", { count: group.records.length })}</span>
               </div>
               <div style={componentTokenTableScrollStyle}>
                 <table style={componentTokenTableStyle}>
                   <thead>
                     <tr>
-                      <th style={componentTokenHeaderCellStyle}>token</th>
-                      <th style={componentTokenHeaderCellStyle}>value</th>
-                      <th style={componentTokenHeaderCellStyle}>preview</th>
+                      <th style={componentTokenHeaderCellStyle}>
+                        {input.t("tokenEditor.colToken")}
+                      </th>
+                      <th style={componentTokenHeaderCellStyle}>
+                        {input.t("tokenEditor.colValue")}
+                      </th>
+                      <th style={componentTokenHeaderCellStyle}>
+                        {input.t("tokenEditor.colPreview")}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -880,7 +919,7 @@ export function renderComponentTokenEditor(input: {
                           <td style={componentTokenCellStyle}>
                             <input
                               key={`${record.path}:${valueText}`}
-                              aria-label={`${record.path} value`}
+                              aria-label={input.t("tokenEditor.valueAria", { path: record.path })}
                               list={TOKEN_REFERENCE_LIST_ID}
                               style={typographyInlineInputStyle}
                               defaultValue={valueText}
@@ -910,9 +949,7 @@ export function renderComponentTokenEditor(input: {
           ))}
         </div>
       ) : (
-        <div style={emptyStatePanelStyle}>
-          No local dimension, number, or string tokens for this component.
-        </div>
+        <div style={emptyStatePanelStyle}>{input.t("tokenEditor.componentTokensEmpty")}</div>
       )}
     </div>
   );
@@ -978,6 +1015,7 @@ function groupTokenMatrixSections(matrix: TokenMatrixModel): TokenMatrixSection[
 }
 
 export function renderTokenMatrixEditor(input: {
+  t: Translate;
   matrix: TokenMatrixModel;
   selectedTokenKey: string | undefined;
   onSelect(record: EditorTokenRecord): void;
@@ -993,10 +1031,16 @@ export function renderTokenMatrixEditor(input: {
     <div style={tokenMatrixPanelStyle}>
       <div style={cardHeaderStyle}>
         <div>
-          <strong>{input.matrix.type} matrix</strong>
+          <strong>{input.t("tokenEditor.matrixTitle", { type: input.matrix.type })}</strong>
           <p style={inlineHelpStyle}>
-            {input.matrix.totalRecords} editable cells across {sections.length}{" "}
-            {sections.length === 1 ? "group" : "groups"}. Select a cell to sync the detail editor.
+            {input.t("tokenEditor.matrixHelp", {
+              count: input.matrix.totalRecords,
+              sections: sections.length,
+              groupWord:
+                sections.length === 1
+                  ? input.t("tokenEditor.groupSingular")
+                  : input.t("tokenEditor.groupPlural"),
+            })}
           </p>
         </div>
       </div>
@@ -1005,7 +1049,7 @@ export function renderTokenMatrixEditor(input: {
           <table style={tokenMatrixTableStyle}>
             <thead>
               <tr>
-                <th style={tokenMatrixHeaderCellStyle}>group</th>
+                <th style={tokenMatrixHeaderCellStyle}>{input.t("tokenEditor.colGroup")}</th>
                 {section.columns.map((column) => (
                   <th key={column} style={tokenMatrixHeaderCellStyle}>
                     {column}
@@ -1023,6 +1067,7 @@ export function renderTokenMatrixEditor(input: {
                       <td key={column} style={tokenMatrixCellStyle}>
                         {record ? (
                           renderTokenMatrixCell({
+                            t: input.t,
                             record,
                             selected: input.selectedTokenKey === tokenRecordKey(record),
                             onSelect: input.onSelect,
@@ -1045,6 +1090,7 @@ export function renderTokenMatrixEditor(input: {
 }
 
 function renderTokenMatrixCell(input: {
+  t: Translate;
   record: EditorTokenRecord;
   selected: boolean;
   onSelect(record: EditorTokenRecord): void;
@@ -1072,7 +1118,7 @@ function renderTokenMatrixCell(input: {
       >
         {isHexColorInputValue(valueText) ? (
           <input
-            aria-label={`${input.record.path} color`}
+            aria-label={input.t("tokenEditor.cellColorAria", { path: input.record.path })}
             type="color"
             style={tokenMatrixColorPickerStyle}
             value={valueText}
@@ -1083,7 +1129,7 @@ function renderTokenMatrixCell(input: {
         )}
         <input
           key={`${input.record.path}:${valueText}`}
-          aria-label={`${input.record.path} value`}
+          aria-label={input.t("tokenEditor.valueAria", { path: input.record.path })}
           list={TOKEN_REFERENCE_LIST_ID}
           style={tokenMatrixValueInputStyle}
           defaultValue={valueText}
@@ -1103,7 +1149,7 @@ function renderTokenMatrixCell(input: {
     return (
       <input
         key={`${input.record.path}:${valueText}`}
-        aria-label={`${input.record.path} value`}
+        aria-label={input.t("tokenEditor.valueAria", { path: input.record.path })}
         list={TOKEN_REFERENCE_LIST_ID}
         style={{
           ...tokenMatrixValueInputStyle,
@@ -1151,7 +1197,214 @@ function nextColorToken(model: ColorComparisonMatrixModel): { path: string; valu
   return { path: `color.custom-${index}.base`, valueText: "#3366ff" };
 }
 
+/**
+ * Replacement dialog shown when deleting a token that is still referenced. The
+ * user must pick a replacement; the parent then repoints every reference before
+ * removing the token so nothing is left dangling. Covers color sets/variations
+ * and flat scalar scales (spacing/radius).
+ */
+export function TokenDeleteDialog({
+  kind,
+  tokenType,
+  label,
+  usages,
+  options,
+  replacement,
+  onChangeReplacement,
+  onCancel,
+  onConfirm,
+}: {
+  kind: "color-variation" | "color-group" | "scalar";
+  tokenType: DesignToken["$type"];
+  label: string;
+  usages: TokenUsage[];
+  options: string[];
+  replacement: string;
+  onChangeReplacement: (value: string) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const t = useT();
+  const { locale } = useLocale();
+  const name = kind === "color-group" ? label.slice(label.lastIndexOf(".") + 1) : label;
+  const noun =
+    kind === "color-group"
+      ? t("tokenEditor.nounColorSet")
+      : kind === "color-variation"
+        ? t("tokenEditor.nounColor")
+        : tokenType === "spacing"
+          ? t("tokenEditor.nounSpacing")
+          : tokenType === "radius"
+            ? t("tokenEditor.nounRadius")
+            : t("tokenEditor.nounToken");
+  // Pick the Korean object/topic particle by whether the noun ends in a consonant.
+  // Particles are a Korean grammar feature only; other locales emit nothing.
+  const particle = (consonant: string, vowel: string): string => {
+    if (locale !== "ko") {
+      return "";
+    }
+    const code = noun.charCodeAt(noun.length - 1);
+    const hasFinal = code >= 0xac00 && code <= 0xd7a3 ? (code - 0xac00) % 28 !== 0 : true;
+    return hasFinal ? consonant : vowel;
+  };
+  const sourceLabel = (source: TokenUsage["source"]): string =>
+    source === "component"
+      ? t("tokenEditor.usageSourceComponent")
+      : source === "node"
+        ? t("tokenEditor.usageSourcePage")
+        : t("tokenEditor.usageSourceToken");
+  const shown = usages.slice(0, 12);
+  return (
+    <div
+      style={colorDeleteOverlayStyle}
+      role="dialog"
+      aria-modal="true"
+      aria-label={t("tokenEditor.deleteDialogAria", { noun, name })}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          onCancel();
+        }
+      }}
+    >
+      <div style={colorDeleteDialogStyle}>
+        <h2 style={colorDeleteTitleStyle}>{t("tokenEditor.deleteTitle", { noun, name })}</h2>
+        <p style={inlineHelpStyle}>
+          {t("tokenEditor.deleteHelpPrefix")}
+          {noun}
+          {particle("은", "는")}
+          {t("tokenEditor.deleteHelpMiddle", { count: usages.length })}
+          {noun}
+          {particle("을", "를")}
+          {t("tokenEditor.deleteHelpSuffix")}
+        </p>
+        <ul style={colorDeleteUsageListStyle}>
+          {shown.map((usage, index) => (
+            <li key={`${usage.source}-${usage.ownerId}-${usage.field}-${index}`}>
+              {sourceLabel(usage.source)} · {usage.ownerId}
+              {usage.field === "$value" ? "" : `.${usage.field}`}
+            </li>
+          ))}
+          {usages.length > shown.length ? (
+            <li>{t("tokenEditor.deleteUsageMore", { count: usages.length - shown.length })}</li>
+          ) : null}
+        </ul>
+        <label style={colorDeleteFieldLabelStyle}>
+          {t("tokenEditor.deleteReplacementLabel", { noun })}
+          <select
+            style={colorDeleteSelectStyle}
+            value={replacement}
+            aria-label={t("tokenEditor.deleteReplacementAria", { noun })}
+            onChange={(event) => onChangeReplacement(event.target.value)}
+          >
+            {options.length === 0 ? (
+              <option value="">{t("tokenEditor.deleteReplacementNone")}</option>
+            ) : null}
+            {options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div style={colorDeleteActionsStyle}>
+          <button type="button" style={colorDeleteCancelStyle} onClick={onCancel}>
+            {t("tokenEditor.cancel")}
+          </button>
+          <button
+            type="button"
+            style={colorDeleteConfirmStyle}
+            disabled={!replacement}
+            onClick={onConfirm}
+          >
+            {t("tokenEditor.deleteConfirm")}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Color-set (group) header: the set name with inline rename, a variation count,
+ * and a delete control. Rename/delete are routed up so the parent can rewrite
+ * references and run the usage-checked deletion flow.
+ */
+function ColorGroupHeader({
+  groupId,
+  label,
+  onRenameGroup,
+  onDeleteGroup,
+}: {
+  groupId: string;
+  label: string;
+  onRenameGroup?: (groupId: string, nextName: string) => void;
+  onDeleteGroup?: (groupId: string) => void;
+}) {
+  const t = useT();
+  const [renaming, setRenaming] = useState(false);
+  const [draft, setDraft] = useState(label);
+  const commit = (): void => {
+    setRenaming(false);
+    const next = draft.trim();
+    if (next && next !== label) {
+      onRenameGroup?.(groupId, next);
+    } else {
+      setDraft(label);
+    }
+  };
+  return (
+    <div style={colorGroupHeaderStyle}>
+      {renaming ? (
+        <input
+          style={colorGroupRenameInputStyle}
+          value={draft}
+          autoFocus
+          aria-label={t("tokenEditor.renameColorSetAria", { label })}
+          onChange={(event) => setDraft(event.target.value)}
+          onBlur={commit}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              commit();
+            } else if (event.key === "Escape") {
+              setDraft(label);
+              setRenaming(false);
+            }
+          }}
+        />
+      ) : (
+        <strong>{label}</strong>
+      )}
+      <div style={colorGroupActionsStyle}>
+        {onRenameGroup && !renaming ? (
+          <button
+            type="button"
+            style={colorGroupRenameButtonStyle}
+            onClick={() => {
+              setDraft(label);
+              setRenaming(true);
+            }}
+          >
+            {t("tokenEditor.rename")}
+          </button>
+        ) : null}
+        {onDeleteGroup ? (
+          <button
+            type="button"
+            style={colorVariationDeleteStyle}
+            aria-label={t("tokenEditor.deleteColorSetAria", { label })}
+            title={t("tokenEditor.deleteColorSetTitle", { groupId })}
+            onClick={() => onDeleteGroup(groupId)}
+          >
+            ×
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function renderColorComparisonMatrix(input: {
+  t: Translate;
   model: ColorComparisonMatrixModel;
   lightLookup: TokenLookup;
   darkLookup: TokenLookup;
@@ -1162,6 +1415,8 @@ export function renderColorComparisonMatrix(input: {
   onCreateCounterpart(targetPath: string, seedRecord: EditorTokenRecord): void;
   onCreateToken?(input: { type: DesignToken["$type"]; path: string; valueText: string }): void;
   onDeleteVariation?(records: EditorTokenRecord[]): void;
+  onDeleteGroup?(groupId: string): void;
+  onRenameGroup?(groupId: string, nextName: string): void;
 }) {
   if (!input.model.columns.length && !input.onCreateToken) {
     return null;
@@ -1170,19 +1425,24 @@ export function renderColorComparisonMatrix(input: {
     <div style={tokenMatrixPanelStyle}>
       <div style={cardHeaderStyle}>
         <div>
-          <strong>color matrix</strong>
+          <strong>{input.t("tokenEditor.colorMatrix")}</strong>
           <p style={inlineHelpStyle}>
-            {input.model.totalRecords} color tokens across {input.model.rows.length}{" "}
-            {input.model.rows.length === 1 ? "group" : "groups"}. Variations stack; light and dark
-            sit side by side.
+            {input.t("tokenEditor.colorMatrixHelp", {
+              count: input.model.totalRecords,
+              sections: input.model.rows.length,
+              groupWord:
+                input.model.rows.length === 1
+                  ? input.t("tokenEditor.groupSingular")
+                  : input.t("tokenEditor.groupPlural"),
+            })}
           </p>
         </div>
         <div style={colorMatrixHeaderActionsStyle}>
           <div style={colorSchemeLegendStyle}>
             <span style={colorSchemeLegendSwatchLightStyle} />
-            light
+            {input.t("tokenEditor.legendLight")}
             <span style={colorSchemeLegendSwatchDarkStyle} />
-            dark
+            {input.t("tokenEditor.legendDark")}
           </div>
           {input.onCreateToken ? (
             <button
@@ -1192,7 +1452,7 @@ export function renderColorComparisonMatrix(input: {
                 input.onCreateToken?.({ type: "color", ...nextColorToken(input.model) })
               }
             >
-              + New color
+              {input.t("tokenEditor.newColor")}
             </button>
           ) : null}
         </div>
@@ -1202,16 +1462,19 @@ export function renderColorComparisonMatrix(input: {
           const variations = input.model.columns.filter((column) => group.cells[column]);
           return (
             <section key={group.id} style={colorGroupCardStyle}>
-              <div style={colorGroupHeaderStyle}>
-                <strong>{group.label}</strong>
-                <span style={colorGroupCountStyle}>{variations.length}</span>
-              </div>
+              <ColorGroupHeader
+                groupId={group.id}
+                label={group.label}
+                {...(input.onRenameGroup ? { onRenameGroup: input.onRenameGroup } : {})}
+                {...(input.onDeleteGroup ? { onDeleteGroup: input.onDeleteGroup } : {})}
+              />
               <table style={colorGroupTableStyle}>
                 <thead>
                   <tr>
                     <th style={colorGroupCornerStyle} />
-                    <th style={colorGroupColHeadStyle}>light</th>
-                    <th style={colorGroupColHeadStyle}>dark</th>
+                    <th style={colorGroupColHeadStyle}>{input.t("tokenEditor.colorColLight")}</th>
+                    <th style={colorGroupColHeadStyle}>{input.t("tokenEditor.colorColDark")}</th>
+                    <th style={{ width: 38 }} />
                   </tr>
                 </thead>
                 <tbody>
@@ -1231,23 +1494,6 @@ export function renderColorComparisonMatrix(input: {
                       >
                         <th style={colorVariationHeadStyle}>
                           <span>{variation}</span>
-                          {input.onDeleteVariation ? (
-                            <button
-                              type="button"
-                              style={colorVariationDeleteStyle}
-                              aria-label={`Delete color ${columnPath}`}
-                              title={`Delete ${columnPath}`}
-                              onClick={() =>
-                                input.onDeleteVariation?.(
-                                  [cell.light, cell.dark].filter(
-                                    (entry): entry is EditorTokenRecord => Boolean(entry)
-                                  )
-                                )
-                              }
-                            >
-                              ×
-                            </button>
-                          ) : null}
                         </th>
                         <td style={colorSideCellStyle}>
                           <ColorScaleSide
@@ -1275,6 +1521,25 @@ export function renderColorComparisonMatrix(input: {
                             onCreateCounterpart={input.onCreateCounterpart}
                           />
                         </td>
+                        <td style={colorVariationDeleteCellStyle}>
+                          {input.onDeleteVariation ? (
+                            <button
+                              type="button"
+                              style={colorVariationDeleteStyle}
+                              aria-label={input.t("tokenEditor.deleteColorAria", { columnPath })}
+                              title={input.t("tokenEditor.deleteColorTitle", { columnPath })}
+                              onClick={() =>
+                                input.onDeleteVariation?.(
+                                  [cell.light, cell.dark].filter(
+                                    (entry): entry is EditorTokenRecord => Boolean(entry)
+                                  )
+                                )
+                              }
+                            >
+                              ×
+                            </button>
+                          ) : null}
+                        </td>
                       </tr>
                     );
                   })}
@@ -1300,6 +1565,7 @@ function InlineColorPicker({
   value: RgbaColor;
   onChange(next: RgbaColor): void;
 }) {
+  const t = useT();
   const [hsv, setHsv] = useState<HsvColor>(() => rgbToHsv(value));
   const [alpha, setAlpha] = useState(value.a);
   const emit = (nextHsv: HsvColor, nextAlpha: number): void => {
@@ -1336,7 +1602,7 @@ function InlineColorPicker({
   return (
     <div style={colorPickerStackStyle}>
       <div
-        aria-label="Saturation and value"
+        aria-label={t("tokenEditor.colorPickerSaturationValue")}
         style={{
           ...colorPickerSvStyle,
           background: `linear-gradient(to top, #000, rgba(0, 0, 0, 0)), linear-gradient(to right, #fff, rgba(255, 255, 255, 0)), ${hueColor}`,
@@ -1361,7 +1627,7 @@ function InlineColorPicker({
         />
       </div>
       <div
-        aria-label="Hue"
+        aria-label={t("tokenEditor.colorPickerHue")}
         style={colorPickerHueStyle}
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId);
@@ -1382,7 +1648,7 @@ function InlineColorPicker({
         />
       </div>
       <div
-        aria-label="Alpha"
+        aria-label={t("tokenEditor.colorPickerAlpha")}
         style={colorPickerAlphaTrackStyle}
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture(event.pointerId);
@@ -1424,6 +1690,7 @@ function ColorSwatchPicker({
   onOpen(): void;
   onChange(next: RgbaColor): void;
 }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const preview = formatColorValue(value);
   return (
@@ -1431,8 +1698,8 @@ function ColorSwatchPicker({
       <button
         type="button"
         style={{ ...colorSwatchTriggerStyle, ...(swatchColor ? { background: swatchColor } : {}) }}
-        title={`Edit color for ${label}`}
-        aria-label={`Edit color for ${label}`}
+        title={t("tokenEditor.editColorFor", { label })}
+        aria-label={t("tokenEditor.editColorFor", { label })}
         data-color-swatch={swatchColor ?? ""}
         onClick={() => {
           onOpen();
@@ -1481,16 +1748,19 @@ function ColorValueField({
   onSelect(): void;
   onCommit(next: string): void;
 }) {
+  const t = useT();
   const [focused, setFocused] = useState(false);
   const [draft, setDraft] = useState(rawValue);
   const shown = focused ? draft : displayValue;
   return (
     <input
-      aria-label={`${label} value`}
+      aria-label={t("tokenEditor.fieldValueAria", { label })}
       list={TOKEN_REFERENCE_LIST_ID}
       style={colorSideInputStyle}
       value={shown}
-      title={isReference ? `${displayValue} — edit references "${rawValue}"` : undefined}
+      title={
+        isReference ? t("tokenEditor.referenceEditTitle", { displayValue, rawValue }) : undefined
+      }
       onFocus={() => {
         setDraft(rawValue);
         setFocused(true);
@@ -1533,6 +1803,7 @@ function ColorScaleSide({
   onCommitValue(record: EditorTokenRecord, valueText: string): void;
   onCreateCounterpart(targetPath: string, seedRecord: EditorTokenRecord): void;
 }) {
+  const t = useT();
   const [pickerOpen, setPickerOpen] = useState(false);
   if (!record) {
     const targetPath = colorCounterpartPath(columnPath, scheme);
@@ -1547,7 +1818,9 @@ function ColorScaleSide({
           }
         }}
       >
-        + {scheme}
+        {t("tokenEditor.addScheme", {
+          scheme: scheme === "light" ? t("tokenEditor.schemeLight") : t("tokenEditor.schemeDark"),
+        })}
       </button>
     );
   }
@@ -1598,29 +1871,37 @@ function ColorScaleSide({
           onSelect={() => onSelect(record)}
           onCommit={commitIfChanged}
         />
-        <button
-          type="button"
-          style={colorTokenToggleStyle}
-          aria-label={`Reference a token for ${record.path}`}
-          title="Reference another color token instead of a raw color"
-          onClick={() => {
-            onSelect(record);
-            setPickerOpen((open) => !open);
-          }}
-        >
-          {"{token}"}
-        </button>
+        <span style={colorTokenPickerAnchorStyle}>
+          <button
+            type="button"
+            style={colorTokenToggleStyle}
+            aria-label={t("tokenEditor.referenceTokenAria", { path: record.path })}
+            title={t("tokenEditor.referenceTokenTitle")}
+            onClick={() => {
+              onSelect(record);
+              setPickerOpen((open) => !open);
+            }}
+          >
+            {"{token}"}
+          </button>
+          {pickerOpen ? (
+            <>
+              <div style={colorPickerBackdropStyle} onClick={() => setPickerOpen(false)} />
+              <div style={colorTokenPickerPopoverStyle}>
+                <TokenPicker
+                  options={tokenOptions}
+                  placeholder={t("tokenEditor.referenceTokenPlaceholder")}
+                  autoFocus
+                  onPick={(reference) => {
+                    onCommitValue(record, reference);
+                    setPickerOpen(false);
+                  }}
+                />
+              </div>
+            </>
+          ) : null}
+        </span>
       </div>
-      {pickerOpen ? (
-        <TokenPicker
-          options={tokenOptions}
-          placeholder="Reference token…"
-          onPick={(reference) => {
-            onCommitValue(record, reference);
-            setPickerOpen(false);
-          }}
-        />
-      ) : null}
     </div>
   );
 }

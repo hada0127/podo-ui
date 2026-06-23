@@ -7,6 +7,7 @@ import {
 } from "./spec-editing.js";
 import { tokenVariationName } from "./token-lookup.js";
 import { fontPreviewMetaStyle, fontPreviewSampleStyle, fontPreviewTextStyle } from "./styles.js";
+import { useT } from "./i18n/context.js";
 
 export function getEmbeddedFontAssetFromDraft(
   draft: EditorTokenDraft
@@ -241,7 +242,7 @@ function escapeCssString(value: string): string {
 export function FontPreviewSample({
   family,
   asset,
-  text = "Aa Bb Cc 123",
+  text,
   style,
   showMeta = true,
 }: {
@@ -251,6 +252,8 @@ export function FontPreviewSample({
   style?: CSSProperties | undefined;
   showMeta?: boolean | undefined;
 }) {
+  const t = useT();
+  const sampleText = text ?? t("fonts.previewSampleText");
   const attachedName = asset ? fontFaceName(asset) : undefined;
   const fontFamily = attachedName
     ? `"${escapeCssString(attachedName)}", ui-sans-serif, system-ui, sans-serif`
@@ -264,7 +267,7 @@ export function FontPreviewSample({
           )}") format("${asset.format}");font-display:swap;}`}
         </style>
       ) : null}
-      <span style={{ ...fontPreviewTextStyle, ...style, fontFamily }}>{text}</span>
+      <span style={{ ...fontPreviewTextStyle, ...style, fontFamily }}>{sampleText}</span>
       {showMeta ? (
         <small style={fontPreviewMetaStyle}>{asset ? asset.fileName : family}</small>
       ) : null}

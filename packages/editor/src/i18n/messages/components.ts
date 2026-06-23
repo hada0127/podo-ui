@@ -1,0 +1,194 @@
+/** Strings for components-panel.tsx. en is the source of truth; ko mirrors it. */
+export const componentsEn = {
+  "components.heading": "Components",
+  "components.search": "Search components",
+  "components.emptyList": "No components match this search.",
+
+  "components.layers": "Layers",
+  "components.addLayer": "Add layer",
+
+  "components.details": "Details",
+  "components.name": "Name",
+  "components.category": "Category",
+  "components.status": "Status",
+  "components.description": "Description",
+  "components.save": "Save",
+
+  // Category labels (technical tokens — same in en/ko).
+  "components.category.atom": "atom",
+  "components.category.molecule": "molecule",
+  "components.category.organism": "organism",
+  "components.category.template": "template",
+  "components.category.layout": "layout",
+  "components.category.utility": "utility",
+
+  // Status labels (technical tokens — same in en/ko).
+  "components.status.draft": "draft",
+  "components.status.experimental": "experimental",
+  "components.status.stable": "stable",
+  "components.status.deprecated": "deprecated",
+
+  // Header stat-row counts.
+  "components.statProps": "{count} props",
+  "components.statVariants": "{count} variants",
+  "components.statStates": "{count} states",
+
+  "components.variantSet": "Variant set",
+  // Appearance inspector group titles.
+  "components.group.Fill": "Fill",
+  "components.group.Stroke": "Stroke",
+  "components.group.Corners": "Corners",
+  "components.group.Layout": "Layout",
+  "components.group.Typography": "Typography",
+  "components.group.Effects": "Effects",
+  "components.group.Other": "Other",
+  "components.design": "Design — {part}",
+  "components.applyTo": "Apply to",
+  "components.allVariantsBase": "All variants (base)",
+  "components.removeProperty": "Remove {property}",
+  "components.rawValuePlaceholder": "e.g. 42px or {token}",
+  "components.noAppearanceProps": "No appearance properties on this layer yet.",
+  "components.addPropertyOption": "+ Add property…",
+  "components.addAppearanceProperty": "Add appearance property",
+
+  "components.state": "State",
+  "components.stateLabel": "state",
+  // State select default option (technical token — same in en/ko).
+  "components.stateDefault": "default",
+
+  "components.variants": "Variants",
+  "components.props": "Props",
+
+  "components.editSchema": "Edit schema (advanced)",
+  "components.tabProps": "Props ({count})",
+  "components.tabVariants": "Variants ({count})",
+  "components.tabSlots": "Slots ({count})",
+  "components.tabTokens": "Tokens ({count})",
+
+  "components.newProp": "New prop",
+  "components.type": "Type",
+  "components.values": "Values",
+  "components.default": "Default",
+  "components.required": "Required",
+  "components.saveProp": "Save prop",
+  "components.delete": "Delete",
+
+  "components.newVariant": "New variant",
+  "components.valuesSelectDefault": "Values (select the default)",
+  "components.addValue": "Add value",
+  "components.setAsDefault": "Set {value} as default",
+  "components.variantValueLabel": "Variant value {index}",
+  "components.removeValue": "Remove {value}",
+  "components.remove": "Remove",
+  "components.tokenBindingsJson": "Token bindings JSON",
+  "components.saveVariant": "Save variant",
+
+  "components.slots": "Slots",
+  "components.newSlot": "New slot",
+  "components.slotRequired": "required",
+  "components.slotOptional": "optional",
+  "components.slotRepeated": "repeated",
+  "components.slotSingle": "single",
+  "components.repeated": "Repeated",
+  "components.fallback": "Fallback",
+  "components.saveSlot": "Save slot",
+
+  "components.componentJson": "Component JSON",
+
+  // Fallback used when a variant value row is empty.
+  "components.valueFallback": "value",
+} as const;
+
+export const componentsKo: Record<keyof typeof componentsEn, string> = {
+  "components.heading": "컴포넌트",
+  "components.search": "컴포넌트 검색",
+  "components.emptyList": "검색과 일치하는 컴포넌트가 없습니다.",
+
+  "components.layers": "레이어",
+  "components.addLayer": "레이어 추가",
+
+  "components.details": "세부 정보",
+  "components.name": "이름",
+  "components.category": "카테고리",
+  "components.status": "상태",
+  "components.description": "설명",
+  "components.save": "저장",
+
+  "components.category.atom": "atom",
+  "components.category.molecule": "molecule",
+  "components.category.organism": "organism",
+  "components.category.template": "template",
+  "components.category.layout": "layout",
+  "components.category.utility": "utility",
+
+  "components.status.draft": "draft",
+  "components.status.experimental": "experimental",
+  "components.status.stable": "stable",
+  "components.status.deprecated": "deprecated",
+
+  "components.statProps": "속성 {count}개",
+  "components.statVariants": "변형 {count}개",
+  "components.statStates": "상태 {count}개",
+
+  "components.variantSet": "변형 세트",
+  "components.group.Fill": "채움",
+  "components.group.Stroke": "선",
+  "components.group.Corners": "모서리",
+  "components.group.Layout": "레이아웃",
+  "components.group.Typography": "타이포그래피",
+  "components.group.Effects": "효과",
+  "components.group.Other": "기타",
+  "components.design": "디자인 — {part}",
+  "components.applyTo": "적용 대상",
+  "components.allVariantsBase": "모든 변형 (기본)",
+  "components.removeProperty": "{property} 제거",
+  "components.rawValuePlaceholder": "예: 42px 또는 {token}",
+  "components.noAppearanceProps": "이 레이어에 아직 외형 속성이 없습니다.",
+  "components.addPropertyOption": "+ 속성 추가…",
+  "components.addAppearanceProperty": "외형 속성 추가",
+
+  "components.state": "상태",
+  "components.stateLabel": "상태",
+  "components.stateDefault": "default",
+
+  "components.variants": "변형",
+  "components.props": "속성",
+
+  "components.editSchema": "스키마 편집 (고급)",
+  "components.tabProps": "속성 ({count})",
+  "components.tabVariants": "변형 ({count})",
+  "components.tabSlots": "슬롯 ({count})",
+  "components.tabTokens": "토큰 ({count})",
+
+  "components.newProp": "새 속성",
+  "components.type": "유형",
+  "components.values": "값",
+  "components.default": "기본값",
+  "components.required": "필수",
+  "components.saveProp": "속성 저장",
+  "components.delete": "삭제",
+
+  "components.newVariant": "새 변형",
+  "components.valuesSelectDefault": "값 (기본값 선택)",
+  "components.addValue": "값 추가",
+  "components.setAsDefault": "{value}을(를) 기본값으로 설정",
+  "components.variantValueLabel": "변형 값 {index}",
+  "components.removeValue": "{value} 제거",
+  "components.remove": "제거",
+  "components.tokenBindingsJson": "토큰 바인딩 JSON",
+  "components.saveVariant": "변형 저장",
+
+  "components.slots": "슬롯",
+  "components.newSlot": "새 슬롯",
+  "components.slotRequired": "필수",
+  "components.slotOptional": "선택",
+  "components.slotRepeated": "반복",
+  "components.slotSingle": "단일",
+  "components.repeated": "반복",
+  "components.fallback": "대체값",
+  "components.saveSlot": "슬롯 저장",
+
+  "components.componentJson": "컴포넌트 JSON",
+
+  "components.valueFallback": "값",
+};

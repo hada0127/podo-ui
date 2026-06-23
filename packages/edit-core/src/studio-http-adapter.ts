@@ -1,4 +1,11 @@
-import type { ComponentDocument, PageDocument, TokenDocument, ValidationIssue } from "@podo/spec";
+import { PodoEditError } from "@podo/spec";
+import type {
+  ComponentDocument,
+  IconManifest,
+  PageDocument,
+  TokenDocument,
+  ValidationIssue,
+} from "@podo/spec";
 import {
   type EditContext,
   type EditorCapabilities,
@@ -64,7 +71,14 @@ export function createStudioHttpAdapter(options: StudioHttpAdapterOptions = {}):
       payload = {};
     }
     if (!response.ok || payload.ok === false) {
-      throw new Error(payload.error?.message ?? `Studio request failed (${response.status}).`);
+      if (payload.error?.message) {
+        throw new Error(payload.error.message);
+      }
+      throw new PodoEditError(
+        "editCore.studioRequestFailed",
+        `Studio request failed (${response.status}).`,
+        { status: response.status }
+      );
     }
     return payload;
   }
@@ -154,6 +168,15 @@ export function createStudioHttpAdapter(options: StudioHttpAdapterOptions = {}):
       const contents = `${JSON.stringify(page, null, 2)}\n`;
       return putFile(path, contents, opts);
     },
+    async saveIconManifest(manifest: IconManifest, opts: SaveOptions = {}): Promise<SaveResult> {
+      // Must match the single filename the studio server validates and reads
+      // (studio/src/index.ts: loadIconManifest / validateWritableFile), the MCP
+      // loader, CLI build, and migration — otherwise edits write to an orphan
+      // path and silently vanish on reload.
+      const path = `.podo/icons/manifest.json`;
+      const contents = `${JSON.stringify(manifest, null, 2)}\n`;
+      return putFile(path, contents, opts);
+    },
     async validate(): Promise<ValidationIssue[]> {
       // A validation failure returns HTTP 422 WITH a report; that is a normal
       // result, not a transport error. But a real server/transport error (e.g.
@@ -169,7 +192,11 @@ export function createStudioHttpAdapter(options: StudioHttpAdapterOptions = {}):
         return payload.report.issues ?? [];
       }
       if (!response.ok) {
-        throw new Error(`Studio validate failed (${response.status}).`);
+        throw new PodoEditError(
+          "editCore.studioValidateFailed",
+          `Studio validate failed (${response.status}).`,
+          { status: response.status }
+        );
       }
       return [];
     },

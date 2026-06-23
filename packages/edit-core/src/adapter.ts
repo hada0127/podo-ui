@@ -76,6 +76,12 @@ export interface PodoSaveAdapter {
   saveTokenDocuments?(documents: TokenDocument[], options?: SaveOptions): Promise<SaveResult>;
   /** Optional: remove a token at a path (hosts that support deletion). */
   deleteToken?(documentIndex: number, path: string, options?: SaveOptions): Promise<SaveResult>;
+  /**
+   * Optional: persist the icon manifest (icon-editing hosts only). The manifest
+   * carries the always-woff2 build artifact inline (`fontAsset`), so hosts store
+   * the validated JSON; they must not rebuild a divergent font.
+   */
+  saveIconManifest?(manifest: IconManifest, options?: SaveOptions): Promise<SaveResult>;
   /** Optional: trigger a design-system build (installed-project hosts only). */
   build?(options?: SaveOptions): Promise<unknown>;
 }

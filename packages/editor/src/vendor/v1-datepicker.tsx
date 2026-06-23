@@ -1,0 +1,2078 @@
+// VENDORED VERBATIM from main branch `react/molecule/datepicker.tsx` (v1
+// datepicker) so the preview has ALL real features (calendar, range, time/hour,
+// quick-select, min/max, etc.). Only the styles import is changed: `styles.x`
+// returns the plain class `x`, matching the scoped v1 CSS in
+// v1-components.generated.css when rendered inside `.podo-v1-stage`. The dropdown
+// renders inline (no `portal` prop) so it stays inside the scoped stage.
+// Do not hand-edit; re-vendor from main.
+// @ts-nocheck
+/* eslint-disable */
+'use client';
+
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+const styles: Record<string, string> = new Proxy({}, { get: (_t, key) => (typeof key === 'string' ? key : '') });
+
+// Types
+export type DatePickerMode = 'instant' | 'period';
+export type DatePickerType = 'date' | 'time' | 'datetime' | 'hour';
+
+/** 시(hour) 표시 포맷: 24시간제 | 12시간제(오전/오후) */
+export type HourFormat = '24' | '12';
+
+/** 시(hour) 선택 간격 */
+export type HourStep = 1 | 2 | 3 | 4 | 6 | 12;
+
+/** 시간 값 (시, 분) */
+export interface TimeValue {
+  hour: number;
+  minute: number;
+}
+
+export interface DatePickerValue {
+  /** 시작 날짜 (년, 월, 일) */
+  date?: Date;
+  /** 시작 시간 (시, 분) */
+  time?: TimeValue;
+  /** 종료 날짜 (년, 월, 일) - period 모드에서 사용 */
+  endDate?: Date;
+  /** 종료 시간 (시, 분) - period 모드에서 사용 */
+  endTime?: TimeValue;
+}
+
+/** Quick Select 프리셋 키 */
+export type QuickSelectKey =
+  | 'today'
+  | 'yesterday'
+  | 'thisWeek'
+  | 'lastWeek'
+  | 'last7Days'
+  | 'last30Days'
+  | 'thisMonth'
+  | 'lastMonth';
+
+/** 날짜 범위 정의 */
+export interface DateRange {
+  from: Date;
+  to: Date;
+}
+
+/** 날짜 비활성화/활성화 조건 타입 */
+export type DateCondition = Date | DateRange | ((date: Date) => boolean);
+
+/** 날짜+시간 제한 값 (날짜만 또는 날짜+시간) */
+export interface DateTimeLimit {
+  date: Date;
+  time?: TimeValue;
+}
+
+/** 분 단위 선택 옵션 */
+export type MinuteStep = 1 | 5 | 10 | 15 | 20 | 30;
+
+/** 년도 선택 범위 */
+export interface YearRange {
+  /** 최소 년도 */
+  min?: number;
+  /** 최대 년도 */
+  max?: number;
+}
+
+/** 초기 달력 표시 월 설정 */
+export type CalendarInitial = 'now' | 'prevMonth' | 'nextMonth' | Date;
+
+export interface InitialCalendar {
+  /** 시작 달력 초기 월 (period 모드의 왼쪽 달력) */
+  start?: CalendarInitial;
+  /** 종료 달력 초기 월 (period 모드의 오른쪽 달력) */
+  end?: CalendarInitial;
+}
+
+export interface DatePickerProps {
+  /** 선택 모드: instant(단일) | period(기간) */
+  mode?: DatePickerMode;
+  /** 값 타입: date | time | datetime */
+  type?: DatePickerType;
+  /** 선택된 값 */
+  value?: DatePickerValue;
+  /** 값 변경 콜백 */
+  onChange?: (value: DatePickerValue) => void;
+  /** 플레이스홀더 */
+  placeholder?: string;
+  /** 비활성화 */
+  disabled?: boolean;
+  /** 하단 버튼 표시 (mode가 period일 때 기본 true) */
+  showActions?: boolean;
+  /** 드롭다운 정렬 */
+  align?: 'left' | 'right';
+  /** 클래스명 */
+  className?: string;
+  /** 선택 불가능한 날짜 조건 (특정 날짜, 범위, 함수) */
+  disable?: DateCondition[];
+  /** 선택 가능한 날짜 조건 (지정된 날짜만 활성화) */
+  enable?: DateCondition[];
+  /** 선택 가능한 최소 날짜 (Date 또는 { date, time }) */
+  minDate?: Date | DateTimeLimit;
+  /** 선택 가능한 최대 날짜 (Date 또는 { date, time }) */
+  maxDate?: Date | DateTimeLimit;
+  /** 분 단위 선택 간격 (1, 5, 10, 15, 30) 기본값: 1
+   *  type='hour'일 때는 무시됨 (분 컬럼이 렌더링되지 않음)
+   */
+  minuteStep?: MinuteStep;
+  /**
+   * 시(hour) 표시 포맷 (type='hour'일 때만 유효)
+   * '24': 0~23시 (기본), '12': 오전/오후 1~12시
+   */
+  hourFormat?: HourFormat;
+  /**
+   * 선택 불가능한 시간 배열 (0~23, type='hour'일 때만 유효)
+   * hourFormat과 무관하게 항상 24시 기준 값
+   * 예: [0,1,2,3,4,5,22,23] → 새벽/심야 비활성
+   */
+  disabledHours?: number[];
+  /**
+   * 시(hour) 선택 간격 (type='hour'일 때만 유효)
+   * 예: hourStep=2 → 0,2,4,...,22 만 선택 가능
+   * 기본값: 1
+   */
+  hourStep?: HourStep;
+  /**
+   * 날짜/시간 표시 포맷
+   * y: 년, m: 월, d: 일, h: 시, i: 분
+   * 예시: "y-m-d", "y.m.d h:i", "y년 m월 d일 h시 i분"
+   * type='hour'에서는 이 prop이 무시되고, hourFormat에 따른
+   * 기본 라벨("h시" 또는 "오전/오후 h시")로 표시됨
+   */
+  format?: string;
+  /**
+   * 기간 선택 모드에서 초기 달력 표시 월 설정
+   * start: 왼쪽 달력, end: 오른쪽 달력
+   * 값: 'now' | 'prevMonth' | 'nextMonth' | Date
+   */
+  initialCalendar?: InitialCalendar;
+  /**
+   * 년도 선택 범위 설정
+   * minDate/maxDate보다 우선 적용됨
+   * 예시: { min: 2020, max: 2030 }
+   */
+  yearRange?: YearRange;
+  /**
+   * 드롭다운을 document.body에 Portal로 렌더링
+   * overflow: hidden 컨테이너 내부에서 드롭다운이 잘리는 문제 해결
+   * 기본값: false
+   */
+  portal?: boolean;
+  /**
+   * Quick Select 프리셋 패널 표시
+   * mode='period'일 때만 동작, instant 모드에서는 무시됨
+   * 기본값: false
+   */
+  quickSelect?: boolean;
+  /**
+   * 인풋 좌우 네비게이션 화살표 숨김
+   * quickSelect + mode='period' 조합일 때 표시되는 navArrow만 제거
+   * 기본값: false
+   */
+  hideNavArrow?: boolean;
+  /**
+   * 드롭다운(캘린더) 열림 방향
+   * 'down': 인풋 아래로 (기본)
+   * 'up': 인풋 위로
+   * 'auto': 인풋 아래 공간 부족 시 자동으로 위로 전환
+   * 기본값: 'down'
+   */
+  direction?: 'down' | 'up' | 'auto';
+  /** 초기화 버튼 클릭 시 콜백 */
+  onReset?: () => void;
+}
+
+// Helper functions
+
+/** CalendarInitial 값을 Date로 변환 */
+const resolveCalendarInitial = (initial: CalendarInitial | undefined, fallback: Date): Date => {
+  if (!initial) return fallback;
+  if (initial instanceof Date) return initial;
+
+  const now = new Date();
+  switch (initial) {
+    case 'now':
+      return new Date(now.getFullYear(), now.getMonth(), 1);
+    case 'prevMonth':
+      return new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    case 'nextMonth':
+      return new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    default:
+      return fallback;
+  }
+};
+
+/**
+ * 커스텀 포맷으로 날짜/시간 포맷팅
+ * y: 년(4자리), m: 월(2자리), d: 일(2자리), h: 시(2자리), i: 분(2자리)
+ */
+const formatWithPattern = (
+  date: Date | undefined,
+  time: TimeValue | undefined,
+  pattern: string
+): string => {
+  if (!date && !time) return '';
+
+  let result = pattern;
+
+  if (date) {
+    result = result.replace(/y/g, String(date.getFullYear()));
+    result = result.replace(/m/g, String(date.getMonth() + 1).padStart(2, '0'));
+    result = result.replace(/d/g, String(date.getDate()).padStart(2, '0'));
+  }
+
+  if (time) {
+    result = result.replace(/h/g, String(time.hour).padStart(2, '0'));
+    result = result.replace(/i/g, String(time.minute).padStart(2, '0'));
+  }
+
+  return result;
+};
+
+const formatDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year} - ${month} - ${day}`;
+};
+
+const formatTime = (date: Date): string => {
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours} : ${minutes}`;
+};
+
+const formatDateTime = (date: Date): string => {
+  return `${formatDate(date)} ${formatTime(date)}`;
+};
+
+const isSameDay = (date1: Date, date2: Date): boolean => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+};
+
+// Navigation helpers
+type NavigationStep = { type: 'days'; count: number } | { type: 'month'; count: number };
+
+const getNavigationStepForPreset = (key: QuickSelectKey): NavigationStep => {
+  switch (key) {
+    case 'today': case 'yesterday': return { type: 'days', count: 1 };
+    case 'thisWeek': case 'lastWeek': case 'last7Days': return { type: 'days', count: 7 };
+    case 'last30Days': return { type: 'days', count: 30 };
+    case 'thisMonth': case 'lastMonth': return { type: 'month', count: 1 };
+  }
+};
+
+const calculateNavigationStep = (start: Date, end: Date): NavigationStep => {
+  const diffMs = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime()
+    - new Date(start.getFullYear(), start.getMonth(), start.getDate()).getTime();
+  return { type: 'days', count: Math.round(diffMs / 86400000) + 1 };
+};
+
+const shiftDateRange = (start: Date, end: Date, step: NavigationStep, dir: 1 | -1) => {
+  if (step.type === 'month') {
+    const shift = step.count * dir;
+    const newStart = new Date(start.getFullYear(), start.getMonth() + shift, 1);
+    const newEnd = new Date(newStart.getFullYear(), newStart.getMonth() + 1, 0);
+    return { start: newStart, end: newEnd };
+  }
+  const shift = step.count * dir;
+  const s = new Date(start); s.setDate(s.getDate() + shift);
+  const e = new Date(s); e.setDate(e.getDate() + step.count - 1);
+  return { start: s, end: e };
+};
+
+// Quick Select helpers
+
+interface QuickSelectPreset {
+  key: QuickSelectKey;
+  label: string;
+}
+
+const QUICK_SELECT_PRESETS: QuickSelectPreset[] = [
+  { key: 'today', label: '오늘' },
+  { key: 'yesterday', label: '어제' },
+  { key: 'thisWeek', label: '이번 주' },
+  { key: 'lastWeek', label: '지난 주' },
+  { key: 'last7Days', label: '최근 7일' },
+  { key: 'last30Days', label: '최근 30일' },
+  { key: 'thisMonth', label: '이번 달' },
+  { key: 'lastMonth', label: '지난 달' },
+];
+
+const getPresetRange = (key: QuickSelectKey): { start: Date; end: Date } => {
+  const today = new Date();
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  switch (key) {
+    case 'today':
+      return { start: new Date(todayStart), end: new Date(todayStart) };
+    case 'yesterday': {
+      const d = new Date(todayStart);
+      d.setDate(d.getDate() - 1);
+      return { start: d, end: new Date(d) };
+    }
+    case 'thisWeek': {
+      const dayOfWeek = todayStart.getDay();
+      const start = new Date(todayStart);
+      start.setDate(start.getDate() - dayOfWeek);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      return { start, end };
+    }
+    case 'lastWeek': {
+      const dayOfWeek = todayStart.getDay();
+      const thisWeekStart = new Date(todayStart);
+      thisWeekStart.setDate(thisWeekStart.getDate() - dayOfWeek);
+      const start = new Date(thisWeekStart);
+      start.setDate(start.getDate() - 7);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      return { start, end };
+    }
+    case 'last7Days': {
+      const start = new Date(todayStart);
+      start.setDate(start.getDate() - 6);
+      return { start, end: new Date(todayStart) };
+    }
+    case 'last30Days': {
+      const start = new Date(todayStart);
+      start.setDate(start.getDate() - 29);
+      return { start, end: new Date(todayStart) };
+    }
+    case 'thisMonth': {
+      const start = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+      const end = new Date(todayStart.getFullYear(), todayStart.getMonth() + 1, 0);
+      return { start, end };
+    }
+    case 'lastMonth': {
+      const start = new Date(todayStart.getFullYear(), todayStart.getMonth() - 1, 1);
+      const end = new Date(todayStart.getFullYear(), todayStart.getMonth(), 0);
+      return { start, end };
+    }
+  }
+};
+
+const isPresetDisabled = (
+  key: QuickSelectKey,
+  minDate?: Date | DateTimeLimit,
+  maxDate?: Date | DateTimeLimit
+): boolean => {
+  const { start, end } = getPresetRange(key);
+
+  if (minDate) {
+    const min = minDate instanceof Date ? minDate : minDate.date;
+    const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+    // start가 minDate 이전이고, end도 minDate 이전이면 완전히 범위 밖
+    if (end < minDay) return true;
+  }
+
+  if (maxDate) {
+    const max = maxDate instanceof Date ? maxDate : maxDate.date;
+    const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+    // start가 maxDate 이후면 완전히 범위 밖
+    if (start > maxDay) return true;
+  }
+
+  return false;
+};
+
+const isPresetActive = (
+  key: QuickSelectKey,
+  value?: DatePickerValue,
+  minDate?: Date | DateTimeLimit,
+  maxDate?: Date | DateTimeLimit
+): boolean => {
+  if (!value?.date || !value?.endDate) return false;
+  let { start, end } = getPresetRange(key);
+  // handleQuickSelect과 동일한 클램핑 적용
+  if (minDate) {
+    const min = minDate instanceof Date ? minDate : minDate.date;
+    const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+    if (start < minDay) start = minDay;
+  }
+  if (maxDate) {
+    const max = maxDate instanceof Date ? maxDate : maxDate.date;
+    const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+    if (end > maxDay) end = maxDay;
+  }
+  return isSameDay(value.date, start) && isSameDay(value.endDate, end);
+};
+
+const getActivePresetLabel = (
+  value?: DatePickerValue,
+  minDate?: Date | DateTimeLimit,
+  maxDate?: Date | DateTimeLimit
+): string | null => {
+  if (!value?.date || !value?.endDate) return null;
+  for (const preset of QUICK_SELECT_PRESETS) {
+    if (isPresetActive(preset.key, value, minDate, maxDate)) return preset.label;
+  }
+  return null;
+};
+
+const isInRange = (date: Date, start: Date, end: Date): boolean => {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  return d >= s && d <= e;
+};
+
+const isInRangeExclusive = (date: Date, start: Date, end: Date): boolean => {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  return d > s && d < e;
+};
+
+const getDaysInMonth = (year: number, month: number): number => {
+  return new Date(year, month + 1, 0).getDate();
+};
+
+const getFirstDayOfMonth = (year: number, month: number): number => {
+  return new Date(year, month, 1).getDay();
+};
+
+/** DateRange 타입 가드 */
+const isDateRange = (condition: DateCondition): condition is DateRange => {
+  return typeof condition === 'object' && 'from' in condition && 'to' in condition;
+};
+
+/** 날짜가 조건에 해당하는지 확인 */
+const matchesCondition = (date: Date, condition: DateCondition): boolean => {
+  if (typeof condition === 'function') {
+    return condition(date);
+  }
+  if (isDateRange(condition)) {
+    return isInRange(date, condition.from, condition.to);
+  }
+  // Date 타입
+  return isSameDay(date, condition);
+};
+
+/** 날짜가 비활성화되어야 하는지 확인 */
+const isDateDisabled = (
+  date: Date,
+  disable?: DateCondition[],
+  enable?: DateCondition[]
+): boolean => {
+  // enable이 지정된 경우: 지정된 조건에 맞지 않으면 비활성화
+  if (enable && enable.length > 0) {
+    const isEnabled = enable.some((condition) => matchesCondition(date, condition));
+    return !isEnabled;
+  }
+
+  // disable이 지정된 경우: 지정된 조건에 맞으면 비활성화
+  if (disable && disable.length > 0) {
+    return disable.some((condition) => matchesCondition(date, condition));
+  }
+
+  return false;
+};
+
+/** DateTimeLimit 타입 가드 */
+const isDateTimeLimit = (value: Date | DateTimeLimit): value is DateTimeLimit => {
+  return typeof value === 'object' && 'date' in value && !(value instanceof Date);
+};
+
+/** DateTimeLimit에서 Date와 TimeValue 추출 */
+const extractDateTimeLimit = (limit: Date | DateTimeLimit): { date: Date; time?: TimeValue } => {
+  if (isDateTimeLimit(limit)) {
+    return { date: limit.date, time: limit.time };
+  }
+  return { date: limit };
+};
+
+/** 날짜가 minDate보다 이전인지 확인 (날짜만 비교) */
+const isBeforeMinDate = (date: Date, minDate?: Date | DateTimeLimit): boolean => {
+  if (!minDate) return false;
+  const { date: minDateValue } = extractDateTimeLimit(minDate);
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const m = new Date(minDateValue.getFullYear(), minDateValue.getMonth(), minDateValue.getDate());
+  return d < m;
+};
+
+/** 날짜가 maxDate보다 이후인지 확인 (날짜만 비교) */
+const isAfterMaxDate = (date: Date, maxDate?: Date | DateTimeLimit): boolean => {
+  if (!maxDate) return false;
+  const { date: maxDateValue } = extractDateTimeLimit(maxDate);
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const m = new Date(maxDateValue.getFullYear(), maxDateValue.getMonth(), maxDateValue.getDate());
+  return d > m;
+};
+
+/** 날짜+시간이 minDate보다 이전인지 확인 */
+const isBeforeMinDateTime = (
+  date: Date,
+  time: TimeValue | undefined,
+  minDate?: Date | DateTimeLimit
+): boolean => {
+  if (!minDate) return false;
+  const { date: minDateValue, time: minTime } = extractDateTimeLimit(minDate);
+
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const m = new Date(minDateValue.getFullYear(), minDateValue.getMonth(), minDateValue.getDate());
+
+  if (d < m) return true;
+  if (d > m) return false;
+
+  // 같은 날짜: 시간 비교
+  if (minTime && time) {
+    if (time.hour < minTime.hour) return true;
+    if (time.hour === minTime.hour && time.minute < minTime.minute) return true;
+  }
+  return false;
+};
+
+/** 날짜+시간이 maxDate보다 이후인지 확인 */
+const isAfterMaxDateTime = (
+  date: Date,
+  time: TimeValue | undefined,
+  maxDate?: Date | DateTimeLimit
+): boolean => {
+  if (!maxDate) return false;
+  const { date: maxDateValue, time: maxTime } = extractDateTimeLimit(maxDate);
+
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const m = new Date(maxDateValue.getFullYear(), maxDateValue.getMonth(), maxDateValue.getDate());
+
+  if (d > m) return true;
+  if (d < m) return false;
+
+  // 같은 날짜: 시간 비교
+  if (maxTime && time) {
+    if (time.hour > maxTime.hour) return true;
+    if (time.hour === maxTime.hour && time.minute > maxTime.minute) return true;
+  }
+  return false;
+};
+
+// Calendar Component
+interface CalendarProps {
+  value?: Date;
+  endValue?: Date;
+  mode: DatePickerMode;
+  onSelect: (date: Date) => void;
+  viewDate: Date;
+  onViewDateChange: (date: Date) => void;
+  /** 네비게이션 버튼 표시 여부 (기본: true) */
+  showPrevNav?: boolean;
+  showNextNav?: boolean;
+  /** 이동 가능한 최소 년/월 (이 값보다 이전으로 이동 불가) */
+  minViewDate?: Date;
+  /** 이동 가능한 최대 년/월 (이 값보다 이후로 이동 불가) */
+  maxViewDate?: Date;
+  /** 선택 불가능한 날짜 조건 */
+  disable?: DateCondition[];
+  /** 선택 가능한 날짜 조건 */
+  enable?: DateCondition[];
+  /** 선택 가능한 최소 날짜 */
+  minDate?: Date | DateTimeLimit;
+  /** 선택 가능한 최대 날짜 */
+  maxDate?: Date | DateTimeLimit;
+  /** 년도 선택 범위 */
+  yearRange?: YearRange;
+}
+
+const Calendar: React.FC<CalendarProps> = ({
+  value,
+  endValue,
+  mode,
+  onSelect,
+  viewDate,
+  onViewDateChange,
+  showPrevNav = true,
+  showNextNav = true,
+  minViewDate,
+  maxViewDate,
+  disable,
+  enable,
+  minDate,
+  maxDate,
+  yearRange,
+}) => {
+  const today = new Date();
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+
+  const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+
+  // 년도 범위 계산 (우선순위: yearRange > minDate/maxDate > 기본값 ±100년)
+  const currentYear = today.getFullYear();
+  const calculateYearBounds = () => {
+    let minYearBound = currentYear - 100;
+    let maxYearBound = currentYear + 100;
+
+    // minDate/maxDate에서 년도 추출
+    if (minDate) {
+      const { date } = extractDateTimeLimit(minDate);
+      minYearBound = Math.max(minYearBound, date.getFullYear());
+    }
+    if (maxDate) {
+      const { date } = extractDateTimeLimit(maxDate);
+      maxYearBound = Math.min(maxYearBound, date.getFullYear());
+    }
+
+    // yearRange가 있으면 우선 적용
+    if (yearRange?.min !== undefined) minYearBound = yearRange.min;
+    if (yearRange?.max !== undefined) maxYearBound = yearRange.max;
+
+    return { minYearBound, maxYearBound };
+  };
+
+  const { minYearBound, maxYearBound } = calculateYearBounds();
+  const yearOptions = Array.from(
+    { length: Math.max(0, maxYearBound - minYearBound + 1) },
+    (_, i) => minYearBound + i
+  );
+
+  // 월 옵션: 1~12월
+  const monthOptions = Array.from({ length: 12 }, (_, i) => i);
+
+  // minViewDate/maxViewDate 기반 제한 계산
+  const minYear = minViewDate?.getFullYear();
+  const minMonth = minViewDate?.getMonth();
+  const maxYear = maxViewDate?.getFullYear();
+  const maxMonth = maxViewDate?.getMonth();
+
+  // 이전 월 버튼 비활성화 여부
+  const isPrevDisabled = minViewDate
+    ? year < minYear! || (year === minYear && month <= minMonth!)
+    : false;
+
+  // 다음 월 버튼 비활성화 여부
+  const isNextDisabled = maxViewDate
+    ? year > maxYear! || (year === maxYear && month >= maxMonth!)
+    : false;
+
+  // 년도 옵션 필터링 (선택 가능한 년도만)
+  const filteredYearOptions = yearOptions.filter((y) => {
+    if (minYear !== undefined && y < minYear) return false;
+    if (maxYear !== undefined && y > maxYear) return false;
+    return true;
+  });
+
+  // 월 옵션 필터링 (현재 선택된 년도에서 선택 가능한 월만)
+  const filteredMonthOptions = monthOptions.filter((m) => {
+    if (minYear !== undefined && minMonth !== undefined) {
+      if (year === minYear && m < minMonth) return false;
+    }
+    if (maxYear !== undefined && maxMonth !== undefined) {
+      if (year === maxYear && m > maxMonth) return false;
+    }
+    return true;
+  });
+
+  const handlePrevMonth = () => {
+    if (isPrevDisabled) return;
+    onViewDateChange(new Date(year, month - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    if (isNextDisabled) return;
+    onViewDateChange(new Date(year, month + 1, 1));
+  };
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onViewDateChange(new Date(parseInt(e.target.value), month, 1));
+  };
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onViewDateChange(new Date(year, parseInt(e.target.value), 1));
+  };
+
+  const renderDaysView = () => {
+    const daysInMonth = getDaysInMonth(year, month);
+    const firstDay = getFirstDayOfMonth(year, month);
+    const prevMonthDays = getDaysInMonth(year, month - 1);
+
+    const days: React.ReactNode[] = [];
+
+    // 날짜 비활성화 확인 (disable/enable + minDate/maxDate)
+    const checkDateDisabled = (date: Date): boolean => {
+      if (isDateDisabled(date, disable, enable)) return true;
+      if (isBeforeMinDate(date, minDate)) return true;
+      if (isAfterMaxDate(date, maxDate)) return true;
+      return false;
+    };
+
+    // Previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const day = prevMonthDays - i;
+      const prevDate = new Date(year, month - 1, day);
+      const isDisabled = checkDateDisabled(prevDate);
+      days.push(
+        <button
+          key={`prev-${day}`}
+          type="button"
+          className={`${styles.calendarCell} ${styles.other} ${isDisabled ? styles.disabled : ''}`}
+          onClick={() => !isDisabled && onSelect(prevDate)}
+          disabled={isDisabled}
+        >
+          {day}
+        </button>
+      );
+    }
+
+    // Current month days
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const isToday = isSameDay(date, today);
+      const isSelected = value && isSameDay(date, value);
+      const isRangeStart = mode === 'period' && value && isSameDay(date, value);
+      const isRangeEnd = mode === 'period' && endValue && isSameDay(date, endValue);
+      const isInRangeDay =
+        mode === 'period' && value && endValue && isInRangeExclusive(date, value, endValue);
+      const isDisabled = checkDateDisabled(date);
+
+      let cellClass = styles.calendarCell;
+      if (isDisabled) cellClass += ` ${styles.disabled}`;
+      if (isToday && !isSelected && !isRangeStart && !isRangeEnd) cellClass += ` ${styles.today}`;
+      if (mode === 'instant' && isSelected) cellClass += ` ${styles.selected}`;
+      if (isRangeStart) cellClass += ` ${styles.rangeStart}`;
+      if (isRangeEnd) cellClass += ` ${styles.rangeEnd}`;
+      if (isInRangeDay) cellClass += ` ${styles.inRange}`;
+
+      days.push(
+        <button
+          key={day}
+          type="button"
+          className={cellClass}
+          onClick={() => !isDisabled && onSelect(date)}
+          disabled={isDisabled}
+        >
+          {day}
+        </button>
+      );
+    }
+
+    // Next month days
+    const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+    const remainingDays = totalCells - (firstDay + daysInMonth);
+    for (let day = 1; day <= remainingDays; day++) {
+      const nextDate = new Date(year, month + 1, day);
+      const isDisabled = checkDateDisabled(nextDate);
+      days.push(
+        <button
+          key={`next-${day}`}
+          type="button"
+          className={`${styles.calendarCell} ${styles.other} ${isDisabled ? styles.disabled : ''}`}
+          onClick={() => !isDisabled && onSelect(nextDate)}
+          disabled={isDisabled}
+        >
+          {day}
+        </button>
+      );
+    }
+
+    // Group into rows
+    const rows: React.ReactNode[] = [];
+    for (let i = 0; i < days.length; i += 7) {
+      rows.push(
+        <div key={i} className={styles.calendarRow}>
+          {days.slice(i, i + 7)}
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <div className={styles.calendarRow}>
+          {weekDays.map((day) => (
+            <div key={day} className={`${styles.calendarCell} ${styles.header}`}>
+              {day}
+            </div>
+          ))}
+        </div>
+        {rows}
+      </>
+    );
+  };
+
+
+  return (
+    <div className={styles.calendar}>
+      <div className={styles.calendarNav}>
+        {showPrevNav ? (
+          <button
+            type="button"
+            className={styles.navButton}
+            onClick={handlePrevMonth}
+            disabled={isPrevDisabled}
+          >
+            <i className="icon-expand-left" />
+          </button>
+        ) : (
+          <div className={styles.navButtonPlaceholder} />
+        )}
+        <div className={styles.navTitle}>
+          <div className={styles.navSelectWrapper}>
+            <select
+              className={styles.navSelect}
+              value={year}
+              onChange={handleYearChange}
+            >
+              {filteredYearOptions.map((y) => (
+                <option key={y} value={y}>
+                  {y}년
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.navSelectWrapper}>
+            <select
+              className={styles.navSelect}
+              value={month}
+              onChange={handleMonthChange}
+            >
+              {filteredMonthOptions.map((m) => (
+                <option key={m} value={m}>
+                  {m + 1}월
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        {showNextNav ? (
+          <button
+            type="button"
+            className={styles.navButton}
+            onClick={handleNextMonth}
+            disabled={isNextDisabled}
+          >
+            <i className="icon-expand-right" />
+          </button>
+        ) : (
+          <div className={styles.navButtonPlaceholder} />
+        )}
+      </div>
+      <div className={styles.calendarGrid}>
+        {renderDaysView()}
+      </div>
+    </div>
+  );
+};
+
+// 반응형 breakpoint 감지 hook
+const useIsMobile = (breakpoint = 600) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= breakpoint);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [breakpoint]);
+
+  return isMobile;
+};
+
+// Period Calendar Component (두 개의 달력을 나란히 표시)
+interface PeriodCalendarProps {
+  value?: Date;
+  endValue?: Date;
+  onSelect: (date: Date) => void;
+  viewDate: Date;
+  endViewDate: Date;
+  onViewDateChange: (date: Date) => void;
+  onEndViewDateChange: (date: Date) => void;
+  /** 선택 불가능한 날짜 조건 */
+  disable?: DateCondition[];
+  /** 선택 가능한 날짜 조건 */
+  enable?: DateCondition[];
+  /** 선택 가능한 최소 날짜 */
+  minDate?: Date | DateTimeLimit;
+  /** 선택 가능한 최대 날짜 */
+  maxDate?: Date | DateTimeLimit;
+  /** 년도 선택 범위 */
+  yearRange?: YearRange;
+}
+
+const PeriodCalendar: React.FC<PeriodCalendarProps> = ({
+  value,
+  endValue,
+  onSelect,
+  viewDate,
+  endViewDate,
+  onViewDateChange,
+  onEndViewDateChange,
+  disable,
+  enable,
+  minDate,
+  maxDate,
+  yearRange,
+}) => {
+  // 모바일에서는 단일 캘린더로 표시 (CSS로 우측 숨김 + 좌측 제한 해제)
+  const isMobile = useIsMobile(600);
+
+  // 왼쪽 달력: 오른쪽 달력(endViewDate)보다 이후로 이동 불가
+  // 오른쪽 달력: 왼쪽 달력(viewDate)보다 이전으로 이동 불가
+  // 모바일에서는 제한 해제하여 자유롭게 이동 가능
+  return (
+    <div className={styles.periodCalendars}>
+      <div className={styles.periodCalendarLeft}>
+        <Calendar
+          value={value}
+          endValue={endValue}
+          mode="period"
+          onSelect={onSelect}
+          viewDate={viewDate}
+          onViewDateChange={onViewDateChange}
+          showPrevNav={true}
+          showNextNav={true}
+          maxViewDate={isMobile ? undefined : endViewDate}
+          disable={disable}
+          enable={enable}
+          minDate={minDate}
+          maxDate={maxDate}
+          yearRange={yearRange}
+        />
+      </div>
+      <div className={styles.periodCalendarRight}>
+        <Calendar
+          value={value}
+          endValue={endValue}
+          mode="period"
+          onSelect={onSelect}
+          viewDate={endViewDate}
+          onViewDateChange={onEndViewDateChange}
+          showPrevNav={true}
+          showNextNav={true}
+          minViewDate={viewDate}
+          disable={disable}
+          enable={enable}
+          minDate={minDate}
+          maxDate={maxDate}
+          yearRange={yearRange}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Selecting part types
+type SelectingPart = 'date' | 'hour' | 'minute' | 'endDate' | 'endHour' | 'endMinute' | null;
+
+// Portal 드롭다운 위치 타입
+interface PortalPosition {
+  top: number;
+  left: number;
+  width: number;
+}
+
+// 드롭다운 max-width 계산 (뷰포트 기준)
+interface DropdownMaxWidth {
+  maxWidth: number;
+}
+
+// Main DatePicker Component
+const DatePicker: React.FC<DatePickerProps> = ({
+  mode = 'instant',
+  type = 'date',
+  value,
+  onChange,
+  placeholder,
+  disabled = false,
+  showActions,
+  align = 'left',
+  className,
+  disable,
+  enable,
+  minDate,
+  maxDate,
+  minuteStep = 1,
+  hourFormat = '24',
+  disabledHours,
+  hourStep = 1,
+  format,
+  initialCalendar,
+  yearRange,
+  portal = false,
+  quickSelect = false,
+  hideNavArrow = false,
+  direction = 'down',
+  onReset,
+}) => {
+  const [selectingPart, setSelectingPart] = useState<SelectingPart>(null);
+  const [tempValue, setTempValue] = useState<DatePickerValue>(value || {});
+  const [navigationStep, setNavigationStep] = useState<NavigationStep | null>(() => {
+    if (value?.date && value?.endDate) {
+      return calculateNavigationStep(value.date, value.endDate);
+    }
+    return null;
+  });
+  // 클램핑 전 원래 범위의 시작점 (navArrow 이동 시 기준점)
+  const [navigationAnchor, setNavigationAnchor] = useState<Date | null>(() => {
+    if (value?.date) return value.date;
+    return null;
+  });
+  // 동적 라벨용 상태
+  const [activePresetKey, setActivePresetKey] = useState<QuickSelectKey | null>(null);
+  const [navOffset, setNavOffset] = useState(0);
+
+  // 초기 달력 표시 월 계산
+  // initialCalendar prop이 명시되면 value보다 우선 적용 (사용자가 지정한 시작 화면을 보장)
+  const [viewDate, setViewDate] = useState(() => {
+    if (initialCalendar?.start) {
+      return resolveCalendarInitial(initialCalendar.start, value?.date ?? new Date());
+    }
+    if (value?.date) return value.date;
+    return new Date();
+  });
+
+  const [endViewDate, setEndViewDate] = useState(() => {
+    if (initialCalendar?.end) {
+      const fallback = value?.endDate
+        ? new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, 1)
+        : new Date();
+      return resolveCalendarInitial(initialCalendar.end, fallback);
+    }
+    if (value?.endDate) {
+      return new Date(value.endDate.getFullYear(), value.endDate.getMonth() + 1, 1);
+    }
+    // 기본값: 현재 달의 다음 달
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth() + 1, 1);
+  });
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Portal 모드 위치 상태
+  const [portalPosition, setPortalPosition] = useState<PortalPosition | null>(null);
+  // 드롭다운 max-width (뷰포트 기준 동적 계산)
+  const [dropdownMaxWidth, setDropdownMaxWidth] = useState<number | null>(null);
+  // 실제 드롭다운 열림 방향 ('up' | 'down'), direction='auto'일 때만 동적으로 변경
+  const [resolvedDirection, setResolvedDirection] = useState<'up' | 'down'>(
+    direction === 'up' ? 'up' : 'down'
+  );
+
+  // hour-only는 native select 단일 입력이라 적용/초기화 액션이 필요 없음 → 즉시 commit
+  const shouldShowActions = showActions ?? (mode === 'period' && type !== 'hour');
+  // 날짜 선택 시에만 드롭다운 표시 (시/분은 native select 사용)
+  const isOpen = selectingPart === 'date' || selectingPart === 'endDate';
+
+  // 드롭다운 max-width 계산 (드롭다운 위치 기준으로 남은 뷰포트 너비)
+  const updateDropdownMaxWidth = useCallback(() => {
+    if (!dropdownRef.current) return;
+
+    const rect = dropdownRef.current.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const padding = 8; // 여백
+
+    // 드롭다운 시작 위치에서 뷰포트 끝까지 남은 너비
+    const availableWidth = viewportWidth - rect.left - padding;
+    setDropdownMaxWidth(availableWidth > 0 ? availableWidth : null);
+  }, []);
+
+  // 드롭다운 열릴 때 max-width 계산
+  useEffect(() => {
+    if (isOpen) {
+      // 다음 프레임에 계산 (드롭다운이 렌더링된 후)
+      requestAnimationFrame(() => {
+        updateDropdownMaxWidth();
+      });
+    } else {
+      setDropdownMaxWidth(null);
+    }
+  }, [isOpen, updateDropdownMaxWidth]);
+
+  // 드롭다운 열릴 때 방향 결정 (non-portal 포함)
+  useEffect(() => {
+    if (!isOpen) return;
+    if (direction !== 'auto') {
+      setResolvedDirection(direction === 'up' ? 'up' : 'down');
+      return;
+    }
+    // auto: 렌더링 후 실제 높이로 다시 판정
+    requestAnimationFrame(() => {
+      if (!inputRef.current) return;
+      const inputRect = inputRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const dropdownHeight = dropdownRef.current?.offsetHeight ?? 360;
+      const spaceBelow = viewportHeight - inputRect.bottom;
+      const spaceAbove = inputRect.top;
+      if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+        setResolvedDirection('up');
+      } else {
+        setResolvedDirection('down');
+      }
+    });
+  }, [isOpen, direction]);
+
+  // direction='auto'일 때 드롭다운 방향 자동 결정
+  const resolveDirection = useCallback((): 'up' | 'down' => {
+    if (direction !== 'auto') return direction === 'up' ? 'up' : 'down';
+    if (!inputRef.current) return 'down';
+
+    const inputRect = inputRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const dropdownHeight = dropdownRef.current?.offsetHeight ?? 360;
+    const spaceBelow = viewportHeight - inputRect.bottom;
+    const spaceAbove = inputRect.top;
+
+    // 아래 공간이 드롭다운 높이보다 작고, 위쪽이 더 넓으면 위로
+    if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) return 'up';
+    return 'down';
+  }, [direction]);
+
+  // Portal 위치 계산 함수 (direction 반영)
+  const updatePortalPosition = useCallback(() => {
+    if (!portal || !inputRef.current) return;
+
+    const rect = inputRef.current.getBoundingClientRect();
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
+    const dir = resolveDirection();
+    setResolvedDirection(dir);
+
+    setPortalPosition({
+      top: dir === 'up'
+        ? rect.top + scrollY // 위로 열릴 때는 인풋 top 기준 (transform으로 올림)
+        : rect.bottom + scrollY,
+      left: align === 'right' ? rect.right + scrollX : rect.left + scrollX,
+      width: rect.width,
+    });
+  }, [portal, align, resolveDirection]);
+
+  // Portal 열릴 때 위치 계산
+  useEffect(() => {
+    if (isOpen && portal) {
+      updatePortalPosition();
+    }
+  }, [isOpen, portal, updatePortalPosition]);
+
+  // Portal 모드에서 스크롤/리사이즈 시 위치 재계산
+  useEffect(() => {
+    if (!portal || !isOpen) return;
+
+    const handleScrollResize = () => {
+      updatePortalPosition();
+    };
+
+    window.addEventListener('scroll', handleScrollResize, true);
+    window.addEventListener('resize', handleScrollResize);
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollResize, true);
+      window.removeEventListener('resize', handleScrollResize);
+    };
+  }, [portal, isOpen, updatePortalPosition]);
+
+  // Close on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      // containerRef 체크
+      if (containerRef.current && containerRef.current.contains(target)) {
+        return;
+      }
+
+      // Portal 모드일 때 드롭다운 영역도 체크
+      if (portal && isOpen) {
+        const portalDropdown = document.querySelector(`.${styles.portalDropdown}`);
+        if (portalDropdown && portalDropdown.contains(target)) {
+          return;
+        }
+      }
+
+      setSelectingPart(null);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [portal, isOpen]);
+
+  // Sync temp value with prop value
+  useEffect(() => {
+    setTempValue(value || {});
+  }, [value]);
+
+  // 초기 value 또는 외부에서 value 변경 시 프리셋 자동 매칭
+  useEffect(() => {
+    if (!quickSelect || mode !== 'period') return;
+    if (!value?.date || !value?.endDate) return;
+
+    for (const preset of QUICK_SELECT_PRESETS) {
+      const { start, end } = getPresetRange(preset.key);
+      if (isSameDay(value.date, start) && isSameDay(value.endDate, end)) {
+        setActivePresetKey(preset.key);
+        setNavOffset(0);
+        setNavigationStep(getNavigationStepForPreset(preset.key));
+        return;
+      }
+    }
+  }, [value?.date, value?.endDate, quickSelect, mode]);
+
+  const formatPeriodText = () => {
+    // hour-only: date 없이 time 만으로 표시
+    if (type === 'hour') {
+      const startText = tempValue.time ? formatHourLabel(tempValue.time.hour) : '';
+      const endText = tempValue.endTime ? formatHourLabel(tempValue.endTime.hour) : '';
+      if (startText && endText) return `${startText} ~ ${endText}`;
+      return startText;
+    }
+
+    if (!tempValue.date) return '';
+
+    // format prop이 있으면 사용
+    if (format) {
+      const startText = formatWithPattern(tempValue.date, tempValue.time, format);
+      if (tempValue.endDate) {
+        const endText = formatWithPattern(tempValue.endDate, tempValue.endTime, format);
+        return `${startText} ~ ${endText}`;
+      }
+      return startText;
+    }
+
+    // 기본 포맷 (한국어)
+    const formatKoreanDateTime = (date: Date, time?: TimeValue) => {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const dateStr = `${year}년 ${month}월 ${day}일`;
+      if (type === 'datetime' && time) {
+        const hours = String(time.hour).padStart(2, '0');
+        const minutes = String(time.minute).padStart(2, '0');
+        return `${dateStr} ${hours}:${minutes}`;
+      }
+      return dateStr;
+    };
+
+    const startText = formatKoreanDateTime(tempValue.date, tempValue.time);
+    if (tempValue.endDate) {
+      const endText = formatKoreanDateTime(tempValue.endDate, tempValue.endTime);
+      return `${startText} ~ ${endText}`;
+    }
+    return startText;
+  };
+
+  // 날짜 선택 시 시간을 minDate/maxDate 범위 내로 자동 보정
+  const adjustTimeForDate = (date: Date, time: TimeValue | undefined): TimeValue | undefined => {
+    if (!time) return time;
+
+    const minLimit = minDate ? extractDateTimeLimit(minDate) : null;
+    const maxLimit = maxDate ? extractDateTimeLimit(maxDate) : null;
+
+    let adjustedHour = time.hour;
+    let adjustedMinute = time.minute;
+
+    // minDate와 같은 날짜인 경우
+    if (minLimit?.time && isSameDay(date, minLimit.date)) {
+      if (adjustedHour < minLimit.time.hour) {
+        adjustedHour = minLimit.time.hour;
+        // minuteStep에 맞춰 올림
+        adjustedMinute = Math.ceil(minLimit.time.minute / minuteStep) * minuteStep;
+      } else if (adjustedHour === minLimit.time.hour && adjustedMinute < minLimit.time.minute) {
+        // minuteStep에 맞춰 올림
+        adjustedMinute = Math.ceil(minLimit.time.minute / minuteStep) * minuteStep;
+      }
+    }
+
+    // maxDate와 같은 날짜인 경우
+    if (maxLimit?.time && isSameDay(date, maxLimit.date)) {
+      if (adjustedHour > maxLimit.time.hour) {
+        adjustedHour = maxLimit.time.hour;
+        // minuteStep에 맞춰 내림
+        adjustedMinute = Math.floor(maxLimit.time.minute / minuteStep) * minuteStep;
+      } else if (adjustedHour === maxLimit.time.hour && adjustedMinute > maxLimit.time.minute) {
+        // minuteStep에 맞춰 내림
+        adjustedMinute = Math.floor(maxLimit.time.minute / minuteStep) * minuteStep;
+      }
+    }
+
+    if (adjustedHour !== time.hour || adjustedMinute !== time.minute) {
+      return { hour: adjustedHour, minute: adjustedMinute };
+    }
+    return time;
+  };
+
+  const handleDateSelect = (date: Date) => {
+    // 날짜만 저장 (시간은 별도 time/endTime으로 관리)
+    const newDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    // instant 모드: 단일 날짜 선택 후 닫기
+    if (mode === 'instant') {
+      const adjustedTime = adjustTimeForDate(newDate, tempValue.time);
+      const newValue = { ...tempValue, date: newDate, time: adjustedTime };
+      setTempValue(newValue);
+      if (!shouldShowActions) {
+        onChange?.(newValue);
+      }
+      setSelectingPart(null);
+      return;
+    }
+
+    // period 모드: 기간 선택 로직
+    // 시작일/종료일이 같을 수 있음
+    // 시작일이 종료일보다 이후일 수 없음 (자동 정렬)
+    // 종료일이 시작일보다 이전일 수 없음 (자동 정렬)
+    // 하나만 선택해도 드롭다운 유지 (적용 버튼으로 닫음)
+
+    const existingStartDate = tempValue.date;
+    const existingEndDate = tempValue.endDate;
+
+    if (!existingStartDate) {
+      // 첫 번째 날짜 선택: 시작일 설정
+      const adjustedTime = adjustTimeForDate(newDate, tempValue.time);
+      setTempValue({ ...tempValue, date: newDate, time: adjustedTime });
+      // 드롭다운 유지 - 종료일 선택 대기
+      return;
+    }
+
+    if (!existingEndDate) {
+      // 두 번째 날짜 선택: 시작일/종료일 자동 정렬
+      const dateOnly = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate());
+      const startDateOnly = new Date(existingStartDate.getFullYear(), existingStartDate.getMonth(), existingStartDate.getDate());
+
+      if (dateOnly < startDateOnly) {
+        // 선택한 날짜가 시작일보다 이전 → 스왑 (선택한 날짜가 시작일, 기존 시작일이 종료일)
+        // 시간도 함께 스왑하고 범위 보정
+        const adjustedStartTime = adjustTimeForDate(newDate, tempValue.time);
+        const adjustedEndTime = adjustTimeForDate(existingStartDate, tempValue.time);
+        setTempValue({
+          date: newDate,
+          time: adjustedStartTime,
+          endDate: existingStartDate,
+          endTime: adjustedEndTime,
+        });
+        setNavigationStep(calculateNavigationStep(newDate, existingStartDate));
+        setNavigationAnchor(newDate);
+        setActivePresetKey(null);
+        setNavOffset(0);
+      } else {
+        // 선택한 날짜가 시작일 이후/같음 → 종료일로 설정
+        const adjustedEndTime = adjustTimeForDate(newDate, tempValue.endTime);
+        setTempValue({ ...tempValue, endDate: newDate, endTime: adjustedEndTime });
+        setNavigationStep(calculateNavigationStep(existingStartDate, newDate));
+        setNavigationAnchor(existingStartDate);
+        setActivePresetKey(null);
+        setNavOffset(0);
+      }
+      // 드롭다운 유지 - 적용 버튼으로 닫음
+      return;
+    }
+
+    // 이미 둘 다 선택된 경우 → 새로운 시작일로 리셋
+    const adjustedTime = adjustTimeForDate(newDate, tempValue.time);
+    setTempValue({ date: newDate, time: adjustedTime, endDate: undefined, endTime: undefined });
+    setActivePresetKey(null);
+    setNavOffset(0);
+  };
+
+  const handleReset = () => {
+    // 선택값만 비우고 팝오버는 열린 상태 유지
+    // selectingPart을 null로 두면 isOpen이 false가 되어 팝오버가 닫힘 → 'date'로 되돌려 시작일 입력 대기 상태 유지
+    setTempValue({});
+    setSelectingPart('date');
+    setActivePresetKey(null);
+    setNavigationStep(null);
+    setNavigationAnchor(null);
+    setNavOffset(0);
+    onReset?.();
+  };
+
+  const handleApply = () => {
+    onChange?.(tempValue);
+    setSelectingPart(null);
+  };
+
+  const handleQuickSelect = (key: QuickSelectKey) => {
+    const { start: originalStart, end: originalEnd } = getPresetRange(key);
+    let start = originalStart;
+    let end = originalEnd;
+    // minDate/maxDate로 클램핑
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (start < minDay) start = minDay;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (end > maxDay) end = maxDay;
+    }
+    const newValue: DatePickerValue = { date: start, endDate: end, time: tempValue.time, endTime: tempValue.endTime };
+    setTempValue(newValue);
+    setViewDate(new Date(start.getFullYear(), start.getMonth(), 1));
+    setEndViewDate(new Date(end.getFullYear(), end.getMonth(), 1));
+    setNavigationStep(getNavigationStepForPreset(key));
+    setNavigationAnchor(originalStart);
+    setActivePresetKey(key);
+    setNavOffset(0);
+
+    if (!shouldShowActions) {
+      onChange?.(newValue);
+      setSelectingPart(null);
+    }
+  };
+
+  // anchor 기준으로 이동 후 범위를 계산하는 헬퍼
+  const getShiftedRange = (direction: 1 | -1) => {
+    const dv = displayValue;
+    if (!dv?.date || !dv?.endDate || !navigationStep) return null;
+    // anchor가 있으면 anchor 기준, 없으면 현재 값 기준
+    const anchorStart = navigationAnchor || dv.date;
+    return shiftDateRange(anchorStart, anchorStart, navigationStep, direction);
+  };
+
+  const handleNavigate = (direction: 1 | -1) => {
+    const dv = displayValue;
+    if (!dv?.date || !dv?.endDate || !navigationStep) return;
+
+    const range = getShiftedRange(direction);
+    if (!range) return;
+    const { start, end } = range;
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+
+    // 이동 후 범위가 minDate~maxDate와 전혀 겹치지 않으면 차단
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (endDay < minDay) return;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (startDay > maxDay) return;
+    }
+
+    setNavOffset((prev) => prev + direction);
+
+    // minDate/maxDate 클램핑
+    let finalStart: Date = start;
+    let finalEnd: Date = end;
+    if (minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      if (startDay < minDay) finalStart = minDay;
+    }
+    if (maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      if (endDay > maxDay) finalEnd = maxDay;
+    }
+
+    // anchor를 이동된 원래 start로 갱신
+    setNavigationAnchor(start);
+
+    const newValue: DatePickerValue = { date: finalStart, endDate: finalEnd, time: dv.time, endTime: dv.endTime };
+    setTempValue(newValue);
+    setViewDate(new Date(finalStart.getFullYear(), finalStart.getMonth(), 1));
+    setEndViewDate(new Date(finalEnd.getFullYear(), finalEnd.getMonth(), 1));
+    onChange?.(newValue);
+  };
+
+  const isNavDisabled = (direction: 1 | -1): boolean => {
+    const range = getShiftedRange(direction);
+    if (!range) return true;
+    const { start, end } = range;
+    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    // 이동 후 범위가 minDate~maxDate와 전혀 겹치지 않을 때만 비활성화
+    if (direction === -1 && minDate) {
+      const min = minDate instanceof Date ? minDate : minDate.date;
+      const minDay = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+      return endDay < minDay;
+    }
+    if (direction === 1 && maxDate) {
+      const max = maxDate instanceof Date ? maxDate : maxDate.date;
+      const maxDay = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+      return startDay > maxDay;
+    }
+    return false;
+  };
+
+  const handlePartClick = (part: SelectingPart) => {
+    if (disabled) return;
+    setSelectingPart(selectingPart === part ? null : part);
+  };
+
+  const displayValue = shouldShowActions ? tempValue : value;
+  const hasStartValue = !!displayValue?.date;
+  const hasEndValue = !!displayValue?.endDate;
+
+  // 날짜만 표시하는 포맷 (시간 제외)
+  const getDateOnlyFormat = (): string | undefined => {
+    if (!format) return undefined;
+    // 시간 관련 부분 제거 (h, i 및 그 주변 문자들)
+    return format.replace(/\s*h[:\s]*i[분]?/g, '').replace(/\s*h시\s*i분/g, '').trim();
+  };
+
+  // Helper to render date button
+  const renderDateButton = (date: Date | undefined, isActive: boolean, onClick: () => void, isPlaceholder: boolean) => {
+    const dateFormat = getDateOnlyFormat();
+
+    if (isPlaceholder || !date) {
+      // format이 있으면 placeholder도 포맷에 맞게 표시
+      const placeholderText = dateFormat
+        ? dateFormat.replace(/y/g, 'YYYY').replace(/m/g, 'MM').replace(/d/g, 'DD')
+        : 'YYYY - MM - DD';
+
+      return (
+        <button
+          type="button"
+          className={`${styles.inputPart} ${isActive ? styles.active : ''} ${styles.placeholder}`}
+          onClick={onClick}
+        >
+          {placeholderText}
+        </button>
+      );
+    }
+
+    // format prop이 있으면 사용 (날짜만)
+    const displayText = dateFormat
+      ? formatWithPattern(date, undefined, dateFormat)
+      : `${date.getFullYear()} - ${String(date.getMonth() + 1).padStart(2, '0')} - ${String(date.getDate()).padStart(2, '0')}`;
+
+    return (
+      <button
+        type="button"
+        className={`${styles.inputPart} ${isActive ? styles.active : ''}`}
+        onClick={onClick}
+      >
+        {displayText}
+      </button>
+    );
+  };
+
+  // hour-only 모드: 24시간 기준 hour 값을 표시 라벨(한국어/12h) 로 변환
+  const formatHourLabel = (h: number): string => {
+    if (hourFormat === '12') {
+      // 0시 → 오전 12시, 1~11시 → 오전 N시, 12시 → 오후 12시, 13~23시 → 오후 (N-12)시
+      const period = h < 12 ? '오전' : '오후';
+      const h12 = h % 12 === 0 ? 12 : h % 12;
+      return `${period} ${h12}시`;
+    }
+    return `${h}시`;
+  };
+
+  // hour-only 옵션 리스트 생성 (hourStep 적용)
+  const buildHourOptions = (): number[] => {
+    const step = hourStep ?? 1;
+    const list: number[] = [];
+    for (let h = 0; h < 24; h += step) list.push(h);
+    return list;
+  };
+
+  // Helper to render hour select
+  const renderHourSelect = (time: TimeValue | undefined, part: SelectingPart, isPlaceholder: boolean) => {
+    const isHourOnly = type === 'hour';
+    const hour = time?.hour ?? 0;
+    const hours = isHourOnly
+      ? buildHourOptions()
+      : Array.from({ length: 24 }, (_, i) => i);
+    const isEnd = part === 'endHour';
+    const currentDate = isEnd ? tempValue.endDate : tempValue.date;
+
+    // minDate/maxDate 시간 제한 계산
+    const minLimit = minDate ? extractDateTimeLimit(minDate) : null;
+    const maxLimit = maxDate ? extractDateTimeLimit(maxDate) : null;
+
+    const isHourDisabled = (h: number): boolean => {
+      // hour-only: disabledHours 우선 적용
+      if (isHourOnly && disabledHours && disabledHours.includes(h)) return true;
+
+      if (!currentDate) return false;
+
+      // minDate와 같은 날짜인 경우
+      if (minLimit?.time && isSameDay(currentDate, minLimit.date)) {
+        if (h < minLimit.time.hour) return true;
+      }
+      // maxDate와 같은 날짜인 경우
+      if (maxLimit?.time && isSameDay(currentDate, maxLimit.date)) {
+        if (h > maxLimit.time.hour) return true;
+      }
+      return false;
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const selectedHour = parseInt(e.target.value, 10);
+
+      // hour-only: 분은 항상 0으로 정규화, minuteStep/min,maxDate time 보정 모두 무시
+      if (isHourOnly) {
+        const newTime: TimeValue = { hour: selectedHour, minute: 0 };
+        const newValue = isEnd
+          ? { ...tempValue, endTime: newTime }
+          : { ...tempValue, time: newTime };
+        setTempValue(newValue);
+        if (!shouldShowActions) {
+          onChange?.(newValue);
+        }
+        return;
+      }
+
+      const currentTime = isEnd ? tempValue.endTime : tempValue.time;
+      let newMinute = currentTime?.minute ?? 0;
+
+      // 시간 변경 시 분이 범위를 벗어나면 자동 보정
+      if (currentDate) {
+        // minDate와 같은 날짜이고 선택한 시간이 minLimit 시간과 같은 경우
+        if (minLimit?.time && isSameDay(currentDate, minLimit.date) && selectedHour === minLimit.time.hour) {
+          if (newMinute < minLimit.time.minute) {
+            // minuteStep에 맞춰 올림
+            newMinute = Math.ceil(minLimit.time.minute / minuteStep) * minuteStep;
+          }
+        }
+        // maxDate와 같은 날짜이고 선택한 시간이 maxLimit 시간과 같은 경우
+        if (maxLimit?.time && isSameDay(currentDate, maxLimit.date) && selectedHour === maxLimit.time.hour) {
+          if (newMinute > maxLimit.time.minute) {
+            // minuteStep에 맞춰 내림
+            newMinute = Math.floor(maxLimit.time.minute / minuteStep) * minuteStep;
+          }
+        }
+      }
+
+      // minuteStep에 맞지 않는 분 값 보정
+      if (newMinute % minuteStep !== 0) {
+        newMinute = Math.floor(newMinute / minuteStep) * minuteStep;
+      }
+
+      const newTime: TimeValue = { hour: selectedHour, minute: newMinute };
+
+      const newValue = isEnd
+        ? { ...tempValue, endTime: newTime }
+        : { ...tempValue, time: newTime };
+      setTempValue(newValue);
+      if (!shouldShowActions) {
+        onChange?.(newValue);
+      }
+    };
+
+    // hour-only: 현재 값이 옵션 리스트에 없으면 가장 가까운 옵션으로 표시
+    const displayHour = isHourOnly && !hours.includes(hour)
+      ? (hours.reduce((prev, curr) => Math.abs(curr - hour) < Math.abs(prev - hour) ? curr : prev, hours[0] ?? 0))
+      : hour;
+
+    return (
+      <select
+        className={`${styles.timeSelect} ${isHourOnly ? styles.hourSelect : ''} ${isPlaceholder ? styles.placeholder : ''}`}
+        value={displayHour}
+        onChange={handleChange}
+        disabled={disabled}
+        aria-label={isHourOnly ? '시간 선택' : undefined}
+      >
+        {hours.map((h) => (
+          <option key={h} value={h} disabled={isHourDisabled(h)}>
+            {isHourOnly ? formatHourLabel(h) : String(h).padStart(2, '0')}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
+  // Helper to render minute select
+  const renderMinuteSelect = (time: TimeValue | undefined, part: SelectingPart, isPlaceholder: boolean) => {
+    const minute = time?.minute ?? 0;
+    // minuteStep에 따라 분 옵션 생성 (0, step, step*2, ...)
+    const minutes = Array.from({ length: Math.ceil(60 / minuteStep) }, (_, i) => i * minuteStep);
+    const isEnd = part === 'endMinute';
+    const currentDate = isEnd ? tempValue.endDate : tempValue.date;
+    const currentTime = isEnd ? tempValue.endTime : tempValue.time;
+
+    // minDate/maxDate 시간 제한 계산
+    const minLimit = minDate ? extractDateTimeLimit(minDate) : null;
+    const maxLimit = maxDate ? extractDateTimeLimit(maxDate) : null;
+
+    const isMinuteDisabled = (m: number): boolean => {
+      if (!currentDate || !currentTime) return false;
+
+      // minDate와 같은 날짜이고 같은 시간인 경우
+      if (minLimit?.time && isSameDay(currentDate, minLimit.date) && currentTime.hour === minLimit.time.hour) {
+        if (m < minLimit.time.minute) return true;
+      }
+      // maxDate와 같은 날짜이고 같은 시간인 경우
+      if (maxLimit?.time && isSameDay(currentDate, maxLimit.date) && currentTime.hour === maxLimit.time.hour) {
+        if (m > maxLimit.time.minute) return true;
+      }
+      return false;
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      let selectedMinute = parseInt(e.target.value, 10);
+      const selectedHour = currentTime?.hour ?? 0;
+
+      // 분 선택 시 범위 자동 보정
+      if (currentDate) {
+        // minDate와 같은 날짜이고 같은 시간인 경우
+        if (minLimit?.time && isSameDay(currentDate, minLimit.date) && selectedHour === minLimit.time.hour) {
+          if (selectedMinute < minLimit.time.minute) {
+            // minuteStep에 맞춰 올림
+            selectedMinute = Math.ceil(minLimit.time.minute / minuteStep) * minuteStep;
+          }
+        }
+        // maxDate와 같은 날짜이고 같은 시간인 경우
+        if (maxLimit?.time && isSameDay(currentDate, maxLimit.date) && selectedHour === maxLimit.time.hour) {
+          if (selectedMinute > maxLimit.time.minute) {
+            // minuteStep에 맞춰 내림
+            selectedMinute = Math.floor(maxLimit.time.minute / minuteStep) * minuteStep;
+          }
+        }
+      }
+
+      const newTime: TimeValue = { hour: selectedHour, minute: selectedMinute };
+
+      const newValue = isEnd
+        ? { ...tempValue, endTime: newTime }
+        : { ...tempValue, time: newTime };
+      setTempValue(newValue);
+      if (!shouldShowActions) {
+        onChange?.(newValue);
+      }
+    };
+
+    // 현재 값이 minuteStep에 맞지 않으면 가장 가까운 값으로 표시
+    const displayMinute = minutes.includes(minute) ? minute : Math.floor(minute / minuteStep) * minuteStep;
+
+    return (
+      <select
+        className={`${styles.timeSelect} ${isPlaceholder ? styles.placeholder : ''}`}
+        value={displayMinute}
+        onChange={handleChange}
+        disabled={disabled}
+      >
+        {minutes.map((m) => (
+          <option key={m} value={m} disabled={isMinuteDisabled(m)}>
+            {String(m).padStart(2, '0')}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
+  // Render input content with clickable parts
+  const renderInputContent = () => {
+    const hasStartTime = displayValue?.time !== undefined;
+    const hasEndTime = displayValue?.endTime !== undefined;
+
+    if (type === 'date') {
+      if (mode === 'period') {
+        return (
+          <div className={styles.inputContent}>
+            {renderDateButton(displayValue?.date, selectingPart === 'date', () => handlePartClick('date'), !hasStartValue)}
+            <span className={styles.separator}>~</span>
+            {renderDateButton(displayValue?.endDate, selectingPart === 'endDate', () => handlePartClick('endDate'), !hasEndValue)}
+          </div>
+        );
+      }
+      return (
+        <div className={styles.inputContent}>
+          {renderDateButton(displayValue?.date, selectingPart === 'date', () => handlePartClick('date'), !hasStartValue)}
+        </div>
+      );
+    }
+
+    if (type === 'time') {
+      if (mode === 'period') {
+        return (
+          <div className={styles.inputContent}>
+            <div className={styles.timeSection}>
+              {renderHourSelect(displayValue?.time, 'hour', !hasStartTime)}
+              <span className={styles.timeSeparator}>:</span>
+              {renderMinuteSelect(displayValue?.time, 'minute', !hasStartTime)}
+            </div>
+            <span className={styles.separator}>~</span>
+            <div className={styles.timeSection}>
+              {renderHourSelect(displayValue?.endTime, 'endHour', !hasEndTime)}
+              <span className={styles.timeSeparator}>:</span>
+              {renderMinuteSelect(displayValue?.endTime, 'endMinute', !hasEndTime)}
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className={styles.inputContent}>
+          <div className={styles.timeSection}>
+            {renderHourSelect(displayValue?.time, 'hour', !hasStartTime)}
+            <span className={styles.timeSeparator}>:</span>
+            {renderMinuteSelect(displayValue?.time, 'minute', !hasStartTime)}
+          </div>
+        </div>
+      );
+    }
+
+    if (type === 'hour') {
+      // hour-only 모드: 분 컬럼/구분자 제거, 시 컬럼만 렌더
+      if (mode === 'period') {
+        return (
+          <div className={styles.inputContent}>
+            <div className={`${styles.timeSection} ${styles.hourSection}`}>
+              {renderHourSelect(displayValue?.time, 'hour', !hasStartTime)}
+            </div>
+            <span className={styles.separator}>~</span>
+            <div className={`${styles.timeSection} ${styles.hourSection}`}>
+              {renderHourSelect(displayValue?.endTime, 'endHour', !hasEndTime)}
+            </div>
+          </div>
+        );
+      }
+      return (
+        <div className={styles.inputContent}>
+          <div className={`${styles.timeSection} ${styles.hourSection}`}>
+            {renderHourSelect(displayValue?.time, 'hour', !hasStartTime)}
+          </div>
+        </div>
+      );
+    }
+
+    // datetime
+    if (mode === 'period') {
+      return (
+        <div className={styles.inputContent}>
+          {renderDateButton(displayValue?.date, selectingPart === 'date', () => handlePartClick('date'), !hasStartValue)}
+          <div className={styles.timeSection}>
+            {renderHourSelect(displayValue?.time, 'hour', !hasStartTime)}
+            <span className={styles.timeSeparator}>:</span>
+            {renderMinuteSelect(displayValue?.time, 'minute', !hasStartTime)}
+          </div>
+          <span className={styles.separator}>~</span>
+          {renderDateButton(displayValue?.endDate, selectingPart === 'endDate', () => handlePartClick('endDate'), !hasEndValue)}
+          <div className={styles.timeSection}>
+            {renderHourSelect(displayValue?.endTime, 'endHour', !hasEndTime)}
+            <span className={styles.timeSeparator}>:</span>
+            {renderMinuteSelect(displayValue?.endTime, 'endMinute', !hasEndTime)}
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className={styles.inputContent}>
+        {renderDateButton(displayValue?.date, selectingPart === 'date', () => handlePartClick('date'), !hasStartValue)}
+        <div className={styles.timeSection}>
+          {renderHourSelect(displayValue?.time, 'hour', !hasStartTime)}
+          <span className={styles.timeSeparator}>:</span>
+          {renderMinuteSelect(displayValue?.time, 'minute', !hasStartTime)}
+        </div>
+      </div>
+    );
+  };
+
+  // Render dropdown content based on selecting part
+  const renderDropdownContent = () => {
+    // 날짜 선택만 드롭다운으로 표시 (시/분은 native select 사용)
+    if (selectingPart === 'date' || selectingPart === 'endDate') {
+      const showQuickSelect = quickSelect && mode === 'period';
+
+      // period 모드: 두 개의 달력을 나란히 표시
+      if (mode === 'period') {
+        const calendarContent = (
+          <PeriodCalendar
+            value={tempValue.date}
+            endValue={tempValue.endDate}
+            onSelect={handleDateSelect}
+            viewDate={viewDate}
+            endViewDate={endViewDate}
+            onViewDateChange={setViewDate}
+            onEndViewDateChange={setEndViewDate}
+            disable={disable}
+            enable={enable}
+            minDate={minDate}
+            maxDate={maxDate}
+            yearRange={yearRange}
+          />
+        );
+
+        if (showQuickSelect) {
+          return (
+            <div className={styles.dropdownBody}>
+              <div className={styles.quickSelectPanel}>
+                {QUICK_SELECT_PRESETS.map((preset) => {
+                  const presetDisabled = isPresetDisabled(preset.key, minDate, maxDate);
+                  const active = isPresetActive(preset.key, tempValue, minDate, maxDate);
+                  return (
+                    <button
+                      key={preset.key}
+                      type="button"
+                      className={`${styles.quickSelectItem}${active ? ` ${styles.active}` : ''}${presetDisabled ? ` ${styles.disabled}` : ''}`}
+                      onClick={() => !presetDisabled && handleQuickSelect(preset.key)}
+                      disabled={presetDisabled}
+                    >
+                      {preset.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {calendarContent}
+            </div>
+          );
+        }
+
+        return calendarContent;
+      }
+      // instant 모드: 단일 달력
+      return (
+        <Calendar
+          value={tempValue.date}
+          endValue={tempValue.endDate}
+          mode={mode}
+          onSelect={handleDateSelect}
+          viewDate={viewDate}
+          onViewDateChange={setViewDate}
+          disable={disable}
+          enable={enable}
+          minDate={minDate}
+          maxDate={maxDate}
+          yearRange={yearRange}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  // 아이콘 결정 (time/hour 타입은 icon-time, 나머지는 icon-calendar)
+  const inputIcon = type === 'time' || type === 'hour' ? 'icon-time' : 'icon-calendar';
+
+  // 드롭다운 콘텐츠 렌더링
+  const renderDropdown = () => {
+    const dropdownContent = (
+      <>
+        {renderDropdownContent()}
+
+        {shouldShowActions && (
+          <div className={styles.bottomActions}>
+            <span className={styles.periodText}>
+              {mode === 'period' && tempValue.date ? formatPeriodText() : ''}
+            </span>
+            <div className={styles.actionButtons}>
+              <button
+                type="button"
+                className={`${styles.actionButton} ${styles.reset}`}
+                onClick={handleReset}
+              >
+                <i className="icon-refresh" />
+                초기화
+              </button>
+              <button
+                type="button"
+                className={`${styles.actionButton} ${styles.apply}`}
+                onClick={handleApply}
+              >
+                적용
+              </button>
+            </div>
+          </div>
+        )}
+      </>
+    );
+
+    // max-width 스타일 (동적 계산)
+    const maxWidthStyle: React.CSSProperties = dropdownMaxWidth
+      ? { maxWidth: dropdownMaxWidth, boxSizing: 'border-box' }
+      : {};
+
+    const upClass = resolvedDirection === 'up' ? styles.dropdownUp : '';
+
+    // Portal 모드
+    if (portal && portalPosition) {
+      const portalStyle: React.CSSProperties = {
+        position: 'absolute',
+        ...(resolvedDirection === 'up'
+          ? { top: portalPosition.top, transform: 'translateY(-100%)' }
+          : { top: portalPosition.top }),
+        ...(align === 'right'
+          ? { right: document.documentElement.clientWidth - portalPosition.left }
+          : { left: portalPosition.left }),
+        zIndex: 9999,
+        ...maxWidthStyle,
+      };
+
+      return createPortal(
+        <div
+          ref={dropdownRef}
+          className={`${styles.dropdown} ${styles.portalDropdown} ${align === 'right' ? styles.right : ''} ${upClass}`}
+          style={portalStyle}
+        >
+          {dropdownContent}
+        </div>,
+        document.body
+      );
+    }
+
+    // 기본 모드
+    return (
+      <div
+        ref={dropdownRef}
+        className={`${styles.dropdown} ${align === 'right' ? styles.right : ''} ${upClass}`}
+        style={maxWidthStyle}
+      >
+        {dropdownContent}
+      </div>
+    );
+  };
+
+  const showNavigation = quickSelect && mode === 'period' && !hideNavArrow;
+
+  const getNavOffsetLabel = (): string | null => {
+    const offset = Math.abs(navOffset);
+    const isFuture = navOffset > 0;
+    if (!navigationStep) return null;
+    if (navigationStep.type === 'month') {
+      return isFuture ? `${offset}개월 후` : `${offset}개월 전`;
+    }
+    if (navigationStep.count === 1) {
+      return isFuture ? `${offset}일 후` : `${offset}일 전`;
+    }
+    if (navigationStep.count === 7) {
+      return isFuture ? `${offset}주 후` : `${offset}주 전`;
+    }
+    if (navigationStep.count === 30) {
+      return isFuture ? `${offset * 30}일 후` : `${offset * 30}일 전`;
+    }
+    return isFuture ? `${offset * navigationStep.count}일 후` : `${offset * navigationStep.count}일 전`;
+  };
+
+  const activePresetLabel = showNavigation
+    ? (getActivePresetLabel(displayValue, minDate, maxDate)
+      || (activePresetKey && navOffset !== 0 ? getNavOffsetLabel() : null))
+    : null;
+
+  return (
+    <div ref={containerRef} className={`${styles.datepicker} ${className || ''}`}>
+      <div
+        ref={inputRef}
+        className={`${styles.input} ${showNavigation ? styles.withNav : ''} ${isOpen ? styles.active : ''} ${disabled ? styles.disabled : ''}`}
+      >
+        {showNavigation && (
+          <button
+            type="button"
+            className={`${styles.navArrow} ${styles.navArrowLeft}`}
+            onClick={(e) => { e.stopPropagation(); handleNavigate(-1); }}
+            disabled={disabled || isNavDisabled(-1)}
+          >
+            <i className="icon-expand-left" />
+          </button>
+        )}
+        {showNavigation && activePresetLabel && (
+          <span className={styles.presetLabel}>{activePresetLabel} :</span>
+        )}
+        {renderInputContent()}
+        {!showNavigation && <i className={`${styles.inputIcon} ${inputIcon}`} />}
+        {showNavigation && (
+          <button
+            type="button"
+            className={`${styles.navArrow} ${styles.navArrowRight}`}
+            onClick={(e) => { e.stopPropagation(); handleNavigate(1); }}
+            disabled={disabled || isNavDisabled(1)}
+          >
+            <i className="icon-expand-right" />
+          </button>
+        )}
+      </div>
+
+      {isOpen && renderDropdown()}
+    </div>
+  );
+};
+
+export default DatePicker;

@@ -1,14 +1,33 @@
-import type { CSSProperties, ReactNode } from "react";
+import { Component, useState, type CSSProperties, type ReactNode } from "react";
 import type { ComponentDocument } from "@podo/spec";
+// Real v1 component CSS (compiled from the main branch), scoped under
+// `.podo-v1-stage` so previews render with the actual v1 styling. See
+// scripts/vendor-v1-css.mjs.
+import "./v1-components.generated.css";
+// The actual v1 rich-text editor + datepicker components, vendored verbatim, so
+// the preview has ALL real features. They use plain class names that the scoped
+// v1 CSS styles inside `.podo-v1-stage`.
+import V1Editor from "./vendor/v1-editor.js";
+import V1DatePicker from "./vendor/v1-datepicker.js";
+import V1Avatar from "./vendor/v1-avatar.js";
+import V1Button from "./vendor/v1-button.js";
+import V1Checkbox from "./vendor/v1-checkbox.js";
+import V1Radio from "./vendor/v1-radio.js";
+import V1Chip from "./vendor/v1-chip.js";
+import V1FileInput from "./vendor/v1-file.js";
+import V1Input from "./vendor/v1-input.js";
+import V1Label from "./vendor/v1-label.js";
+import V1Select from "./vendor/v1-select.js";
+import V1Textarea from "./vendor/v1-textarea.js";
+import V1Toggle from "./vendor/v1-toggle.js";
+import V1Tooltip from "./vendor/v1-tooltip.js";
+import V1Field from "./vendor/v1-field.js";
+import V1Pagination from "./vendor/v1-pagination.js";
+import V1Tab from "./vendor/v1-tab.js";
+import V1Table from "./vendor/v1-table.js";
+import V1Toast from "./vendor/v1-toast.js";
+import { cssToken, type TokenLookup } from "./token-lookup.js";
 import {
-  cssToken,
-  resolveTokenPath,
-  isTypographyValue,
-  typographyToCss,
-  type TokenLookup,
-} from "./token-lookup.js";
-import {
-  buttonBasePreviewStyle,
   codeStyle,
   componentMatrixCellStyle,
   componentMatrixHeaderCellStyle,
@@ -21,29 +40,6 @@ import {
   componentMatrixScrollStyle,
   componentMatrixTableStyle,
   componentPreviewStageStyle,
-  previewAvatarIconStyle,
-  previewAvatarStyle,
-  previewCalendarDayStyle,
-  previewCalendarGridStyle,
-  previewCalendarHeaderStyle,
-  previewChipDeleteStyle,
-  previewChipDotStyle,
-  previewChipStyle,
-  previewChoiceBoxStyle,
-  previewChoiceDotStyle,
-  previewChoiceGroupStyle,
-  previewChoiceStyle,
-  previewControlIconStyle,
-  previewFieldMessageStyle,
-  previewFieldStyle,
-  previewInlineWrapStyle,
-  previewLabelStyle,
-  previewPaginationStyle,
-  previewPopoverStackStyle,
-  previewTableListStyle,
-  previewToastAccentStyle,
-  previewToastContentStyle,
-  previewTooltipStageStyle,
 } from "./styles.js";
 
 export const legacyComponentPreviewIds = [
@@ -79,17 +75,24 @@ export function renderComponentPreview(
   selections: Record<string, string>,
   lookup: TokenLookup
 ) {
-  const stageStyle = componentPreviewStageStyleFromTokens(lookup);
   return (
     <div
-      style={stageStyle}
+      className="podo-v1-stage podo-design-target"
+      style={componentPreviewStageStyleFromTokens(lookup)}
       data-podo-preview-component-id={component.id}
       data-podo-preview-kind={componentPreviewKind(component)}
     >
+      <style>{componentAppearanceCss(component, lookup, selections, "podo-design-target")}</style>
       {renderComponentPreviewBody(component, selections, lookup)}
     </div>
   );
 }
+
+// Components whose preview is a full, stateful v1 app with global document
+// listeners (focus, click-outside, contentEditable). Rendering several live
+// instances in the variant matrix makes them fight each other, so we show only
+// the single interactive preview above and skip the matrix for them.
+const SINGLE_INSTANCE_PREVIEW_IDS = new Set(["editor", "datepicker"]);
 
 export function renderComponentPreviewMatrix(input: {
   component: ComponentDocument;
@@ -97,6 +100,9 @@ export function renderComponentPreviewMatrix(input: {
   lookup: TokenLookup;
   onSelect(selections: Record<string, string>): void;
 }) {
+  if (SINGLE_INSTANCE_PREVIEW_IDS.has(input.component.id)) {
+    return null;
+  }
   const rowVariant = input.component.variants[0];
   if (!rowVariant) {
     return null;
@@ -125,10 +131,10 @@ export function renderComponentPreviewMatrix(input: {
             </tr>
           </thead>
           <tbody>
-            {rowVariant.values.map((rowValue) => (
+            {rowVariant.values.map((rowValue, rowIndex) => (
               <tr key={rowValue}>
                 <th style={componentMatrixRowHeaderStyle}>{rowValue}</th>
-                {columns.map((columnValue) => {
+                {columns.map((columnValue, columnIndex) => {
                   const cellSelections = {
                     ...input.selections,
                     [rowVariant.name]: rowValue,
@@ -137,6 +143,9 @@ export function renderComponentPreviewMatrix(input: {
                   const selected =
                     input.selections[rowVariant.name] === rowValue &&
                     (!columnVariant || input.selections[columnVariant.name] === columnValue);
+                  // Index-based scope class guarantees uniqueness (value-derived
+                  // names could collide after sanitization).
+                  const cellScope = `podo-design-cell-${rowIndex}-${columnIndex}`;
                   return (
                     <td key={columnValue} style={componentMatrixCellStyle}>
                       <div
@@ -154,7 +163,19 @@ export function renderComponentPreviewMatrix(input: {
                           }
                         }}
                       >
-                        <span style={componentMatrixPreviewClipStyle}>
+                        <span
+                          className={`podo-v1-stage ${cellScope}`}
+                          style={componentMatrixPreviewClipStyle}
+                        >
+                          <style>
+                            {componentAppearanceCss(
+                              input.component,
+                              input.lookup,
+                              cellSelections,
+                              cellScope,
+                              false
+                            )}
+                          </style>
                           {renderComponentPreviewBody(
                             input.component,
                             cellSelections,
@@ -191,623 +212,432 @@ function renderComponentPreviewBody(
     : renderSpecDrivenComponentPreview(component, lookup);
 }
 
-function renderButtonPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const state = selections.state ?? "default";
-  const isLoading = state === "loading";
-  return (
-    <button type="button" style={buttonPreviewStyleFromTokens(selections, lookup)}>
-      {isLoading ? "Loading..." : "Submit"}
-    </button>
-  );
+// Components rendered as a schematic card on the canvas instead of a live
+// instance: the editor/datepicker are heavy single-instance apps the user opted
+// out of, and `layout` containers are structural (slot drop targets).
+const CANVAS_SCHEMATIC_IDS = new Set(["editor", "datepicker"]);
+
+export function isCanvasLiveComponent(component: ComponentDocument): boolean {
+  return component.category !== "layout" && !CANVAS_SCHEMATIC_IDS.has(component.id);
 }
 
-function renderAvatarPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const type = selections.type ?? "icon";
-  const size = Number.parseInt(selections.size ?? "56", 10) || 56;
-  const ring = selections.state === "hover";
-  const avatarSize = Math.max(24, Math.min(size, 72));
+// Renders the REAL v1 component (no preview-stage chrome) for use as a canvas
+// shape body, so placed components look and read like the actual component —
+// Figma-style — and update live as their props change.
+export function renderComponentInstance(
+  component: ComponentDocument,
+  selections: Record<string, string>,
+  lookup: TokenLookup
+): ReactNode {
   return (
-    <div style={previewInlineWrapStyle}>
-      <div
-        style={{
-          ...previewAvatarStyle,
-          width: avatarSize,
-          height: avatarSize,
-          borderRadius: cssToken(lookup, "radius.scale.full", "9999px"),
-          borderColor: ring
-            ? cssToken(lookup, "color.primary.base", "#7c3aed")
-            : cssToken(lookup, "color.border.base", "#e4e4e7"),
-          background:
-            type === "image"
-              ? `linear-gradient(135deg, ${cssToken(
-                  lookup,
-                  "color.primary.fill",
-                  "#f3e8ff"
-                )}, ${cssToken(lookup, "color.info.fill", "#eef6ff")})`
-              : cssToken(lookup, "color.default.fill", "#f4f4f5"),
-          color: cssToken(lookup, "color.text.body", "#2c2c31"),
-          fontSize: Math.max(11, Math.round(avatarSize * 0.34)),
-        }}
-      >
-        {type === "text" ? "PO" : type === "image" ? "" : <span style={previewAvatarIconStyle} />}
-      </div>
+    <div
+      className="podo-v1-stage"
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "grid",
+        placeItems: "center",
+        overflow: "hidden",
+        padding: 8,
+        boxSizing: "border-box",
+      }}
+    >
+      {renderComponentPreviewBody(component, selections, lookup)}
     </div>
   );
 }
 
-function renderCheckboxRadioPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const control = selections.control ?? "checkbox";
-  const layout = selections.layout ?? "horizontal";
-  const state = selections.state ?? "default";
-  const isChecked = state === "checked";
-  const disabled = state === "disabled";
-  const direction = layout === "vertical" ? "column" : "row";
-
-  if (control === "radio-group") {
-    return (
-      <div style={{ ...previewChoiceGroupStyle, flexDirection: direction }}>
-        {["Free", "Team", "Enterprise"].map((label, index) =>
-          renderChoiceControl({
-            key: label,
-            type: "radio",
-            label,
-            checked: index === 1 || (isChecked && index === 0),
-            disabled: disabled && index === 2,
-            lookup,
-          })
-        )}
-      </div>
-    );
-  }
-
+// Like renderComponentInstance but hugs its content (inline), for use as an
+// auto-layout child inside a flex container.
+export function renderComponentInline(
+  component: ComponentDocument,
+  selections: Record<string, string>,
+  lookup: TokenLookup
+): ReactNode {
   return (
-    <div style={{ ...previewChoiceGroupStyle, flexDirection: direction }}>
-      {renderChoiceControl({
-        key: "accept",
-        type: control === "radio" ? "radio" : "checkbox",
-        label: control === "radio" ? "Selected option" : "Accept terms",
-        checked: isChecked,
-        disabled,
-        lookup,
-      })}
-    </div>
-  );
-}
-
-function renderChoiceControl(input: {
-  key: string;
-  type: "checkbox" | "radio";
-  label: string;
-  checked: boolean;
-  disabled: boolean;
-  lookup: TokenLookup;
-}) {
-  const active = cssToken(input.lookup, "color.primary.base", "#7c3aed");
-  const muted = cssToken(input.lookup, "color.text.action-disabled", "#a1a1aa");
-  return (
-    <label
-      key={input.key}
-      style={{
-        ...previewChoiceStyle,
-        color: input.disabled ? muted : cssToken(input.lookup, "color.text.body", "#2c2c31"),
-      }}
-    >
-      <span
-        style={{
-          ...previewChoiceBoxStyle,
-          borderRadius:
-            input.type === "radio" ? "9999px" : cssToken(input.lookup, "radius.scale.2", "4px"),
-          borderColor: input.checked
-            ? active
-            : cssToken(input.lookup, "color.border.base", "#e4e4e7"),
-          background: input.checked ? active : cssToken(input.lookup, "color.bg.modal", "#ffffff"),
-        }}
-      >
-        {input.checked ? (
-          <span
-            style={{
-              ...previewChoiceDotStyle,
-              borderRadius:
-                input.type === "radio" ? "9999px" : cssToken(input.lookup, "radius.scale.1", "2px"),
-            }}
-          />
-        ) : null}
-      </span>
-      {input.label}
-    </label>
-  );
-}
-
-function renderChipPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const theme = selections.theme ?? "default";
-  const type = selections.type ?? "default";
-  const size = selections.size ?? "md";
-  const round = selections.shape === "round";
-  const tone = chipToneToColorToken(theme);
-  const baseColor = cssToken(lookup, `color.${tone}.base`, "#7c3aed");
-  const fillColor = cssToken(lookup, `color.${tone}.fill`, "#f4f4f5");
-  const textColor =
-    type === "default"
-      ? cssToken(lookup, "color.text.body", "#2c2c31")
-      : type === "fill"
-        ? baseColor
-        : baseColor;
-  return (
-    <span
-      style={{
-        ...previewChipStyle,
-        minHeight: size === "sm" ? 24 : 30,
-        padding: size === "sm" ? "0 8px" : "0 12px",
-        borderRadius: round
-          ? cssToken(lookup, "radius.scale.full", "9999px")
-          : cssToken(lookup, "radius.scale.3", "6px"),
-        background:
-          type === "border"
-            ? "transparent"
-            : type === "fill"
-              ? fillColor
-              : cssToken(lookup, "color.default.fill", "#f4f4f5"),
-        borderColor:
-          type === "default" ? cssToken(lookup, "color.border.base", "#e4e4e7") : baseColor,
-        color: textColor,
-        ...tokenTypographyStyle(
-          lookup,
-          size === "sm" ? "typography.paragraph.p5-semibold" : "typography.paragraph.p4-semibold"
-        ),
-      }}
-    >
-      <span style={{ ...previewChipDotStyle, background: baseColor }} />
-      Status
-      <span aria-hidden="true" style={previewChipDeleteStyle}>
-        x
-      </span>
+    <span className="podo-v1-stage" style={{ display: "inline-flex", alignItems: "center" }}>
+      {renderComponentPreviewBody(component, selections, lookup)}
     </span>
   );
 }
 
-function renderDatePickerPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const type = selections.type ?? "date";
-  const mode = selections.mode ?? "instant";
-  const state = selections.state ?? "default";
-  const open = state === "open" || state === "selected";
+// Joins truthy class names; falsy entries are dropped so v1 "default" values emit
+// no class (matching the v1 SCSS, which styles the bare element).
+function v1Classes(...names: Array<string | false | undefined>): string {
+  return names.filter(Boolean).join(" ");
+}
+
+function renderButtonPreview(s: Record<string, string>) {
+  const state = s.state ?? "default";
+  return (
+    <V1Button
+      theme={(s.theme ?? "default") as never}
+      variant={(s.variant ?? "solid") as never}
+      size={(s.size ?? "sm") as never}
+      textAlign={(s.alignment ?? "center") as never}
+      loading={state === "loading"}
+      disabled={state === "disabled"}
+    >
+      Submit
+    </V1Button>
+  );
+}
+
+function renderChipPreview(s: Record<string, string>) {
+  return (
+    <V1Chip
+      theme={(s.theme ?? "default") as never}
+      type={(s.type ?? "default") as never}
+      size={(s.size ?? "md") as never}
+      round={s.shape === "round"}
+      onDelete={() => {}}
+    >
+      Status
+    </V1Chip>
+  );
+}
+
+function renderCheckboxRadioPreview(s: Record<string, string>) {
+  const control = s.control ?? "checkbox";
+  const state = s.state ?? "default";
+  const checked = state === "checked";
   const disabled = state === "disabled";
-  return (
-    <div style={previewPopoverStackStyle}>
-      <div
-        style={{
-          ...inputLikePreviewStyle(lookup, state),
-          opacity: disabled ? 0.65 : 1,
-        }}
-      >
-        <span style={previewMutedTextStyle(lookup)}>
-          {type === "time"
-            ? "09:30"
-            : type === "hour"
-              ? "09"
-              : mode === "period"
-                ? "2026-06-15 - 2026-06-20"
-                : "2026-06-15"}
-        </span>
-        <span style={previewControlIconStyle}>cal</span>
-      </div>
-      {open ? (
-        <div style={previewCalendarStyle(lookup)}>
-          <div style={previewCalendarHeaderStyle}>
-            <button type="button" style={previewIconButtonStyle(lookup)}>
-              {"<"}
-            </button>
-            <strong>June 2026</strong>
-            <button type="button" style={previewIconButtonStyle(lookup)}>
-              {">"}
-            </button>
-          </div>
-          <div style={previewCalendarGridStyle}>
-            {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
-              <span key={`${day}-${index}`} style={previewCalendarWeekdayStyle(lookup)}>
-                {day}
-              </span>
-            ))}
-            {Array.from({ length: 21 }, (_, index) => index + 1).map((day) => {
-              const selected = day === 15 || (mode === "period" && day >= 15 && day <= 20);
-              return (
-                <span
-                  key={day}
-                  style={{
-                    ...previewCalendarDayStyle,
-                    background: selected
-                      ? cssToken(lookup, "color.primary.base", "#7c3aed")
-                      : "transparent",
-                    color: selected
-                      ? cssToken(lookup, "color.primary.reverse", "#ffffff")
-                      : cssToken(lookup, "color.text.body", "#2c2c31"),
-                  }}
-                >
-                  {day}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function renderDocTabsPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const selected = selections["default-tab"] ?? "scss";
-  return (
-    <div style={previewTabsShellStyle(lookup)}>
-      <div role="tablist" style={previewTabsListStyle(lookup)}>
-        {["scss", "react", "cdn"].map((tab) => renderTabButton(tab, selected === tab, lookup))}
-      </div>
-      <div style={previewTabPanelStyle(lookup)}>
-        <code style={codeStyle}>
-          {selected === "react"
-            ? "import { Button } from '@podo/react';"
-            : selected === "cdn"
-              ? '<script src="podo.js"></script>'
-              : "@use '@podo/scss/button';"}
-        </code>
-      </div>
-    </div>
-  );
-}
-
-function renderRichEditorPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const invalid = selections.state === "invalid";
-  const resizable = selections.resize === "resizable";
-  return (
-    <div
-      style={{
-        ...previewEditorShellStyle(lookup),
-        borderColor: invalid
-          ? cssToken(lookup, "color.danger.base", "#f04646")
-          : cssToken(lookup, "color.border.base", "#e4e4e7"),
-      }}
-    >
-      <div style={previewEditorToolbarStyle(lookup)}>
-        {["B", "I", "H", "Link", "Img"].map((tool) => (
-          <button key={tool} type="button" style={previewToolbarButtonStyle(lookup)}>
-            {tool}
-          </button>
-        ))}
-      </div>
-      <div style={previewEditorContentStyle(lookup)}>
-        <strong>Release notes</strong>
-        <p style={{ margin: 0 }}>Write rich content, add media, and keep validation visible.</p>
-      </div>
-      {resizable ? <span style={previewResizeHandleStyle(lookup)} /> : null}
-    </div>
-  );
-}
-
-function renderFieldPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const invalid = selections.state === "invalid";
-  return (
-    <div style={previewFieldStyle}>
-      {renderLabelPreview({ size: "sm", weight: "semibold" }, lookup)}
-      <div style={inputLikePreviewStyle(lookup, invalid ? "invalid" : "default")}>
-        team@podo.dev
-      </div>
-      <span
-        style={{
-          ...previewFieldMessageStyle,
-          color: invalid
-            ? cssToken(lookup, "color.danger.base", "#f04646")
-            : cssToken(lookup, "color.text.sub", "#71717a"),
-        }}
-      >
-        {invalid ? "Enter a valid email address." : "We use this for workspace updates."}
-      </span>
-    </div>
-  );
-}
-
-function renderFilePreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const multiple = selections.selection === "multiple";
-  const disabled = selections.state === "disabled";
-  return (
-    <div
-      style={{
-        ...previewFileDropStyle(lookup),
-        opacity: disabled ? 0.65 : 1,
-        background: disabled
-          ? cssToken(lookup, "color.bg.disabled", "#e4e4e7")
-          : cssToken(lookup, "color.bg.modal", "#ffffff"),
-      }}
-    >
-      <button type="button" style={previewSecondaryButtonStyle(lookup)} disabled={disabled}>
-        Choose file
-      </button>
-      <div style={previewFileListStyle(lookup)}>
-        <span>product-shot.png</span>
-        {multiple ? <span>brand-guide.pdf</span> : null}
-      </div>
-    </div>
-  );
-}
-
-function renderInputPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const state = selections.state ?? "default";
-  const disabled = state === "disabled";
-  return (
-    <div
-      style={{
-        ...inputLikePreviewStyle(lookup, state),
-        opacity: disabled ? 0.65 : 1,
-      }}
-    >
-      <span style={previewControlIconStyle}>@</span>
-      <span>team@podo.dev</span>
-      <span style={{ ...previewMutedTextStyle(lookup), marginLeft: "auto" }}>verified</span>
-    </div>
-  );
-}
-
-function renderLabelPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const size = selections.size ?? "md";
-  const weight = selections.weight ?? (selections.semibold === "true" ? "semibold" : "regular");
-  const disabled = selections.state === "disabled";
-  const typographyPath =
-    size === "lg"
-      ? "typography.paragraph.p3"
-      : size === "sm"
-        ? "typography.paragraph.p5"
-        : "typography.paragraph.p4";
-  return (
-    <label
-      style={{
-        ...previewLabelStyle,
-        ...tokenTypographyStyle(lookup, typographyPath),
-        fontWeight: weight === "semibold" ? 600 : 400,
-        color: disabled
-          ? cssToken(lookup, "color.text.action-disabled", "#a1a1aa")
-          : cssToken(lookup, "color.text.body", "#2c2c31"),
-      }}
-    >
-      Email address
-      <span style={{ color: cssToken(lookup, "color.danger.base", "#f04646") }}>*</span>
-    </label>
-  );
-}
-
-function renderPaginationPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const compact = selections.density === "compact";
-  const size = compact ? 30 : 36;
-  return (
-    <nav aria-label="Pagination preview" style={previewPaginationStyle}>
-      {["<", "1", "2", "3", "...", "10", ">"].map((item) => {
-        const selected = item === "2";
-        const disabled = item === "<";
-        return (
-          <button
-            key={item}
-            type="button"
-            disabled={disabled}
-            style={{
-              ...previewPageButtonStyle(lookup),
-              width: item === "..." ? 24 : size,
-              height: size,
-              background: selected
-                ? cssToken(lookup, "color.primary.base", "#7c3aed")
-                : cssToken(lookup, "color.bg.modal", "#ffffff"),
-              color: disabled
-                ? cssToken(lookup, "color.text.action-disabled", "#a1a1aa")
-                : selected
-                  ? cssToken(lookup, "color.primary.reverse", "#ffffff")
-                  : cssToken(lookup, "color.text.body", "#2c2c31"),
-              borderColor: selected
-                ? cssToken(lookup, "color.primary.base", "#7c3aed")
-                : cssToken(lookup, "color.border.base", "#e4e4e7"),
-            }}
-          >
-            {item}
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
-
-function renderSelectPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const state = selections.state ?? "default";
-  const open = state === "open";
-  const disabled = state === "disabled";
-  const leading = selections.icon === "leading";
-  return (
-    <div style={previewPopoverStackStyle}>
-      <div
-        style={{
-          ...inputLikePreviewStyle(lookup, state),
-          opacity: disabled ? 0.65 : 1,
-        }}
-      >
-        {leading ? <span style={previewControlIconStyle}>usr</span> : null}
-        <span>Product team</span>
-        <span style={{ ...previewControlIconStyle, marginLeft: "auto" }}>v</span>
-      </div>
-      {open ? (
-        <div style={previewMenuStyle(lookup)}>
-          {["Product team", "Design system", "Operations"].map((item, index) => (
-            <div
-              key={item}
-              style={{
-                ...previewMenuItemStyle(lookup),
-                background:
-                  index === 0 ? cssToken(lookup, "color.primary.fill", "#f3e8ff") : "transparent",
-              }}
-            >
-              {item}
-            </div>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function renderTabPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const fill = selections.width === "fill";
-  return (
-    <div style={previewTabsShellStyle(lookup)}>
-      <div
-        role="tablist"
-        style={{
-          ...previewTabsListStyle(lookup),
-          gridTemplateColumns: fill ? "repeat(3, 1fr)" : undefined,
-          display: fill ? "grid" : "flex",
-        }}
-      >
-        {["Overview", "Usage", "Changelog"].map((tab, index) =>
-          renderTabButton(tab, index === 0, lookup)
-        )}
-      </div>
-      <div style={previewTabPanelStyle(lookup)}>
-        Component guidance and examples stay inside the selected panel.
-      </div>
-    </div>
-  );
-}
-
-function renderTablePreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const asList = selections.display === "list";
-  const bordered = selections.border === "line";
-  const fill = selections.fill === "row";
-  const rows = [
-    ["Button", "stable", "React"],
-    ["Select", "stable", "Web"],
-    ["Toast", "draft", "Native"],
-  ];
-  if (asList) {
+  if (control === "radio-group") {
     return (
-      <div style={previewTableListStyle}>
-        {rows.map((row) => (
-          <div key={row[0]} style={previewTableListItemStyle(lookup)}>
-            <strong>{row[0]}</strong>
-            <span>{row[1]}</span>
-            <span>{row[2]}</span>
-          </div>
-        ))}
-      </div>
+      <CheckboxRadioGroupPreview
+        vertical={(s.layout ?? "horizontal") === "vertical"}
+        disabled={disabled}
+      />
     );
   }
-  return (
-    <table
-      style={{
-        ...previewTableStyle(lookup),
-        borderCollapse: bordered ? "collapse" : "separate",
-      }}
-    >
-      <thead>
-        <tr>
-          {["Component", "Status", "Target"].map((heading) => (
-            <th key={heading} style={previewTableHeaderCellStyle(lookup, bordered)}>
-              {heading}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, rowIndex) => (
-          <tr
-            key={row[0]}
-            style={{
-              background:
-                fill && rowIndex === 1
-                  ? cssToken(lookup, "color.bg.elevation", "#fafafa")
-                  : "transparent",
-            }}
-          >
-            {row.map((cell) => (
-              <td key={cell} style={previewTableCellStyle(lookup, bordered)}>
-                {cell}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+  if (control === "radio") {
+    return (
+      <V1Radio
+        name="opt"
+        value="a"
+        label="Selected option"
+        defaultChecked={checked}
+        disabled={disabled}
+      />
+    );
+  }
+  return <V1Checkbox label="Accept terms" defaultChecked={checked} disabled={disabled} />;
 }
 
-function renderTextareaPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const state = selections.state ?? "default";
+function CheckboxRadioGroupPreview({
+  vertical,
+  disabled,
+}: {
+  vertical: boolean;
+  disabled: boolean;
+}) {
+  const [value, setValue] = useState("team");
   return (
-    <textarea
-      readOnly
-      value={"Draft a concise message for the launch checklist.\nKeep tone direct and useful."}
-      style={previewTextareaStyle(lookup, state)}
+    <V1Radio.Group
+      name="plan"
+      vertical={vertical}
+      value={value}
+      onChange={setValue}
+      options={[
+        { value: "free", label: "Free" },
+        { value: "team", label: "Team" },
+        { value: "ent", label: "Enterprise", disabled },
+      ]}
     />
   );
 }
 
-function renderToastPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const theme = selections.theme ?? "default";
-  const long = selections.length === "long";
-  const tone = theme === "default" ? "default-deep" : theme;
-  const accent = cssToken(lookup, `color.${tone}.base`, "#7c3aed");
+function renderTogglePreview(s: Record<string, string>) {
+  const state = s.state ?? "default";
   return (
-    <div
-      style={{
-        ...previewToastStyle(lookup),
-        width: long ? 420 : 320,
-        borderColor: accent,
-      }}
+    <V1Toggle
+      {...(s.label === "hidden" ? {} : { label: "Enable dark mode" })}
+      defaultChecked={state === "checked"}
+      disabled={state === "disabled"}
+    />
+  );
+}
+
+function renderInputPreview(s: Record<string, string>) {
+  const state = s.state ?? "default";
+  const style = s.style ?? "border";
+  const size = s.size ?? "sm";
+  const className =
+    v1Classes(
+      style !== "border" && style,
+      size !== "sm" && size,
+      state === "invalid" && "danger"
+    ) || undefined;
+  return (
+    <V1Input
+      {...(className ? { className } : {})}
+      defaultValue="team@podo.dev"
+      placeholder="team@podo.dev"
+      disabled={state === "disabled"}
+    />
+  );
+}
+
+function renderSelectPreview(s: Record<string, string>) {
+  const state = s.state ?? "default";
+  return (
+    <V1Select
+      defaultValue="product"
+      disabled={state === "disabled"}
+      {...(s.icon === "leading" ? { withIcon: "icon-user" } : {})}
+      options={[
+        { value: "product", label: "Product team" },
+        { value: "design", label: "Design system" },
+        { value: "ops", label: "Operations" },
+      ]}
+    />
+  );
+}
+
+function renderTextareaPreview() {
+  return <TextareaPreviewBody />;
+}
+
+function TextareaPreviewBody() {
+  const [value, setValue] = useState(
+    "Draft a concise message for the launch checklist.\nKeep tone direct and useful."
+  );
+  return <V1Textarea value={value} onChange={(event) => setValue(event.target.value)} />;
+}
+
+function renderFilePreview(s: Record<string, string>) {
+  const state = s.state ?? "default";
+  return <V1FileInput multiple={s.selection === "multiple"} disabled={state === "disabled"} />;
+}
+
+function renderLabelPreview(s: Record<string, string>) {
+  return (
+    <V1Label
+      size={(s.size ?? "md") as never}
+      semibold={s.weight === "semibold" || s.semibold === "true"}
+      required={s.required === "true"}
+      disabled={s.state === "disabled"}
     >
-      <span style={{ ...previewToastAccentStyle, background: accent }} />
-      <div style={previewToastContentStyle}>
-        <strong>Changes saved</strong>
-        <span>Token updates are ready to build into the project.</span>
+      Email address
+    </V1Label>
+  );
+}
+
+function renderPaginationPreview() {
+  return <PaginationPreviewBody />;
+}
+
+function PaginationPreviewBody() {
+  const [page, setPage] = useState(2);
+  return <V1Pagination currentPage={page} totalPages={10} onPageChange={setPage} />;
+}
+
+function renderTabPreview(s: Record<string, string>) {
+  return (
+    <V1Tab
+      fill={s.width === "fill"}
+      defaultActiveKey="overview"
+      items={[
+        { key: "overview", label: "Overview" },
+        { key: "usage", label: "Usage" },
+        { key: "changelog", label: "Changelog" },
+      ]}
+    />
+  );
+}
+
+function renderDocTabsPreview(s: Record<string, string>) {
+  const selected = s["default-tab"] ?? "scss";
+  const snippet =
+    selected === "react"
+      ? "import { Button } from '@podo/react';"
+      : selected === "cdn"
+        ? '<script src="podo.js"></script>'
+        : "@use '@podo/scss/button';";
+  return (
+    <div style={{ width: "min(520px, 100%)" }}>
+      <V1Tab
+        defaultActiveKey={selected}
+        items={[
+          { key: "scss", label: "scss" },
+          { key: "react", label: "react" },
+          { key: "cdn", label: "cdn" },
+        ]}
+      />
+      <div style={{ paddingTop: 16 }}>
+        <code style={codeStyle}>{snippet}</code>
       </div>
-      <button type="button" style={previewToastCloseStyle(lookup)}>
-        x
-      </button>
     </div>
   );
 }
 
-function renderTogglePreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const checked = selections.state === "checked";
-  const disabled = selections.state === "disabled";
-  const showLabel = selections.label !== "hidden";
+function renderTablePreview(s: Record<string, string>) {
+  const columns = [
+    { key: "component", title: "Component" },
+    { key: "status", title: "Status" },
+    { key: "target", title: "Target" },
+  ];
+  const dataSource = [
+    { component: "Button", status: "stable", target: "React" },
+    { component: "Select", status: "stable", target: "Web" },
+    { component: "Toast", status: "draft", target: "Native" },
+  ];
   return (
-    <label style={previewToggleRootStyle(lookup)}>
-      <span
-        style={{
-          ...previewToggleTrackStyle(lookup),
-          background: checked
-            ? cssToken(lookup, "color.primary.base", "#7c3aed")
-            : cssToken(lookup, "color.bg.toggle", "#a1a1aa"),
-          opacity: disabled ? 0.55 : 1,
-        }}
-      >
-        <span
-          style={{
-            ...previewToggleThumbStyle(lookup),
-            transform: checked ? "translateX(20px)" : "translateX(0)",
-          }}
-        />
-      </span>
-      {showLabel ? <span>Enable dark mode</span> : null}
-    </label>
+    <div style={{ width: "min(560px, 100%)" }}>
+      <V1Table
+        columns={columns as never}
+        dataSource={dataSource as never}
+        rowKey="component"
+        list={s.display === "list"}
+        border={s.border === "line"}
+        fill={s.fill === "row"}
+      />
+    </div>
   );
 }
 
-function renderTooltipPreview(selections: Record<string, string>, lookup: TokenLookup) {
-  const variant = selections.variant ?? "default";
-  const position = selections.position ?? "top";
-  const info = variant === "info";
+function renderToastPreview(s: Record<string, string>) {
+  const long = s.length === "long";
   return (
-    <div style={previewTooltipStageStyle}>
-      {position.startsWith("top") || position === "left" || position === "right" ? (
-        <div style={previewTooltipBubbleStyle(lookup, info)}>Use token alias paths for reuse.</div>
-      ) : null}
-      <button type="button" style={previewSecondaryButtonStyle(lookup)}>
-        Hover target
-      </button>
-      {position.startsWith("bottom") ? (
-        <div style={previewTooltipBubbleStyle(lookup, info)}>Use token alias paths for reuse.</div>
-      ) : null}
+    <V1Toast
+      id="preview"
+      {...(long ? {} : { header: "Changes saved" })}
+      message="Token updates are ready to build into the project."
+      theme={(s.theme ?? "default") as never}
+      border={s.border === "border"}
+      long={long}
+      onClose={() => {}}
+    />
+  );
+}
+
+function renderTooltipPreview(s: Record<string, string>, lookup: TokenLookup) {
+  return (
+    <div style={{ display: "grid", placeItems: "center", minHeight: 120 }}>
+      <V1Tooltip
+        content="Use token alias paths for reuse."
+        variant={(s.variant ?? "default") as never}
+        position={(s.position ?? "top") as never}
+      >
+        <button type="button" style={previewTriggerButtonStyle(lookup)}>
+          Hover target
+        </button>
+      </V1Tooltip>
+    </div>
+  );
+}
+
+const AVATAR_IMAGE_SRC =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23c4b5fd'/%3E%3Cstop offset='1' stop-color='%2393c5fd'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='96' height='96' fill='url(%23g)'/%3E%3C/svg%3E";
+
+function renderAvatarPreview(s: Record<string, string>) {
+  const type = (s.type ?? "icon") as never;
+  const size = (Number.parseInt(s.size ?? "56", 10) || 56) as never;
+  return (
+    <V1Avatar
+      type={type}
+      size={size}
+      {...(s.type === "text" ? { text: "PO" } : {})}
+      {...(s.type === "image" ? { src: AVATAR_IMAGE_SRC } : {})}
+    />
+  );
+}
+
+function renderEditorPreview(selections: Record<string, string>) {
+  return <EditorPreviewBody resizable={selections.resize === "resizable"} />;
+}
+
+const EDITOR_INITIAL_HTML =
+  "<h3>Release notes</h3><p>Write rich content here — try the full toolbar: tables, images, YouTube, links, colors and lists all work.</p>";
+
+function EditorPreviewBody({ resizable }: { resizable: boolean }) {
+  // Render the REAL vendored v1 editor so every feature actually works.
+  const [value, setValue] = useState(EDITOR_INITIAL_HTML);
+  return (
+    <div style={{ width: "min(680px, 100%)" }}>
+      <PreviewErrorBoundary>
+        <V1Editor value={value} onChange={setValue} height="360px" resizable={resizable} />
+      </PreviewErrorBoundary>
+    </div>
+  );
+}
+
+// Contains preview-component crashes so a single broken preview cannot blank the
+// whole editor app, and surfaces the error message for debugging.
+class PreviewErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
+  state = { error: null as string | null };
+  static getDerivedStateFromError(error: unknown) {
+    return { error: error instanceof Error ? error.message : String(error) };
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 16, color: "#b91c1c", fontFamily: "ui-monospace, monospace" }}>
+          Preview error: {this.state.error}
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function renderDatePickerPreview(selections: Record<string, string>) {
+  return (
+    <DatePickerPreviewBody
+      type={selections.type ?? "date"}
+      mode={selections.mode ?? "instant"}
+      direction={selections.direction ?? "down"}
+      disabled={selections.state === "disabled"}
+    />
+  );
+}
+
+function DatePickerPreviewBody({
+  type,
+  mode,
+  direction,
+  disabled,
+}: {
+  type: string;
+  mode: string;
+  direction: string;
+  disabled: boolean;
+}) {
+  // The v1 datepicker is CONTROLLED for the display value (in instant mode it
+  // shows `value`, not internal state), so a value/onChange pair is required for
+  // day/time selections to appear. No `portal` prop → the dropdown renders inline
+  // within the scoped stage. `value` is reset when the axis (type/mode) changes.
+  const [value, setValue] = useState<Record<string, unknown>>({});
+  return (
+    <div style={{ width: "min(440px, 100%)" }}>
+      <PreviewErrorBoundary>
+        <V1DatePicker
+          key={`${type}-${mode}`}
+          type={type as never}
+          mode={mode as never}
+          direction={direction as never}
+          disabled={disabled}
+          value={value as never}
+          onChange={setValue as never}
+        />
+      </PreviewErrorBoundary>
+    </div>
+  );
+}
+
+function renderFieldPreview(selections: Record<string, string>) {
+  const invalid = selections.state === "invalid";
+  return (
+    <div style={{ width: 340 }}>
+      <V1Field
+        label="Email address"
+        required
+        {...(invalid
+          ? { error: "Enter a valid email address." }
+          : { helper: "We use this for workspace updates." })}
+      >
+        <V1Input defaultValue="team@podo.dev" />
+      </V1Field>
     </div>
   );
 }
@@ -819,7 +649,7 @@ const legacyComponentPreviewRenderers = {
   chip: renderChipPreview,
   datepicker: renderDatePickerPreview,
   "doc-tabs": renderDocTabsPreview,
-  editor: renderRichEditorPreview,
+  editor: renderEditorPreview,
   field: renderFieldPreview,
   file: renderFilePreview,
   input: renderInputPreview,
@@ -850,6 +680,138 @@ function renderSpecDrivenComponentPreview(component: ComponentDocument, lookup: 
   );
 }
 
+// Appearance bridge: edits to a component's `<part>.<property>` bindings are
+// applied to the LIVE preview by injecting a scoped `<style>` that overrides the
+// real element's CSS (the v1 styles hardcode radius/spacing as px, so a CSS-var
+// override is not enough — we set the property directly with `!important`).
+
+// Maps an appearance property key (normalized: lowercased, separators removed) to
+// the CSS property it controls. Typography is resolved separately.
+const APPEARANCE_CSS_PROPERTY: Record<string, string> = {
+  background: "background",
+  backgroundcolor: "background-color",
+  color: "color",
+  bordercolor: "border-color",
+  borderwidth: "border-width",
+  borderradius: "border-radius",
+  radius: "border-radius",
+  gap: "gap",
+  padding: "padding",
+  paddingx: "padding-inline",
+  paddingy: "padding-block",
+  paddingtop: "padding-top",
+  paddingright: "padding-right",
+  paddingbottom: "padding-bottom",
+  paddingleft: "padding-left",
+  width: "width",
+  height: "height",
+  minheight: "min-height",
+  fontsize: "font-size",
+  fontweight: "font-weight",
+  opacity: "opacity",
+};
+
+// Per-component anatomy-part -> CSS selector (descendant of the preview). Filled
+// from the vendored components + v1 CSS so overrides hit the real styled element.
+// Derived from the vendored components + v1 CSS (codex/agy cross-checked). Every
+// component has a `root`; sub-parts are included where they have a styled element.
+const COMPONENT_PART_SELECTORS: Record<string, Record<string, string>> = {
+  avatar: {
+    root: ".avatar",
+    image: ".avatar .image",
+    icon: ".avatar i",
+    text: ".avatar span",
+    "activity-ring": ".activityRing",
+  },
+  button: {
+    root: "button",
+    "left-icon": "button > i:first-child",
+    "right-icon": "button > i:last-child",
+  },
+  "checkbox-radio": {
+    root: "input[type=checkbox]:not(.toggle), input[type=radio]",
+    label: "input[type=checkbox] + span, input[type=radio] + span",
+  },
+  chip: { root: ".chip", icon: ".chip i", "delete-button": ".chip button" },
+  datepicker: { root: ".datepicker", input: ".datepicker .input", calendar: ".calendar" },
+  "doc-tabs": { root: "ul.tabs", tab: "ul.tabs > li" },
+  editor: { root: ".editor", toolbar: ".editor .toolbar", content: ".editorContent" },
+  field: { root: ".style", label: ".style > label", message: ".style .helper" },
+  file: { root: "input[type=file]" },
+  input: { root: ".style input" },
+  label: { root: "label" },
+  pagination: { root: ".pagination", "page-button": ".pageButton" },
+  select: { root: "select" },
+  tab: { root: "ul.tabs", tab: "ul.tabs > li" },
+  table: { root: "table", header: "table th", row: "table tr", cell: "table td" },
+  textarea: { root: "textarea" },
+  toast: { root: ".toast", toast: ".toast", header: ".toast-header", message: ".toast-body" },
+  toggle: { root: ".toggle" },
+  tooltip: { root: ".tooltipBox" },
+};
+
+function appearanceCssProperty(property: string): string | undefined {
+  return APPEARANCE_CSS_PROPERTY[property.toLowerCase().replace(/[-_]/g, "")];
+}
+
+// Builds the scoped override CSS for a component's appearance bindings. Scoped
+// under `.podo-design-target` so only the editable preview (not matrix cells) is
+// affected.
+// Resolves the effective appearance bindings for the given variant/state
+// selections: base component.tokens, then each selected variant axis's tokens and
+// per-value valueTokens, then the selected state's tokens (later wins).
+export function resolveComponentAppearance(
+  component: ComponentDocument,
+  selections: Record<string, string>,
+  includeBase = true
+): Record<string, string> {
+  // Base tokens mirror the DEFAULT variant; including them in non-default matrix
+  // cells would clobber each variant's intrinsic v1 colors. So cells pass
+  // includeBase=false and show only their own variant/state overrides.
+  const merged: Record<string, string> = includeBase ? { ...(component.tokens ?? {}) } : {};
+  for (const variant of component.variants ?? []) {
+    const value = selections[variant.name];
+    if (!value) continue;
+    Object.assign(merged, variant.tokens ?? {});
+    Object.assign(merged, variant.valueTokens?.[value] ?? {});
+  }
+  const stateName = selections.state;
+  if (stateName && stateName !== "default") {
+    const state = (component.states ?? []).find((item) => item.name === stateName);
+    Object.assign(merged, state?.tokens ?? {});
+  }
+  return merged;
+}
+
+function componentAppearanceCss(
+  component: ComponentDocument,
+  lookup: TokenLookup,
+  selections: Record<string, string>,
+  scopeClass: string,
+  includeBase = true
+): string {
+  const parts = COMPONENT_PART_SELECTORS[component.id];
+  if (!parts) return "";
+  const rules: string[] = [];
+  for (const [key, reference] of Object.entries(
+    resolveComponentAppearance(component, selections, includeBase)
+  )) {
+    if (typeof reference !== "string") continue;
+    const dot = key.indexOf(".");
+    if (dot < 0) continue;
+    const selector = parts[key.slice(0, dot)];
+    const cssProp = appearanceCssProperty(key.slice(dot + 1));
+    if (!selector || !cssProp) continue;
+    // A binding is either a {token} alias (resolve it) or a raw CSS value (use it).
+    const isAlias = /^\{.+\}$/.test(reference);
+    const resolved = isAlias ? cssToken(lookup, reference.slice(1, -1), "") : reference;
+    // Guard against breaking out of the injected <style>/declaration block.
+    if (!resolved || /[<>{};]/.test(resolved)) continue;
+    rules.push(`.${scopeClass} ${selector} { ${cssProp}: ${resolved} !important; }`);
+  }
+  return rules.join("\n");
+}
+
 function componentPreviewStageStyleFromTokens(lookup: TokenLookup): CSSProperties {
   return {
     ...componentPreviewStageStyle,
@@ -858,303 +820,7 @@ function componentPreviewStageStyleFromTokens(lookup: TokenLookup): CSSPropertie
   };
 }
 
-function buttonPreviewStyleFromTokens(
-  selections: Record<string, string>,
-  lookup: TokenLookup
-): CSSProperties {
-  const theme = selections.theme ?? "default";
-  const variant = selections.variant ?? "solid";
-  const size = selections.size ?? "sm";
-  const state = selections.state ?? "default";
-  const textAlign = selections.alignment ?? selections["text-align"] ?? "center";
-  const typography = resolveTokenPath(lookup, `component.button.size.${size}.typography`);
-  const typographyStyle = isTypographyValue(typography) ? typographyToCss(typography) : {};
-  const references = buttonPreviewTokenReferences(selections);
-  const background = cssToken(lookup, references.background, "#f4f4f5");
-  const color = cssToken(lookup, references.color, "#2c2c31");
-  const borderColor = cssToken(lookup, references.border, background);
-  const isDisabled = state === "disabled";
-  const isLoading = state === "loading";
-  const isFocusVisible = state === "focusVisible";
-  return {
-    ...buttonBasePreviewStyle,
-    ...typographyStyle,
-    height: cssToken(lookup, `component.button.size.${size}.height`, "42px"),
-    padding: `${cssToken(lookup, `component.button.size.${size}.paddingY`, "0px")} ${cssToken(
-      lookup,
-      `component.button.size.${size}.paddingX`,
-      "8px"
-    )}`,
-    borderRadius: cssToken(lookup, `component.button.size.${size}.radius`, "6px"),
-    gap: cssToken(lookup, "component.button.gap", "4px"),
-    background,
-    color,
-    justifyContent:
-      textAlign === "left" ? "flex-start" : textAlign === "right" ? "flex-end" : "center",
-    border:
-      variant === "text"
-        ? "1px solid transparent"
-        : `${cssToken(lookup, "component.button.borderWidth", "1px")} solid ${borderColor}`,
-    boxShadow: isFocusVisible
-      ? `0 0 0 ${cssToken(lookup, "component.button.focusWidth", "4px")} ${cssToken(
-          lookup,
-          `component.button.theme.${theme}.outline`,
-          "rgba(124, 58, 237, 0.3)"
-        )}`
-      : "none",
-    cursor: isDisabled ? "not-allowed" : "default",
-    opacity: isLoading ? Number(cssToken(lookup, "component.button.loading.opacity", "0.72")) : 1,
-  };
-}
-
-interface ButtonPreviewTokenReferences {
-  background: string;
-  color: string;
-  border: string;
-  height: string;
-  typography: string;
-}
-
-function buttonPreviewTokenReferences(
-  selections: Record<string, string>
-): ButtonPreviewTokenReferences {
-  const theme = selections.theme ?? "default";
-  const variant = selections.variant ?? "solid";
-  const size = selections.size ?? "sm";
-  const state = selections.state ?? "default";
-  const visualPrefix =
-    state === "disabled"
-      ? `component.button.disabled.${variant}`
-      : state === "hover" || state === "active"
-        ? `component.button.theme.${theme}.${variant}.${state}`
-        : `component.button.theme.${theme}.${variant}`;
-  return {
-    background: `${visualPrefix}.background`,
-    color: `${visualPrefix}.color`,
-    border: `${visualPrefix}.border`,
-    height: `component.button.size.${size}.height`,
-    typography: `component.button.size.${size}.typography`,
-  };
-}
-
-export function defaultPreviewSelectionsForComponent(
-  component: ComponentDocument
-): Record<string, string> {
-  return Object.fromEntries(
-    component.variants.map((variant) => [variant.name, variant.default ?? variant.values[0] ?? ""])
-  );
-}
-
-function chipToneToColorToken(theme: string): string {
-  if (theme === "blue") return "info";
-  if (theme === "green") return "success";
-  if (theme === "orange" || theme === "yellow") return "warning";
-  if (theme === "red") return "danger";
-  return "default";
-}
-
-export function tokenTypographyStyle(
-  lookup: TokenLookup,
-  path: string,
-  fallback: CSSProperties = {
-    fontFamily: "ui-sans-serif, system-ui, sans-serif",
-    fontSize: 14,
-    lineHeight: "20px",
-    fontWeight: 400,
-    letterSpacing: 0,
-  }
-): CSSProperties {
-  const value = resolveTokenPath(lookup, path);
-  return isTypographyValue(value) ? typographyToCss(value) : fallback;
-}
-
-function inputLikePreviewStyle(lookup: TokenLookup, state: string): CSSProperties {
-  return {
-    width: 320,
-    minHeight: 42,
-    border: `1px solid ${
-      state === "invalid"
-        ? cssToken(lookup, "color.danger.base", "#f04646")
-        : state === "focusVisible" || state === "open"
-          ? cssToken(lookup, "color.primary.base", "#7c3aed")
-          : cssToken(lookup, "color.border.base", "#e4e4e7")
-    }`,
-    borderRadius: cssToken(lookup, "radius.scale.3", "6px"),
-    background:
-      state === "disabled"
-        ? cssToken(lookup, "color.bg.disabled", "#e4e4e7")
-        : cssToken(lookup, "color.bg.modal", "#ffffff"),
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    display: "flex",
-    alignItems: "center",
-    gap: cssToken(lookup, "spacing.scale.3", "8px"),
-    padding: `${cssToken(lookup, "spacing.scale.3", "8px")} ${cssToken(
-      lookup,
-      "spacing.scale.4",
-      "12px"
-    )}`,
-    boxShadow:
-      state === "focusVisible"
-        ? `0 0 0 4px ${cssToken(lookup, "color.primary.outline", "rgba(124, 58, 237, 0.3)")}`
-        : "none",
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4"),
-  };
-}
-
-function previewMutedTextStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    color: cssToken(lookup, "color.text.sub", "#71717a"),
-  };
-}
-
-function previewIconButtonStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    width: 28,
-    height: 28,
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.2", "4px"),
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
-}
-
-function renderTabButton(label: string, selected: boolean, lookup: TokenLookup) {
-  return (
-    <button
-      key={label}
-      type="button"
-      role="tab"
-      aria-selected={selected}
-      style={{
-        ...previewTabButtonStyle(lookup),
-        color: selected
-          ? cssToken(lookup, "color.primary.base", "#7c3aed")
-          : cssToken(lookup, "color.text.sub", "#71717a"),
-        borderBottomColor: selected
-          ? cssToken(lookup, "color.primary.base", "#7c3aed")
-          : "transparent",
-      }}
-    >
-      {label}
-    </button>
-  );
-}
-
-function previewTabsShellStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    width: "min(520px, 100%)",
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.4", "8px"),
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    overflow: "hidden",
-  };
-}
-
-function previewTabsListStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    display: "flex",
-    alignItems: "stretch",
-    borderBottom: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    background: cssToken(lookup, "color.bg.elevation", "#fafafa"),
-  };
-}
-
-function previewTabButtonStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    minHeight: 42,
-    border: 0,
-    borderBottom: "2px solid transparent",
-    background: "transparent",
-    padding: `0 ${cssToken(lookup, "spacing.scale.5", "16px")}`,
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4-semibold"),
-  };
-}
-
-function previewTabPanelStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    minHeight: 88,
-    padding: cssToken(lookup, "spacing.scale.5", "16px"),
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4"),
-  };
-}
-
-function previewEditorShellStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    width: "min(560px, 100%)",
-    minHeight: 220,
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.4", "8px"),
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    overflow: "hidden",
-    position: "relative",
-  };
-}
-
-function previewEditorToolbarStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    minHeight: 44,
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    padding: `0 ${cssToken(lookup, "spacing.scale.3", "8px")}`,
-    borderBottom: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    background: cssToken(lookup, "color.bg.elevation", "#fafafa"),
-  };
-}
-
-function previewToolbarButtonStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    height: 30,
-    minWidth: 30,
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.2", "4px"),
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    padding: "0 8px",
-  };
-}
-
-function previewEditorContentStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    display: "grid",
-    alignContent: "start",
-    gap: 8,
-    minHeight: 160,
-    padding: cssToken(lookup, "spacing.scale.5", "16px"),
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4"),
-  };
-}
-
-function previewResizeHandleStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    position: "absolute",
-    right: 8,
-    bottom: 8,
-    width: 12,
-    height: 12,
-    borderRight: `2px solid ${cssToken(lookup, "color.border.pressed", "#a1a1aa")}`,
-    borderBottom: `2px solid ${cssToken(lookup, "color.border.pressed", "#a1a1aa")}`,
-  };
-}
-
-function previewFileDropStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    width: 360,
-    border: `1px dashed ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.4", "8px"),
-    padding: cssToken(lookup, "spacing.scale.5", "16px"),
-    display: "grid",
-    justifyItems: "center",
-    gap: cssToken(lookup, "spacing.scale.3", "8px"),
-  };
-}
-
-function previewSecondaryButtonStyle(lookup: TokenLookup): CSSProperties {
+function previewTriggerButtonStyle(lookup: TokenLookup): CSSProperties {
   return {
     minHeight: 36,
     border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
@@ -1162,229 +828,6 @@ function previewSecondaryButtonStyle(lookup: TokenLookup): CSSProperties {
     background: cssToken(lookup, "color.bg.modal", "#ffffff"),
     color: cssToken(lookup, "color.text.body", "#2c2c31"),
     padding: `0 ${cssToken(lookup, "spacing.scale.4", "12px")}`,
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4-semibold"),
-  };
-}
-
-function previewFileListStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    display: "grid",
-    gap: 4,
-    justifyItems: "center",
-    color: cssToken(lookup, "color.text.sub", "#71717a"),
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p5"),
-  };
-}
-
-function previewPageButtonStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.3", "6px"),
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4"),
-  };
-}
-
-function previewMenuStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    width: 320,
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.3", "6px"),
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    boxShadow: `0 10px 24px ${cssToken(lookup, "color.border.alpha", "rgba(0, 0, 0, 0.18)")}`,
-    overflow: "hidden",
-  };
-}
-
-function previewMenuItemStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    minHeight: 36,
-    display: "flex",
-    alignItems: "center",
-    padding: `0 ${cssToken(lookup, "spacing.scale.4", "12px")}`,
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4"),
-  };
-}
-
-function previewCalendarStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    width: 320,
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.4", "8px"),
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    padding: cssToken(lookup, "spacing.scale.4", "12px"),
-    boxShadow: `0 10px 24px ${cssToken(lookup, "color.border.alpha", "rgba(0, 0, 0, 0.18)")}`,
-  };
-}
-
-function previewCalendarWeekdayStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    color: cssToken(lookup, "color.text.sub", "#71717a"),
-    textAlign: "center",
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p5-semibold"),
-  };
-}
-
-function previewTableStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    width: "min(560px, 100%)",
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.4", "8px"),
-    overflow: "hidden",
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    borderSpacing: 0,
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4"),
-  };
-}
-
-function previewTableHeaderCellStyle(lookup: TokenLookup, bordered: boolean): CSSProperties {
-  return {
-    background: cssToken(lookup, "color.bg.elevation", "#fafafa"),
-    borderBottom: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRight: bordered ? `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}` : 0,
-    color: cssToken(lookup, "color.text.header", "#1c1c20"),
-    padding: `${cssToken(lookup, "spacing.scale.3", "8px")} ${cssToken(
-      lookup,
-      "spacing.scale.4",
-      "12px"
-    )}`,
-    textAlign: "left",
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4-semibold"),
-  };
-}
-
-function previewTableCellStyle(lookup: TokenLookup, bordered: boolean): CSSProperties {
-  return {
-    borderBottom: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRight: bordered ? `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}` : 0,
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    padding: `${cssToken(lookup, "spacing.scale.3", "8px")} ${cssToken(
-      lookup,
-      "spacing.scale.4",
-      "12px"
-    )}`,
-  };
-}
-
-function previewTableListItemStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    minHeight: 54,
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.3", "6px"),
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    display: "grid",
-    gridTemplateColumns: "minmax(0, 1fr) auto auto",
-    alignItems: "center",
-    gap: 12,
-    padding: `0 ${cssToken(lookup, "spacing.scale.4", "12px")}`,
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-  };
-}
-
-function previewTextareaStyle(lookup: TokenLookup, state: string): CSSProperties {
-  return {
-    width: 420,
-    minHeight: 132,
-    resize: "none",
-    border: `1px solid ${
-      state === "invalid"
-        ? cssToken(lookup, "color.danger.base", "#f04646")
-        : state === "focusVisible"
-          ? cssToken(lookup, "color.primary.base", "#7c3aed")
-          : cssToken(lookup, "color.border.base", "#e4e4e7")
-    }`,
-    borderRadius: cssToken(lookup, "radius.scale.3", "6px"),
-    background:
-      state === "disabled"
-        ? cssToken(lookup, "color.bg.disabled", "#e4e4e7")
-        : cssToken(lookup, "color.bg.modal", "#ffffff"),
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    padding: `${cssToken(lookup, "spacing.scale.3", "8px")} ${cssToken(
-      lookup,
-      "spacing.scale.4",
-      "12px"
-    )}`,
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4"),
-  };
-}
-
-function previewToastStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    maxWidth: "100%",
-    border: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
-    borderRadius: cssToken(lookup, "radius.scale.4", "8px"),
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    boxShadow: `0 12px 28px ${cssToken(lookup, "color.border.alpha", "rgba(0, 0, 0, 0.18)")}`,
-    display: "grid",
-    gridTemplateColumns: "4px minmax(0, 1fr) auto",
-    overflow: "hidden",
-  };
-}
-
-function previewToastCloseStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    alignSelf: "start",
-    margin: 10,
-    border: 0,
-    background: "transparent",
-    color: cssToken(lookup, "color.text.sub", "#71717a"),
-    fontSize: 16,
-  };
-}
-
-function previewToggleRootStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: cssToken(lookup, "spacing.scale.3", "8px"),
-    color: cssToken(lookup, "color.text.body", "#2c2c31"),
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4"),
-  };
-}
-
-function previewToggleTrackStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    width: 48,
-    height: 28,
-    borderRadius: cssToken(lookup, "radius.scale.full", "9999px"),
-    padding: 3,
-    display: "flex",
-    alignItems: "center",
-    transition: "background 120ms ease",
-  };
-}
-
-function previewToggleThumbStyle(lookup: TokenLookup): CSSProperties {
-  return {
-    width: 22,
-    height: 22,
-    borderRadius: cssToken(lookup, "radius.scale.full", "9999px"),
-    background: cssToken(lookup, "color.bg.modal", "#ffffff"),
-    boxShadow: `0 1px 4px ${cssToken(lookup, "color.border.alpha", "rgba(0, 0, 0, 0.18)")}`,
-    transition: "transform 120ms ease",
-  };
-}
-
-function previewTooltipBubbleStyle(lookup: TokenLookup, info: boolean): CSSProperties {
-  return {
-    maxWidth: 260,
-    borderRadius: cssToken(lookup, "radius.scale.3", "6px"),
-    background: info
-      ? cssToken(lookup, "color.info.base", "#1890ff")
-      : cssToken(lookup, "color.default-deep.base", "#52525b"),
-    color: cssToken(lookup, "color.default-deep.reverse", "#ffffff"),
-    padding: `${cssToken(lookup, "spacing.scale.2", "4px")} ${cssToken(
-      lookup,
-      "spacing.scale.3",
-      "8px"
-    )}`,
-    textAlign: "center",
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p5"),
   };
 }
 
@@ -1409,7 +852,7 @@ function previewSpecHeaderStyle(lookup: TokenLookup): CSSProperties {
     background: cssToken(lookup, "color.bg.elevation", "#fafafa"),
     borderBottom: `1px solid ${cssToken(lookup, "color.border.base", "#e4e4e7")}`,
     color: cssToken(lookup, "color.text.header", "#1c1c20"),
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4-semibold"),
+    fontWeight: 600,
   };
 }
 
@@ -1418,6 +861,13 @@ function previewSpecBodyStyle(lookup: TokenLookup): CSSProperties {
     display: "grid",
     placeItems: "center",
     color: cssToken(lookup, "color.text.sub", "#71717a"),
-    ...tokenTypographyStyle(lookup, "typography.paragraph.p4"),
   };
+}
+
+export function defaultPreviewSelectionsForComponent(
+  component: ComponentDocument
+): Record<string, string> {
+  return Object.fromEntries(
+    component.variants.map((variant) => [variant.name, variant.default ?? variant.values[0] ?? ""])
+  );
 }

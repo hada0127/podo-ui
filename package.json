@@ -15,6 +15,7 @@
   },
   "homepage": "https://podoui.com",
   "scripts": {
+    "ui": "pnpm --filter @podo/editor dev",
     "build": "pnpm clean && pnpm -r --if-present build",
     "clean": "pnpm -r --if-present clean && rm -rf dist coverage .turbo",
     "examples:build": "pnpm --filter './examples/*' build",

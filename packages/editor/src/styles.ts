@@ -26,7 +26,7 @@ export const productTitleStyle: CSSProperties = { fontSize: 15 };
 
 export const panelTabsStyle: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(5, minmax(82px, 1fr))",
+  gridTemplateColumns: "repeat(6, minmax(72px, 1fr))",
   gap: 4,
 };
 
@@ -95,6 +95,29 @@ export const schemeButtonActiveStyle: CSSProperties = {
   border: "1px solid #8fb3f4",
   background: "#eaf1ff",
   color: "#153e75",
+};
+
+export const localeControlStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+};
+
+export const localeSegmentedStyle: CSSProperties = {
+  display: "grid",
+  gridAutoFlow: "column",
+  gap: 3,
+};
+
+export const localeButtonStyle: CSSProperties = {
+  height: 28,
+  border: "1px solid #d8dde6",
+  borderRadius: 6,
+  background: "#ffffff",
+  color: "#4e5968",
+  padding: "0 10px",
+  fontSize: 12,
+  cursor: "pointer",
 };
 
 export const sidebarStyle: CSSProperties = {
@@ -507,17 +530,17 @@ export const colorGroupCornerStyle: CSSProperties = {
 };
 
 export const colorVariationHeadStyle: CSSProperties = {
-  width: 70,
+  width: 76,
   textAlign: "left",
   verticalAlign: "middle",
-  padding: "7px 8px 7px 0",
+  padding: "9px 10px 9px 10px",
+  borderTop: "1px solid #f2f5fa",
   color: "#4e5968",
   fontSize: 12,
   fontWeight: 600,
   overflowWrap: "anywhere",
   display: "flex",
   alignItems: "center",
-  justifyContent: "space-between",
   gap: 6,
 };
 
@@ -526,7 +549,7 @@ export const colorVariationRowActiveStyle: CSSProperties = {
 };
 
 export const colorSideCellStyle: CSSProperties = {
-  padding: "5px 16px 5px 0",
+  padding: "9px 16px 9px 0",
   verticalAlign: "middle",
   borderTop: "1px solid #f2f5fa",
 };
@@ -697,6 +720,28 @@ export const colorTokenToggleStyle: CSSProperties = {
   fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
   padding: "0 10px",
   whiteSpace: "nowrap",
+};
+
+// The `{token}` reference picker renders as a floating popover anchored to its
+// button (so it overlays instead of pushing the matrix down).
+export const colorTokenPickerAnchorStyle: CSSProperties = {
+  position: "relative",
+  display: "inline-flex",
+};
+
+export const colorTokenPickerPopoverStyle: CSSProperties = {
+  position: "absolute",
+  top: "calc(100% + 6px)",
+  right: 0,
+  zIndex: 41,
+  width: 300,
+  maxWidth: "72vw",
+  boxSizing: "border-box",
+  background: "#ffffff",
+  border: "1px solid #d8dde6",
+  borderRadius: 10,
+  boxShadow: "0 12px 28px rgba(15, 23, 42, 0.18)",
+  padding: 10,
 };
 
 export const colorSideEmptyButtonStyle: CSSProperties = {
@@ -898,6 +943,131 @@ export const colorVariationDeleteStyle: CSSProperties = {
   fontSize: 12,
   cursor: "pointer",
   padding: 0,
+};
+
+// Trailing cell that holds each variation's delete control on the right edge.
+export const colorVariationDeleteCellStyle: CSSProperties = {
+  width: 38,
+  textAlign: "right",
+  verticalAlign: "middle",
+  padding: "9px 10px 9px 6px",
+  borderTop: "1px solid #f2f5fa",
+};
+
+// Color-set (group) header rename + delete controls.
+export const colorGroupActionsStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+};
+
+export const colorGroupRenameButtonStyle: CSSProperties = {
+  border: "1px solid #d8dee8",
+  borderRadius: 5,
+  background: "#f7f9fc",
+  color: "#4e5968",
+  fontSize: 11,
+  fontWeight: 600,
+  padding: "2px 8px",
+  cursor: "pointer",
+};
+
+export const colorGroupRenameInputStyle: CSSProperties = {
+  border: "1px solid #9db8e8",
+  borderRadius: 6,
+  padding: "2px 6px",
+  fontSize: 13,
+  fontWeight: 700,
+  color: "#171a20",
+  width: 160,
+};
+
+// Usage-checked color deletion dialog (repoint references before removal).
+export const colorDeleteOverlayStyle: CSSProperties = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(15, 23, 42, 0.32)",
+  display: "grid",
+  placeItems: "center",
+  zIndex: 1000,
+  padding: 20,
+};
+
+export const colorDeleteDialogStyle: CSSProperties = {
+  width: "min(460px, 100%)",
+  maxHeight: "80vh",
+  overflow: "auto",
+  background: "#ffffff",
+  borderRadius: 12,
+  border: "1px solid #e3e9f2",
+  boxShadow: "0 18px 48px rgba(15, 23, 42, 0.24)",
+  padding: 20,
+  display: "grid",
+  gap: 12,
+};
+
+export const colorDeleteTitleStyle: CSSProperties = {
+  margin: 0,
+  fontSize: 15,
+  fontWeight: 700,
+  color: "#171a20",
+};
+
+export const colorDeleteUsageListStyle: CSSProperties = {
+  margin: 0,
+  paddingLeft: 18,
+  display: "grid",
+  gap: 2,
+  fontSize: 12,
+  color: "#4e5968",
+  maxHeight: 160,
+  overflow: "auto",
+};
+
+export const colorDeleteFieldLabelStyle: CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: "#4e5968",
+  display: "grid",
+  gap: 4,
+};
+
+export const colorDeleteSelectStyle: CSSProperties = {
+  border: "1px solid #ccd6e3",
+  borderRadius: 7,
+  padding: "6px 8px",
+  fontSize: 13,
+  color: "#171a20",
+  background: "#ffffff",
+};
+
+export const colorDeleteActionsStyle: CSSProperties = {
+  display: "flex",
+  justifyContent: "flex-end",
+  gap: 8,
+  marginTop: 4,
+};
+
+export const colorDeleteCancelStyle: CSSProperties = {
+  border: "1px solid #ccd6e3",
+  borderRadius: 7,
+  background: "#ffffff",
+  color: "#3a4658",
+  padding: "7px 14px",
+  fontSize: 13,
+  fontWeight: 600,
+  cursor: "pointer",
+};
+
+export const colorDeleteConfirmStyle: CSSProperties = {
+  border: "1px solid #c0322e",
+  borderRadius: 7,
+  background: "#d93a36",
+  color: "#ffffff",
+  padding: "7px 14px",
+  fontSize: 13,
+  fontWeight: 700,
+  cursor: "pointer",
 };
 
 export const typographyAddButtonStyle: CSSProperties = {
@@ -1315,6 +1485,349 @@ export const slotRowStyle: CSSProperties = {
   gap: 5,
 };
 
+export const slotRowLabelStyle: CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  color: "#52525b",
+};
+
+export const propRowStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "84px minmax(0, 1fr)",
+  alignItems: "center",
+  gap: 8,
+};
+
+// Figma-style THREE-pane component-set editor: layers (left) + variant-set
+// preview (center) + properties rail (right).
+export const componentPanelWorkspaceLayout: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "184px minmax(0, 1fr) 320px",
+  gap: 16,
+  alignItems: "start", // keep sticky columns sized to content, not stretched
+  width: "100%",
+  minWidth: 0,
+};
+
+export const layersColumnStyle: CSSProperties = {
+  position: "sticky",
+  top: 12,
+  display: "grid",
+  gap: 12,
+  minWidth: 0,
+};
+
+export const stickyPreviewColumnStyle: CSSProperties = {
+  position: "sticky",
+  top: 12,
+  display: "grid",
+  gap: 16,
+  minWidth: 0,
+};
+
+export const propertiesRailStyle: CSSProperties = {
+  display: "grid",
+  gap: 10,
+  alignContent: "start",
+  minWidth: 0,
+};
+
+// Figma-style section title: small uppercase muted label.
+export const railSectionTitleStyle: CSSProperties = {
+  fontSize: 10,
+  fontWeight: 700,
+  textTransform: "uppercase",
+  letterSpacing: "0.8px",
+  color: "#616167",
+};
+
+export const editSchemaBodyStyle: CSSProperties = {
+  display: "grid",
+  gap: 16,
+  marginTop: 12,
+};
+
+// Figma-style layers list (anatomy parts) + per-part appearance rows.
+export const layersListStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: 4,
+};
+
+// Figma-style hierarchical layers tree (vertical rows, indent by depth).
+export const layerTreeStyle: CSSProperties = {
+  display: "grid",
+  gap: 1,
+};
+
+export const layerRowStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+  padding: "4px 6px",
+  borderRadius: 4,
+  cursor: "pointer",
+  fontSize: 11,
+  fontWeight: 500,
+  color: "#3f3f46",
+  userSelect: "none",
+  border: "1px solid transparent",
+};
+
+export const layerRowActiveStyle: CSSProperties = {
+  background: "#edf4ff",
+  borderColor: "#bcd4ff",
+  color: "#1d4ed8",
+  fontWeight: 600,
+};
+
+export const layerIconStyle: CSSProperties = {
+  width: 14,
+  flexShrink: 0,
+  textAlign: "center",
+  color: "#a1a1aa",
+  fontSize: 11,
+};
+
+export const layerNameStyle: CSSProperties = {
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  flex: 1,
+};
+
+export const layerRenameInputStyle: CSSProperties = {
+  font: "inherit",
+  flex: 1,
+  minWidth: 0,
+  border: "1px solid #6366f1",
+  borderRadius: 3,
+  padding: "1px 4px",
+};
+
+export const layerDisclosureStyle: CSSProperties = {
+  width: 14,
+  flexShrink: 0,
+  border: "none",
+  background: "transparent",
+  color: "#a1a1aa",
+  cursor: "pointer",
+  fontSize: 11,
+  lineHeight: 1,
+  padding: 0,
+  textAlign: "center",
+};
+
+export const layerDropIndicatorStyle: CSSProperties = {
+  position: "absolute",
+  left: 4,
+  right: 4,
+  height: 2,
+  background: "#3b82f6",
+  borderRadius: 2,
+  pointerEvents: "none",
+};
+
+export const layerMenuStyle: CSSProperties = {
+  position: "fixed",
+  zIndex: 81,
+  minWidth: 168,
+  background: "#ffffff",
+  border: "1px solid #e4e4e7",
+  borderRadius: 8,
+  boxShadow: "0 12px 32px rgba(15, 23, 42, 0.18)",
+  padding: 4,
+  display: "grid",
+  gap: 1,
+};
+
+export const layerMenuItemStyle: CSSProperties = {
+  display: "block",
+  width: "100%",
+  textAlign: "left",
+  border: "none",
+  background: "transparent",
+  borderRadius: 5,
+  padding: "6px 10px",
+  fontSize: 12,
+  color: "#27272a",
+  cursor: "pointer",
+};
+
+export const layerButtonStyle: CSSProperties = {
+  padding: "4px 10px",
+  borderRadius: 6,
+  border: "1px solid #e4e4e7",
+  background: "#ffffff",
+  color: "#3f3f46",
+  fontSize: 12,
+  cursor: "pointer",
+};
+
+export const layerButtonActiveStyle: CSSProperties = {
+  background: "#ede9fe",
+  borderColor: "#c4b5fd",
+  color: "#5b21b6",
+  fontWeight: 600,
+};
+
+export const appearanceRowStyle: CSSProperties = {
+  display: "grid",
+  gap: 4,
+};
+
+export const appearanceHeaderStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 6,
+};
+
+// Pencil/Figma-style grouped inspector: named property groups with mini headers.
+export const appearanceGroupsStyle: CSSProperties = {
+  display: "grid",
+  gap: 14,
+};
+
+export const appearanceGroupStyle: CSSProperties = {
+  display: "grid",
+  gap: 7,
+};
+
+export const appearanceGroupTitleStyle: CSSProperties = {
+  fontSize: 10,
+  fontWeight: 700,
+  textTransform: "uppercase",
+  letterSpacing: "0.7px",
+  color: "#a1a1aa",
+  paddingBottom: 4,
+  borderBottom: "1px solid #f1f1f3",
+};
+
+// Token chip: [swatch] value ........ token-name — click to open the picker.
+export const tokenChipStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+  width: "100%",
+  minWidth: 0,
+  padding: "4px 8px",
+  borderRadius: 6,
+  border: "1px solid #e4e4e7",
+  background: "#ffffff",
+  cursor: "pointer",
+  textAlign: "left",
+};
+
+export const tokenChipValueStyle: CSSProperties = {
+  fontSize: 11,
+  color: "#1a1a1a",
+  flexShrink: 0,
+  fontVariantNumeric: "tabular-nums",
+};
+
+export const tokenChipNameStyle: CSSProperties = {
+  flex: 1,
+  minWidth: 0,
+  textAlign: "right",
+  fontSize: 10,
+  color: "#939399",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+};
+
+export const appearanceControlStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+  minWidth: 0,
+};
+
+export const appearanceValueStyle: CSSProperties = {
+  flex: 1,
+  minWidth: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  fontSize: 11,
+  color: "#71717a",
+};
+
+export const swatchStyle: CSSProperties = {
+  width: 16,
+  height: 16,
+  borderRadius: 4,
+  border: "1px solid rgba(0,0,0,0.08)",
+  flexShrink: 0,
+};
+
+export const appearanceRemoveStyle: CSSProperties = {
+  border: "none",
+  background: "transparent",
+  color: "#a1a1aa",
+  cursor: "pointer",
+  fontSize: 14,
+  lineHeight: 1,
+  padding: 2,
+  flexShrink: 0,
+};
+
+export const propLabelStyle: CSSProperties = {
+  fontSize: 11,
+  fontWeight: 500,
+  color: "#616167",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+};
+
+export const advancedDetailsStyle: CSSProperties = {
+  marginTop: 2,
+  display: "grid",
+  gap: 6,
+};
+
+export const advancedSummaryStyle: CSSProperties = {
+  fontSize: 12,
+  color: "#71717a",
+  cursor: "pointer",
+};
+
+export const slotBadgeWrapStyle: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 4,
+};
+
+export const slotBadgeStyle: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 4,
+  padding: "2px 4px 2px 8px",
+  borderRadius: 6,
+  background: "#f4f4f5",
+  border: "1px solid #e4e4e7",
+  fontSize: 12,
+  color: "#27272a",
+};
+
+export const slotBadgeRemoveStyle: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: 16,
+  height: 16,
+  borderRadius: 4,
+  border: "none",
+  background: "transparent",
+  color: "#71717a",
+  cursor: "pointer",
+  fontSize: 13,
+  lineHeight: 1,
+  padding: 0,
+};
+
 export const viewportPanelStyle: CSSProperties = {
   border: "1px solid #d8dde6",
   borderRadius: 8,
@@ -1426,7 +1939,7 @@ export const exportJsonTextareaStyle: CSSProperties = {
 };
 
 export const cardStyle: CSSProperties = {
-  border: "1px solid #d4dce8",
+  border: "1px solid #d9d9db",
   borderRadius: 8,
   background: "#ffffff",
   display: "grid",
@@ -1487,6 +2000,12 @@ export const editorFormStyle: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
   gap: 10,
+};
+
+// Single-column field list (one control per line) for the rail Variants/Props.
+export const railFieldsStyle: CSSProperties = {
+  display: "grid",
+  gap: 8,
 };
 
 export const previewPanelStyle: CSSProperties = {
@@ -1761,173 +2280,6 @@ export const fontPreviewMetaStyle: CSSProperties = {
   color: "#6b7280",
   fontSize: 11,
 };
-export const previewInlineWrapStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
-
-export const previewAvatarStyle: CSSProperties = {
-  border: "2px solid #e4e4e7",
-  display: "grid",
-  placeItems: "center",
-  overflow: "hidden",
-  fontWeight: 700,
-};
-
-export const previewAvatarIconStyle: CSSProperties = {
-  width: "42%",
-  height: "42%",
-  border: "2px solid currentColor",
-  borderRadius: "9999px",
-  boxShadow: "0 13px 0 -4px currentColor",
-  opacity: 0.85,
-};
-
-export const previewChoiceGroupStyle: CSSProperties = {
-  display: "flex",
-  gap: 14,
-  alignItems: "start",
-  justifyContent: "center",
-  flexWrap: "wrap",
-};
-
-export const previewChoiceStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 8,
-  fontSize: 14,
-  lineHeight: "20px",
-};
-
-export const previewChoiceBoxStyle: CSSProperties = {
-  width: 18,
-  height: 18,
-  border: "1px solid #e4e4e7",
-  display: "grid",
-  placeItems: "center",
-  flex: "0 0 auto",
-};
-
-export const previewChoiceDotStyle: CSSProperties = {
-  width: 8,
-  height: 8,
-  background: "#ffffff",
-};
-
-export const previewChipStyle: CSSProperties = {
-  border: "1px solid #e4e4e7",
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 6,
-};
-
-export const previewChipDotStyle: CSSProperties = {
-  width: 7,
-  height: 7,
-  borderRadius: "9999px",
-};
-
-export const previewChipDeleteStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: 16,
-  height: 16,
-  opacity: 0.72,
-};
-
-export const previewPopoverStackStyle: CSSProperties = {
-  display: "grid",
-  justifyItems: "center",
-  gap: 8,
-};
-
-export const previewControlIconStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  minWidth: 20,
-  color: "inherit",
-  opacity: 0.68,
-  fontSize: 11,
-  textTransform: "uppercase",
-};
-
-export const previewCalendarHeaderStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 8,
-  marginBottom: 10,
-};
-
-export const previewCalendarGridStyle: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(7, 1fr)",
-  gap: 4,
-};
-
-export const previewCalendarDayStyle: CSSProperties = {
-  width: 32,
-  height: 30,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: 6,
-  fontSize: 12,
-};
-
-export const previewFieldStyle: CSSProperties = {
-  width: 340,
-  display: "grid",
-  gap: 6,
-};
-
-export const previewFieldMessageStyle: CSSProperties = {
-  fontSize: 12,
-  lineHeight: "18px",
-};
-
-export const previewLabelStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 3,
-};
-
-export const previewPaginationStyle: CSSProperties = {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: 6,
-  flexWrap: "wrap",
-};
-
-export const previewTableListStyle: CSSProperties = {
-  width: "min(520px, 100%)",
-  display: "grid",
-  gap: 8,
-};
-
-export const previewToastAccentStyle: CSSProperties = {
-  display: "block",
-  width: 4,
-  minHeight: 92,
-};
-
-export const previewToastContentStyle: CSSProperties = {
-  display: "grid",
-  gap: 4,
-  padding: 14,
-  alignContent: "center",
-};
-
-export const previewTooltipStageStyle: CSSProperties = {
-  display: "grid",
-  gap: 8,
-  justifyItems: "center",
-  alignItems: "center",
-};
 
 export const componentPreviewStageStyle: CSSProperties = {
   minHeight: 168,
@@ -1945,9 +2297,14 @@ export const buttonBasePreviewStyle: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
-  minWidth: 120,
   cursor: "default",
   outline: "none",
+};
+
+export const variantValueRowStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
 };
 
 export const codeStyle: CSSProperties = {
@@ -1962,7 +2319,9 @@ export const tokenPickerDropdownStyle: CSSProperties = {
   position: "absolute",
   top: "calc(100% + 4px)",
   left: 0,
-  right: 0,
+  right: "auto",
+  minWidth: 240,
+  maxWidth: "min(320px, 90vw)",
   zIndex: 20,
   maxHeight: 260,
   overflowY: "auto",
@@ -2156,4 +2515,328 @@ export const slotDropZoneEmptyStyle: CSSProperties = {
   margin: "auto",
   fontSize: 11,
   color: "#6b7280",
+};
+
+// --- Icon editor ---------------------------------------------------------------
+
+export const iconGroupListStyle: CSSProperties = { display: "grid", gap: 3 };
+
+export const iconGroupButtonStyle: CSSProperties = {
+  minHeight: 36,
+  border: "1px solid transparent",
+  borderRadius: 6,
+  background: "transparent",
+  color: "#171a20",
+  padding: "7px 9px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 8,
+  textAlign: "left",
+  cursor: "pointer",
+};
+
+export const iconGroupButtonActiveStyle: CSSProperties = {
+  border: "1px solid #7aa7ee",
+  background: "#edf4ff",
+  color: "#123b72",
+};
+
+export const iconGroupCountStyle: CSSProperties = {
+  color: "#657386",
+  fontSize: 11,
+  fontVariantNumeric: "tabular-nums",
+};
+
+export const iconSearchInputStyle: CSSProperties = {
+  height: 36,
+  width: "100%",
+  boxSizing: "border-box",
+  border: "1px solid #ccd6e3",
+  borderRadius: 6,
+  background: "#ffffff",
+  padding: "0 11px",
+  color: "#263241",
+  fontSize: 13,
+};
+
+export const iconBuildPillStyle: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 6,
+  borderRadius: 999,
+  padding: "4px 10px",
+  fontSize: 12,
+  fontWeight: 600,
+  border: "1px solid transparent",
+};
+
+export const iconBuildPillReadyStyle: CSSProperties = {
+  background: "#e8f6ee",
+  color: "#1a7f47",
+  border: "1px solid #aedcc1",
+};
+
+export const iconBuildPillStaleStyle: CSSProperties = {
+  background: "#fdf3e2",
+  color: "#9a6a12",
+  border: "1px solid #ecd3a3",
+};
+
+export const iconBuildPillBusyStyle: CSSProperties = {
+  background: "#edf4ff",
+  color: "#123b72",
+  border: "1px solid #b6cdf3",
+};
+
+export const iconBuildPillErrorStyle: CSSProperties = {
+  background: "#fff4f2",
+  color: "#b42318",
+  border: "1px solid #f0b8b2",
+};
+
+export const iconSaveButtonStyle: CSSProperties = {
+  height: 38,
+  border: "1px solid #2563eb",
+  borderRadius: 7,
+  background: "#2563eb",
+  color: "#ffffff",
+  fontWeight: 700,
+  padding: "0 16px",
+  cursor: "pointer",
+};
+
+export const iconSaveButtonDisabledStyle: CSSProperties = {
+  border: "1px solid #cbd5e1",
+  background: "#e2e8f0",
+  color: "#94a3b8",
+  cursor: "default",
+};
+
+export const iconSpecimenStripStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 14,
+  flexWrap: "wrap",
+  border: "1px solid #e2e7ef",
+  borderRadius: 8,
+  background: "#fbfcfe",
+  padding: "12px 14px",
+  fontSize: 26,
+  color: "#1f2937",
+};
+
+export const iconDropzoneStyle: CSSProperties = {
+  border: "1.5px dashed #b9c4d4",
+  borderRadius: 10,
+  background: "#fbfcfe",
+  padding: 16,
+  display: "grid",
+  gap: 10,
+  color: "#52607a",
+};
+
+export const iconDropzoneActiveStyle: CSSProperties = {
+  border: "1.5px dashed #2563eb",
+  background: "#eef4ff",
+  color: "#1d4ed8",
+};
+
+export const iconPasteTextareaStyle: CSSProperties = {
+  width: "100%",
+  minHeight: 64,
+  boxSizing: "border-box",
+  resize: "vertical",
+  border: "1px solid #ccd6e3",
+  borderRadius: 6,
+  background: "#ffffff",
+  color: "#171a20",
+  padding: 9,
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  fontSize: 12,
+  lineHeight: 1.5,
+};
+
+export const iconGroupSectionTitleStyle: CSSProperties = {
+  margin: "18px 0 6px",
+  fontSize: 13,
+  fontWeight: 700,
+  color: "#3a4658",
+  textTransform: "uppercase",
+  letterSpacing: "0.04em",
+};
+
+export const iconGridStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))",
+  gap: 10,
+};
+
+export const iconTileStyle: CSSProperties = {
+  border: "1px solid #e2e7ef",
+  borderRadius: 10,
+  background: "#ffffff",
+  display: "grid",
+  justifyItems: "center",
+  gap: 6,
+  padding: "14px 8px 10px",
+  cursor: "pointer",
+  minWidth: 0,
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+};
+
+export const iconTileActiveStyle: CSSProperties = {
+  border: "1px solid #2563eb",
+  background: "#f4f8ff",
+  boxShadow: "0 0 0 2px rgba(37, 99, 235, 0.18)",
+};
+
+export const iconTileGlyphStyle: CSSProperties = {
+  width: 40,
+  height: 40,
+  color: "#1f2937",
+  display: "block",
+};
+
+export const iconTileNameStyle: CSSProperties = {
+  fontSize: 11,
+  color: "#374151",
+  maxWidth: "100%",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+};
+
+export const iconTileCodepointStyle: CSSProperties = {
+  fontSize: 10,
+  color: "#9aa6b6",
+  fontVariantNumeric: "tabular-nums",
+};
+
+export const iconInspectorStyle: CSSProperties = {
+  border: "1px solid #d4dce8",
+  borderRadius: 10,
+  background: "#ffffff",
+  padding: 14,
+  display: "grid",
+  gap: 12,
+  alignContent: "start",
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+};
+
+export const iconInspectorPreviewStyle: CSSProperties = {
+  width: 96,
+  height: 96,
+  border: "1px solid #e2e7ef",
+  borderRadius: 10,
+  background: "#fbfcfe",
+  display: "grid",
+  placeItems: "center",
+  color: "#1f2937",
+};
+
+export const iconFieldLabelStyle: CSSProperties = {
+  fontSize: 11,
+  fontWeight: 700,
+  color: "#52607a",
+  textTransform: "uppercase",
+  letterSpacing: "0.03em",
+};
+
+export const iconFieldInputStyle: CSSProperties = {
+  height: 34,
+  width: "100%",
+  boxSizing: "border-box",
+  border: "1px solid #ccd6e3",
+  borderRadius: 6,
+  background: "#ffffff",
+  padding: "0 10px",
+  color: "#171a20",
+  fontSize: 13,
+};
+
+export const iconGroupChecklistStyle: CSSProperties = {
+  display: "grid",
+  gap: 4,
+};
+
+export const iconGroupCheckRowStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  fontSize: 13,
+  color: "#374151",
+};
+
+export const iconDangerButtonStyle: CSSProperties = {
+  height: 34,
+  border: "1px solid #f0b8b2",
+  borderRadius: 6,
+  background: "#fff4f2",
+  color: "#b42318",
+  fontWeight: 600,
+  padding: "0 12px",
+  cursor: "pointer",
+};
+
+export const iconDrawWrapStyle: CSSProperties = {
+  display: "grid",
+  gap: 10,
+  border: "1px solid #d4dce8",
+  borderRadius: 12,
+  background: "#ffffff",
+  padding: 14,
+  boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+};
+
+export const iconDrawToolbarStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+  flexWrap: "wrap",
+};
+
+export const iconDrawToolButtonStyle: CSSProperties = {
+  height: 32,
+  border: "1px solid #ccd6e3",
+  borderRadius: 6,
+  background: "#ffffff",
+  color: "#263241",
+  padding: "0 10px",
+  fontSize: 13,
+  cursor: "pointer",
+};
+
+export const iconDrawToolButtonActiveStyle: CSSProperties = {
+  height: 32,
+  border: "1px solid #2563eb",
+  borderRadius: 6,
+  background: "#2563eb",
+  color: "#ffffff",
+  padding: "0 10px",
+  fontSize: 13,
+  fontWeight: 600,
+  cursor: "pointer",
+};
+
+export const iconDrawCanvasStyle: CSSProperties = {
+  width: "100%",
+  maxWidth: 520,
+  aspectRatio: "1 / 1",
+  border: "1px solid #e2e7ef",
+  borderRadius: 10,
+  touchAction: "none",
+  cursor: "crosshair",
+  justifySelf: "center",
+};
+
+export const iconDrawApplyButtonStyle: CSSProperties = {
+  height: 36,
+  border: "1px solid #2563eb",
+  borderRadius: 7,
+  background: "#2563eb",
+  color: "#ffffff",
+  fontWeight: 700,
+  padding: "0 16px",
+  cursor: "pointer",
 };

@@ -1,0 +1,24 @@
+/** Strings for component-layers.tsx. en is the source of truth; ko mirrors it. */
+export const layersEn = {
+  "layers.toggleLayer": "Toggle layer",
+  "layers.menuRename": "Rename",
+  "layers.menuAddChild": "Add child layer",
+  "layers.menuAddSibling": "Add sibling layer",
+  "layers.menuDuplicate": "Duplicate",
+  "layers.menuMoveOut": "Move out (outdent)",
+  "layers.menuMoveUp": "Move up",
+  "layers.menuMoveDown": "Move down",
+  "layers.menuDelete": "Delete",
+} as const;
+
+export const layersKo: Record<keyof typeof layersEn, string> = {
+  "layers.toggleLayer": "레이어 토글",
+  "layers.menuRename": "이름 변경",
+  "layers.menuAddChild": "자식 레이어 추가",
+  "layers.menuAddSibling": "형제 레이어 추가",
+  "layers.menuDuplicate": "복제",
+  "layers.menuMoveOut": "밖으로 빼기 (내어쓰기)",
+  "layers.menuMoveUp": "위로 이동",
+  "layers.menuMoveDown": "아래로 이동",
+  "layers.menuDelete": "삭제",
+};

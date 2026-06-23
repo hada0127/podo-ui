@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   collectTokenPaths,
+  computeIconsHash,
   mergePodoOverrides,
   parseComponentDocument,
   parseIconManifest,
@@ -12,6 +13,7 @@ import {
   parseTokenDocument,
   validateComponentTokenBindings,
   validateIconManifest,
+  validateInlineSvg,
   validateTokenReferences,
   type ComponentDocument,
   type IconManifest,
@@ -356,6 +358,129 @@ describe("Podo spec schemas", () => {
         expect.objectContaining({ code: "icon.codepointLock.mismatch" }),
       ])
     );
+  });
+
+  const INLINE_SVG_A =
+    '<svg viewBox="0 0 1000 1000"><path d="M100 100 L900 900 Z" fill="currentColor"/></svg>';
+  const INLINE_SVG_B =
+    '<svg viewBox="0 0 1000 1000"><path d="M0 0 H1000 V1000 H0 Z" fill="currentColor"/></svg>';
+
+  function embeddedIconManifest(): IconManifest {
+    const parsed = parseIconManifest({
+      schemaVersion: "2.0.0",
+      kind: "icons",
+      fontFamily: "PodoIcons",
+      icons: {
+        alpha: { svg: INLINE_SVG_A, codepoint: "E900", tags: [] },
+        beta: { svg: INLINE_SVG_B, codepoint: "E901", tags: [] },
+      },
+      groups: { all: ["alpha", "beta"] },
+      codepointLock: { alpha: "E900", beta: "E901" },
+    });
+    return {
+      ...parsed,
+      fontAsset: {
+        kind: "font",
+        source: "embedded",
+        family: "PodoIcons",
+        fileName: "PodoIcons.woff2",
+        format: "woff2",
+        mimeType: "font/woff2",
+        dataUrl: "data:font/woff2;base64,d09GMgABAAAAAAA",
+      },
+      fontBuild: { iconsHash: computeIconsHash(parsed), unitsPerEm: 1000, glyphCount: 3 },
+    };
+  }
+
+  it("accepts a valid embedded (inline-svg + woff2) icon manifest", () => {
+    const manifest = embeddedIconManifest();
+    expect(validateIconManifest(manifest)).toEqual([]);
+    expect(manifest.fontBuild?.iconsHash).toBe(computeIconsHash(manifest));
+  });
+
+  it("requires exactly one of source or inline svg", () => {
+    const both = embeddedIconManifest();
+    both.icons.alpha = { ...both.icons.alpha!, source: "svg/alpha.svg" };
+    expect(validateIconManifest(both)).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "icon.source.ambiguous" })])
+    );
+
+    const neither = embeddedIconManifest();
+    neither.icons.beta = { codepoint: "E901", tags: [] };
+    expect(validateIconManifest(neither)).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "icon.source.missing" })])
+    );
+  });
+
+  it("flags a non-woff2 embed, stale build, and missing font", () => {
+    const notWoff2 = embeddedIconManifest();
+    notWoff2.fontAsset = { ...notWoff2.fontAsset!, format: "woff", mimeType: "font/woff" };
+    expect(validateIconManifest(notWoff2)).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "icon.fontAsset.notWoff2" })])
+    );
+
+    const stale = embeddedIconManifest();
+    stale.icons.alpha = {
+      ...stale.icons.alpha!,
+      svg: '<svg viewBox="0 0 1000 1000"><path d="M0 0 L500 500 Z" fill="currentColor"/></svg>',
+    };
+    expect(validateIconManifest(stale)).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "icon.fontBuild.stale" })])
+    );
+
+    const noFont = embeddedIconManifest();
+    delete noFont.fontAsset;
+    delete noFont.fontBuild;
+    expect(validateIconManifest(noFont)).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "icon.fontAsset.missing" })])
+    );
+  });
+
+  it("validates inline svg shape rules", () => {
+    const fixed = embeddedIconManifest();
+    fixed.icons.alpha = {
+      ...fixed.icons.alpha!,
+      svg: '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M0 0Z" fill="currentColor"/></svg>',
+    };
+    fixed.fontBuild = { ...fixed.fontBuild!, iconsHash: computeIconsHash(fixed) };
+    expect(validateIconManifest(fixed)).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "icon.svg.fixedSize" })])
+    );
+
+    expect(
+      validateInlineSvg("noViewBox", '<svg><path d="M0 0Z" fill="currentColor"/></svg>')
+    ).toEqual([expect.objectContaining({ code: "icon.svg.missingViewBox" })]);
+    expect(
+      validateInlineSvg("noColor", '<svg viewBox="0 0 24 24"><path d="M0 0Z" fill="#000"/></svg>')
+    ).toEqual([expect.objectContaining({ code: "icon.svg.missingCurrentColor" })]);
+    expect(
+      validateInlineSvg(
+        "ok",
+        '<svg viewBox="0 0 24 24"><path d="M0 0Z" fill="currentColor"/></svg>'
+      )
+    ).toEqual([]);
+  });
+
+  it("rejects inline svg with XSS vectors", () => {
+    const unsafeSvgs = [
+      '<svg viewBox="0 0 1 1" fill="currentColor"><image href="x" onerror="alert(1)"/></svg>',
+      '<svg viewBox="0 0 1 1" fill="currentColor"><animate onbegin="alert(1)"/></svg>',
+      '<svg viewBox="0 0 1 1" fill="currentColor"><script>alert(1)</script></svg>',
+      '<svg viewBox="0 0 1 1" fill="currentColor"><foreignObject><body>x</body></foreignObject></svg>',
+      '<svg viewBox="0 0 1 1" fill="currentColor"><a href="javascript:alert(1)"><path d="M0 0Z"/></a></svg>',
+    ];
+    for (const svg of unsafeSvgs) {
+      expect(validateInlineSvg("evil", svg).map((entry) => entry.code)).toContain(
+        "icon.svg.unsafe"
+      );
+    }
+    // Canonical geometry-only svg is not flagged unsafe.
+    expect(
+      validateInlineSvg(
+        "safe",
+        '<svg viewBox="0 0 1000 1000"><path d="M100 100H900V900H100Z" fill="currentColor"/></svg>'
+      )
+    ).toEqual([]);
   });
 
   it("deep merges .podo overrides while replacing arrays", () => {

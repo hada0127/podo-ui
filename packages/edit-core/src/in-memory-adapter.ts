@@ -1,4 +1,4 @@
-import type { ComponentDocument, PageDocument, TokenDocument } from "@podo/spec";
+import type { ComponentDocument, IconManifest, PageDocument, TokenDocument } from "@podo/spec";
 import {
   type EditContext,
   type EditorCapabilities,
@@ -18,6 +18,7 @@ export interface InMemoryAdapterInit {
   tokenDocuments?: TokenDocument[];
   components?: ComponentDocument[];
   pages?: PageDocument[];
+  iconManifest?: IconManifest;
   capabilities?: Partial<EditorCapabilities>;
 }
 
@@ -35,11 +36,20 @@ export function createInMemoryAdapter(init: InMemoryAdapterInit = {}): PodoSaveA
   let tokenDocuments = normalizeEditorTokenDocuments(init.tokenDocuments ?? []);
   let components = init.components ? [...init.components] : [];
   let pages = init.pages ? [...init.pages] : [];
+  let iconManifest = init.iconManifest;
   const capabilities: EditorCapabilities = { ...DEFAULT_CAPABILITIES, ...init.capabilities };
 
   return {
     async loadContext(): Promise<EditContext> {
-      return { tokenDocuments, components, pages, capabilities };
+      // iconManifest is conditionally spread so the key is omitted (not set to
+      // undefined) when no manifest exists — required by exactOptionalPropertyTypes.
+      return {
+        tokenDocuments,
+        components,
+        pages,
+        capabilities,
+        ...(iconManifest ? { iconManifest } : {}),
+      };
     },
     async saveToken(input: SaveTokenInput): Promise<SaveResult> {
       if (input.dryRun) {
@@ -86,6 +96,13 @@ export function createInMemoryAdapter(init: InMemoryAdapterInit = {}): PodoSaveA
         ? pages.map((item) => (item.id === page.id ? page : item))
         : [...pages, page];
       return { ok: true, path: `${page.id}.page.json` };
+    },
+    async saveIconManifest(manifest: IconManifest, options: SaveOptions = {}): Promise<SaveResult> {
+      if (options.dryRun) {
+        return { ok: true, dryRun: true, path: "icons.manifest.json" };
+      }
+      iconManifest = manifest;
+      return { ok: true, path: "icons.manifest.json" };
     },
     async validate() {
       return validateWorkspace({ tokenDocuments, components });

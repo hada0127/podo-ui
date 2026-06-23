@@ -1,0 +1,117 @@
+// VENDORED VERBATIM from main `react/molecule/table.tsx` (v1 component). Only the
+// CSS-module import is swapped for an identity map so `styles.x` -> class `x`,
+// matching the scoped v1 CSS in v1-components.generated.css under `.podo-v1-stage`.
+// Do not hand-edit; re-vendor from main.
+// @ts-nocheck
+/* eslint-disable */
+import React, { useCallback } from 'react';
+
+export interface TableColumn<T> {
+  /** Column key */
+  key: string;
+  /** Header text */
+  title: React.ReactNode;
+  /** Custom render function */
+  render?: (value: unknown, record: T, index: number) => React.ReactNode;
+  /** Column width */
+  width?: string | number;
+  /** Text alignment */
+  align?: 'left' | 'center' | 'right';
+}
+
+export interface TableProps<T extends Record<string, unknown>> {
+  /** Column definitions */
+  columns: TableColumn<T>[];
+  /** Data source */
+  dataSource: T[];
+  /** Row key extractor */
+  rowKey: keyof T | ((record: T) => string);
+  /** Clickable rows (hover effect) */
+  list?: boolean;
+  /** Row border */
+  border?: boolean;
+  /** Filled background */
+  fill?: boolean;
+  /** Row click callback */
+  onRowClick?: (record: T, index: number) => void;
+  /** Additional class name */
+  className?: string;
+}
+
+function Table<T extends Record<string, unknown>>({
+  columns,
+  dataSource,
+  rowKey,
+  list,
+  border,
+  fill,
+  onRowClick,
+  className,
+}: TableProps<T>) {
+  const getRowKey = useCallback((record: T, index: number): string => {
+    if (typeof rowKey === 'function') {
+      return rowKey(record);
+    }
+    return String(record[rowKey] ?? index);
+  }, [rowKey]);
+
+  const handleRowClick = useCallback((record: T, index: number) => {
+    onRowClick?.(record, index);
+  }, [onRowClick]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent, record: T, index: number) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onRowClick?.(record, index);
+    }
+  }, [onRowClick]);
+
+  const tableClass = [list && 'list', border && 'border', fill && 'fill', className]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <table className={tableClass || undefined}>
+      <thead>
+        <tr>
+          {columns.map((col) => (
+            <th
+              key={col.key}
+              scope="col"
+              style={{
+                width: col.width,
+                textAlign: col.align,
+              }}
+            >
+              {col.title}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {dataSource.map((record, index) => (
+          <tr
+            key={getRowKey(record, index)}
+            onClick={() => handleRowClick(record, index)}
+            style={onRowClick ? { cursor: 'pointer' } : undefined}
+            role={onRowClick ? 'button' : undefined}
+            tabIndex={onRowClick ? 0 : undefined}
+            onKeyDown={onRowClick ? (e) => handleKeyDown(e, record, index) : undefined}
+          >
+            {columns.map((col) => (
+              <td key={col.key} style={{ textAlign: col.align }}>
+                {col.render
+                  ? col.render(record[col.key], record, index)
+                  : (record[col.key] as React.ReactNode)}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+Table.displayName = 'Table';
+
+export default Table;

@@ -101,6 +101,11 @@ function componentBindingVar(id: string, key: string): string {
 }
 
 function aliasToCssVar(reference: string): string {
+  // A binding may be a raw CSS value (e.g. "42px") instead of a token alias; emit
+  // raw values verbatim and only token aliases as `var(--podo-…)`.
+  if (!/^\{.+\}$/.test(reference) && !reference.startsWith("#/")) {
+    return reference;
+  }
   return `var(--podo-${normalizeAliasReference(reference).replace(/\./g, "-")})`;
 }
 

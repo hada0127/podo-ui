@@ -5,6 +5,7 @@ import {
   T,
   createShapeId,
   resizeBox,
+  useEditor,
   type Editor,
   type Geometry2d,
   type RecordProps,
@@ -18,7 +19,16 @@ import {
   type ComponentDocument,
   type PageDocument,
 } from "@podo/spec";
+import { createContext, useContext, useLayoutEffect, useRef } from "react";
+import { useT } from "./i18n/context.js";
 import { type ResponsiveViewportName } from "./viewport.js";
+import { cssToken, type TokenLookup } from "./token-lookup.js";
+import {
+  defaultPreviewSelectionsForComponent,
+  isCanvasLiveComponent,
+  renderComponentInline,
+  renderComponentInstance,
+} from "./previews.js";
 import {
   autoLayoutFrameStyle,
   componentShapeStyle,
@@ -30,6 +40,22 @@ import {
   slotDropZoneLabelStyle,
   slotDropZoneStyle,
 } from "./styles.js";
+
+// Lets the live tldraw shapes render the REAL component (and resolve token
+// colors) without threading data through tldraw's shape props. The canvas panel
+// provides the current component set + token lookup.
+export interface PodoCanvasRenderData {
+  components: ComponentDocument[];
+  lookup: TokenLookup | null;
+  // All canvas nodes, so a layout container shape can resolve and live-arrange
+  // its slotted children (auto-layout).
+  nodes: EditorComponentNode[];
+}
+export const PodoCanvasRenderContext = createContext<PodoCanvasRenderData>({
+  components: [],
+  lookup: null,
+  nodes: [],
+});
 
 export const PODO_COMPONENT_SHAPE_TYPE = "podo-component" as const;
 export const PODO_COMPONENT_DRAG_TYPE = "application/x-podo-component";
@@ -194,6 +220,254 @@ declare module "tldraw" {
 export type PodoComponentShape = TLShape<typeof PODO_COMPONENT_SHAPE_TYPE>;
 export type PodoComponentShapeInput = Pick<PodoComponentShape, "id" | "type" | "x" | "y" | "props">;
 
+// Variant/state selections for a placed node: variant defaults, overridden by the
+// node's props, with the primary axis driven by the node's `variant` field.
+function buildCanvasSelections(
+  component: ComponentDocument,
+  props: Record<string, unknown>,
+  variant: string
+): Record<string, string> {
+  const selections = defaultPreviewSelectionsForComponent(component);
+  // The node's `variant` field seeds the primary axis, but explicit props win — so
+  // editing a variant axis (e.g. theme) in the inspector is reflected live.
+  const primaryAxis = component.variants[0]?.name;
+  if (primaryAxis && variant) {
+    selections[primaryAxis] = variant;
+  }
+  for (const [key, value] of Object.entries(props)) {
+    if (typeof value === "string") {
+      selections[key] = value;
+    }
+  }
+  return selections;
+}
+
+// Resolves a layout length that may be a `{token}` reference or a raw CSS value.
+function resolveLayoutLength(
+  value: string | undefined,
+  lookup: TokenLookup,
+  fallback: number
+): string {
+  if (!value) return `${fallback}px`;
+  if (value.startsWith("{")) return cssToken(lookup, value.slice(1, -1), `${fallback}px`);
+  return value;
+}
+
+// "hug" sizing: keep the shape sized to its measured content. Runs only for the
+// hugged axes and only updates on a meaningful delta, so it converges instead of
+// looping. Measurement is divided by the canvas zoom to stay in page space.
+function useHugResize(
+  shape: PodoComponentShape,
+  contentRef: { current: HTMLElement | null },
+  hugWidth: boolean,
+  hugHeight: boolean
+): void {
+  const editor = useEditor();
+  const { w, h } = shape.props;
+  const { id, type } = shape;
+  useLayoutEffect(() => {
+    const element = contentRef.current;
+    if (!element || (!hugWidth && !hugHeight)) {
+      return;
+    }
+    const measure = (): void => {
+      const zoom = editor.getZoomLevel() || 1;
+      const rect = element.getBoundingClientRect();
+      const nextW = hugWidth ? Math.max(24, Math.round(rect.width / zoom)) : w;
+      const nextH = hugHeight ? Math.max(24, Math.round(rect.height / zoom)) : h;
+      if (Math.abs(nextW - w) > 1 || Math.abs(nextH - h) > 1) {
+        editor.updateShape({ id, type, props: { w: nextW, h: nextH } });
+      }
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [editor, contentRef, hugWidth, hugHeight, w, h, id, type]);
+}
+
+// Renders a placed canvas node: an auto-layout container live-arranges its slotted
+// child components with flex; a plain live component renders the REAL v1 component
+// (Figma-style); everything else (editor/datepicker, unknown id) shows a card.
+function PodoComponentShapeBody({ shape }: { shape: PodoComponentShape }) {
+  const t = useT();
+  const { components, lookup, nodes } = useContext(PodoCanvasRenderContext);
+  const props = safeParseRecord(shape.props.propsJson);
+  const slots = safeParseRecord(shape.props.slotsJson);
+  const layoutInfo = safeParseRecord(shape.props.layoutJson);
+  const layout = normalizeEditorNodeLayout(layoutInfo.layout);
+  const hugWidth = layoutInfo.widthSizing === "hug";
+  const hugHeight = layoutInfo.heightSizing === "hug";
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  useHugResize(shape, contentRef, hugWidth, hugHeight);
+  const slotEntries = Object.entries(slots);
+  const isAutoLayout = layout.mode !== "none";
+  const component = components.find((item) => item.id === shape.props.componentId);
+
+  // A node that is slotted into a container is rendered live INSIDE that
+  // container; its standalone shape collapses to a small "nested" chip so it does
+  // not double-render on the canvas.
+  const thisNodeId = shapeIdToNodeId(shape.id);
+  const parentNode = nodes.find((item) =>
+    Object.values(item.slots).some((ids) => Array.isArray(ids) && ids.includes(thisNodeId))
+  );
+  if (parentNode) {
+    return (
+      <HTMLContainer style={nestedChildShapeStyle}>
+        <span>
+          {t("canvas.nestedChild", { label: shape.props.label, parent: parentNode.name })}
+        </span>
+      </HTMLContainer>
+    );
+  }
+
+  if (component && lookup && component.category === "layout" && isAutoLayout) {
+    const nodeById = new Map(nodes.map((item) => [item.id, item]));
+    const childNodes = slotEntries
+      .flatMap(([, ids]) => (Array.isArray(ids) ? (ids as unknown[]) : []))
+      .map((id) => nodeById.get(String(id)))
+      .filter((item): item is EditorComponentNode => Boolean(item));
+    const isHorizontal = layout.mode === "horizontal";
+    return (
+      <HTMLContainer style={liveComponentShapeStyle}>
+        <div
+          ref={contentRef}
+          style={{
+            display: hugWidth || hugHeight ? "inline-flex" : "flex",
+            width: hugWidth ? "fit-content" : "100%",
+            height: hugHeight ? "fit-content" : "100%",
+            boxSizing: "border-box",
+            flexDirection: isHorizontal ? "row" : "column",
+            alignItems: flexAlignToCss(layout.align),
+            justifyContent: flexJustifyToCss(layout.justify),
+            flexWrap: layout.wrap ? "wrap" : "nowrap",
+            gap: resolveLayoutLength(layout.gap, lookup, 8),
+            padding: resolveLayoutLength(layout.padding, lookup, 12),
+            overflow: "hidden",
+          }}
+        >
+          {childNodes.length ? (
+            childNodes.map((child) => {
+              const childComponent = components.find((item) => item.id === child.componentId);
+              const mainFill = isHorizontal
+                ? child.widthSizing === "fill"
+                : child.heightSizing === "fill";
+              const crossFill = isHorizontal
+                ? child.heightSizing === "fill"
+                : child.widthSizing === "fill";
+              const childStyle = {
+                display: "inline-flex",
+                ...(mainFill ? { flex: "1 1 0" } : {}),
+                ...(crossFill ? { alignSelf: "stretch" as const } : {}),
+              };
+              return childComponent ? (
+                <span key={child.id} style={childStyle}>
+                  {renderComponentInline(
+                    childComponent,
+                    buildCanvasSelections(childComponent, child.props, child.variant ?? ""),
+                    lookup
+                  )}
+                </span>
+              ) : (
+                <span key={child.id} style={{ ...slotDropZoneStyle, ...childStyle }}>
+                  {child.name}
+                </span>
+              );
+            })
+          ) : (
+            <span style={slotDropZoneEmptyStyle}>{t("canvas.autoLayoutDropHere")}</span>
+          )}
+        </div>
+      </HTMLContainer>
+    );
+  }
+
+  if (component && lookup && isCanvasLiveComponent(component)) {
+    return (
+      <HTMLContainer style={liveComponentShapeStyle}>
+        {renderComponentInstance(
+          component,
+          buildCanvasSelections(component, props, shape.props.variant),
+          lookup
+        )}
+      </HTMLContainer>
+    );
+  }
+
+  return (
+    <HTMLContainer style={componentShapeStyle}>
+      <div style={shapeHeaderStyle}>
+        <strong>{shape.props.label}</strong>
+        <span>{shape.props.variant}</span>
+      </div>
+      {isAutoLayout ? (
+        <div
+          style={{
+            ...autoLayoutFrameStyle,
+            flexDirection: layout.mode === "horizontal" ? "row" : "column",
+            alignItems: flexAlignToCss(layout.align),
+            justifyContent: flexJustifyToCss(layout.justify),
+            flexWrap: layout.wrap ? "wrap" : "nowrap",
+            gap: layout.gap ? 10 : 6,
+          }}
+        >
+          {slotEntries.length ? (
+            slotEntries.map(([name, children]) => (
+              <div key={name} style={slotDropZoneStyle}>
+                <span style={slotDropZoneLabelStyle}>{name}</span>
+                <span>
+                  {t("canvas.childCount", {
+                    count: Array.isArray(children) ? children.length : 0,
+                  })}
+                </span>
+              </div>
+            ))
+          ) : (
+            <span style={slotDropZoneEmptyStyle}>{t("canvas.autoLayoutAddSlot")}</span>
+          )}
+        </div>
+      ) : (
+        <div style={shapeMetaStyle}>{shape.props.componentId}</div>
+      )}
+      <div style={shapeBodyStyle}>
+        <span>{t("canvas.propsCount", { count: Object.keys(props).length })}</span>
+        <span>{t("canvas.slotsCount", { count: slotEntries.length })}</span>
+        {isAutoLayout ? (
+          <span style={shapeLayoutBadgeStyle}>
+            {layout.mode === "horizontal" ? t("canvas.layoutRow") : t("canvas.layoutColumn")}
+          </span>
+        ) : null}
+      </div>
+    </HTMLContainer>
+  );
+}
+
+const liveComponentShapeStyle = {
+  width: "100%",
+  height: "100%",
+  background: "#ffffff",
+  border: "1px solid #e4e4e7",
+  borderRadius: 8,
+  overflow: "hidden",
+  boxSizing: "border-box" as const,
+};
+
+const nestedChildShapeStyle = {
+  width: "100%",
+  height: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "rgba(124, 58, 237, 0.04)",
+  border: "1px dashed #c4b5fd",
+  borderRadius: 8,
+  color: "#71717a",
+  fontSize: 11,
+  textAlign: "center" as const,
+  padding: 6,
+  boxSizing: "border-box" as const,
+};
+
 export class PodoComponentShapeUtil extends ShapeUtil<PodoComponentShape> {
   static override type = PODO_COMPONENT_SHAPE_TYPE;
   static override props: RecordProps<PodoComponentShape> = {
@@ -241,53 +515,7 @@ export class PodoComponentShapeUtil extends ShapeUtil<PodoComponentShape> {
   }
 
   component(shape: PodoComponentShape) {
-    const props = safeParseRecord(shape.props.propsJson);
-    const slots = safeParseRecord(shape.props.slotsJson);
-    const layout = normalizeEditorNodeLayout(safeParseRecord(shape.props.layoutJson).layout);
-    const slotEntries = Object.entries(slots);
-    const isAutoLayout = layout.mode !== "none";
-    return (
-      <HTMLContainer style={componentShapeStyle}>
-        <div style={shapeHeaderStyle}>
-          <strong>{shape.props.label}</strong>
-          <span>{shape.props.variant}</span>
-        </div>
-        {isAutoLayout ? (
-          <div
-            style={{
-              ...autoLayoutFrameStyle,
-              flexDirection: layout.mode === "horizontal" ? "row" : "column",
-              alignItems: flexAlignToCss(layout.align),
-              justifyContent: flexJustifyToCss(layout.justify),
-              flexWrap: layout.wrap ? "wrap" : "nowrap",
-              gap: layout.gap ? 10 : 6,
-            }}
-          >
-            {slotEntries.length ? (
-              slotEntries.map(([name, children]) => (
-                <div key={name} style={slotDropZoneStyle}>
-                  <span style={slotDropZoneLabelStyle}>{name}</span>
-                  <span>{Array.isArray(children) ? children.length : 0} child</span>
-                </div>
-              ))
-            ) : (
-              <span style={slotDropZoneEmptyStyle}>auto-layout · add a slot</span>
-            )}
-          </div>
-        ) : (
-          <div style={shapeMetaStyle}>{shape.props.componentId}</div>
-        )}
-        <div style={shapeBodyStyle}>
-          <span>{Object.keys(props).length} props</span>
-          <span>{slotEntries.length} slots</span>
-          {isAutoLayout ? (
-            <span style={shapeLayoutBadgeStyle}>
-              {layout.mode === "horizontal" ? "→ row" : "↓ column"}
-            </span>
-          ) : null}
-        </div>
-      </HTMLContainer>
-    );
+    return <PodoComponentShapeBody shape={shape} />;
   }
 
   getIndicatorPath(shape: PodoComponentShape): Path2D {
@@ -453,6 +681,30 @@ export function composeSlot(
         ? {
             ...node,
             slots: { ...node.slots, [slotName]: [...(node.slots[slotName] ?? []), childNodeId] },
+          }
+        : node
+    ),
+    selectedNodeId: parentNodeId,
+  };
+}
+
+/** Removes a child node from a parent node's slot (inverse of composeSlot). */
+export function removeFromSlot(
+  state: EditorCanvasState,
+  parentNodeId: string,
+  slotName: string,
+  childNodeId: string
+): EditorCanvasState {
+  return {
+    ...state,
+    nodes: state.nodes.map((node) =>
+      node.id === parentNodeId
+        ? {
+            ...node,
+            slots: {
+              ...node.slots,
+              [slotName]: (node.slots[slotName] ?? []).filter((id) => id !== childNodeId),
+            },
           }
         : node
     ),
@@ -705,10 +957,18 @@ export function createPageDocumentFromCanvas(
         slots[slotName] = children;
       }
     }
+    // The canvas `variant` field is the PRIMARY variant axis value, which is not
+    // always the prop literally named "variant" (e.g. Button's first axis is
+    // `theme`). Export it under the real axis name so it can't clobber a different
+    // prop (the other axes already live in `node.props` via their defaults).
+    const primaryAxis = component?.variants[0]?.name;
     return {
       type: "component-instance",
       component: node.componentId,
-      props: { ...node.props, ...(node.variant ? { variant: node.variant } : {}) },
+      props: {
+        ...node.props,
+        ...(primaryAxis && node.variant ? { [primaryAxis]: node.variant } : {}),
+      },
       slots,
     };
   };

@@ -2,6 +2,8 @@ import { Tldraw, type Editor } from "tldraw";
 import { useRef } from "react";
 import type { Dispatch, DragEvent, MutableRefObject, SetStateAction } from "react";
 import type { ComponentDocument } from "@podo/spec";
+import type { TokenLookup } from "./token-lookup.js";
+import { PodoCanvasRenderContext } from "./canvas.js";
 import type { PodoSaveAdapter } from "@podo/edit-core";
 import {
   PODO_COMPONENT_DRAG_TYPE,
@@ -12,8 +14,10 @@ import {
   editorNodeToTldrawShape,
   nodeLayout,
   podoShapeUtils,
+  removeFromSlot,
   selectResponsivePreview,
   updateComponentNodeLayout,
+  updateComponentNodeProps,
   type AxisSizing,
   type ComponentSpecExportFile,
   type EditorCanvasState,
@@ -34,16 +38,24 @@ import {
   checkboxFieldStyle,
   errorTextStyle,
   fieldStyle,
+  advancedDetailsStyle,
+  advancedSummaryStyle,
   inputStyle,
   inspectorStyle,
   legacyGridPanelStyle,
   previewFrameStyle,
+  propLabelStyle,
+  propRowStyle,
   rowStyle,
   segmentedButtonActiveStyle,
   segmentedButtonStyle,
   segmentedStyle,
   selectStyle,
   sidebarTitleStyle,
+  slotBadgeRemoveStyle,
+  slotBadgeStyle,
+  slotBadgeWrapStyle,
+  slotRowLabelStyle,
   slotRowStyle,
   smallButtonStyle,
   textareaStyle,
@@ -52,11 +64,12 @@ import {
   viewportPanelStyle,
 } from "./styles.js";
 import { TokenPicker, type TokenPickerOption } from "./token-picker.js";
+import { useT } from "./i18n/context.js";
 
-const LAYOUT_MODE_OPTIONS: Array<{ value: EditorNodeLayout["mode"]; label: string }> = [
-  { value: "none", label: "none (absolute)" },
-  { value: "horizontal", label: "horizontal (row)" },
-  { value: "vertical", label: "vertical (column)" },
+const LAYOUT_MODE_OPTIONS: Array<{ value: EditorNodeLayout["mode"]; labelKey: string }> = [
+  { value: "none", labelKey: "canvasPanel.layoutMode.none" },
+  { value: "horizontal", labelKey: "canvasPanel.layoutMode.horizontal" },
+  { value: "vertical", labelKey: "canvasPanel.layoutMode.vertical" },
 ];
 const LAYOUT_ALIGN_OPTIONS: EditorNodeLayout["align"][] = [
   "start",
@@ -74,6 +87,20 @@ const LAYOUT_JUSTIFY_OPTIONS: EditorNodeLayout["justify"][] = [
 ];
 const AXIS_SIZING_OPTIONS: AxisSizing[] = ["fixed", "hug", "fill"];
 
+/** Map a visible align/justify/sizing token to its catalog key (token kept verbatim). */
+const VALUE_LABEL_KEYS: Record<string, string> = {
+  start: "canvasPanel.value.start",
+  center: "canvasPanel.value.center",
+  end: "canvasPanel.value.end",
+  stretch: "canvasPanel.value.stretch",
+  baseline: "canvasPanel.value.baseline",
+  "space-between": "canvasPanel.value.spaceBetween",
+  "space-around": "canvasPanel.value.spaceAround",
+  fixed: "canvasPanel.value.fixed",
+  hug: "canvasPanel.value.hug",
+  fill: "canvasPanel.value.fill",
+};
+
 type NodeLayoutUpdate = {
   layout?: Partial<EditorNodeLayout>;
   widthSizing?: AxisSizing;
@@ -88,15 +115,16 @@ function NodeLayoutInspector({
   node: EditorComponentNode;
   onApply: (update: NodeLayoutUpdate) => void;
 }) {
+  const t = useT();
   const layout = nodeLayout(node);
   const widthSizing = node.widthSizing ?? DEFAULT_AXIS_SIZING;
   const heightSizing = node.heightSizing ?? DEFAULT_AXIS_SIZING;
   const isAutoLayout = layout.mode !== "none";
   return (
     <div style={fieldStyle}>
-      <span>Auto layout</span>
+      <span>{t("canvasPanel.autoLayout")}</span>
       <select
-        aria-label="Auto layout mode"
+        aria-label={t("canvasPanel.autoLayoutMode")}
         style={selectStyle}
         value={layout.mode}
         onChange={(event) =>
@@ -105,7 +133,7 @@ function NodeLayoutInspector({
       >
         {LAYOUT_MODE_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label}
+            {t(option.labelKey)}
           </option>
         ))}
       </select>
@@ -113,9 +141,9 @@ function NodeLayoutInspector({
         <>
           <div style={rowStyle}>
             <label style={fieldStyle}>
-              align
+              {t("canvasPanel.align")}
               <select
-                aria-label="Align items"
+                aria-label={t("canvasPanel.alignItems")}
                 style={selectStyle}
                 value={layout.align}
                 onChange={(event) =>
@@ -126,15 +154,15 @@ function NodeLayoutInspector({
               >
                 {LAYOUT_ALIGN_OPTIONS.map((value) => (
                   <option key={value} value={value}>
-                    {value}
+                    {t(VALUE_LABEL_KEYS[value] ?? value)}
                   </option>
                 ))}
               </select>
             </label>
             <label style={fieldStyle}>
-              justify
+              {t("canvasPanel.justify")}
               <select
-                aria-label="Justify content"
+                aria-label={t("canvasPanel.justifyContent")}
                 style={selectStyle}
                 value={layout.justify}
                 onChange={(event) =>
@@ -145,7 +173,7 @@ function NodeLayoutInspector({
               >
                 {LAYOUT_JUSTIFY_OPTIONS.map((value) => (
                   <option key={value} value={value}>
-                    {value}
+                    {t(VALUE_LABEL_KEYS[value] ?? value)}
                   </option>
                 ))}
               </select>
@@ -153,14 +181,14 @@ function NodeLayoutInspector({
           </div>
           <div style={rowStyle}>
             <label style={fieldStyle}>
-              gap
+              {t("canvasPanel.gap")}
               <input
                 key={`${node.id}:gap:${layout.gap}`}
-                aria-label="Layout gap"
+                aria-label={t("canvasPanel.layoutGap")}
                 style={inputStyle}
                 list={TOKEN_REFERENCE_LIST_ID}
                 defaultValue={layout.gap}
-                placeholder="{spacing.2}"
+                placeholder={t("canvasPanel.spacingPlaceholder")}
                 onBlur={(event) => {
                   if (event.currentTarget.value !== layout.gap) {
                     onApply({ layout: { gap: event.currentTarget.value } });
@@ -174,14 +202,14 @@ function NodeLayoutInspector({
               />
             </label>
             <label style={fieldStyle}>
-              padding
+              {t("canvasPanel.padding")}
               <input
                 key={`${node.id}:padding:${layout.padding}`}
-                aria-label="Layout padding"
+                aria-label={t("canvasPanel.layoutPadding")}
                 style={inputStyle}
                 list={TOKEN_REFERENCE_LIST_ID}
                 defaultValue={layout.padding}
-                placeholder="{spacing.2}"
+                placeholder={t("canvasPanel.spacingPlaceholder")}
                 onBlur={(event) => {
                   if (event.currentTarget.value !== layout.padding) {
                     onApply({ layout: { padding: event.currentTarget.value } });
@@ -201,37 +229,37 @@ function NodeLayoutInspector({
               checked={layout.wrap}
               onChange={(event) => onApply({ layout: { wrap: event.currentTarget.checked } })}
             />
-            wrap
+            {t("canvasPanel.wrap")}
           </label>
         </>
       ) : null}
       <div style={rowStyle}>
         <label style={fieldStyle}>
-          width
+          {t("canvasPanel.width")}
           <select
-            aria-label="Width sizing"
+            aria-label={t("canvasPanel.widthSizing")}
             style={selectStyle}
             value={widthSizing}
             onChange={(event) => onApply({ widthSizing: event.currentTarget.value as AxisSizing })}
           >
             {AXIS_SIZING_OPTIONS.map((value) => (
               <option key={value} value={value}>
-                {value}
+                {t(VALUE_LABEL_KEYS[value] ?? value)}
               </option>
             ))}
           </select>
         </label>
         <label style={fieldStyle}>
-          height
+          {t("canvasPanel.height")}
           <select
-            aria-label="Height sizing"
+            aria-label={t("canvasPanel.heightSizing")}
             style={selectStyle}
             value={heightSizing}
             onChange={(event) => onApply({ heightSizing: event.currentTarget.value as AxisSizing })}
           >
             {AXIS_SIZING_OPTIONS.map((value) => (
               <option key={value} value={value}>
-                {value}
+                {t(VALUE_LABEL_KEYS[value] ?? value)}
               </option>
             ))}
           </select>
@@ -292,6 +320,7 @@ export function CanvasPanelControls({
   adapter: PodoSaveAdapter | undefined;
   enqueueHostWrite: (key: string, task: () => Promise<unknown>) => void;
 }) {
+  const t = useT();
   const propsTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const insertTokenReference = (reference: string): void => {
@@ -310,56 +339,208 @@ export function CanvasPanelControls({
     });
   };
 
+  // Spec-driven single-prop update: writes one key on the selected node's props
+  // without round-tripping through the raw JSON draft.
+  const commitNodeProp = (name: string, value: unknown): void => {
+    if (!selectedNode) {
+      return;
+    }
+    const nextProps = { ...selectedNode.props };
+    if (value === undefined) {
+      delete nextProps[name];
+    } else {
+      nextProps[name] = value;
+    }
+    commitState(updateComponentNodeProps(state, selectedNode.id, nextProps));
+  };
+
   return (
     <>
-      <div style={sidebarTitleStyle}>Canvas</div>
+      <div style={sidebarTitleStyle}>{t("canvasPanel.title")}</div>
       {selectedNode && selectedComponent ? (
         <div style={inspectorStyle}>
           <strong>{selectedNode.name}</strong>
-          <label style={fieldStyle}>
-            Props
-            <textarea
-              ref={propsTextareaRef}
-              style={textareaStyle}
-              value={propsDraftNodeId === selectedNode.id ? propsDraft : ""}
-              onBlur={commitSelectedPropsDraft}
-              onChange={(event) => updateSelectedPropsDraft(event.currentTarget.value)}
-            />
-            <TokenPicker options={tokenPickerOptions} onPick={insertTokenReference} />
-            <button type="button" style={smallButtonStyle} onClick={commitSelectedPropsDraft}>
-              Apply
-            </button>
-            {propsDraftError ? <span style={errorTextStyle}>{propsDraftError}</span> : null}
-          </label>
           <div style={fieldStyle}>
-            <span>Slots</span>
-            {selectedComponent.slots.length ? (
-              selectedComponent.slots.map((slot) => (
-                <div key={slot.name} style={slotRowStyle}>
-                  <span>
-                    {slot.name}
-                    {slot.repeated ? " *" : ""} ({selectedNode.slots[slot.name]?.length ?? 0})
-                  </span>
-                  {state.nodes
-                    .filter((node) => node.id !== selectedNode.id)
-                    .map((child) => (
-                      <button
-                        key={child.id}
-                        type="button"
-                        style={smallButtonStyle}
-                        onClick={() =>
-                          commitState(composeSlot(state, selectedNode.id, slot.name, child.id))
-                        }
-                      >
-                        + {child.name}
-                      </button>
+            <span style={slotRowLabelStyle}>{t("canvasPanel.props")}</span>
+            {selectedComponent.variants.map((axis) => {
+              const current = String(
+                selectedNode.props[axis.name] ?? axis.default ?? axis.values[0] ?? ""
+              );
+              return (
+                <label key={`variant:${axis.name}`} style={propRowStyle}>
+                  <span style={propLabelStyle}>{axis.name}</span>
+                  <select
+                    style={selectStyle}
+                    value={current}
+                    onChange={(event) => commitNodeProp(axis.name, event.currentTarget.value)}
+                  >
+                    {axis.values.map((value) => (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
                     ))}
-                </div>
-              ))
+                  </select>
+                </label>
+              );
+            })}
+            {selectedComponent.props
+              .filter((prop) => !selectedComponent.variants.some((axis) => axis.name === prop.name))
+              .map((prop) => {
+                const propType = prop.type;
+                const raw = selectedNode.props[prop.name];
+                if (propType.kind === "enum" || propType.kind === "union") {
+                  return (
+                    <label key={prop.name} style={propRowStyle}>
+                      <span style={propLabelStyle}>{prop.name}</span>
+                      <select
+                        style={selectStyle}
+                        value={String(raw ?? prop.default ?? "")}
+                        onChange={(event) => commitNodeProp(prop.name, event.currentTarget.value)}
+                      >
+                        <option value="">{t("canvasPanel.enumEmpty")}</option>
+                        {propType.values.map((value) => (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  );
+                }
+                if (propType.kind === "boolean") {
+                  return (
+                    <label key={prop.name} style={checkboxFieldStyle}>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(raw ?? prop.default ?? false)}
+                        onChange={(event) => commitNodeProp(prop.name, event.currentTarget.checked)}
+                      />
+                      {prop.name}
+                    </label>
+                  );
+                }
+                if (propType.kind === "number") {
+                  return (
+                    <label key={prop.name} style={propRowStyle}>
+                      <span style={propLabelStyle}>{prop.name}</span>
+                      <input
+                        type="number"
+                        style={inputStyle}
+                        value={raw === undefined || raw === null ? "" : String(raw)}
+                        onChange={(event) => {
+                          const next = event.currentTarget.value;
+                          commitNodeProp(prop.name, next === "" ? undefined : Number(next));
+                        }}
+                      />
+                    </label>
+                  );
+                }
+                if (propType.kind === "string") {
+                  return (
+                    <label key={prop.name} style={propRowStyle}>
+                      <span style={propLabelStyle}>{prop.name}</span>
+                      <input
+                        type="text"
+                        style={inputStyle}
+                        list={TOKEN_REFERENCE_LIST_ID}
+                        value={raw === undefined || raw === null ? "" : String(raw)}
+                        onChange={(event) => commitNodeProp(prop.name, event.currentTarget.value)}
+                      />
+                    </label>
+                  );
+                }
+                return null;
+              })}
+            <details style={advancedDetailsStyle}>
+              <summary style={advancedSummaryStyle}>{t("canvasPanel.advancedRawJson")}</summary>
+              <textarea
+                ref={propsTextareaRef}
+                style={textareaStyle}
+                value={propsDraftNodeId === selectedNode.id ? propsDraft : ""}
+                onBlur={commitSelectedPropsDraft}
+                onChange={(event) => updateSelectedPropsDraft(event.currentTarget.value)}
+              />
+              <TokenPicker options={tokenPickerOptions} onPick={insertTokenReference} />
+              <button type="button" style={smallButtonStyle} onClick={commitSelectedPropsDraft}>
+                {t("canvasPanel.apply")}
+              </button>
+              {propsDraftError ? <span style={errorTextStyle}>{propsDraftError}</span> : null}
+            </details>
+          </div>
+          <div style={fieldStyle}>
+            <span>{t("canvasPanel.slots")}</span>
+            {selectedComponent.slots.length ? (
+              selectedComponent.slots.map((slot) => {
+                const assigned = selectedNode.slots[slot.name] ?? [];
+                const assignedSet = new Set(assigned);
+                const candidates = state.nodes.filter(
+                  (node) => node.id !== selectedNode.id && !assignedSet.has(node.id)
+                );
+                const canAdd = (slot.repeated || assigned.length === 0) && candidates.length > 0;
+                return (
+                  <div key={slot.name} style={slotRowStyle}>
+                    <span style={slotRowLabelStyle}>
+                      {slot.name}
+                      {slot.repeated ? " *" : ""} ({assigned.length})
+                    </span>
+                    {assigned.length ? (
+                      <div style={slotBadgeWrapStyle}>
+                        {assigned.map((childId) => {
+                          const child = state.nodes.find((node) => node.id === childId);
+                          return (
+                            <span key={childId} style={slotBadgeStyle}>
+                              {child?.name ?? childId}
+                              <button
+                                type="button"
+                                aria-label={t("canvasPanel.removeChildFromSlot", {
+                                  child: child?.name ?? childId,
+                                  slot: slot.name,
+                                })}
+                                style={slotBadgeRemoveStyle}
+                                onClick={() =>
+                                  commitState(
+                                    removeFromSlot(state, selectedNode.id, slot.name, childId)
+                                  )
+                                }
+                              >
+                                ×
+                              </button>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                    {canAdd ? (
+                      <select
+                        aria-label={t("canvasPanel.addChildToSlot", { slot: slot.name })}
+                        style={selectStyle}
+                        value=""
+                        onChange={(event) => {
+                          if (event.currentTarget.value) {
+                            commitState(
+                              composeSlot(
+                                state,
+                                selectedNode.id,
+                                slot.name,
+                                event.currentTarget.value
+                              )
+                            );
+                          }
+                        }}
+                      >
+                        <option value="">{t("canvasPanel.addChildOption")}</option>
+                        {candidates.map((child) => (
+                          <option key={child.id} value={child.id}>
+                            {child.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : null}
+                  </div>
+                );
+              })
             ) : (
-              <span style={errorTextStyle}>
-                This component declares no slots. Add slots in the Components panel.
-              </span>
+              <span style={errorTextStyle}>{t("canvasPanel.noSlots")}</span>
             )}
           </div>
           <NodeLayoutInspector
@@ -374,7 +555,7 @@ export function CanvasPanelControls({
               style={smallButtonStyle}
               onClick={() => saveNodeAsComponent(selectedNode.id)}
             >
-              Save as component
+              {t("canvasPanel.saveAsComponent")}
             </button>
             <button
               type="button"
@@ -383,7 +564,7 @@ export function CanvasPanelControls({
                 setExportPreview(createComponentSpecExportFile(state, selectedNode.id))
               }
             >
-              Export node
+              {t("canvasPanel.exportNode")}
             </button>
           </div>
           {exportPreview ? (
@@ -392,7 +573,7 @@ export function CanvasPanelControls({
         </div>
       ) : null}
       <button type="button" style={toolbarButtonStyle} onClick={createCustomLayout}>
-        + New layout component
+        {t("canvasPanel.newLayoutComponent")}
       </button>
       <div style={toolbarStyle}>
         {state.components.map((component) => (
@@ -418,9 +599,7 @@ export function CanvasPanelControls({
       </div>
       <div style={viewportPanelStyle}>
         <strong>{frame.name}</strong>
-        <span>
-          {frame.width} x {frame.height}
-        </span>
+        <span>{t("canvasPanel.viewportSize", { width: frame.width, height: frame.height })}</span>
         <div style={segmentedStyle}>
           {Object.keys(responsiveViewports).map((name) => (
             <button
@@ -439,11 +618,13 @@ export function CanvasPanelControls({
           ))}
         </div>
         <div style={legacyGridPanelStyle}>
-          <span>Legacy grid</span>
+          <span>{t("canvasPanel.legacyGrid")}</span>
           <strong>
-            {editorLegacyGridContract.breakpoints.pc.columns}/
-            {editorLegacyGridContract.breakpoints.tablet.columns}/
-            {editorLegacyGridContract.breakpoints.mobile.columns} columns
+            {t("canvasPanel.legacyGridColumns", {
+              pc: editorLegacyGridContract.breakpoints.pc.columns,
+              tablet: editorLegacyGridContract.breakpoints.tablet.columns,
+              mobile: editorLegacyGridContract.breakpoints.mobile.columns,
+            })}
           </strong>
           <small>
             .grid, .grid-fix-{"{2..6}"}, .w-*, .w-full, .w-{"{n}_{d}"}, .w-{"{n}px"}
@@ -451,11 +632,11 @@ export function CanvasPanelControls({
         </div>
       </div>
       <div style={inspectorStyle}>
-        <strong>Page export</strong>
+        <strong>{t("canvasPanel.pageExport")}</strong>
         <label style={fieldStyle}>
-          Page id
+          {t("canvasPanel.pageId")}
           <input
-            aria-label="Page id"
+            aria-label={t("canvasPanel.pageId")}
             style={inputStyle}
             value={pageIdDraft}
             onChange={(event) => setPageIdDraft(event.currentTarget.value)}
@@ -469,7 +650,7 @@ export function CanvasPanelControls({
               const id = pageIdDraft.trim();
               const file = createPageDocumentExportFile(state, {
                 id,
-                name: id || "Page",
+                name: id || t("canvasPanel.defaultPageName"),
               });
               setPagePreview(file);
               setPageExportError(undefined);
@@ -479,12 +660,12 @@ export function CanvasPanelControls({
               }
             } catch (error) {
               setPageExportError(
-                error instanceof Error ? error.message : "Page could not be exported."
+                error instanceof Error ? error.message : t("canvasPanel.pageExportError")
               );
             }
           }}
         >
-          Export page
+          {t("canvasPanel.exportPage")}
         </button>
         {pageExportError ? <span style={errorTextStyle}>{pageExportError}</span> : null}
         {pagePreview ? (
@@ -501,12 +682,14 @@ export function CanvasPanelWorkspace({
   handleCanvasDrop,
   editorRef,
   syncFromTldraw,
+  lookup,
 }: {
   state: EditorCanvasState;
   frame: ResponsiveViewport;
   handleCanvasDrop: (event: DragEvent<HTMLElement>) => void;
   editorRef: MutableRefObject<Editor | null>;
   syncFromTldraw: (editor: Editor) => void;
+  lookup: TokenLookup;
 }) {
   return (
     <section style={canvasShellStyle}>
@@ -519,46 +702,50 @@ export function CanvasPanelWorkspace({
           }}
           onDrop={handleCanvasDrop}
         >
-          <Tldraw
-            shapeUtils={podoShapeUtils}
-            onMount={(editor) => {
-              editorRef.current = editor;
-              for (const node of state.nodes) {
-                editor.createShape(editorNodeToTldrawShape(node));
-              }
-              const unsubscribers = [
-                editor.sideEffects.registerAfterChangeHandler("shape", () =>
-                  syncFromTldraw(editor)
-                ),
-                editor.sideEffects.registerAfterDeleteHandler("shape", () =>
-                  syncFromTldraw(editor)
-                ),
-                // Selection lives on instance_page_state (not shape records), so a plain
-                // selection click does not fire the shape handlers. This record also
-                // changes on hover/edit/crop, so sync only when selectedShapeIds actually
-                // changes — otherwise hovering would needlessly emit editor-state updates.
-                editor.sideEffects.registerAfterChangeHandler(
-                  "instance_page_state",
-                  (prev, next) => {
-                    const before = prev.selectedShapeIds;
-                    const after = next.selectedShapeIds;
-                    if (
-                      before.length !== after.length ||
-                      before.some((id, index) => id !== after[index])
-                    ) {
-                      syncFromTldraw(editor);
-                    }
-                  }
-                ),
-              ];
-              return () => {
-                editorRef.current = null;
-                for (const unsubscribe of unsubscribers) {
-                  unsubscribe();
+          <PodoCanvasRenderContext.Provider
+            value={{ components: state.components, lookup, nodes: state.nodes }}
+          >
+            <Tldraw
+              shapeUtils={podoShapeUtils}
+              onMount={(editor) => {
+                editorRef.current = editor;
+                for (const node of state.nodes) {
+                  editor.createShape(editorNodeToTldrawShape(node));
                 }
-              };
-            }}
-          />
+                const unsubscribers = [
+                  editor.sideEffects.registerAfterChangeHandler("shape", () =>
+                    syncFromTldraw(editor)
+                  ),
+                  editor.sideEffects.registerAfterDeleteHandler("shape", () =>
+                    syncFromTldraw(editor)
+                  ),
+                  // Selection lives on instance_page_state (not shape records), so a plain
+                  // selection click does not fire the shape handlers. This record also
+                  // changes on hover/edit/crop, so sync only when selectedShapeIds actually
+                  // changes — otherwise hovering would needlessly emit editor-state updates.
+                  editor.sideEffects.registerAfterChangeHandler(
+                    "instance_page_state",
+                    (prev, next) => {
+                      const before = prev.selectedShapeIds;
+                      const after = next.selectedShapeIds;
+                      if (
+                        before.length !== after.length ||
+                        before.some((id, index) => id !== after[index])
+                      ) {
+                        syncFromTldraw(editor);
+                      }
+                    }
+                  ),
+                ];
+                return () => {
+                  editorRef.current = null;
+                  for (const unsubscribe of unsubscribers) {
+                    unsubscribe();
+                  }
+                };
+              }}
+            />
+          </PodoCanvasRenderContext.Provider>
         </div>
       </div>
     </section>

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { createInMemoryAdapter, type PodoSaveAdapter } from "@podo/edit-core";
 import {
@@ -68,7 +68,13 @@ import {
   upsertComponentVariant,
 } from "./spec-editing.js";
 import { legacyComponents, legacyTokenDocuments } from "./legacy-fixtures.js";
-import { PODO_SCHEMA_VERSION, type ComponentDocument } from "@podo/spec";
+import {
+  parseIconManifest,
+  validateIconManifest,
+  PODO_SCHEMA_VERSION,
+  type ComponentDocument,
+  type IconManifest,
+} from "@podo/spec";
 import { legacyGridContract } from "@podo/tokens";
 
 describe("@podo/editor", () => {
@@ -291,7 +297,13 @@ describe("@podo/editor", () => {
     expect(tokenPaths).toContain("color.primary.hover");
     expect(tokenPaths).toContain("spacing.scale.5");
     expect(tokenPaths).toContain("radius.scale.3");
+    expect(tokenPaths).toContain("typography.display.display3");
+    // Display + the v1 paragraph (p1~p5) scale ship by default so components can
+    // bind to the same typography v1 uses; headings stay project-set.
     expect(tokenPaths).toContain("typography.paragraph.p3");
+    expect(tokenPaths).toContain("typography.paragraph.p3-semibold");
+    expect(tokenPaths).toContain("typography.paragraph.p1");
+    expect(tokenPaths.some((path) => path.startsWith("typography.heading"))).toBe(false);
     expect(tokenPaths).toContain("component.button.theme.primary.solid.background");
     expect(tokenPaths).toContain("component.button.theme.primary.solid.hover.background");
     expect(tokenPaths).toContain("component.button.theme.primary.solid.active.background");
@@ -331,19 +343,22 @@ describe("@podo/editor", () => {
       "center",
       "right",
     ]);
+    // Button appearance bindings were repointed from component-local tokens to the
+    // GLOBAL design tokens they resolve to (so the design editor offers the real
+    // token set). Literals with no global match (e.g. opacity) stay component-local.
     expect(button?.states.find((state) => state.name === "hover")?.tokens).toMatchObject({
-      "root.background": "{component.button.theme.default.solid.hover.background}",
+      "root.background": "{color.default.hover}",
     });
     expect(button?.states.find((state) => state.name === "disabled")?.tokens).toMatchObject({
-      "root.background": "{component.button.disabled.solid.background}",
+      "root.background": "{color.bg.disabled}",
     });
     expect(button?.states.find((state) => state.name === "loading")?.tokens).toMatchObject({
-      "root.opacity": "{component.button.loading.opacity}",
+      "root.opacity": "0.72",
     });
     expect(button?.tokens).toMatchObject({
-      "root.background": "{component.button.theme.default.solid.background}",
-      "root.height": "{component.button.size.sm.height}",
-      "root.typography": "{component.button.size.sm.typography}",
+      "root.background": "{color.default.base}",
+      "root.radius": "{radius.scale.3}",
+      "root.typography": "{typography.paragraph.p3}",
     });
   });
 
@@ -466,7 +481,9 @@ describe("@podo/editor", () => {
       expect.arrayContaining(["font.weight.regular", "font.weight.bold"])
     );
     expect(workspace.sizes.some((record) => record.path.startsWith("font.size."))).toBe(true);
-    expect(workspace.styles.some((record) => record.path === "typography.heading.h1")).toBe(true);
+    expect(workspace.styles.some((record) => record.path === "typography.display.display1")).toBe(
+      true
+    );
     expect(fontFormatFromFileName("podo-sans.otf")).toBe("opentype");
     expect(isEmbeddedFontAsset(token.$extensions?.podo?.fontAsset)).toBe(true);
     expect(token.$extensions?.podo?.fontAsset?.fileName).toBe("podo-sans.woff2");
@@ -546,21 +563,27 @@ describe("@podo/editor", () => {
     expect(screen.getByRole("button", { name: "Submit" }).tagName).toBe("BUTTON");
     cleanup();
 
+    // v1 select is a native control with no custom menu; the trigger shows the value.
     render(renderComponentPreview(legacyComponentById("select"), { state: "open" }, lookup));
-    expect(screen.getByText("Operations")).not.toBeNull();
+    expect(screen.getByText("Product team")).not.toBeNull();
     cleanup();
 
-    render(renderComponentPreview(legacyComponentById("input"), { state: "invalid" }, lookup));
-    const inputShell = screen.getByText("team@podo.dev").parentElement;
-    expect(inputShell?.style.borderColor).toBe("rgb(240, 70, 70)");
+    // Renders the real v1 Input (native <input>); invalid maps to `.danger`.
+    const { container: inputContainer } = render(
+      renderComponentPreview(legacyComponentById("input"), { state: "invalid" }, lookup)
+    );
+    const inputEl = inputContainer.querySelector("input");
+    expect(inputEl).not.toBeNull();
+    expect(inputEl?.classList.contains("danger")).toBe(true);
     cleanup();
 
     render(renderComponentPreview(legacyComponentById("table"), { display: "table" }, lookup));
     expect(screen.getByRole("table")).not.toBeNull();
     cleanup();
 
+    // v1 `.list` is still a <table>; it only swaps row hover/cursor, not cards.
     render(renderComponentPreview(legacyComponentById("table"), { display: "list" }, lookup));
-    expect(screen.queryByRole("table")).toBeNull();
+    expect(screen.getByRole("table")).not.toBeNull();
     expect(screen.getByText("Toast")).not.toBeNull();
     cleanup();
 
@@ -822,6 +845,32 @@ describe("@podo/editor", () => {
     // a non-layout, non-auto-layout node still exports under a plain flex root
     expect(file.document.root.layout).toEqual({ mode: "flex" });
     expect(file.document.root.children[0]?.type).toBe("component-instance");
+  });
+
+  it("exports the primary variant axis under its real prop name without clobbering other props", () => {
+    // A component whose FIRST variant axis is `theme` (not `variant`) and that also
+    // has a `variant` prop: the canvas `variant` field carries the theme value and
+    // must export under `theme`, never overwriting the real `variant` prop.
+    const themed: ComponentDocument = {
+      ...buttonComponent,
+      props: [{ name: "variant", type: { kind: "string" }, default: "solid" }],
+      variants: [{ name: "theme", values: ["default", "primary"], default: "default" }],
+    };
+    const node = createComponentNode(themed, { x: 0, y: 0 }, { id: "btn", variant: "primary" });
+    const state: EditorCanvasState = {
+      ...createEditorState({ components: [themed] }),
+      nodes: [node],
+    };
+    const page = createPageDocumentFromCanvas(state, { id: "home", name: "Home" });
+    if (page.root.type !== "layout") {
+      throw new Error("expected a layout root");
+    }
+    const instance = page.root.children[0];
+    if (instance?.type !== "component-instance") {
+      throw new Error("expected a component-instance child");
+    }
+    expect(instance.props.theme).toBe("primary");
+    expect(instance.props.variant).toBe("solid");
   });
 
   it("derives the light and dark counterpart color paths", () => {
@@ -1438,3 +1487,76 @@ const layoutComponent: ComponentDocument = {
   accessibility: { aria: [], keyboard: [] },
   examples: [],
 };
+
+function inlineIconManifest(): IconManifest {
+  return parseIconManifest({
+    schemaVersion: "2.0.0",
+    kind: "icons",
+    fontFamily: "PodoIcons",
+    icons: {
+      dot: {
+        svg: '<svg viewBox="0 0 1000 1000"><path d="M100 100H900V900H100Z" fill="currentColor"/></svg>',
+        codepoint: "E900",
+        tags: [],
+      },
+    },
+    groups: {},
+    codepointLock: { dot: "E900" },
+  });
+}
+
+describe("@podo/editor icon editing", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("shows the icons tab by default and renders the icon grid", () => {
+    render(
+      <PodoEditorApp
+        components={legacyComponents}
+        tokenDocuments={legacyTokenDocuments}
+        iconManifest={inlineIconManifest()}
+        panel="icons"
+      />
+    );
+    expect(screen.getByText("dot")).toBeDefined();
+    expect(screen.getByRole("button", { name: "icons" })).toBeDefined();
+  });
+
+  it("hides the icons tab unless the host enables icon editing", () => {
+    const { rerender } = render(
+      <PodoEditorApp
+        components={legacyComponents}
+        tokenDocuments={legacyTokenDocuments}
+        capabilities={{ pageDesign: false, writeMode: "overrides", iconEditing: false }}
+      />
+    );
+    expect(screen.queryByRole("button", { name: "icons" })).toBeNull();
+    rerender(
+      <PodoEditorApp
+        components={legacyComponents}
+        tokenDocuments={legacyTokenDocuments}
+        capabilities={{ pageDesign: false, writeMode: "overrides", iconEditing: true }}
+      />
+    );
+    expect(screen.queryByRole("button", { name: "icons" })).not.toBeNull();
+  });
+
+  it("builds and saves a valid always-woff2 manifest from edits", async () => {
+    const saved: IconManifest[] = [];
+    render(
+      <PodoEditorApp
+        components={legacyComponents}
+        tokenDocuments={legacyTokenDocuments}
+        iconManifest={inlineIconManifest()}
+        onIconsChange={(manifest) => saved.push(manifest)}
+        panel="icons"
+      />
+    );
+    fireEvent.click(screen.getByText("Build & save woff2"));
+    await waitFor(() => expect(saved.length).toBe(1));
+    const manifest = saved[0]!;
+    expect(manifest.fontAsset?.format).toBe("woff2");
+    expect(validateIconManifest(manifest)).toEqual([]);
+  });
+});

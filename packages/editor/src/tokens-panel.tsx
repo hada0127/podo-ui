@@ -30,6 +30,7 @@ import {
   tokenTypeMetaStyle,
   tokenTypeNameStyle,
 } from "./styles.js";
+import { useT } from "./i18n/context.js";
 
 export function TokensPanelControls({
   tokenGroups,
@@ -42,9 +43,10 @@ export function TokensPanelControls({
   typographyWorkspaceActive: boolean;
   selectTokenType: (type: DesignToken["$type"]) => void;
 }) {
+  const t = useT();
   return (
     <>
-      <div style={sidebarTitleStyle}>Tokens</div>
+      <div style={sidebarTitleStyle}>{t("tokensPanel.title")}</div>
       <div style={listStyle}>
         {tokenGroups.map((group) => {
           const active =
@@ -63,7 +65,10 @@ export function TokensPanelControls({
             >
               <span style={tokenTypeNameStyle}>{group.label}</span>
               <small style={tokenTypeMetaStyle}>
-                {group.count} tokens / {group.sections.length} groups
+                {t("tokensPanel.groupSummary", {
+                  count: group.count,
+                  groups: group.sections.length,
+                })}
               </small>
             </button>
           );
@@ -94,7 +99,10 @@ export function TokensPanelWorkspace({
   removeFontAssetFromRecord,
   createTypographyToken,
   deleteTokenRecord,
-  deleteTokenRecords,
+  requestDeleteColorVariation,
+  requestDeleteColorGroup,
+  requestDeleteScalarToken,
+  renameColorGroup,
   toggleFamilyWeight,
 }: {
   tokenRecords: EditorTokenRecord[];
@@ -125,25 +133,35 @@ export function TokensPanelWorkspace({
     valueText: string;
   }) => void;
   deleteTokenRecord: (record: EditorTokenRecord) => void;
-  deleteTokenRecords: (records: EditorTokenRecord[]) => void;
+  requestDeleteColorVariation: (records: EditorTokenRecord[]) => void;
+  requestDeleteColorGroup: (groupId: string) => void;
+  requestDeleteScalarToken: (record: EditorTokenRecord) => void;
+  renameColorGroup: (groupId: string, nextName: string) => void;
   toggleFamilyWeight: (
     record: EditorTokenRecord,
     weightValue: number,
     defaultWeights: number[]
   ) => void;
 }) {
-  const scalarLabel = tokenDraft.type === "radius" ? "Radius" : "Spacing";
+  const t = useT();
+  const scalarLabel =
+    tokenDraft.type === "radius"
+      ? t("tokensPanel.scalarLabel.radius")
+      : t("tokensPanel.scalarLabel.spacing");
   const scalarRecords = tokenRecords.filter((record) => record.token.$type === tokenDraft.type);
   return (
     <section style={sectionStyle}>
       <div style={sectionHeaderStyle}>
         <div>
-          <h1 style={sectionTitleStyle}>Tokens</h1>
-          <p style={sectionMetaStyle}>{tokenRecords.length} JSON token specs</p>
+          <h1 style={sectionTitleStyle}>{t("tokensPanel.title")}</h1>
+          <p style={sectionMetaStyle}>
+            {t("tokensPanel.metaSpecs", { count: tokenRecords.length })}
+          </p>
         </div>
       </div>
       {typographyWorkspaceActive
         ? renderTypographyTokenEditor({
+            t,
             model: typographyWorkspace,
             selectedTokenKey,
             lookup: previewTokenLookup,
@@ -158,6 +176,7 @@ export function TokensPanelWorkspace({
           })
         : tokenDraft.type === "color"
           ? renderColorComparisonMatrix({
+              t,
               model: colorComparisonMatrix,
               lightLookup: lightTokenLookup,
               darkLookup: darkTokenLookup,
@@ -167,10 +186,13 @@ export function TokensPanelWorkspace({
               onCommitValue: updateTokenMatrixCell,
               onCreateCounterpart: createColorCounterpart,
               onCreateToken: createTypographyToken,
-              onDeleteVariation: deleteTokenRecords,
+              onDeleteVariation: requestDeleteColorVariation,
+              onDeleteGroup: requestDeleteColorGroup,
+              onRenameGroup: renameColorGroup,
             })
           : tokenDraft.type === "spacing" || tokenDraft.type === "radius"
             ? renderScalarScaleEditor({
+                t,
                 type: tokenDraft.type,
                 label: scalarLabel,
                 records: scalarRecords,
@@ -179,9 +201,10 @@ export function TokensPanelWorkspace({
                 onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
                 onCommitValue: updateTokenMatrixCell,
                 onCreateToken: createTypographyToken,
-                onDeleteToken: deleteTokenRecord,
+                onDeleteToken: requestDeleteScalarToken,
               })
             : renderTokenMatrixEditor({
+                t,
                 matrix: tokenMatrix,
                 selectedTokenKey,
                 onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),

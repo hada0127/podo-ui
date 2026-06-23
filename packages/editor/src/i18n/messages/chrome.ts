@@ -1,0 +1,91 @@
+/**
+ * Editor shell ("chrome") strings: top bar, panel tabs, color-scheme and
+ * language controls, and the generic error fallbacks used by index.tsx.
+ *
+ * `chromeEn` is the source of truth for the key set; `chromeKo` must mirror it.
+ */
+export const chromeEn = {
+  "chrome.product": "Podo Editor",
+  "chrome.language": "Language",
+  "chrome.scheme": "Scheme",
+  "chrome.scheme.light": "light",
+  "chrome.scheme.dark": "dark",
+  "chrome.scheme.auto": "auto",
+  // Lowercase to match the header's `text-transform: capitalize` styling (the
+  // tabs render capitalized) and the historical raw-key text content.
+  "chrome.panel.tokens": "tokens",
+  "chrome.panel.icons": "icons",
+  "chrome.panel.components": "components",
+  "chrome.panel.canvas": "canvas",
+  "chrome.panel.build": "build",
+  "chrome.panel.project": "project",
+
+  // Error fallbacks (used when a caught value is not a coded PodoEditError).
+  "chrome.error.saveFailed": "Save to host failed.",
+  "chrome.error.colorCounterpart": "Color counterpart could not be created.",
+  "chrome.error.tokenCreate": "Token could not be created.",
+  "chrome.error.tokenCellValue": "Token cell value is invalid.",
+  "chrome.error.typographyStructure":
+    "Typography token values must be structured before field editing.",
+  "chrome.error.fontRead": "Font file could not be read.",
+  "chrome.error.tokenDelete": "Token could not be deleted.",
+  "chrome.error.tokensDelete": "Tokens could not be deleted.",
+  "chrome.error.colorSetRename": "Color set could not be renamed.",
+  "chrome.error.colorSetExists": 'Color set "{name}" already exists.',
+  "chrome.error.componentMeta": "Component meta is invalid.",
+  "chrome.error.appearanceBinding": "Appearance binding is invalid.",
+  "chrome.error.variantBinding": "Variant binding is invalid.",
+  "chrome.error.layerName": "Layer name is invalid.",
+  "chrome.error.layerEdit": "Layer edit is invalid.",
+  "chrome.error.propDraft": "Prop draft is invalid.",
+  "chrome.error.propDelete": "Prop could not be deleted.",
+  "chrome.error.variantDraft": "Variant draft is invalid.",
+  "chrome.error.variantDelete": "Variant could not be deleted.",
+  "chrome.error.slotDraft": "Slot draft is invalid.",
+  "chrome.error.slotDelete": "Slot could not be deleted.",
+  "chrome.error.variantExists": 'A variant named "{name}" already exists.',
+  "chrome.error.iconBuildFailed": "Icon font build failed.",
+  "chrome.error.svgAdd": "The SVG could not be added.",
+  "chrome.error.svgReplace": "The SVG could not be replaced.",
+} as const;
+
+export const chromeKo: Record<keyof typeof chromeEn, string> = {
+  "chrome.product": "Podo Editor",
+  "chrome.language": "언어",
+  "chrome.scheme": "색상 모드",
+  "chrome.scheme.light": "라이트",
+  "chrome.scheme.dark": "다크",
+  "chrome.scheme.auto": "자동",
+  "chrome.panel.tokens": "토큰",
+  "chrome.panel.icons": "아이콘",
+  "chrome.panel.components": "컴포넌트",
+  "chrome.panel.canvas": "캔버스",
+  "chrome.panel.build": "빌드",
+  "chrome.panel.project": "프로젝트",
+
+  "chrome.error.saveFailed": "호스트에 저장하지 못했습니다.",
+  "chrome.error.colorCounterpart": "대응 색상을 만들 수 없습니다.",
+  "chrome.error.tokenCreate": "토큰을 만들 수 없습니다.",
+  "chrome.error.tokenCellValue": "토큰 셀 값이 올바르지 않습니다.",
+  "chrome.error.typographyStructure": "필드를 편집하려면 타이포그래피 토큰 값을 구조화해야 합니다.",
+  "chrome.error.fontRead": "글꼴 파일을 읽을 수 없습니다.",
+  "chrome.error.tokenDelete": "토큰을 삭제할 수 없습니다.",
+  "chrome.error.tokensDelete": "토큰을 삭제할 수 없습니다.",
+  "chrome.error.colorSetRename": "색상 세트 이름을 바꿀 수 없습니다.",
+  "chrome.error.colorSetExists": '색상 세트 "{name}"이(가) 이미 있습니다.',
+  "chrome.error.componentMeta": "컴포넌트 메타 정보가 올바르지 않습니다.",
+  "chrome.error.appearanceBinding": "외형 바인딩이 올바르지 않습니다.",
+  "chrome.error.variantBinding": "변형 바인딩이 올바르지 않습니다.",
+  "chrome.error.layerName": "레이어 이름이 올바르지 않습니다.",
+  "chrome.error.layerEdit": "레이어 편집이 올바르지 않습니다.",
+  "chrome.error.propDraft": "속성 입력이 올바르지 않습니다.",
+  "chrome.error.propDelete": "속성을 삭제할 수 없습니다.",
+  "chrome.error.variantDraft": "변형 입력이 올바르지 않습니다.",
+  "chrome.error.variantDelete": "변형을 삭제할 수 없습니다.",
+  "chrome.error.slotDraft": "슬롯 입력이 올바르지 않습니다.",
+  "chrome.error.slotDelete": "슬롯을 삭제할 수 없습니다.",
+  "chrome.error.variantExists": '"{name}" 변형이 이미 있습니다.',
+  "chrome.error.iconBuildFailed": "아이콘 폰트 빌드에 실패했습니다.",
+  "chrome.error.svgAdd": "SVG를 추가할 수 없습니다.",
+  "chrome.error.svgReplace": "SVG를 교체할 수 없습니다.",
+};

@@ -857,6 +857,7 @@ async function readIconInputHash(root: string, manifest: IconManifest): Promise<
     const files = await Promise.all(
       Object.values(manifest.icons)
         .map((icon) => icon.source)
+        .filter((source): source is string => source != null)
         .sort()
         .map(async (source) => [source, await readFile(join(projectSvgRoot, source), "utf8")])
     );
@@ -867,7 +868,18 @@ async function readIconInputHash(root: string, manifest: IconManifest): Promise<
 }
 
 async function hasIconSources(svgRoot: string, manifest: IconManifest): Promise<boolean> {
-  const sources = Object.values(manifest.icons).map((icon) => join(svgRoot, icon.source));
+  // Inline (browser-edited) manifests carry their SVG in `svg`, not on disk; only
+  // a fully file-path manifest can be hashed from project SVG files.
+  const sources: string[] = [];
+  for (const icon of Object.values(manifest.icons)) {
+    if (icon.source == null) {
+      return false;
+    }
+    sources.push(join(svgRoot, icon.source));
+  }
+  if (sources.length === 0) {
+    return false;
+  }
   return (await Promise.all(sources.map((source) => exists(source)))).every(Boolean);
 }
 

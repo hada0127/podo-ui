@@ -22,6 +22,7 @@
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
+    "@podo/icon-build": "workspace:*",
     "@podo/spec": "workspace:*",
     "fantasticon": "^4.1.0",
     "svgo": "^4.0.1",

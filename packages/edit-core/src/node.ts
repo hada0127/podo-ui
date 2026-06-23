@@ -2,8 +2,10 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import {
   parseComponentDocument,
+  parseIconManifest,
   parseTokenDocument,
   type ComponentDocument,
+  type IconManifest,
   type TokenDocument,
 } from "@podo/spec";
 import {
@@ -24,6 +26,12 @@ export interface RepoFsAdapterOptions {
   componentsDir: string;
   /** File written by the bulk token save. Defaults to "editor.tokens.json". */
   tokensFileName?: string;
+  /**
+   * Full path to the icon manifest JSON. When set, the adapter loads and saves
+   * the (embedded, always-woff2) icon manifest there; when omitted, icon editing
+   * is not persisted by this host.
+   */
+  iconsManifestPath?: string;
   capabilities?: Partial<EditorCapabilities>;
 }
 
@@ -113,7 +121,18 @@ export function createRepoFsAdapter(options: RepoFsAdapterOptions): PodoSaveAdap
         // Skip invalid component files.
       }
     }
-    return { tokenDocuments, components, capabilities };
+    let iconManifest: IconManifest | undefined;
+    if (options.iconsManifestPath) {
+      const raw = await readFile(options.iconsManifestPath, "utf8").catch(() => undefined);
+      if (raw) {
+        try {
+          iconManifest = parseIconManifest(JSON.parse(raw));
+        } catch {
+          // Skip an invalid manifest; the validation gate surfaces it.
+        }
+      }
+    }
+    return { tokenDocuments, components, capabilities, ...(iconManifest ? { iconManifest } : {}) };
   }
 
   return {
@@ -158,6 +177,14 @@ export function createRepoFsAdapter(options: RepoFsAdapterOptions): PodoSaveAdap
     async saveComponent(component: ComponentDocument, opts: SaveOptions = {}): Promise<SaveResult> {
       const filePath = join(options.componentsDir, `${component.id}.component.json`);
       return writeJson(filePath, component, Boolean(opts.dryRun));
+    },
+    async saveIconManifest(manifest: IconManifest, opts: SaveOptions = {}): Promise<SaveResult> {
+      // The manifest already carries the authoritative woff2 (`fontAsset`); the
+      // adapter persists the validated JSON verbatim and never rebuilds a font.
+      if (!options.iconsManifestPath) {
+        return { ok: true, ...(opts.dryRun ? { dryRun: true } : {}) };
+      }
+      return writeJson(options.iconsManifestPath, manifest, Boolean(opts.dryRun));
     },
     async validate() {
       const context = await loadContextImpl();
