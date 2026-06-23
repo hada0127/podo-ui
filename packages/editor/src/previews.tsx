@@ -1,5 +1,6 @@
 import { Component, useState, type CSSProperties, type ReactNode } from "react";
 import type { ComponentDocument } from "@podo/spec";
+import type { Translate } from "./i18n/context.js";
 // Real v1 component CSS (compiled from the main branch), scoped under
 // `.podo-v1-stage` so previews render with the actual v1 styling. See
 // scripts/vendor-v1-css.mjs.
@@ -99,6 +100,7 @@ export function renderComponentPreviewMatrix(input: {
   selections: Record<string, string>;
   lookup: TokenLookup;
   onSelect(selections: Record<string, string>): void;
+  t: Translate;
 }) {
   if (SINGLE_INSTANCE_PREVIEW_IDS.has(input.component.id)) {
     return null;
@@ -112,7 +114,7 @@ export function renderComponentPreviewMatrix(input: {
   return (
     <div style={componentMatrixPanelStyle}>
       <div style={componentMatrixHeaderStyle}>
-        <strong>Variant matrix</strong>
+        <strong>{input.t("previews.variantMatrix")}</strong>
         <span>
           {rowVariant.name}
           {columnVariant ? ` x ${columnVariant.name}` : ""}
@@ -125,7 +127,7 @@ export function renderComponentPreviewMatrix(input: {
               <th style={componentMatrixHeaderCellStyle}>{rowVariant.name}</th>
               {columns.map((column) => (
                 <th key={column} style={componentMatrixHeaderCellStyle}>
-                  {columnVariant ? column : "preview"}
+                  {columnVariant ? column : input.t("previews.preview")}
                 </th>
               ))}
             </tr>

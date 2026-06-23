@@ -17,7 +17,7 @@ import { cssToken, type TokenLookup } from "./token-lookup.js";
 import { renderComponentTokenEditor } from "./token-editor.js";
 import { renderComponentPreview, renderComponentPreviewMatrix } from "./previews.js";
 import { LayersPanel } from "./component-layers.js";
-import { useT } from "./i18n/context.js";
+import { useT, type Translate } from "./i18n/context.js";
 import {
   appearanceGroupStyle,
   appearanceGroupTitleStyle,
@@ -103,6 +103,15 @@ function anatomyPartNames(component: ComponentDocument): string[] {
 
 function humanizeLabel(name: string): string {
   return name.replace(/[-_.]/g, " ").replace(/^\w/, (char) => char.toUpperCase());
+}
+
+// Localized label for a known appearance property (background, borderColor,
+// paddingX, …). Falls back to the humanized key for custom/unknown properties so
+// the section headers and their property labels stay consistent across locales.
+function appearancePropertyLabel(property: string, t: Translate): string {
+  const key = `components.prop.${property.toLowerCase().replace(/[-_.\s]/g, "")}`;
+  const localized = t(key);
+  return localized === key ? humanizeLabel(property) : localized;
 }
 
 // Heuristic: which appearance properties are colors (swatch + color picker) vs
@@ -567,6 +576,7 @@ export function ComponentsPanelWorkspace({
             selections: effectiveComponentPreviewSelections,
             lookup: previewTokenLookup,
             onSelect: setComponentPreviewSelections,
+            t,
           });
           return matrix ? (
             <div style={componentPreviewPanelStyle}>
@@ -623,7 +633,9 @@ export function ComponentsPanelWorkspace({
                       return (
                         <div key={binding.key} style={appearanceRowStyle}>
                           <div style={appearanceHeaderStyle}>
-                            <span style={propLabelStyle}>{humanizeLabel(binding.property)}</span>
+                            <span style={propLabelStyle}>
+                              {appearancePropertyLabel(binding.property, t)}
+                            </span>
                             <button
                               type="button"
                               aria-label={t("components.removeProperty", {
@@ -708,7 +720,7 @@ export function ComponentsPanelWorkspace({
                 <option value="">{t("components.addPropertyOption")}</option>
                 {addableProperties.map((entry) => (
                   <option key={entry.property} value={entry.property}>
-                    {humanizeLabel(entry.property)}
+                    {appearancePropertyLabel(entry.property, t)}
                   </option>
                 ))}
               </select>

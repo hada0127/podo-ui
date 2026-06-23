@@ -17,6 +17,7 @@ import { fontsEn, fontsKo } from "./messages/fonts.js";
 import { iconEditorEn, iconEditorKo } from "./messages/iconEditor.js";
 import { iconsPanelEn, iconsPanelKo } from "./messages/iconsPanel.js";
 import { layersEn, layersKo } from "./messages/layers.js";
+import { previewsEn, previewsKo } from "./messages/previews.js";
 import { projectPanelEn, projectPanelKo } from "./messages/projectPanel.js";
 import { tokenEditorEn, tokenEditorKo } from "./messages/tokenEditor.js";
 import { tokenPickerEn, tokenPickerKo } from "./messages/tokenPicker.js";
@@ -40,6 +41,7 @@ export const messages: Record<Locale, MessageTable> = {
     ...iconEditorEn,
     ...iconsPanelEn,
     ...layersEn,
+    ...previewsEn,
     ...projectPanelEn,
     ...tokenEditorEn,
     ...tokenPickerEn,
@@ -60,6 +62,7 @@ export const messages: Record<Locale, MessageTable> = {
     ...iconEditorKo,
     ...iconsPanelKo,
     ...layersKo,
+    ...previewsKo,
     ...projectPanelKo,
     ...tokenEditorKo,
     ...tokenPickerKo,
