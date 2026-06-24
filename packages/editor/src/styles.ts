@@ -2115,7 +2115,10 @@ export const componentMatrixPreviewButtonActiveStyle: CSSProperties = {
 };
 
 export const componentMatrixPreviewClipStyle: CSSProperties = {
-  maxWidth: 180,
+  // No horizontal cap: the box shrink-wraps to the preview's width so a wide
+  // component (e.g. an input) shows in full. `overflow: hidden` + `maxHeight`
+  // still clamps tall previews. The matrix's scroll container handles wide
+  // matrices; capping width here cropped the right edge of each preview.
   maxHeight: 110,
   overflow: "hidden",
   display: "grid",
