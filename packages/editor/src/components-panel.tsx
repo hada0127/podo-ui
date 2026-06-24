@@ -177,6 +177,11 @@ const COMMON_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: stri
   { property: "typography", defaultAlias: "{typography.paragraph.p3}" },
 ];
 
+// Components whose primary text is anatomy/children (not a spec prop), so the
+// preview exposes a synthetic "Text" control that feeds the reserved `text`
+// selection key (renderers read it via previewText()).
+const PREVIEW_TEXT_COMPONENT_IDS = new Set(["button", "chip", "label", "checkbox-radio", "toggle"]);
+
 export function ComponentsPanelControls({
   componentSearch,
   setComponentSearch,
@@ -363,6 +368,10 @@ export function ComponentsPanelWorkspace({
   };
   // Figma-style layers (anatomy parts) + per-part appearance editing.
   const [selectedPart, setSelectedPart] = useState("");
+  // Selection-driven right rail: "preview" (clicking the live preview) shows the
+  // test controls; "design" (selecting a variant-set cell or a layer) shows that
+  // selection's appearance/design properties.
+  const [inspectorTarget, setInspectorTarget] = useState<"design" | "preview">("design");
   // Which appearance binding row is currently open for token picking.
   const [editingBindingKey, setEditingBindingKey] = useState<string | null>(null);
   // "Apply to" scope: base tokens, or a specific variant value (so editing a layer's
@@ -563,7 +572,15 @@ export function ComponentsPanelWorkspace({
             </div>
           </div>
         </details>
-        <div style={componentPreviewPanelStyle}>
+        <div
+          style={
+            inspectorTarget === "preview"
+              ? { ...componentPreviewPanelStyle, outline: "2px solid #7aa7ee", outlineOffset: 2 }
+              : { ...componentPreviewPanelStyle, cursor: "pointer" }
+          }
+          onClick={() => setInspectorTarget("preview")}
+          title={t("components.previewTestHint")}
+        >
           {renderComponentPreview(
             selectedComponentForSpec,
             effectiveComponentPreviewSelections,
@@ -575,7 +592,10 @@ export function ComponentsPanelWorkspace({
             component: selectedComponentForSpec,
             selections: effectiveComponentPreviewSelections,
             lookup: previewTokenLookup,
-            onSelect: setComponentPreviewSelections,
+            onSelect: (next) => {
+              setComponentPreviewSelections(next);
+              setInspectorTarget("design");
+            },
             t,
           });
           return matrix ? (
@@ -589,145 +609,147 @@ export function ComponentsPanelWorkspace({
         })()}
       </div>
       <div style={propertiesRailStyle}>
-        <div style={cardStyle}>
-          <div style={cardHeaderStyle}>
-            <strong style={railSectionTitleStyle}>
-              {t("components.design", { part: humanizeLabel(activePart) })}
-            </strong>
-          </div>
-          {appearanceScopeOptions.length ? (
-            <label style={propRowStyle}>
-              <span style={propLabelStyle}>{t("components.applyTo")}</span>
-              <select
-                style={selectStyle}
-                value={activeScope}
-                onChange={(event) => setAppearanceScope(event.currentTarget.value)}
-              >
-                <option value="base">{t("components.allVariantsBase")}</option>
-                {appearanceScopeOptions.map((option) => (
-                  <option key={option.key} value={option.key}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-          <div style={appearanceGroupsStyle}>
-            {partBindings.length ? (
-              APPEARANCE_GROUP_ORDER.filter((group) =>
-                partBindings.some((binding) => appearanceGroup(binding.property) === group)
-              ).map((group) => (
-                <div key={group} style={appearanceGroupStyle}>
-                  <span style={appearanceGroupTitleStyle}>{t(`components.group.${group}`)}</span>
-                  {partBindings
-                    .filter((binding) => appearanceGroup(binding.property) === group)
-                    .map((binding) => {
-                      const isColor = isColorAppearanceProperty(binding.property);
-                      // A binding is a {token} alias or a raw CSS value.
-                      const isAlias = binding.reference.startsWith("{");
-                      const resolved = isAlias
-                        ? cssToken(previewTokenLookup, binding.reference.slice(1, -1), "")
-                        : binding.reference;
-                      const tokenName = isAlias ? binding.reference.slice(1, -1) : "";
-                      const raw = isRawValueProperty(binding.property);
-                      return (
-                        <div key={binding.key} style={appearanceRowStyle}>
-                          <div style={appearanceHeaderStyle}>
-                            <span style={propLabelStyle}>
-                              {appearancePropertyLabel(binding.property, t)}
-                            </span>
-                            <button
-                              type="button"
-                              aria-label={t("components.removeProperty", {
-                                property: binding.property,
-                              })}
-                              style={appearanceRemoveStyle}
-                              onClick={() => applyAppearanceBinding(binding.key, "")}
-                            >
-                              ×
-                            </button>
-                          </div>
-                          {editingBindingKey === binding.key ? (
-                            raw ? (
-                              <input
-                                autoFocus
-                                type="text"
-                                defaultValue={binding.reference}
-                                placeholder={t("components.rawValuePlaceholder")}
-                                style={inputStyle}
-                                onBlur={(event) => {
-                                  applyAppearanceBinding(binding.key, event.currentTarget.value);
-                                  setEditingBindingKey(null);
-                                }}
-                                onKeyDown={(event) => {
-                                  if (event.key === "Enter") event.currentTarget.blur();
-                                  if (event.key === "Escape") setEditingBindingKey(null);
-                                }}
-                              />
-                            ) : (
-                              <TokenPicker
-                                autoFocus
-                                options={optionsForProperty(binding.property)}
-                                placeholder={tokenName}
-                                onPick={(reference) => {
-                                  applyAppearanceBinding(binding.key, reference);
-                                  setEditingBindingKey(null);
-                                }}
-                                onCancel={() => setEditingBindingKey(null)}
-                              />
-                            )
-                          ) : (
-                            <button
-                              type="button"
-                              style={tokenChipStyle}
-                              title={tokenName || resolved}
-                              onClick={() => setEditingBindingKey(binding.key)}
-                            >
-                              <span
-                                style={{
-                                  ...swatchStyle,
-                                  ...(isColor && resolved
-                                    ? { background: resolved }
-                                    : { background: "transparent", border: "none" }),
-                                }}
-                              />
-                              <span style={tokenChipValueStyle}>{resolved || "—"}</span>
-                              <span style={tokenChipNameStyle}>{tokenName}</span>
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
-                </div>
-              ))
-            ) : (
-              <span style={appearanceValueStyle}>{t("components.noAppearanceProps")}</span>
-            )}
-            {addableProperties.length ? (
-              <select
-                aria-label={t("components.addAppearanceProperty")}
-                style={selectStyle}
-                value=""
-                onChange={(event) => {
-                  const entry = addableProperties.find(
-                    (item) => item.property === event.currentTarget.value
-                  );
-                  if (entry) {
-                    applyAppearanceBinding(`${activePart}.${entry.property}`, entry.defaultAlias);
-                  }
-                }}
-              >
-                <option value="">{t("components.addPropertyOption")}</option>
-                {addableProperties.map((entry) => (
-                  <option key={entry.property} value={entry.property}>
-                    {appearancePropertyLabel(entry.property, t)}
-                  </option>
-                ))}
-              </select>
+        {inspectorTarget === "design" ? (
+          <div style={cardStyle}>
+            <div style={cardHeaderStyle}>
+              <strong style={railSectionTitleStyle}>
+                {t("components.design", { part: humanizeLabel(activePart) })}
+              </strong>
+            </div>
+            {appearanceScopeOptions.length ? (
+              <label style={propRowStyle}>
+                <span style={propLabelStyle}>{t("components.applyTo")}</span>
+                <select
+                  style={selectStyle}
+                  value={activeScope}
+                  onChange={(event) => setAppearanceScope(event.currentTarget.value)}
+                >
+                  <option value="base">{t("components.allVariantsBase")}</option>
+                  {appearanceScopeOptions.map((option) => (
+                    <option key={option.key} value={option.key}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
             ) : null}
+            <div style={appearanceGroupsStyle}>
+              {partBindings.length ? (
+                APPEARANCE_GROUP_ORDER.filter((group) =>
+                  partBindings.some((binding) => appearanceGroup(binding.property) === group)
+                ).map((group) => (
+                  <div key={group} style={appearanceGroupStyle}>
+                    <span style={appearanceGroupTitleStyle}>{t(`components.group.${group}`)}</span>
+                    {partBindings
+                      .filter((binding) => appearanceGroup(binding.property) === group)
+                      .map((binding) => {
+                        const isColor = isColorAppearanceProperty(binding.property);
+                        // A binding is a {token} alias or a raw CSS value.
+                        const isAlias = binding.reference.startsWith("{");
+                        const resolved = isAlias
+                          ? cssToken(previewTokenLookup, binding.reference.slice(1, -1), "")
+                          : binding.reference;
+                        const tokenName = isAlias ? binding.reference.slice(1, -1) : "";
+                        const raw = isRawValueProperty(binding.property);
+                        return (
+                          <div key={binding.key} style={appearanceRowStyle}>
+                            <div style={appearanceHeaderStyle}>
+                              <span style={propLabelStyle}>
+                                {appearancePropertyLabel(binding.property, t)}
+                              </span>
+                              <button
+                                type="button"
+                                aria-label={t("components.removeProperty", {
+                                  property: binding.property,
+                                })}
+                                style={appearanceRemoveStyle}
+                                onClick={() => applyAppearanceBinding(binding.key, "")}
+                              >
+                                ×
+                              </button>
+                            </div>
+                            {editingBindingKey === binding.key ? (
+                              raw ? (
+                                <input
+                                  autoFocus
+                                  type="text"
+                                  defaultValue={binding.reference}
+                                  placeholder={t("components.rawValuePlaceholder")}
+                                  style={inputStyle}
+                                  onBlur={(event) => {
+                                    applyAppearanceBinding(binding.key, event.currentTarget.value);
+                                    setEditingBindingKey(null);
+                                  }}
+                                  onKeyDown={(event) => {
+                                    if (event.key === "Enter") event.currentTarget.blur();
+                                    if (event.key === "Escape") setEditingBindingKey(null);
+                                  }}
+                                />
+                              ) : (
+                                <TokenPicker
+                                  autoFocus
+                                  options={optionsForProperty(binding.property)}
+                                  placeholder={tokenName}
+                                  onPick={(reference) => {
+                                    applyAppearanceBinding(binding.key, reference);
+                                    setEditingBindingKey(null);
+                                  }}
+                                  onCancel={() => setEditingBindingKey(null)}
+                                />
+                              )
+                            ) : (
+                              <button
+                                type="button"
+                                style={tokenChipStyle}
+                                title={tokenName || resolved}
+                                onClick={() => setEditingBindingKey(binding.key)}
+                              >
+                                <span
+                                  style={{
+                                    ...swatchStyle,
+                                    ...(isColor && resolved
+                                      ? { background: resolved }
+                                      : { background: "transparent", border: "none" }),
+                                  }}
+                                />
+                                <span style={tokenChipValueStyle}>{resolved || "—"}</span>
+                                <span style={tokenChipNameStyle}>{tokenName}</span>
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                  </div>
+                ))
+              ) : (
+                <span style={appearanceValueStyle}>{t("components.noAppearanceProps")}</span>
+              )}
+              {addableProperties.length ? (
+                <select
+                  aria-label={t("components.addAppearanceProperty")}
+                  style={selectStyle}
+                  value=""
+                  onChange={(event) => {
+                    const entry = addableProperties.find(
+                      (item) => item.property === event.currentTarget.value
+                    );
+                    if (entry) {
+                      applyAppearanceBinding(`${activePart}.${entry.property}`, entry.defaultAlias);
+                    }
+                  }}
+                >
+                  <option value="">{t("components.addPropertyOption")}</option>
+                  {addableProperties.map((entry) => (
+                    <option key={entry.property} value={entry.property}>
+                      {appearancePropertyLabel(entry.property, t)}
+                    </option>
+                  ))}
+                </select>
+              ) : null}
+            </div>
           </div>
-        </div>
-        {selectedComponentForSpec.states.length ? (
+        ) : null}
+        {inspectorTarget === "preview" && selectedComponentForSpec.states.length ? (
           <div style={cardStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.state")}</strong>
@@ -749,7 +771,7 @@ export function ComponentsPanelWorkspace({
             </label>
           </div>
         ) : null}
-        {selectedComponentForSpec.variants.length ? (
+        {inspectorTarget === "preview" && selectedComponentForSpec.variants.length ? (
           <div style={cardStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.variants")}</strong>
@@ -781,91 +803,114 @@ export function ComponentsPanelWorkspace({
             </div>
           </div>
         ) : null}
-        <div style={cardStyle}>
-          <div style={cardHeaderStyle}>
-            <strong style={railSectionTitleStyle}>{t("components.props")}</strong>
+        {inspectorTarget === "preview" &&
+        PREVIEW_TEXT_COMPONENT_IDS.has(selectedComponentForSpec.id) ? (
+          <div style={cardStyle}>
+            <div style={cardHeaderStyle}>
+              <strong style={railSectionTitleStyle}>{t("components.previewText")}</strong>
+            </div>
+            <div style={railFieldsStyle}>
+              <label style={propRowStyle}>
+                <span style={propLabelStyle}>{t("components.previewTextLabel")}</span>
+                <input
+                  style={inputStyle}
+                  value={effectiveComponentPreviewSelections.text ?? ""}
+                  onChange={(event) => commitPreviewSelection("text", event.currentTarget.value)}
+                />
+              </label>
+            </div>
           </div>
-          <div style={railFieldsStyle}>
-            {selectedComponentForSpec.props
-              .filter(
-                (prop) => !selectedComponentForSpec.variants.some((axis) => axis.name === prop.name)
-              )
-              .map((prop) => {
-                const propType = prop.type;
-                const raw = effectiveComponentPreviewSelections[prop.name];
-                const fallback = prop.default !== undefined ? String(prop.default) : "";
-                if (propType.kind === "enum" || propType.kind === "union") {
-                  return (
-                    <label key={prop.name} style={propRowStyle}>
-                      <span style={propLabelStyle}>{prop.name}</span>
-                      <select
-                        style={selectStyle}
-                        value={raw ?? fallback}
-                        onChange={(event) =>
-                          commitPreviewSelection(prop.name, event.currentTarget.value)
-                        }
-                      >
-                        <option value="">—</option>
-                        {propType.values.map((value) => (
-                          <option key={value} value={value}>
-                            {value}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  );
-                }
-                if (propType.kind === "boolean") {
-                  return (
-                    <label key={prop.name} style={checkboxFieldStyle}>
-                      <input
-                        type="checkbox"
-                        checked={raw === "true" || (raw === undefined && Boolean(prop.default))}
-                        onChange={(event) =>
-                          commitPreviewSelection(prop.name, event.currentTarget.checked)
-                        }
-                      />
-                      {prop.name}
-                    </label>
-                  );
-                }
-                if (propType.kind === "number") {
-                  return (
-                    <label key={prop.name} style={propRowStyle}>
-                      <span style={propLabelStyle}>{prop.name}</span>
-                      <input
-                        type="number"
-                        style={inputStyle}
-                        value={raw ?? fallback}
-                        onChange={(event) =>
-                          commitPreviewSelection(
-                            prop.name,
-                            event.currentTarget.value === "" ? undefined : event.currentTarget.value
-                          )
-                        }
-                      />
-                    </label>
-                  );
-                }
-                if (propType.kind === "string") {
-                  return (
-                    <label key={prop.name} style={propRowStyle}>
-                      <span style={propLabelStyle}>{prop.name}</span>
-                      <input
-                        type="text"
-                        style={inputStyle}
-                        value={raw ?? fallback}
-                        onChange={(event) =>
-                          commitPreviewSelection(prop.name, event.currentTarget.value)
-                        }
-                      />
-                    </label>
-                  );
-                }
-                return null;
-              })}
+        ) : null}
+        {inspectorTarget === "preview" ? (
+          <div style={cardStyle}>
+            <div style={cardHeaderStyle}>
+              <strong style={railSectionTitleStyle}>{t("components.props")}</strong>
+            </div>
+            <div style={railFieldsStyle}>
+              {selectedComponentForSpec.props
+                .filter(
+                  (prop) =>
+                    !selectedComponentForSpec.variants.some((axis) => axis.name === prop.name)
+                )
+                .map((prop) => {
+                  const propType = prop.type;
+                  const raw = effectiveComponentPreviewSelections[prop.name];
+                  const fallback = prop.default !== undefined ? String(prop.default) : "";
+                  if (propType.kind === "enum" || propType.kind === "union") {
+                    return (
+                      <label key={prop.name} style={propRowStyle}>
+                        <span style={propLabelStyle}>{prop.name}</span>
+                        <select
+                          style={selectStyle}
+                          value={raw ?? fallback}
+                          onChange={(event) =>
+                            commitPreviewSelection(prop.name, event.currentTarget.value)
+                          }
+                        >
+                          <option value="">—</option>
+                          {propType.values.map((value) => (
+                            <option key={value} value={value}>
+                              {value}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    );
+                  }
+                  if (propType.kind === "boolean") {
+                    return (
+                      <label key={prop.name} style={checkboxFieldStyle}>
+                        <input
+                          type="checkbox"
+                          checked={raw === "true" || (raw === undefined && Boolean(prop.default))}
+                          onChange={(event) =>
+                            commitPreviewSelection(prop.name, event.currentTarget.checked)
+                          }
+                        />
+                        {prop.name}
+                      </label>
+                    );
+                  }
+                  if (propType.kind === "number") {
+                    return (
+                      <label key={prop.name} style={propRowStyle}>
+                        <span style={propLabelStyle}>{prop.name}</span>
+                        <input
+                          type="number"
+                          style={inputStyle}
+                          value={raw ?? fallback}
+                          onChange={(event) =>
+                            commitPreviewSelection(
+                              prop.name,
+                              event.currentTarget.value === ""
+                                ? undefined
+                                : event.currentTarget.value
+                            )
+                          }
+                        />
+                      </label>
+                    );
+                  }
+                  if (propType.kind === "string") {
+                    return (
+                      <label key={prop.name} style={propRowStyle}>
+                        <span style={propLabelStyle}>{prop.name}</span>
+                        <input
+                          type="text"
+                          style={inputStyle}
+                          value={raw ?? fallback}
+                          onChange={(event) =>
+                            commitPreviewSelection(prop.name, event.currentTarget.value)
+                          }
+                        />
+                      </label>
+                    );
+                  }
+                  return null;
+                })}
+            </div>
           </div>
-        </div>
+        ) : null}
         <details style={disclosureStyle}>
           <summary style={summaryStyle}>{t("components.editSchema")}</summary>
           <div style={editSchemaBodyStyle}>

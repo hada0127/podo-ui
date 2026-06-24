@@ -269,8 +269,24 @@ function v1Classes(...names: Array<string | false | undefined>): string {
   return names.filter(Boolean).join(" ");
 }
 
+// Preview "controls" feed runtime prop values through the selections map so the
+// user can change a component's text/icon and see it applied live. Text content
+// is carried on the reserved `text` key (most components render their content via
+// anatomy/children, not a spec prop); icon names come straight from the string
+// props (icon / rightIcon).
+function previewText(s: Record<string, string>, fallback: string): string {
+  const value = s.text ?? s.children;
+  return typeof value === "string" && value.trim() !== "" ? value : fallback;
+}
+function previewIcon(s: Record<string, string>, key = "icon"): string | undefined {
+  const value = s[key];
+  return typeof value === "string" && value.trim() !== "" ? value : undefined;
+}
+
 function renderButtonPreview(s: Record<string, string>) {
   const state = s.state ?? "default";
+  const icon = previewIcon(s, "icon");
+  const rightIcon = previewIcon(s, "rightIcon");
   return (
     <V1Button
       theme={(s.theme ?? "default") as never}
@@ -279,13 +295,16 @@ function renderButtonPreview(s: Record<string, string>) {
       textAlign={(s.alignment ?? "center") as never}
       loading={state === "loading"}
       disabled={state === "disabled"}
+      {...(icon ? { icon } : {})}
+      {...(rightIcon ? { rightIcon } : {})}
     >
-      Submit
+      {previewText(s, "Submit")}
     </V1Button>
   );
 }
 
 function renderChipPreview(s: Record<string, string>) {
+  const icon = previewIcon(s, "icon");
   return (
     <V1Chip
       theme={(s.theme ?? "default") as never}
@@ -293,8 +312,9 @@ function renderChipPreview(s: Record<string, string>) {
       size={(s.size ?? "md") as never}
       round={s.shape === "round"}
       onDelete={() => {}}
+      {...(icon ? { icon } : {})}
     >
-      Status
+      {previewText(s, "Status")}
     </V1Chip>
   );
 }
@@ -317,13 +337,19 @@ function renderCheckboxRadioPreview(s: Record<string, string>) {
       <V1Radio
         name="opt"
         value="a"
-        label="Selected option"
+        label={previewText(s, "Selected option")}
         defaultChecked={checked}
         disabled={disabled}
       />
     );
   }
-  return <V1Checkbox label="Accept terms" defaultChecked={checked} disabled={disabled} />;
+  return (
+    <V1Checkbox
+      label={previewText(s, "Accept terms")}
+      defaultChecked={checked}
+      disabled={disabled}
+    />
+  );
 }
 
 function CheckboxRadioGroupPreview({
@@ -353,7 +379,7 @@ function renderTogglePreview(s: Record<string, string>) {
   const state = s.state ?? "default";
   return (
     <V1Toggle
-      {...(s.label === "hidden" ? {} : { label: "Enable dark mode" })}
+      {...(s.label === "hidden" ? {} : { label: previewText(s, "Enable dark mode") })}
       defaultChecked={state === "checked"}
       disabled={state === "disabled"}
     />
@@ -374,7 +400,7 @@ function renderInputPreview(s: Record<string, string>) {
     <V1Input
       {...(className ? { className } : {})}
       defaultValue="team@podo.dev"
-      placeholder="team@podo.dev"
+      placeholder={s.placeholder?.trim() ? s.placeholder : "team@podo.dev"}
       disabled={state === "disabled"}
     />
   );
@@ -420,7 +446,7 @@ function renderLabelPreview(s: Record<string, string>) {
       required={s.required === "true"}
       disabled={s.state === "disabled"}
     >
-      Email address
+      {previewText(s, "Email address")}
     </V1Label>
   );
 }
@@ -535,11 +561,13 @@ const AVATAR_IMAGE_SRC =
 function renderAvatarPreview(s: Record<string, string>) {
   const type = (s.type ?? "icon") as never;
   const size = (Number.parseInt(s.size ?? "56", 10) || 56) as never;
+  const icon = previewIcon(s, "icon");
   return (
     <V1Avatar
       type={type}
       size={size}
-      {...(s.type === "text" ? { text: "PO" } : {})}
+      {...(s.type === "text" ? { text: previewText(s, "PO") } : {})}
+      {...(s.type === "icon" && icon ? { icon } : {})}
       {...(s.type === "image" ? { src: AVATAR_IMAGE_SRC } : {})}
     />
   );

@@ -83,6 +83,9 @@ export const componentsEn = {
 
   "components.variants": "Variants",
   "components.props": "Props",
+  "components.previewText": "Preview text",
+  "components.previewTextLabel": "Text",
+  "components.previewTestHint": "Click the preview to edit variant / icon / text",
 
   "components.editSchema": "Edit schema (advanced)",
   "components.tabProps": "Props ({count})",
@@ -202,6 +205,9 @@ export const componentsKo: Record<keyof typeof componentsEn, string> = {
 
   "components.variants": "변형",
   "components.props": "속성",
+  "components.previewText": "미리보기 텍스트",
+  "components.previewTextLabel": "텍스트",
+  "components.previewTestHint": "미리보기를 클릭해 변형·아이콘·텍스트 편집",
 
   "components.editSchema": "스키마 편집 (고급)",
   "components.tabProps": "속성 ({count})",
