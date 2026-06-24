@@ -609,6 +609,24 @@ export function ComponentsPanelWorkspace({
         })()}
       </div>
       <div style={propertiesRailStyle}>
+        <div style={componentEditModeBarStyle}>
+          {(["design", "preview"] as const).map((target) => (
+            <button
+              key={target}
+              type="button"
+              aria-pressed={inspectorTarget === target}
+              style={{
+                ...componentEditModeButtonStyle,
+                ...(inspectorTarget === target ? componentEditModeButtonActiveStyle : {}),
+              }}
+              onClick={() => setInspectorTarget(target)}
+            >
+              {target === "design"
+                ? t("components.inspectorDesign")
+                : t("components.inspectorTest")}
+            </button>
+          ))}
+        </div>
         {inspectorTarget === "design" ? (
           <div style={cardStyle}>
             <div style={cardHeaderStyle}>

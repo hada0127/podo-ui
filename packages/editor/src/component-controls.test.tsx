@@ -42,4 +42,30 @@ describe("component preview controls feed runtime props", () => {
     render(<>{renderComponentInstance(pick("label"), { text: "Your name" }, lookup)}</>);
     expect(screen.getByText("Your name")).toBeDefined();
   });
+
+  it("falls back to the demo text when the text is blank/whitespace", () => {
+    render(<>{renderComponentInstance(pick("button"), { text: "   " }, lookup)}</>);
+    expect(screen.getByText("Submit")).toBeDefined();
+  });
+
+  it("applies a custom rightIcon selection to the button preview", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("button"), { rightIcon: "icon-chevron" }, lookup)}</>
+    );
+    expect(container.querySelector(".icon-chevron")).not.toBeNull();
+  });
+
+  it("applies a custom icon selection to the chip preview", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("chip"), { icon: "icon-star" }, lookup)}</>
+    );
+    expect(container.querySelector(".icon-star")).not.toBeNull();
+  });
+
+  it("applies a custom icon selection to the avatar preview (type=icon)", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("avatar"), { type: "icon", icon: "icon-bell" }, lookup)}</>
+    );
+    expect(container.querySelector(".icon-bell")).not.toBeNull();
+  });
 });
