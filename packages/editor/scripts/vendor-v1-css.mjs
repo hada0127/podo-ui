@@ -41,6 +41,10 @@ const MODULE_PARTIALS = [
   "react/atom/editor.module",
   "react/molecule/datepicker.module",
   "react/molecule/field.module",
+  // Pagination is module-only on v1 (the global scss/molecule/pagination is
+  // empty), so without this the .pageButton / .active / .pageButtonPlaceholder
+  // classes the component renders get no styling and the preview looks broken.
+  "react/molecule/pagination.module",
 ];
 
 // v1 components assume the global reset (list-style:none, margin/padding:0,

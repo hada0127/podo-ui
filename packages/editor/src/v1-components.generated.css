@@ -15906,3 +15906,944 @@ html[data-color-mode=dark] {
 .podo-v1-stage .style.has-error > div.child textarea {
   border-color: var(--color-danger);
 }
+.podo-v1-stage {
+  /*
+    Color & Theme
+  */
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).primary {
+  color: var(--color-primary) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).primarya:hover {
+  color: var(--color-primary-hover) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).primarya:active {
+  color: var(--color-primary-pressed) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).primarya:focus {
+  color: var(--color-primary-focus) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).primary-fill {
+  color: var(--color-primary);
+  background-color: var(--color-primary-fill) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).primary-reverse {
+  color: var(--color-primary-reverse) !important;
+}
+.podo-v1-stage body .primary-bg {
+  color: var(--color-primary-reverse) !important;
+  background-color: var(--color-primary) !important;
+}
+.podo-v1-stage body .primary-border:not(:disabled) {
+  border: 1px solid var(--color-primary) !important;
+}
+.podo-v1-stage body .primary-border-fill {
+  color: var(--color-primary);
+  background-color: var(--color-primary-fill) !important;
+  border: 1px solid var(--color-primary) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).default {
+  color: var(--color-default) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).defaulta:hover {
+  color: var(--color-default-hover) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).defaulta:active {
+  color: var(--color-default-pressed) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).defaulta:focus {
+  color: var(--color-default-focus) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).default-fill {
+  color: var(--color-default-reverse) !important;
+  background-color: var(--color-default-fill) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).default-reverse {
+  color: var(--color-default-reverse) !important;
+}
+.podo-v1-stage body .default-bg {
+  color: var(--color-default-reverse) !important;
+  background-color: var(--color-default) !important;
+}
+.podo-v1-stage body .default-border:not(:disabled) {
+  border: 1px solid var(--color-default) !important;
+}
+.podo-v1-stage body .default-border-fill {
+  color: var(--color-default-reverse) !important;
+  background-color: var(--color-default-fill) !important;
+  border: 1px solid var(--color-default) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).default-deep {
+  color: var(--color-default-deep) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).default-deepa:hover {
+  color: var(--color-default-deep-hover) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).default-deepa:active {
+  color: var(--color-default-deep-pressed) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).default-deepa:focus {
+  color: var(--color-default-deep-focus) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).default-deep-fill {
+  color: var(--color-default-deep);
+  background-color: var(--color-default-deep-fill) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).default-deep-reverse {
+  color: var(--color-default-deep-reverse) !important;
+}
+.podo-v1-stage body .default-deep-bg {
+  color: var(--color-default-deep-reverse) !important;
+  background-color: var(--color-default-deep) !important;
+}
+.podo-v1-stage body .default-deep-border:not(:disabled) {
+  border: 1px solid var(--color-default-deep) !important;
+}
+.podo-v1-stage body .default-deep-border-fill {
+  color: var(--color-default-deep);
+  background-color: var(--color-default-deep-fill) !important;
+  border: 1px solid var(--color-default-deep) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).info {
+  color: var(--color-info) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).infoa:hover {
+  color: var(--color-info-hover) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).infoa:active {
+  color: var(--color-info-pressed) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).infoa:focus {
+  color: var(--color-info-focus) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).info-fill {
+  color: var(--color-info);
+  background-color: var(--color-info-fill) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).info-reverse {
+  color: var(--color-info-reverse) !important;
+}
+.podo-v1-stage body .info-bg {
+  color: var(--color-info-reverse) !important;
+  background-color: var(--color-info) !important;
+}
+.podo-v1-stage body .info-border:not(:disabled) {
+  border: 1px solid var(--color-info) !important;
+}
+.podo-v1-stage body .info-border-fill {
+  color: var(--color-info);
+  background-color: var(--color-info-fill) !important;
+  border: 1px solid var(--color-info) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).link {
+  color: var(--color-link) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).linka:hover {
+  color: var(--color-link-hover) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).linka:active {
+  color: var(--color-link-pressed) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).linka:focus {
+  color: var(--color-link-focus) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).link-fill {
+  color: var(--color-link);
+  background-color: var(--color-link-fill) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).link-reverse {
+  color: var(--color-link-reverse) !important;
+}
+.podo-v1-stage body .link-bg {
+  color: var(--color-link-reverse) !important;
+  background-color: var(--color-link) !important;
+}
+.podo-v1-stage body .link-border:not(:disabled) {
+  border: 1px solid var(--color-link) !important;
+}
+.podo-v1-stage body .link-border-fill {
+  color: var(--color-link);
+  background-color: var(--color-link-fill) !important;
+  border: 1px solid var(--color-link) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).success {
+  color: var(--color-success) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).successa:hover {
+  color: var(--color-success-hover) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).successa:active {
+  color: var(--color-success-pressed) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).successa:focus {
+  color: var(--color-success-focus) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).success-fill {
+  color: var(--color-success);
+  background-color: var(--color-success-fill) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).success-reverse {
+  color: var(--color-success-reverse) !important;
+}
+.podo-v1-stage body .success-bg {
+  color: var(--color-success-reverse) !important;
+  background-color: var(--color-success) !important;
+}
+.podo-v1-stage body .success-border:not(:disabled) {
+  border: 1px solid var(--color-success) !important;
+}
+.podo-v1-stage body .success-border-fill {
+  color: var(--color-success);
+  background-color: var(--color-success-fill) !important;
+  border: 1px solid var(--color-success) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).warning {
+  color: var(--color-warning) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).warninga:hover {
+  color: var(--color-warning-hover) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).warninga:active {
+  color: var(--color-warning-pressed) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).warninga:focus {
+  color: var(--color-warning-focus) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).warning-fill {
+  color: var(--color-warning);
+  background-color: var(--color-warning-fill) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).warning-reverse {
+  color: var(--color-warning-reverse) !important;
+}
+.podo-v1-stage body .warning-bg {
+  color: var(--color-warning-reverse) !important;
+  background-color: var(--color-warning) !important;
+}
+.podo-v1-stage body .warning-border:not(:disabled) {
+  border: 1px solid var(--color-warning) !important;
+}
+.podo-v1-stage body .warning-border-fill {
+  color: var(--color-warning);
+  background-color: var(--color-warning-fill) !important;
+  border: 1px solid var(--color-warning) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).danger {
+  color: var(--color-danger) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).dangera:hover {
+  color: var(--color-danger-hover) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).dangera:active {
+  color: var(--color-danger-pressed) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).dangera:focus {
+  color: var(--color-danger-focus) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).danger-fill {
+  color: var(--color-danger);
+  background-color: var(--color-danger-fill) !important;
+}
+.podo-v1-stage body :not(button, input, textarea, :disabled).danger-reverse {
+  color: var(--color-danger-reverse) !important;
+}
+.podo-v1-stage body .danger-bg {
+  color: var(--color-danger-reverse) !important;
+  background-color: var(--color-danger) !important;
+}
+.podo-v1-stage body .danger-border:not(:disabled) {
+  border: 1px solid var(--color-danger) !important;
+}
+.podo-v1-stage body .danger-border-fill {
+  color: var(--color-danger);
+  background-color: var(--color-danger-fill) !important;
+  border: 1px solid var(--color-danger) !important;
+}
+.podo-v1-stage {
+  /*
+    Spacing
+  */
+}
+.podo-v1-stage .p-0 {
+  padding: 0;
+}
+.podo-v1-stage .p-t-0 {
+  padding-top: 0;
+}
+.podo-v1-stage .p-r-0 {
+  padding-right: 0;
+}
+.podo-v1-stage .p-b-0 {
+  padding-bottom: 0;
+}
+.podo-v1-stage .p-l-0 {
+  padding-left: 0;
+}
+.podo-v1-stage .m-0 {
+  margin: 0;
+}
+.podo-v1-stage .m-t-0 {
+  margin-top: 0;
+}
+.podo-v1-stage .m-r-0 {
+  margin-right: 0;
+}
+.podo-v1-stage .m-b-0 {
+  margin-bottom: 0;
+}
+.podo-v1-stage .m-l-0 {
+  margin-left: 0;
+}
+.podo-v1-stage .p-1 {
+  padding: 2px;
+}
+.podo-v1-stage .p-t-1 {
+  padding-top: 2px;
+}
+.podo-v1-stage .p-r-1 {
+  padding-right: 2px;
+}
+.podo-v1-stage .p-b-1 {
+  padding-bottom: 2px;
+}
+.podo-v1-stage .p-l-1 {
+  padding-left: 2px;
+}
+.podo-v1-stage .m-1 {
+  margin: 2px;
+}
+.podo-v1-stage .m-t-1 {
+  margin-top: 2px;
+}
+.podo-v1-stage .m-r-1 {
+  margin-right: 2px;
+}
+.podo-v1-stage .m-b-1 {
+  margin-bottom: 2px;
+}
+.podo-v1-stage .m-l-1 {
+  margin-left: 2px;
+}
+.podo-v1-stage .p-2 {
+  padding: 4px;
+}
+.podo-v1-stage .p-t-2 {
+  padding-top: 4px;
+}
+.podo-v1-stage .p-r-2 {
+  padding-right: 4px;
+}
+.podo-v1-stage .p-b-2 {
+  padding-bottom: 4px;
+}
+.podo-v1-stage .p-l-2 {
+  padding-left: 4px;
+}
+.podo-v1-stage .m-2 {
+  margin: 4px;
+}
+.podo-v1-stage .m-t-2 {
+  margin-top: 4px;
+}
+.podo-v1-stage .m-r-2 {
+  margin-right: 4px;
+}
+.podo-v1-stage .m-b-2 {
+  margin-bottom: 4px;
+}
+.podo-v1-stage .m-l-2 {
+  margin-left: 4px;
+}
+.podo-v1-stage .p-3 {
+  padding: 8px;
+}
+.podo-v1-stage .p-t-3 {
+  padding-top: 8px;
+}
+.podo-v1-stage .p-r-3 {
+  padding-right: 8px;
+}
+.podo-v1-stage .p-b-3 {
+  padding-bottom: 8px;
+}
+.podo-v1-stage .p-l-3 {
+  padding-left: 8px;
+}
+.podo-v1-stage .m-3 {
+  margin: 8px;
+}
+.podo-v1-stage .m-t-3 {
+  margin-top: 8px;
+}
+.podo-v1-stage .m-r-3 {
+  margin-right: 8px;
+}
+.podo-v1-stage .m-b-3 {
+  margin-bottom: 8px;
+}
+.podo-v1-stage .m-l-3 {
+  margin-left: 8px;
+}
+.podo-v1-stage .p-4 {
+  padding: 12px;
+}
+.podo-v1-stage .p-t-4 {
+  padding-top: 12px;
+}
+.podo-v1-stage .p-r-4 {
+  padding-right: 12px;
+}
+.podo-v1-stage .p-b-4 {
+  padding-bottom: 12px;
+}
+.podo-v1-stage .p-l-4 {
+  padding-left: 12px;
+}
+.podo-v1-stage .m-4 {
+  margin: 12px;
+}
+.podo-v1-stage .m-t-4 {
+  margin-top: 12px;
+}
+.podo-v1-stage .m-r-4 {
+  margin-right: 12px;
+}
+.podo-v1-stage .m-b-4 {
+  margin-bottom: 12px;
+}
+.podo-v1-stage .m-l-4 {
+  margin-left: 12px;
+}
+.podo-v1-stage .p-5 {
+  padding: 16px;
+}
+.podo-v1-stage .p-t-5 {
+  padding-top: 16px;
+}
+.podo-v1-stage .p-r-5 {
+  padding-right: 16px;
+}
+.podo-v1-stage .p-b-5 {
+  padding-bottom: 16px;
+}
+.podo-v1-stage .p-l-5 {
+  padding-left: 16px;
+}
+.podo-v1-stage .m-5 {
+  margin: 16px;
+}
+.podo-v1-stage .m-t-5 {
+  margin-top: 16px;
+}
+.podo-v1-stage .m-r-5 {
+  margin-right: 16px;
+}
+.podo-v1-stage .m-b-5 {
+  margin-bottom: 16px;
+}
+.podo-v1-stage .m-l-5 {
+  margin-left: 16px;
+}
+.podo-v1-stage .p-6 {
+  padding: 24px;
+}
+.podo-v1-stage .p-t-6 {
+  padding-top: 24px;
+}
+.podo-v1-stage .p-r-6 {
+  padding-right: 24px;
+}
+.podo-v1-stage .p-b-6 {
+  padding-bottom: 24px;
+}
+.podo-v1-stage .p-l-6 {
+  padding-left: 24px;
+}
+.podo-v1-stage .m-6 {
+  margin: 24px;
+}
+.podo-v1-stage .m-t-6 {
+  margin-top: 24px;
+}
+.podo-v1-stage .m-r-6 {
+  margin-right: 24px;
+}
+.podo-v1-stage .m-b-6 {
+  margin-bottom: 24px;
+}
+.podo-v1-stage .m-l-6 {
+  margin-left: 24px;
+}
+.podo-v1-stage .p-7 {
+  padding: 32px;
+}
+.podo-v1-stage .p-t-7 {
+  padding-top: 32px;
+}
+.podo-v1-stage .p-r-7 {
+  padding-right: 32px;
+}
+.podo-v1-stage .p-b-7 {
+  padding-bottom: 32px;
+}
+.podo-v1-stage .p-l-7 {
+  padding-left: 32px;
+}
+.podo-v1-stage .m-7 {
+  margin: 32px;
+}
+.podo-v1-stage .m-t-7 {
+  margin-top: 32px;
+}
+.podo-v1-stage .m-r-7 {
+  margin-right: 32px;
+}
+.podo-v1-stage .m-b-7 {
+  margin-bottom: 32px;
+}
+.podo-v1-stage .m-l-7 {
+  margin-left: 32px;
+}
+.podo-v1-stage .p-8 {
+  padding: 40px;
+}
+.podo-v1-stage .p-t-8 {
+  padding-top: 40px;
+}
+.podo-v1-stage .p-r-8 {
+  padding-right: 40px;
+}
+.podo-v1-stage .p-b-8 {
+  padding-bottom: 40px;
+}
+.podo-v1-stage .p-l-8 {
+  padding-left: 40px;
+}
+.podo-v1-stage .m-8 {
+  margin: 40px;
+}
+.podo-v1-stage .m-t-8 {
+  margin-top: 40px;
+}
+.podo-v1-stage .m-r-8 {
+  margin-right: 40px;
+}
+.podo-v1-stage .m-b-8 {
+  margin-bottom: 40px;
+}
+.podo-v1-stage .m-l-8 {
+  margin-left: 40px;
+}
+.podo-v1-stage .p-9 {
+  padding: 48px;
+}
+.podo-v1-stage .p-t-9 {
+  padding-top: 48px;
+}
+.podo-v1-stage .p-r-9 {
+  padding-right: 48px;
+}
+.podo-v1-stage .p-b-9 {
+  padding-bottom: 48px;
+}
+.podo-v1-stage .p-l-9 {
+  padding-left: 48px;
+}
+.podo-v1-stage .m-9 {
+  margin: 48px;
+}
+.podo-v1-stage .m-t-9 {
+  margin-top: 48px;
+}
+.podo-v1-stage .m-r-9 {
+  margin-right: 48px;
+}
+.podo-v1-stage .m-b-9 {
+  margin-bottom: 48px;
+}
+.podo-v1-stage .m-l-9 {
+  margin-left: 48px;
+}
+.podo-v1-stage .p-10 {
+  padding: 64px;
+}
+.podo-v1-stage .p-t-10 {
+  padding-top: 64px;
+}
+.podo-v1-stage .p-r-10 {
+  padding-right: 64px;
+}
+.podo-v1-stage .p-b-10 {
+  padding-bottom: 64px;
+}
+.podo-v1-stage .p-l-10 {
+  padding-left: 64px;
+}
+.podo-v1-stage .m-10 {
+  margin: 64px;
+}
+.podo-v1-stage .m-t-10 {
+  margin-top: 64px;
+}
+.podo-v1-stage .m-r-10 {
+  margin-right: 64px;
+}
+.podo-v1-stage .m-b-10 {
+  margin-bottom: 64px;
+}
+.podo-v1-stage .m-l-10 {
+  margin-left: 64px;
+}
+.podo-v1-stage .p-11 {
+  padding: 80px;
+}
+.podo-v1-stage .p-t-11 {
+  padding-top: 80px;
+}
+.podo-v1-stage .p-r-11 {
+  padding-right: 80px;
+}
+.podo-v1-stage .p-b-11 {
+  padding-bottom: 80px;
+}
+.podo-v1-stage .p-l-11 {
+  padding-left: 80px;
+}
+.podo-v1-stage .m-11 {
+  margin: 80px;
+}
+.podo-v1-stage .m-t-11 {
+  margin-top: 80px;
+}
+.podo-v1-stage .m-r-11 {
+  margin-right: 80px;
+}
+.podo-v1-stage .m-b-11 {
+  margin-bottom: 80px;
+}
+.podo-v1-stage .m-l-11 {
+  margin-left: 80px;
+}
+.podo-v1-stage .p-12 {
+  padding: 96px;
+}
+.podo-v1-stage .p-t-12 {
+  padding-top: 96px;
+}
+.podo-v1-stage .p-r-12 {
+  padding-right: 96px;
+}
+.podo-v1-stage .p-b-12 {
+  padding-bottom: 96px;
+}
+.podo-v1-stage .p-l-12 {
+  padding-left: 96px;
+}
+.podo-v1-stage .m-12 {
+  margin: 96px;
+}
+.podo-v1-stage .m-t-12 {
+  margin-top: 96px;
+}
+.podo-v1-stage .m-r-12 {
+  margin-right: 96px;
+}
+.podo-v1-stage .m-b-12 {
+  margin-bottom: 96px;
+}
+.podo-v1-stage .m-l-12 {
+  margin-left: 96px;
+}
+.podo-v1-stage .p-13 {
+  padding: 160px;
+}
+.podo-v1-stage .p-t-13 {
+  padding-top: 160px;
+}
+.podo-v1-stage .p-r-13 {
+  padding-right: 160px;
+}
+.podo-v1-stage .p-b-13 {
+  padding-bottom: 160px;
+}
+.podo-v1-stage .p-l-13 {
+  padding-left: 160px;
+}
+.podo-v1-stage .m-13 {
+  margin: 160px;
+}
+.podo-v1-stage .m-t-13 {
+  margin-top: 160px;
+}
+.podo-v1-stage .m-r-13 {
+  margin-right: 160px;
+}
+.podo-v1-stage .m-b-13 {
+  margin-bottom: 160px;
+}
+.podo-v1-stage .m-l-13 {
+  margin-left: 160px;
+}
+.podo-v1-stage {
+  /*
+    Devices
+  */
+  /*
+    Radius
+  */
+}
+.podo-v1-stage .r-0 {
+  border-radius: 0;
+}
+.podo-v1-stage .r-1 {
+  border-radius: 2px;
+}
+.podo-v1-stage .r-2 {
+  border-radius: 4px;
+}
+.podo-v1-stage .r-3 {
+  border-radius: 6px;
+}
+.podo-v1-stage .r-4 {
+  border-radius: 8px;
+}
+.podo-v1-stage .r-5 {
+  border-radius: 12px;
+}
+.podo-v1-stage .r-6 {
+  border-radius: 20px;
+}
+.podo-v1-stage .r-full {
+  border-radius: 9999px;
+}
+.podo-v1-stage {
+  /*
+    Layout
+  */
+  /*
+    Border
+  */
+}
+.podo-v1-stage .border-0 {
+  border: 0 solid;
+}
+.podo-v1-stage .border-1 {
+  border: 1px solid;
+}
+.podo-v1-stage .border-2 {
+  border: 2px solid;
+}
+.podo-v1-stage .border-3 {
+  border: 3px solid;
+}
+.podo-v1-stage .border-4 {
+  border: 4px solid;
+}
+.podo-v1-stage {
+  /*
+    Shadow
+  */
+}
+.podo-v1-stage .shadow-1 {
+  box-shadow: 0px 6px 18px -3px rgba(50, 50, 50, 0.06);
+}
+.podo-v1-stage .shadow-2 {
+  box-shadow: 0px 8px 23px -3px rgba(50, 50, 50, 0.1);
+}
+.podo-v1-stage .shadow-3 {
+  box-shadow: 0px 9px 30px -3px rgba(50, 50, 50, 0.12);
+}
+.podo-v1-stage .shadow-4 {
+  box-shadow: 0px 9.995px 46px -3px rgba(50, 50, 50, 0.12);
+}
+.podo-v1-stage .shadow-5 {
+  box-shadow: 0px 13px 63px -3px rgba(50, 50, 50, 0.14);
+}
+.podo-v1-stage {
+  /*
+    Elevation
+  */
+}
+.podo-v1-stage .bg-elevation {
+  background-color: var(--color-bg-elevation);
+}
+.podo-v1-stage .bg-elevation-1 {
+  background-color: var(--color-bg-elevation-1);
+}
+.podo-v1-stage .bg-elevation-2 {
+  background-color: var(--color-bg-elevation-2);
+  box-shadow: 0px 6px 18px -3px rgba(50, 50, 50, 0.06);
+}
+.podo-v1-stage .bg-elevation-3 {
+  background-color: var(--color-bg-elevation-3);
+  box-shadow: 0px 8px 23px -3px rgba(50, 50, 50, 0.1);
+}
+@media (prefers-color-scheme: dark) {
+  .podo-v1-stage :root:not([data-color-mode=light]) .bg-elevation-2 {
+    box-shadow: none;
+  }
+  .podo-v1-stage :root:not([data-color-mode=light]) .bg-elevation-3 {
+    box-shadow: none;
+  }
+}
+.podo-v1-stage html[data-color-mode=dark] .bg-elevation-2 {
+  box-shadow: none;
+}
+.podo-v1-stage html[data-color-mode=dark] .bg-elevation-3 {
+  box-shadow: none;
+}
+.podo-v1-stage {
+  /*
+    Hide
+  */
+}
+.podo-v1-stage .hide {
+  display: none !important;
+}
+@media screen and (min-width: 1280px) {
+  .podo-v1-stage .hide-pc {
+    display: none !important;
+  }
+}
+@media screen and (min-width: 768px) and (max-width: calc(1280px - 1px)) {
+  .podo-v1-stage .hide-tb {
+    display: none !important;
+  }
+}
+@media screen and (max-width: calc(768px - 1px)) {
+  .podo-v1-stage .hide-mo {
+    display: none !important;
+  }
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 900;
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Black.woff") format("woff");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 800;
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-ExtraBold.woff") format("woff");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 700;
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff") format("woff");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 600;
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff") format("woff");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 500;
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Medium.woff") format("woff");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 400;
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff") format("woff");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 300;
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Light.woff") format("woff");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 200;
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-ExtraLight.woff") format("woff");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 100;
+  src: url("https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Thin.woff") format("woff");
+  font-display: swap;
+}
+.podo-v1-stage {
+  /*
+      Heading
+    */
+  /*
+      Display
+    */
+  /*
+    Paragraph
+  */
+  /*
+    Typo
+  */
+  /*
+    Icon
+  */
+}
+.podo-v1-stage .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.podo-v1-stage .pageButton {
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--color-text-body);
+}
+@media screen and (max-width: calc(768px - 1px)) {
+  .podo-v1-stage .pageButton {
+    font-size: 14px;
+  }
+}
+.podo-v1-stage .pageButton {
+  min-width: 32px;
+  height: 32px;
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: var(--color-text-action);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.podo-v1-stage .pageButton:hover:not(.active) {
+  background-color: var(--color-default-fill);
+  color: var(--color-text-action-hover);
+}
+.podo-v1-stage .pageButton:active:not(.active) {
+  background-color: var(--color-default-hover);
+}
+.podo-v1-stage .pageButton.active {
+  background-color: var(--color-primary);
+  color: var(--color-primary-reverse);
+  border-color: var(--color-primary);
+  font-weight: 600;
+  cursor: default;
+}
+.podo-v1-stage .pageButton:focus-visible {
+  outline: 4px solid var(--color-primary-outline);
+}
+.podo-v1-stage .pageButton:disabled {
+  color: var(--color-text-action-disabled);
+  cursor: not-allowed;
+  background-color: transparent;
+}
+.podo-v1-stage .pageButton i {
+  font-size: 16px;
+}
+.podo-v1-stage .pageButtonPlaceholder {
+  min-width: 32px;
+  height: 32px;
+}
