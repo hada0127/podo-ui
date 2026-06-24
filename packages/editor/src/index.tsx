@@ -455,6 +455,9 @@ export function PodoEditorApp({
   >({});
   const [componentEditMode, setComponentEditMode] = useState<ComponentEditMode>("props");
   const [selectedColorScheme, setSelectedColorScheme] = useState<EditorColorScheme>(colorScheme);
+  // Canvas edit ("design") vs interactive preview ("play") mode. Ephemeral view
+  // state, like selectedColorScheme — not host-controlled.
+  const [canvasMode, setCanvasMode] = useState<"edit" | "preview">("edit");
   const [systemColorScheme, setSystemColorScheme] = useState<"light" | "dark">("light");
   const [exportPreview, setExportPreview] = useState<ComponentSpecExportFile | undefined>();
   const [pageIdDraft, setPageIdDraft] = useState("home");
@@ -1734,6 +1737,28 @@ export function PodoEditorApp({
               </span>
             </div>
           ) : null}
+          {effectiveActivePanel === "canvas" ? (
+            <div style={localeControlStyle}>
+              <span style={topBarControlLabelStyle}>{t("chrome.canvasMode")}</span>
+              <div style={localeSegmentedStyle}>
+                {(["edit", "preview"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={canvasMode === mode}
+                    style={{
+                      ...localeButtonStyle,
+                      textTransform: "capitalize",
+                      ...(canvasMode === mode ? schemeButtonActiveStyle : {}),
+                    }}
+                    onClick={() => setCanvasMode(mode)}
+                  >
+                    {t(`chrome.canvasMode.${mode}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
           <div style={localeControlStyle}>
             <span style={topBarControlLabelStyle}>{t("chrome.language")}</span>
             <div style={localeSegmentedStyle}>
@@ -1933,6 +1958,7 @@ export function PodoEditorApp({
               editorRef={editorRef}
               syncFromTldraw={syncFromTldraw}
               lookup={previewTokenLookup}
+              previewMode={canvasMode === "preview"}
             />
           ) : null}
           {effectiveActivePanel === "build" ? (

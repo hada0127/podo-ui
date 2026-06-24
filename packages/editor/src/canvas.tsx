@@ -19,19 +19,30 @@ import {
   type ComponentDocument,
   type PageDocument,
 } from "@podo/spec";
-import { createContext, useContext, useLayoutEffect, useRef } from "react";
-import { useT } from "./i18n/context.js";
-import { type ResponsiveViewportName } from "./viewport.js";
+import {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+  type Ref,
+} from "react";
+import { useT, type Translate } from "./i18n/context.js";
+import { type ResponsiveViewport, type ResponsiveViewportName } from "./viewport.js";
 import { cssToken, type TokenLookup } from "./token-lookup.js";
 import {
   defaultPreviewSelectionsForComponent,
   isCanvasLiveComponent,
+  PreviewErrorBoundary,
   renderComponentInline,
   renderComponentInstance,
 } from "./previews.js";
 import {
   autoLayoutFrameStyle,
+  canvasPreviewEmptyStyle,
   componentShapeStyle,
+  previewFrameStyle,
   shapeBodyStyle,
   shapeHeaderStyle,
   shapeLayoutBadgeStyle,
@@ -300,9 +311,6 @@ function PodoComponentShapeBody({ shape }: { shape: PodoComponentShape }) {
   const hugHeight = layoutInfo.heightSizing === "hug";
   const contentRef = useRef<HTMLDivElement | null>(null);
   useHugResize(shape, contentRef, hugWidth, hugHeight);
-  const slotEntries = Object.entries(slots);
-  const isAutoLayout = layout.mode !== "none";
-  const component = components.find((item) => item.id === shape.props.componentId);
 
   // A node that is slotted into a container is rendered live INSIDE that
   // container; its standalone shape collapses to a small "nested" chip so it does
@@ -321,6 +329,60 @@ function PodoComponentShapeBody({ shape }: { shape: PodoComponentShape }) {
     );
   }
 
+  const { wrapperStyle, content } = renderCanvasNodeContent(
+    {
+      componentId: shape.props.componentId,
+      name: shape.props.label,
+      variant: shape.props.variant,
+      props,
+      slots: slots as Record<string, string[]>,
+      layout,
+      hugWidth,
+      hugHeight,
+    },
+    { components, lookup, nodes },
+    t,
+    contentRef
+  );
+  return <HTMLContainer style={wrapperStyle}>{content}</HTMLContainer>;
+}
+
+/** Inputs the shared node renderer needs — the caller normalizes layout + hug. */
+export interface CanvasNodeRenderInput {
+  componentId: string;
+  name: string;
+  variant?: string;
+  props: Record<string, unknown>;
+  slots: Record<string, string[]>;
+  layout: EditorNodeLayout;
+  hugWidth: boolean;
+  hugHeight: boolean;
+}
+
+export interface CanvasNodeRenderData {
+  components: ComponentDocument[];
+  lookup: TokenLookup | null;
+  nodes: EditorComponentNode[];
+}
+
+// The single source of truth for "render this canvas node as live content".
+// Returns the wrapper style + content so BOTH the tldraw shape body (wraps in
+// HTMLContainer) and the interactive preview (wraps in an absolutely-positioned
+// div) render identically and can never drift. Three branches mirror the canvas:
+// auto-layout container (flex of inline children), live v1 component, or the
+// schematic card for non-live ids (editor/datepicker/unknown).
+export function renderCanvasNodeContent(
+  input: CanvasNodeRenderInput,
+  data: CanvasNodeRenderData,
+  t: Translate,
+  contentRef?: Ref<HTMLDivElement>
+): { wrapperStyle: CSSProperties; content: ReactNode } {
+  const { components, lookup, nodes } = data;
+  const { props, slots, layout, hugWidth, hugHeight } = input;
+  const slotEntries = Object.entries(slots);
+  const isAutoLayout = layout.mode !== "none";
+  const component = components.find((item) => item.id === input.componentId);
+
   if (component && lookup && component.category === "layout" && isAutoLayout) {
     const nodeById = new Map(nodes.map((item) => [item.id, item]));
     const childNodes = slotEntries
@@ -328,8 +390,9 @@ function PodoComponentShapeBody({ shape }: { shape: PodoComponentShape }) {
       .map((id) => nodeById.get(String(id)))
       .filter((item): item is EditorComponentNode => Boolean(item));
     const isHorizontal = layout.mode === "horizontal";
-    return (
-      <HTMLContainer style={liveComponentShapeStyle}>
+    return {
+      wrapperStyle: liveComponentShapeStyle,
+      content: (
         <div
           ref={contentRef}
           style={{
@@ -378,67 +441,144 @@ function PodoComponentShapeBody({ shape }: { shape: PodoComponentShape }) {
             <span style={slotDropZoneEmptyStyle}>{t("canvas.autoLayoutDropHere")}</span>
           )}
         </div>
-      </HTMLContainer>
-    );
+      ),
+    };
   }
 
   if (component && lookup && isCanvasLiveComponent(component)) {
-    return (
-      <HTMLContainer style={liveComponentShapeStyle}>
-        {renderComponentInstance(
-          component,
-          buildCanvasSelections(component, props, shape.props.variant),
-          lookup
-        )}
-      </HTMLContainer>
-    );
+    return {
+      wrapperStyle: liveComponentShapeStyle,
+      content: renderComponentInstance(
+        component,
+        buildCanvasSelections(component, props, input.variant ?? ""),
+        lookup
+      ),
+    };
   }
 
-  return (
-    <HTMLContainer style={componentShapeStyle}>
-      <div style={shapeHeaderStyle}>
-        <strong>{shape.props.label}</strong>
-        <span>{shape.props.variant}</span>
-      </div>
-      {isAutoLayout ? (
-        <div
-          style={{
-            ...autoLayoutFrameStyle,
-            flexDirection: layout.mode === "horizontal" ? "row" : "column",
-            alignItems: flexAlignToCss(layout.align),
-            justifyContent: flexJustifyToCss(layout.justify),
-            flexWrap: layout.wrap ? "wrap" : "nowrap",
-            gap: layout.gap ? 10 : 6,
-          }}
-        >
-          {slotEntries.length ? (
-            slotEntries.map(([name, children]) => (
-              <div key={name} style={slotDropZoneStyle}>
-                <span style={slotDropZoneLabelStyle}>{name}</span>
-                <span>
-                  {t("canvas.childCount", {
-                    count: Array.isArray(children) ? children.length : 0,
-                  })}
-                </span>
-              </div>
-            ))
-          ) : (
-            <span style={slotDropZoneEmptyStyle}>{t("canvas.autoLayoutAddSlot")}</span>
-          )}
+  return {
+    wrapperStyle: componentShapeStyle,
+    content: (
+      <>
+        <div style={shapeHeaderStyle}>
+          <strong>{input.name}</strong>
+          <span>{input.variant}</span>
         </div>
-      ) : (
-        <div style={shapeMetaStyle}>{shape.props.componentId}</div>
-      )}
-      <div style={shapeBodyStyle}>
-        <span>{t("canvas.propsCount", { count: Object.keys(props).length })}</span>
-        <span>{t("canvas.slotsCount", { count: slotEntries.length })}</span>
         {isAutoLayout ? (
-          <span style={shapeLayoutBadgeStyle}>
-            {layout.mode === "horizontal" ? t("canvas.layoutRow") : t("canvas.layoutColumn")}
-          </span>
-        ) : null}
-      </div>
-    </HTMLContainer>
+          <div
+            style={{
+              ...autoLayoutFrameStyle,
+              flexDirection: layout.mode === "horizontal" ? "row" : "column",
+              alignItems: flexAlignToCss(layout.align),
+              justifyContent: flexJustifyToCss(layout.justify),
+              flexWrap: layout.wrap ? "wrap" : "nowrap",
+              gap: layout.gap ? 10 : 6,
+            }}
+          >
+            {slotEntries.length ? (
+              slotEntries.map(([name, children]) => (
+                <div key={name} style={slotDropZoneStyle}>
+                  <span style={slotDropZoneLabelStyle}>{name}</span>
+                  <span>
+                    {t("canvas.childCount", {
+                      count: Array.isArray(children) ? children.length : 0,
+                    })}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <span style={slotDropZoneEmptyStyle}>{t("canvas.autoLayoutAddSlot")}</span>
+            )}
+          </div>
+        ) : (
+          <div style={shapeMetaStyle}>{input.componentId}</div>
+        )}
+        <div style={shapeBodyStyle}>
+          <span>{t("canvas.propsCount", { count: Object.keys(props).length })}</span>
+          <span>{t("canvas.slotsCount", { count: slotEntries.length })}</span>
+          {isAutoLayout ? (
+            <span style={shapeLayoutBadgeStyle}>
+              {layout.mode === "horizontal" ? t("canvas.layoutRow") : t("canvas.layoutColumn")}
+            </span>
+          ) : null}
+        </div>
+      </>
+    ),
+  };
+}
+
+/**
+ * Interactive page preview: renders the composed canvas (EditorCanvasState) as a
+ * live, tldraw-free DOM tree so placed components actually respond. Top-level
+ * (non-slotted) nodes are absolutely positioned in a viewport-sized frame;
+ * slotted children render nested inside their layout container (never twice).
+ */
+export function CanvasPreview({
+  state,
+  frame,
+  lookup,
+}: {
+  state: EditorCanvasState;
+  frame: ResponsiveViewport;
+  lookup: TokenLookup;
+}) {
+  const t = useT();
+  const slotted = new Set<string>();
+  for (const node of state.nodes) {
+    for (const ids of Object.values(node.slots)) {
+      if (Array.isArray(ids)) {
+        for (const id of ids) slotted.add(id);
+      }
+    }
+  }
+  const topLevel = state.nodes.filter((node) => !slotted.has(node.id));
+  const data: CanvasNodeRenderData = {
+    components: state.components,
+    lookup,
+    nodes: state.nodes,
+  };
+  return (
+    <div
+      data-testid="canvas-preview"
+      style={{ ...previewFrameStyle, width: frame.width, height: frame.height, overflow: "auto" }}
+    >
+      {topLevel.length === 0 ? (
+        <div style={canvasPreviewEmptyStyle}>{t("canvas.previewEmpty")}</div>
+      ) : (
+        topLevel.map((node, index) => {
+          const { wrapperStyle, content } = renderCanvasNodeContent(
+            {
+              componentId: node.componentId,
+              name: node.name,
+              variant: node.variant ?? "",
+              props: node.props,
+              slots: node.slots,
+              layout: nodeLayout(node),
+              hugWidth: node.widthSizing === "hug",
+              hugHeight: node.heightSizing === "hug",
+            },
+            data,
+            t
+          );
+          return (
+            <div
+              key={node.id}
+              style={{
+                ...wrapperStyle,
+                position: "absolute",
+                left: node.x,
+                top: node.y,
+                width: node.w,
+                height: node.h,
+                zIndex: index,
+              }}
+            >
+              <PreviewErrorBoundary>{content}</PreviewErrorBoundary>
+            </div>
+          );
+        })
+      )}
+    </div>
   );
 }
 

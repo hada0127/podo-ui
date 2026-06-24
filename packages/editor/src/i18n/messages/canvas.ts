@@ -8,6 +8,7 @@ export const canvasEn = {
   "canvas.slotsCount": "{count} slots",
   "canvas.layoutRow": "→ row",
   "canvas.layoutColumn": "↓ column",
+  "canvas.previewEmpty": "Place components on the canvas, then switch to play to test them.",
 } as const;
 
 export const canvasKo: Record<keyof typeof canvasEn, string> = {
@@ -19,4 +20,5 @@ export const canvasKo: Record<keyof typeof canvasEn, string> = {
   "canvas.slotsCount": "슬롯 {count}개",
   "canvas.layoutRow": "→ 가로",
   "canvas.layoutColumn": "↓ 세로",
+  "canvas.previewEmpty": "캔버스에 컴포넌트를 배치한 뒤 플레이로 전환해 테스트하세요.",
 };

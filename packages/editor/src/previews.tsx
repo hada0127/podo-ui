@@ -566,7 +566,10 @@ function EditorPreviewBody({ resizable }: { resizable: boolean }) {
 
 // Contains preview-component crashes so a single broken preview cannot blank the
 // whole editor app, and surfaces the error message for debugging.
-class PreviewErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
+export class PreviewErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: string | null }
+> {
   state = { error: null as string | null };
   static getDerivedStateFromError(error: unknown) {
     return { error: error instanceof Error ? error.message : String(error) };

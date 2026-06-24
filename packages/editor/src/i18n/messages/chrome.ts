@@ -11,6 +11,9 @@ export const chromeEn = {
   "chrome.scheme.light": "light",
   "chrome.scheme.dark": "dark",
   "chrome.scheme.auto": "auto",
+  "chrome.canvasMode": "Mode",
+  "chrome.canvasMode.edit": "design",
+  "chrome.canvasMode.preview": "play",
   // Lowercase to match the header's `text-transform: capitalize` styling (the
   // tabs render capitalized) and the historical raw-key text content.
   "chrome.panel.tokens": "tokens",
@@ -56,6 +59,9 @@ export const chromeKo: Record<keyof typeof chromeEn, string> = {
   "chrome.scheme.light": "라이트",
   "chrome.scheme.dark": "다크",
   "chrome.scheme.auto": "자동",
+  "chrome.canvasMode": "모드",
+  "chrome.canvasMode.edit": "디자인",
+  "chrome.canvasMode.preview": "플레이",
   "chrome.panel.tokens": "토큰",
   "chrome.panel.icons": "아이콘",
   "chrome.panel.components": "컴포넌트",

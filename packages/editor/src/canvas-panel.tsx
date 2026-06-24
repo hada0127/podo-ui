@@ -3,7 +3,7 @@ import { useRef } from "react";
 import type { Dispatch, DragEvent, MutableRefObject, SetStateAction } from "react";
 import type { ComponentDocument } from "@podo/spec";
 import type { TokenLookup } from "./token-lookup.js";
-import { PodoCanvasRenderContext } from "./canvas.js";
+import { CanvasPreview, PodoCanvasRenderContext } from "./canvas.js";
 import type { PodoSaveAdapter } from "@podo/edit-core";
 import {
   PODO_COMPONENT_DRAG_TYPE,
@@ -683,6 +683,7 @@ export function CanvasPanelWorkspace({
   editorRef,
   syncFromTldraw,
   lookup,
+  previewMode,
 }: {
   state: EditorCanvasState;
   frame: ResponsiveViewport;
@@ -690,7 +691,20 @@ export function CanvasPanelWorkspace({
   editorRef: MutableRefObject<Editor | null>;
   syncFromTldraw: (editor: Editor) => void;
   lookup: TokenLookup;
+  previewMode: boolean;
 }) {
+  // Preview/play mode swaps tldraw out for a live interactive render of the
+  // composed page (tldraw intercepts pointer events, so components can only be
+  // tested once it is unmounted).
+  if (previewMode) {
+    return (
+      <section style={canvasShellStyle}>
+        <div style={canvasArtboardStageStyle}>
+          <CanvasPreview state={state} frame={frame} lookup={lookup} />
+        </div>
+      </section>
+    );
+  }
   return (
     <section style={canvasShellStyle}>
       <div style={canvasArtboardStageStyle}>

@@ -2430,6 +2430,17 @@ export const previewFrameStyle: CSSProperties = {
   boxShadow: "0 8px 28px rgba(15, 23, 42, 0.12)",
 };
 
+export const canvasPreviewEmptyStyle: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  display: "grid",
+  placeItems: "center",
+  padding: 24,
+  textAlign: "center",
+  color: "#8a93a3",
+  fontSize: 13,
+};
+
 export const componentShapeStyle: CSSProperties = {
   width: "100%",
   height: "100%",
