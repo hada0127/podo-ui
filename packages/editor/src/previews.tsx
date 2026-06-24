@@ -111,6 +111,7 @@ export function renderComponentPreviewMatrix(input: {
   }
   const columnVariant = input.component.variants[1];
   const columns = columnVariant?.values ?? ["preview"];
+  const defaultSelections = defaultPreviewSelectionsForComponent(input.component);
   return (
     <div style={componentMatrixPanelStyle}>
       <div style={componentMatrixHeaderStyle}>
@@ -137,7 +138,17 @@ export function renderComponentPreviewMatrix(input: {
               <tr key={rowValue}>
                 <th style={componentMatrixRowHeaderStyle}>{rowValue}</th>
                 {columns.map((columnValue, columnIndex) => {
+                  // The matrix is a stable reference grid: each cell shows its own
+                  // variant combo with DEFAULT content, so editing the preview's
+                  // test controls (text / icon / state) never changes the matrix.
                   const cellSelections = {
+                    ...defaultSelections,
+                    [rowVariant.name]: rowValue,
+                    ...(columnVariant ? { [columnVariant.name]: columnValue } : {}),
+                  };
+                  // Clicking a cell selects that variant for design — carry the
+                  // current selections so the live preview keeps its overrides.
+                  const cellOnSelect = {
                     ...input.selections,
                     [rowVariant.name]: rowValue,
                     ...(columnVariant ? { [columnVariant.name]: columnValue } : {}),
@@ -157,11 +168,11 @@ export function renderComponentPreviewMatrix(input: {
                           ...componentMatrixPreviewButtonStyle,
                           ...(selected ? componentMatrixPreviewButtonActiveStyle : {}),
                         }}
-                        onClick={() => input.onSelect(cellSelections)}
+                        onClick={() => input.onSelect(cellOnSelect)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter" || event.key === " ") {
                             event.preventDefault();
-                            input.onSelect(cellSelections);
+                            input.onSelect(cellOnSelect);
                           }
                         }}
                       >

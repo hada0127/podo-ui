@@ -272,6 +272,7 @@ export function ComponentsPanelWorkspace({
   moveAnatomyPart,
   tokenPickerOptions,
   previewTokenLookup,
+  iconNames,
   effectiveComponentPreviewSelections,
   setComponentPreviewSelections,
 }: {
@@ -319,6 +320,7 @@ export function ComponentsPanelWorkspace({
   moveAnatomyPart: (partName: string, newParent: string | null, beforeName: string | null) => void;
   tokenPickerOptions: TokenPickerOption[];
   previewTokenLookup: TokenLookup;
+  iconNames: string[];
   effectiveComponentPreviewSelections: Record<string, string>;
   setComponentPreviewSelections: Dispatch<SetStateAction<Record<string, string>>>;
 }) {
@@ -910,6 +912,29 @@ export function ComponentsPanelWorkspace({
                     );
                   }
                   if (propType.kind === "string") {
+                    // Icon props pick from the registered icon set; their value is
+                    // the v1 icon class (icon-<name>) the renderers/components use.
+                    if (/icon/i.test(prop.name)) {
+                      return (
+                        <label key={prop.name} style={propRowStyle}>
+                          <span style={propLabelStyle}>{prop.name}</span>
+                          <select
+                            style={selectStyle}
+                            value={raw ?? fallback}
+                            onChange={(event) =>
+                              commitPreviewSelection(prop.name, event.currentTarget.value)
+                            }
+                          >
+                            <option value="">—</option>
+                            {iconNames.map((name) => (
+                              <option key={name} value={`icon-${name}`}>
+                                {name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      );
+                    }
                     return (
                       <label key={prop.name} style={propRowStyle}>
                         <span style={propLabelStyle}>{prop.name}</span>

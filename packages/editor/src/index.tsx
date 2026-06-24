@@ -1946,6 +1946,7 @@ export function PodoEditorApp({
               moveAnatomyPart={moveAnatomyPart}
               tokenPickerOptions={tokenPickerOptions}
               previewTokenLookup={previewTokenLookup}
+              iconNames={Object.keys(iconModel.icons)}
               effectiveComponentPreviewSelections={effectiveComponentPreviewSelections}
               setComponentPreviewSelections={setComponentPreviewSelections}
             />

@@ -1,9 +1,13 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
-import { renderComponentInstance } from "./previews.js";
+import { renderComponentInstance, renderComponentPreviewMatrix } from "./previews.js";
 import { legacyComponents } from "./legacy-fixtures.js";
 import type { TokenLookup } from "./token-lookup.js";
+import type { Translate } from "./i18n/context.js";
+
+// The matrix only uses t() for header labels; identity is enough for these assertions.
+const t = ((key: string) => key) as Translate;
 
 afterEach(cleanup);
 
@@ -67,5 +71,23 @@ describe("component preview controls feed runtime props", () => {
       <>{renderComponentInstance(pick("avatar"), { type: "icon", icon: "icon-bell" }, lookup)}</>
     );
     expect(container.querySelector(".icon-bell")).not.toBeNull();
+  });
+
+  it("variant matrix ignores preview test overrides (renders default content)", () => {
+    const { container } = render(
+      <>
+        {renderComponentPreviewMatrix({
+          component: pick("button"),
+          selections: { text: "OVERRIDE", icon: "icon-plus", state: "loading" },
+          lookup,
+          onSelect: () => {},
+          t,
+        })}
+      </>
+    );
+    // Cells show the canonical default ("Submit"), never the preview's overrides.
+    expect(container.textContent).toContain("Submit");
+    expect(container.textContent).not.toContain("OVERRIDE");
+    expect(container.querySelector(".icon-plus")).toBeNull();
   });
 });
