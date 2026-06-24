@@ -17,6 +17,7 @@ import { cssToken, type TokenLookup } from "./token-lookup.js";
 import { renderComponentTokenEditor } from "./token-editor.js";
 import { renderComponentPreview, renderComponentPreviewMatrix } from "./previews.js";
 import { LayersPanel } from "./component-layers.js";
+import { IconPicker } from "./icon-picker.js";
 import { useT, type Translate } from "./i18n/context.js";
 import {
   appearanceGroupStyle,
@@ -918,20 +919,13 @@ export function ComponentsPanelWorkspace({
                       return (
                         <label key={prop.name} style={propRowStyle}>
                           <span style={propLabelStyle}>{prop.name}</span>
-                          <select
-                            style={selectStyle}
-                            value={raw ?? fallback}
-                            onChange={(event) =>
-                              commitPreviewSelection(prop.name, event.currentTarget.value)
-                            }
-                          >
-                            <option value="">—</option>
-                            {iconNames.map((name) => (
-                              <option key={name} value={`icon-${name}`}>
-                                {name}
-                              </option>
-                            ))}
-                          </select>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <IconPicker
+                              value={raw ?? fallback}
+                              iconNames={iconNames}
+                              onChange={(next) => commitPreviewSelection(prop.name, next)}
+                            />
+                          </div>
                         </label>
                       );
                     }

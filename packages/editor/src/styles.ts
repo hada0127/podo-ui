@@ -2392,6 +2392,60 @@ export const tokenPickerEmptyStyle: CSSProperties = {
   color: "#6b7280",
 };
 
+// Icon picker: a current-glyph swatch + search input, with a glyph grid popover.
+export const iconPickerSwatchStyle: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: 32,
+  height: 32,
+  flex: "none",
+  border: "1px solid #ccd6e3",
+  borderRadius: 6,
+  background: "#ffffff",
+  fontSize: 18,
+  color: "#1f2937",
+};
+export const iconPickerPopoverStyle: CSSProperties = {
+  ...tokenPickerDropdownStyle,
+  padding: 8,
+};
+export const iconPickerGridStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(64px, 1fr))",
+  gap: 4,
+  marginTop: 8,
+};
+export const iconPickerCellStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 4,
+  padding: "8px 4px",
+  border: "1px solid transparent",
+  borderRadius: 6,
+  background: "transparent",
+  cursor: "pointer",
+  overflow: "hidden",
+};
+export const iconPickerCellActiveStyle: CSSProperties = {
+  borderColor: "#7aa7ee",
+  background: "#eef4ff",
+};
+export const iconPickerCellGlyphStyle: CSSProperties = {
+  fontSize: 22,
+  lineHeight: 1,
+  color: "#1f2937",
+};
+export const iconPickerCellNameStyle: CSSProperties = {
+  fontSize: 10,
+  color: "#6b7280",
+  maxWidth: "100%",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+};
+
 export const canvasShellStyle: CSSProperties = {
   minWidth: 0,
   minHeight: 0,

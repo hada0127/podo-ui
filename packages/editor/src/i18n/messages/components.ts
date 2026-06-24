@@ -88,6 +88,8 @@ export const componentsEn = {
   "components.previewTestHint": "Click the preview to edit variant / icon / text",
   "components.inspectorDesign": "Design",
   "components.inspectorTest": "Test",
+  "components.iconSearch": "Search icons",
+  "components.iconNone": "None",
 
   "components.editSchema": "Edit schema (advanced)",
   "components.tabProps": "Props ({count})",
@@ -212,6 +214,8 @@ export const componentsKo: Record<keyof typeof componentsEn, string> = {
   "components.previewTestHint": "미리보기를 클릭해 변형·아이콘·텍스트 편집",
   "components.inspectorDesign": "디자인",
   "components.inspectorTest": "테스트",
+  "components.iconSearch": "아이콘 검색",
+  "components.iconNone": "없음",
 
   "components.editSchema": "스키마 편집 (고급)",
   "components.tabProps": "속성 ({count})",
