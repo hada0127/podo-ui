@@ -39,6 +39,8 @@ const MODULE_PARTIALS = [
   "react/atom/avatar.module",
   "react/atom/tooltip.module",
   "react/atom/editor.module",
+  "react/atom/input.module",
+  "react/atom/textarea.module",
   "react/molecule/datepicker.module",
   "react/molecule/field.module",
   // Pagination is module-only on v1 (the global scss/molecule/pagination is
