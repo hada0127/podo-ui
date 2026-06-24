@@ -690,7 +690,10 @@ function renderSpecDrivenComponentPreview(component: ComponentDocument, lookup: 
 // Maps an appearance property key (normalized: lowercased, separators removed) to
 // the CSS property it controls. Typography is resolved separately.
 const APPEARANCE_CSS_PROPERTY: Record<string, string> = {
-  background: "background",
+  // Use background-COLOR, not the `background` shorthand: the shorthand resets
+  // background-image, which wipes v1 elements that paint with one (e.g. the
+  // <select> dropdown arrow, checkbox/radio marks).
+  background: "background-color",
   backgroundcolor: "background-color",
   color: "color",
   bordercolor: "border-color",
