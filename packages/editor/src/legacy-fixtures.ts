@@ -1180,6 +1180,10 @@ export const legacyComponents: ComponentDocument[] = [
     ],
     tokens: {
       ...legacyBaseComponentTokens(),
+      // The "root" part maps to the bare <input>, but the v1 checkbox/radio draws
+      // its box (fill + border + check) entirely via a ::before SVG. A background
+      // on the input therefore bleeds around that smaller SVG box, so clear it.
+      "root.background": "transparent",
       "control.size": "{spacing.scale.6}",
       "control.borderColor": "{color.border.base}",
       "control.background": "{color.bg.modal}",
