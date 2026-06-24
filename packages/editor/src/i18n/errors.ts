@@ -38,10 +38,11 @@ export function localizeError(error: unknown, t: Translate, fallbackKey: string)
   if (isZodLike(error)) {
     const parts = error.issues
       .map((issue) => {
-        const code = issue.params?.i18n;
+        // Guard against malformed issue entries (e.g. a null in the array).
+        const code = issue?.params?.i18n;
         const key = code ? `error.${code}` : undefined;
-        if (key && hasKey(key)) return t(key, issue.params);
-        return issue.message ?? "";
+        if (key && hasKey(key)) return t(key, issue?.params);
+        return issue?.message ?? "";
       })
       .filter((part) => part.length > 0);
     if (parts.length > 0) return parts.join(" ");

@@ -96,3 +96,88 @@ describe("component variant valueTokens", () => {
     ).toBe(true);
   });
 });
+
+function componentWithAnatomy(anatomy: unknown): unknown {
+  return {
+    schemaVersion: PODO_SCHEMA_VERSION,
+    kind: "component",
+    id: "button",
+    name: "Button",
+    category: "atom",
+    status: "stable",
+    anatomy,
+    variants: [{ name: "variant", values: ["a"], default: "a" }],
+    targets: {
+      web: { supported: true },
+      react: { supported: true },
+      hono: { supported: true },
+      native: { supported: true },
+    },
+    accessibility: {},
+  };
+}
+
+describe("component anatomy schema validation", () => {
+  it("rejects duplicate anatomy part names", () => {
+    expect(() =>
+      parseComponentDocument(
+        componentWithAnatomy([{ name: "root" }, { name: "icon" }, { name: "icon" }])
+      )
+    ).toThrow(/unique/i);
+  });
+
+  it("rejects a part that is its own parent", () => {
+    expect(() =>
+      parseComponentDocument(
+        componentWithAnatomy([{ name: "root" }, { name: "icon", parent: "icon" }])
+      )
+    ).toThrow(/own parent/i);
+  });
+
+  it("rejects a missing parent", () => {
+    expect(() =>
+      parseComponentDocument(
+        componentWithAnatomy([{ name: "root" }, { name: "icon", parent: "ghost" }])
+      )
+    ).toThrow(/does not exist/i);
+  });
+
+  it("rejects a parent cycle", () => {
+    expect(() =>
+      parseComponentDocument(
+        componentWithAnatomy([
+          { name: "root" },
+          { name: "a", parent: "b" },
+          { name: "b", parent: "a" },
+        ])
+      )
+    ).toThrow(/cycle/i);
+  });
+
+  it("accepts a valid anatomy hierarchy", () => {
+    expect(() =>
+      parseComponentDocument(
+        componentWithAnatomy([
+          { name: "root" },
+          { name: "icon", parent: "root" },
+          { name: "label", parent: "root" },
+        ])
+      )
+    ).not.toThrow();
+  });
+
+  it("attaches an i18n code to anatomy validation issues", () => {
+    try {
+      parseComponentDocument(
+        componentWithAnatomy([{ name: "root" }, { name: "icon" }, { name: "icon" }])
+      );
+      throw new Error("expected parse to throw");
+    } catch (error) {
+      const issues = (
+        error as { issues?: Array<{ message?: string; params?: Record<string, unknown> }> }
+      ).issues;
+      const issue = issues?.find((item) => /unique/i.test(item.message ?? ""));
+      expect(issue?.params?.i18n).toBe("spec.anatomyUnique");
+    }
+  });
+});
