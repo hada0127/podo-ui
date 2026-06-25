@@ -8,7 +8,8 @@ import "./v1-components.generated.css";
 // The actual v1 rich-text editor + datepicker components, vendored verbatim, so
 // the preview has ALL real features. They use plain class names that the scoped
 // v1 CSS styles inside `.podo-v1-stage`.
-import V1Editor, { type ToolbarItem } from "./vendor/v1-editor.js";
+import V1Editor from "./vendor/v1-editor/index.js";
+import type { ToolbarItem } from "./vendor/v1-editor/types.js";
 import V1DatePicker from "./vendor/v1-datepicker.js";
 import V1Avatar from "./vendor/v1-avatar.js";
 import V1Button from "./vendor/v1-button.js";
