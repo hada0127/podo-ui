@@ -1233,12 +1233,15 @@ export const legacyComponents: ComponentDocument[] = [
     ],
     states: [{ name: "hover", selector: ":hover" }],
     tokens: {
-      ...legacyBaseComponentTokens(),
-      // v1 default chip is a dark solid fill (color('default-deep')), not a light fill.
-      "root.background": "{color.default-deep.base}",
-      "root.color": "{color.default-deep.reverse}",
+      // Chip colors (theme + type) come entirely from the vendored v1 CSS classes
+      // (.chip, .chip.blue, .chip.fill, .chip.border, …). Binding root.background/
+      // color/borderColor here would override those classes with !important and
+      // freeze the single preview on the default theme, so keep only layout tokens.
+      // (The v1 .chip base already paints the default dark default-deep fill.)
       "root.paddingX": "{spacing.scale.3}",
       "root.radius": "{radius.scale.3}",
+      "root.gap": "{spacing.scale.2}",
+      "root.typography": "{typography.paragraph.p3}",
       "label.typography": "{typography.paragraph.p3}",
     },
     examples: [

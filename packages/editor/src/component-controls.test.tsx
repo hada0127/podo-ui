@@ -84,6 +84,16 @@ describe("component preview controls feed runtime props", () => {
     expect(appearance["root.background"]).toBe("transparent");
   });
 
+  it("chip does not bind root color tokens, so v1 theme/type classes drive its colors", () => {
+    // Binding root.background/color/borderColor would override the vendored v1
+    // .chip.blue/.fill/.border classes with !important and freeze the single
+    // preview on the default theme.
+    const appearance = resolveComponentAppearance(pick("chip"), {});
+    expect(appearance["root.background"]).toBeUndefined();
+    expect(appearance["root.color"]).toBeUndefined();
+    expect(appearance["root.borderColor"]).toBeUndefined();
+  });
+
   it("variant matrix ignores preview test overrides (renders default content)", () => {
     const { container } = render(
       <>
