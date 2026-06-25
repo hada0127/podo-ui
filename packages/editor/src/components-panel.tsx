@@ -15,7 +15,11 @@ import {
 import { tokenRecordKey, type ComponentTokenEditorModel } from "./token-model.js";
 import { cssToken, type TokenLookup } from "./token-lookup.js";
 import { renderComponentTokenEditor } from "./token-editor.js";
-import { renderComponentPreview, renderComponentPreviewMatrix } from "./previews.js";
+import {
+  EDITOR_TOOLBAR_ITEMS,
+  renderComponentPreview,
+  renderComponentPreviewMatrix,
+} from "./previews.js";
 import { LayersPanel } from "./component-layers.js";
 import { IconPicker } from "./icon-picker.js";
 import { useT, type Translate } from "./i18n/context.js";
@@ -47,6 +51,9 @@ import {
   dangerButtonStyle,
   disclosureStyle,
   editSchemaBodyStyle,
+  editorToggleChipOnStyle,
+  editorToggleChipStyle,
+  editorToolbarToggleRowStyle,
   editorFormStyle,
   emptyListStyle,
   errorBannerStyle,
@@ -945,6 +952,33 @@ export function ComponentsPanelWorkspace({
                   }
                   return null;
                 })}
+            </div>
+          </div>
+        ) : null}
+        {inspectorTarget === "preview" && selectedComponentForSpec.id === "editor" ? (
+          <div style={cardStyle}>
+            <div style={cardHeaderStyle}>
+              <strong style={railSectionTitleStyle}>{t("components.editorToolbar")}</strong>
+            </div>
+            <div style={editorToolbarToggleRowStyle}>
+              {EDITOR_TOOLBAR_ITEMS.map((item) => {
+                const on = effectiveComponentPreviewSelections[`toolbar:${item}`] !== "false";
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    aria-pressed={on}
+                    style={
+                      on
+                        ? { ...editorToggleChipStyle, ...editorToggleChipOnStyle }
+                        : editorToggleChipStyle
+                    }
+                    onClick={() => commitPreviewSelection(`toolbar:${item}`, on ? "false" : "")}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
             </div>
           </div>
         ) : null}

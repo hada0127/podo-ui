@@ -30,9 +30,6 @@ import V1Toast from "./vendor/v1-toast.js";
 import { cssToken, type TokenLookup } from "./token-lookup.js";
 import {
   codeStyle,
-  editorToggleChipOnStyle,
-  editorToggleChipStyle,
-  editorToolbarToggleRowStyle,
   componentMatrixCellStyle,
   componentMatrixHeaderCellStyle,
   componentMatrixHeaderStyle,
@@ -644,13 +641,18 @@ function renderAvatarPreview(s: Record<string, string>) {
 }
 
 function renderEditorPreview(selections: Record<string, string>) {
-  return <EditorPreviewBody resizable={selections.resize === "resizable"} />;
+  // Toolbar items are toggled from the right rail (see components-panel); default
+  // all on — an item is hidden only when its selection is explicitly "false".
+  const toolbar = EDITOR_TOOLBAR_ITEMS.filter((item) => selections[`toolbar:${item}`] !== "false");
+  return <EditorPreviewBody resizable={selections.resize === "resizable"} toolbar={toolbar} />;
 }
 
 const EDITOR_INITIAL_HTML =
   "<h3>Release notes</h3><p>Write rich content here — try the full toolbar: tables, images, YouTube, links, colors and lists all work.</p>";
 
-const EDITOR_TOOLBAR_ITEMS: ToolbarItem[] = [
+// The v1 editor's toolbar items, in order; exposed so the inspector can render a
+// toggle per item.
+export const EDITOR_TOOLBAR_ITEMS: ToolbarItem[] = [
   "undo-redo",
   "paragraph",
   "text-style",
@@ -666,45 +668,15 @@ const EDITOR_TOOLBAR_ITEMS: ToolbarItem[] = [
   "code",
 ];
 
-function EditorPreviewBody({ resizable }: { resizable: boolean }) {
+function EditorPreviewBody({ resizable, toolbar }: { resizable: boolean; toolbar: ToolbarItem[] }) {
   // Render the REAL vendored v1 editor so every feature actually works.
   const [value, setValue] = useState(EDITOR_INITIAL_HTML);
-  // Let the preview toggle which toolbar items show; default all on.
-  const [enabled, setEnabled] = useState<Set<ToolbarItem>>(() => new Set(EDITOR_TOOLBAR_ITEMS));
-  const toggle = (item: ToolbarItem) =>
-    setEnabled((prev) => {
-      const next = new Set(prev);
-      if (next.has(item)) {
-        next.delete(item);
-      } else {
-        next.add(item);
-      }
-      return next;
-    });
-  const toolbar = EDITOR_TOOLBAR_ITEMS.filter((item) => enabled.has(item));
   // Wider than other previews so the full single-line toolbar (~930px) fits
   // without being cropped; falls back to the stage width on narrow screens.
   return (
     <div style={{ width: "min(960px, 100%)" }} className="podo-editor-preview">
       {/* Keep the v1 toolbar on a single (scrollable) line instead of wrapping. */}
       <style>{".podo-editor-preview .toolbar{flex-wrap:nowrap!important;overflow-x:auto}"}</style>
-      <div style={editorToolbarToggleRowStyle}>
-        {EDITOR_TOOLBAR_ITEMS.map((item) => (
-          <button
-            key={item}
-            type="button"
-            aria-pressed={enabled.has(item)}
-            style={
-              enabled.has(item)
-                ? { ...editorToggleChipStyle, ...editorToggleChipOnStyle }
-                : editorToggleChipStyle
-            }
-            onClick={() => toggle(item)}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
       <PreviewErrorBoundary>
         <V1Editor
           value={value}
