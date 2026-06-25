@@ -60,17 +60,16 @@ function legacyComponent(input: LegacyComponentInput): ComponentDocument {
 }
 
 function legacyBaseComponentTokens(): ComponentDocument["tokens"] {
-  // Color bindings (background/color/borderColor) are intentionally omitted: the
-  // vendored v1 CSS drives every component's colors through its own classes
-  // (theme/type/state). Binding them here emitted `.podo-design-target X { … !important }`
-  // that overrode those classes, freezing the single preview on the default
-  // variant. Components that genuinely need a non-default surface set it
-  // explicitly (e.g. form fields bind root.background to {color.bg.block}).
-  return {
-    "root.radius": "{radius.scale.3}",
-    "root.gap": "{spacing.scale.2}",
-    "root.typography": "{typography.paragraph.p3}",
-  };
+  // Intentionally empty: the vendored v1 CSS already drives every component's
+  // base styling (colors, radius, gap, typography) through its own classes, and
+  // componentAppearanceCss emits these bindings as `.podo-design-target X { … !important }`
+  // which OVERRODE the v1 styling in the single preview — e.g. root.radius=6px
+  // squared off the toggle's 9999px pill, and root.typography froze size-variant
+  // font sizes. The matrix (includeBase=false) already renders correctly from v1
+  // alone, so leaving the base empty makes the single preview match it. Components
+  // that need a real non-default value bind it explicitly (e.g. form fields →
+  // root.background {color.bg.block}; button → root.height).
+  return {};
 }
 
 function enumProp(

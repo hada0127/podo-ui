@@ -163,6 +163,13 @@ describe("component preview controls feed runtime props", () => {
     expect(container.querySelector("select")?.value).toBe("design");
   });
 
+  it("toggle root radius is unbound so the v1 9999px pill shape is preserved", () => {
+    // root.radius=6px (formerly in the base tokens) squared off the toggle's
+    // 9999px pill; the base is now empty so the v1 pill shows. (Avatar keeps its
+    // own explicit root.radius={radius.scale.full} for the circle, so it was fine.)
+    expect(resolveComponentAppearance(pick("toggle"), {})["root.radius"]).toBeUndefined();
+  });
+
   it("variant matrix ignores preview test overrides (renders default content)", () => {
     const { container } = render(
       <>
