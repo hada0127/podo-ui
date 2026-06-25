@@ -355,14 +355,13 @@ describe("@podo/editor", () => {
     expect(button?.states.find((state) => state.name === "loading")?.tokens).toMatchObject({
       "root.opacity": "0.72",
     });
-    // Color bindings were dropped from the button base tokens so the vendored v1
-    // theme/variant classes drive colors in the single preview (binding them here
-    // overrode those classes with !important and froze the default theme).
-    expect(button?.tokens).toMatchObject({
-      "root.radius": "{radius.scale.3}",
-      "root.typography": "{typography.paragraph.p3}",
-    });
+    // The v1 button classes drive colors AND size in the single preview; binding
+    // root.* here overrode them with !important (froze theme + every size to sm),
+    // so the base tokens carry only the size-independent focus outline.
     expect(button?.tokens?.["root.background"]).toBeUndefined();
+    expect(button?.tokens?.["root.height"]).toBeUndefined();
+    expect(button?.tokens?.["root.radius"]).toBeUndefined();
+    expect(button?.tokens).toMatchObject({ "focus.outlineWidth": "4px" });
   });
 
   it("builds editable token matrices for natural token variation groups", () => {

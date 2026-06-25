@@ -170,6 +170,18 @@ describe("component preview controls feed runtime props", () => {
     expect(resolveComponentAppearance(pick("toggle"), {})["root.radius"]).toBeUndefined();
   });
 
+  it("button/chip/input bind no size/shape tokens so v1 size & shape variants apply", () => {
+    // These !important bindings used to freeze the single preview: button every
+    // size→sm, chip .round→6px, input vertical padding→0 / md·lg radius→6px.
+    const button = resolveComponentAppearance(pick("button"), {});
+    expect(button["root.height"]).toBeUndefined();
+    expect(button["root.radius"]).toBeUndefined();
+    expect(resolveComponentAppearance(pick("chip"), {})["root.radius"]).toBeUndefined();
+    const input = resolveComponentAppearance(pick("input"), {});
+    expect(input["root.paddingY"]).toBeUndefined();
+    expect(input["root.radius"]).toBeUndefined();
+  });
+
   it("variant matrix ignores preview test overrides (renders default content)", () => {
     const { container } = render(
       <>

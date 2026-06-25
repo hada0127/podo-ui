@@ -1119,14 +1119,10 @@ export const legacyComponents: ComponentDocument[] = [
       },
     ],
     tokens: {
-      // Colors (theme + variant: solid/fill/border) come from the v1 button
-      // classes; binding them here froze the single preview on the default theme.
-      "root.height": "42px",
-      "root.paddingX": "{spacing.scale.3}",
-      "root.paddingY": "{spacing.scale.0}",
-      "root.radius": "{radius.scale.3}",
-      "root.gap": "{spacing.scale.2}",
-      "root.typography": "{typography.paragraph.p3}",
+      // The v1 button classes drive colors AND size (height / padding / radius /
+      // gap / font, per theme·variant·size). Binding root.height/radius/etc. here
+      // froze every size to `sm` (42px / 6px) in the single preview, so they're
+      // omitted; the focus outline (no size dependence) stays.
       "focus.outlineWidth": "4px",
       "focus.outlineColor": "{color.default.outline}",
     },
@@ -1236,13 +1232,9 @@ export const legacyComponents: ComponentDocument[] = [
       // Chip colors (theme + type) come entirely from the vendored v1 CSS classes
       // (.chip, .chip.blue, .chip.fill, .chip.border, …). Binding root.background/
       // color/borderColor here would override those classes with !important and
-      // freeze the single preview on the default theme, so keep only layout tokens.
-      // (The v1 .chip base already paints the default dark default-deep fill.)
-      "root.paddingX": "{spacing.scale.3}",
-      "root.radius": "{radius.scale.3}",
-      "root.gap": "{spacing.scale.2}",
-      "root.typography": "{typography.paragraph.p3}",
-      "label.typography": "{typography.paragraph.p3}",
+      // freeze the single preview on default. radius/padding/gap/typography are
+      // ALSO v1-class-driven (.chip.round = 100px pill; .chip.sm padding/font), so
+      // binding them squared off the round variant and froze size — leave it to v1.
     },
     examples: [
       { target: "react", title: "Chip", code: '<Chip theme="blue" type="fill">Status</Chip>' },
@@ -1475,15 +1467,11 @@ export const legacyComponents: ComponentDocument[] = [
       { name: "invalid", tokens: { "root.borderColor": "{color.danger.base}" } },
     ],
     tokens: {
-      // Surface + border colors (default / focus / danger) come from the v1 input
-      // CSS. Binding root.background/borderColor here with !important overrode the
-      // v1 focus + .danger borders, so the invalid control had no visible effect.
-      // Keep layout/text only; the disabled state still tints via its state token.
-      "root.color": "{color.text.body}",
-      "root.radius": "{radius.scale.3}",
-      "root.paddingX": "{spacing.scale.4}",
-      "root.paddingY": "{spacing.scale.0}",
-      "root.typography": "{typography.paragraph.p3}",
+      // The v1 input CSS drives colors, borders, radius, padding and font (incl.
+      // per-size). Binding root.* here overrode them: root.borderColor hid the
+      // focus/danger borders, root.paddingY={spacing.scale.0} zeroed the v1 8px
+      // vertical padding, and root.radius froze the md/lg radii. All omitted; the
+      // focus/disabled/invalid STATE tokens (in `states`) still apply.
     },
     accessibility: { aria: ["aria-invalid", "aria-required"], keyboard: ["Tab focuses input"] },
     examples: [{ target: "react", title: "Input", code: '<Input placeholder="Email" />' }],
