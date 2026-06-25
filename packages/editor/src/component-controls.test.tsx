@@ -114,6 +114,55 @@ describe("component preview controls feed runtime props", () => {
     expect(appearance["root.borderColor"]).toBeUndefined();
   });
 
+  it("button consumes the disabled boolean prop", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("button"), { disabled: "true" }, lookup)}</>
+    );
+    expect(container.querySelector("button")?.disabled).toBe(true);
+  });
+
+  it("button consumes the loading boolean prop", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("button"), { loading: "true" }, lookup)}</>
+    );
+    expect(container.querySelector(".icon-loading")).not.toBeNull();
+  });
+
+  it("toggle consumes the checked boolean prop", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("toggle"), { checked: "true" }, lookup)}</>
+    );
+    expect(container.querySelector("input")?.checked).toBe(true);
+  });
+
+  it("file consumes the disabled boolean prop", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("file"), { disabled: "true" }, lookup)}</>
+    );
+    expect(container.querySelector("input")?.disabled).toBe(true);
+  });
+
+  it("chip consumes the round boolean prop", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("chip"), { round: "true" }, lookup)}</>
+    );
+    expect(container.querySelector(".chip.round")).not.toBeNull();
+  });
+
+  it("avatar consumes the activityRing boolean prop", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("avatar"), { type: "icon", activityRing: "true" }, lookup)}</>
+    );
+    expect(container.querySelector(".activityRing")).not.toBeNull();
+  });
+
+  it("select consumes the value string prop", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("select"), { value: "design" }, lookup)}</>
+    );
+    expect(container.querySelector("select")?.value).toBe("design");
+  });
+
   it("variant matrix ignores preview test overrides (renders default content)", () => {
     const { container } = render(
       <>

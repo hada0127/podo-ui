@@ -303,9 +303,9 @@ function renderButtonPreview(s: Record<string, string>) {
       theme={(s.theme ?? "default") as never}
       variant={(s.variant ?? "solid") as never}
       size={(s.size ?? "sm") as never}
-      textAlign={(s.alignment ?? "center") as never}
-      loading={state === "loading"}
-      disabled={state === "disabled"}
+      textAlign={(s.textAlign ?? s.alignment ?? "center") as never}
+      loading={state === "loading" || s.loading === "true"}
+      disabled={state === "disabled" || s.disabled === "true"}
       {...(icon ? { icon } : {})}
       {...(rightIcon ? { rightIcon } : {})}
     >
@@ -321,7 +321,7 @@ function renderChipPreview(s: Record<string, string>) {
       theme={(s.theme ?? "default") as never}
       type={(s.type ?? "default") as never}
       size={(s.size ?? "md") as never}
-      round={s.shape === "round"}
+      round={s.shape === "round" || s.round === "true"}
       onDelete={() => {}}
       {...(icon ? { icon } : {})}
     >
@@ -333,22 +333,22 @@ function renderChipPreview(s: Record<string, string>) {
 function renderCheckboxRadioPreview(s: Record<string, string>) {
   const control = s.control ?? "checkbox";
   const state = s.state ?? "default";
-  const checked = state === "checked";
-  const disabled = state === "disabled";
+  const checked = state === "checked" || s.checked === "true";
+  const disabled = state === "disabled" || s.disabled === "true";
+  const vertical = (s.layout ?? "horizontal") === "vertical" || s.vertical === "true";
+  // Key on `checked` so toggling the checked control remounts the box (uncontrolled
+  // defaultChecked only applies on mount) while it stays clickable in the preview.
+  const checkedKey = checked ? "on" : "off";
   if (control === "radio-group") {
-    return (
-      <CheckboxRadioGroupPreview
-        vertical={(s.layout ?? "horizontal") === "vertical"}
-        disabled={disabled}
-      />
-    );
+    return <CheckboxRadioGroupPreview vertical={vertical} disabled={disabled} />;
   }
   if (control === "radio") {
     return (
       <V1Radio
+        key={checkedKey}
         name="opt"
         value="a"
-        label={previewText(s, "Selected option")}
+        label={s.label?.trim() ? s.label : previewText(s, "Selected option")}
         defaultChecked={checked}
         disabled={disabled}
       />
@@ -356,9 +356,11 @@ function renderCheckboxRadioPreview(s: Record<string, string>) {
   }
   return (
     <V1Checkbox
-      label={previewText(s, "Accept terms")}
+      key={checkedKey}
+      label={s.label?.trim() ? s.label : previewText(s, "Accept terms")}
       defaultChecked={checked}
       disabled={disabled}
+      indeterminate={s.indeterminate === "true"}
     />
   );
 }
@@ -388,11 +390,14 @@ function CheckboxRadioGroupPreview({
 
 function renderTogglePreview(s: Record<string, string>) {
   const state = s.state ?? "default";
+  const checked = state === "checked" || s.checked === "true";
+  const disabled = state === "disabled" || s.disabled === "true";
   return (
     <V1Toggle
+      key={checked ? "on" : "off"}
       {...(s.label === "hidden" ? {} : { label: previewText(s, "Enable dark mode") })}
-      defaultChecked={state === "checked"}
-      disabled={state === "disabled"}
+      defaultChecked={checked}
+      disabled={disabled}
     />
   );
 }
@@ -431,11 +436,16 @@ function renderInputPreview(s: Record<string, string>, lookup: TokenLookup) {
 
 function renderSelectPreview(s: Record<string, string>) {
   const state = s.state ?? "default";
+  const disabled = state === "disabled" || s.disabled === "true";
+  const value = s.value?.trim() ? s.value : "product";
+  const withIcon = previewIcon(s, "withIcon") ?? (s.icon === "leading" ? "icon-user" : undefined);
   return (
     <V1Select
-      defaultValue="product"
-      disabled={state === "disabled"}
-      {...(s.icon === "leading" ? { withIcon: "icon-user" } : {})}
+      key={value}
+      defaultValue={value}
+      disabled={disabled}
+      {...(s.placeholder?.trim() ? { placeholder: s.placeholder } : {})}
+      {...(withIcon ? { withIcon } : {})}
       options={[
         { value: "product", label: "Product team" },
         { value: "design", label: "Design system" },
@@ -445,20 +455,36 @@ function renderSelectPreview(s: Record<string, string>) {
   );
 }
 
-function renderTextareaPreview() {
-  return <TextareaPreviewBody />;
+function renderTextareaPreview(s: Record<string, string>) {
+  // Key on the value control so it reseeds the (interactive) local state.
+  return <TextareaPreviewBody s={s} key={s.value ?? ""} />;
 }
 
-function TextareaPreviewBody() {
+function TextareaPreviewBody({ s }: { s: Record<string, string> }) {
   const [value, setValue] = useState(
-    "Draft a concise message for the launch checklist.\nKeep tone direct and useful."
+    s.value?.trim()
+      ? s.value
+      : "Draft a concise message for the launch checklist.\nKeep tone direct and useful."
   );
-  return <V1Textarea value={value} onChange={(event) => setValue(event.target.value)} />;
+  const disabled = s.state === "disabled" || s.disabled === "true";
+  return (
+    <V1Textarea
+      value={value}
+      onChange={(event) => setValue(event.target.value)}
+      disabled={disabled}
+      {...(s.placeholder?.trim() ? { placeholder: s.placeholder } : {})}
+    />
+  );
 }
 
 function renderFilePreview(s: Record<string, string>) {
   const state = s.state ?? "default";
-  return <V1FileInput multiple={s.selection === "multiple"} disabled={state === "disabled"} />;
+  return (
+    <V1FileInput
+      multiple={s.selection === "multiple" || s.multiple === "true"}
+      disabled={state === "disabled" || s.disabled === "true"}
+    />
+  );
 }
 
 function renderLabelPreview(s: Record<string, string>) {
@@ -467,27 +493,43 @@ function renderLabelPreview(s: Record<string, string>) {
       size={(s.size ?? "md") as never}
       semibold={s.weight === "semibold" || s.semibold === "true"}
       required={s.required === "true"}
-      disabled={s.state === "disabled"}
+      disabled={s.state === "disabled" || s.disabled === "true"}
     >
       {previewText(s, "Email address")}
     </V1Label>
   );
 }
 
-function renderPaginationPreview() {
-  return <PaginationPreviewBody />;
+function renderPaginationPreview(s: Record<string, string>) {
+  // Key on the page controls so the (interactive) current page reseeds.
+  return <PaginationPreviewBody s={s} key={`${s.currentPage ?? ""}-${s.totalPages ?? ""}`} />;
 }
 
-function PaginationPreviewBody() {
-  const [page, setPage] = useState(2);
-  return <V1Pagination currentPage={page} totalPages={10} onPageChange={setPage} />;
+function PaginationPreviewBody({ s }: { s: Record<string, string> }) {
+  const total = Number.parseInt(s.totalPages ?? "", 10) || 10;
+  const [page, setPage] = useState(Number.parseInt(s.currentPage ?? "", 10) || 2);
+  const maxVisible = Number.parseInt(s.maxVisiblePages ?? "", 10) || undefined;
+  const prevIcon = previewIcon(s, "prevIcon");
+  const nextIcon = previewIcon(s, "nextIcon");
+  return (
+    <V1Pagination
+      currentPage={page}
+      totalPages={total}
+      onPageChange={setPage}
+      {...(maxVisible ? { maxVisiblePages: maxVisible } : {})}
+      {...(prevIcon ? { prevIcon } : {})}
+      {...(nextIcon ? { nextIcon } : {})}
+    />
+  );
 }
 
 function renderTabPreview(s: Record<string, string>) {
+  const active = s.activeKey?.trim() || s.defaultActiveKey?.trim() || "overview";
   return (
     <V1Tab
-      fill={s.width === "fill"}
-      defaultActiveKey="overview"
+      key={active}
+      fill={s.width === "fill" || s.fill === "true"}
+      defaultActiveKey={active}
       items={[
         { key: "overview", label: "Overview" },
         { key: "usage", label: "Usage" },
@@ -498,7 +540,7 @@ function renderTabPreview(s: Record<string, string>) {
 }
 
 function renderDocTabsPreview(s: Record<string, string>) {
-  const selected = s["default-tab"] ?? "scss";
+  const selected = s["default-tab"] ?? (s.defaultTab?.trim() ? s.defaultTab : "scss");
   const snippet =
     selected === "react"
       ? "import { Button } from '@podo/react';"
@@ -508,6 +550,7 @@ function renderDocTabsPreview(s: Record<string, string>) {
   return (
     <div style={{ width: "min(520px, 100%)" }}>
       <V1Tab
+        key={selected}
         defaultActiveKey={selected}
         items={[
           { key: "scss", label: "scss" },
@@ -591,7 +634,8 @@ function renderAvatarPreview(s: Record<string, string>) {
       size={size}
       {...(s.type === "text" ? { text: previewText(s, "PO") } : {})}
       {...(s.type === "icon" && icon ? { icon } : {})}
-      {...(s.type === "image" ? { src: AVATAR_IMAGE_SRC } : {})}
+      {...(s.type === "image" ? { src: s.src?.trim() ? s.src : AVATAR_IMAGE_SRC } : {})}
+      {...(s.activityRing === "true" ? { activityRing: true } : {})}
     />
   );
 }
@@ -643,7 +687,8 @@ function renderDatePickerPreview(selections: Record<string, string>) {
       type={selections.type ?? "date"}
       mode={selections.mode ?? "instant"}
       direction={selections.direction ?? "down"}
-      disabled={selections.state === "disabled"}
+      disabled={selections.state === "disabled" || selections.disabled === "true"}
+      {...(selections.placeholder?.trim() ? { placeholder: selections.placeholder } : {})}
     />
   );
 }
@@ -653,11 +698,13 @@ function DatePickerPreviewBody({
   mode,
   direction,
   disabled,
+  placeholder,
 }: {
   type: string;
   mode: string;
   direction: string;
   disabled: boolean;
+  placeholder?: string;
 }) {
   // The v1 datepicker is CONTROLLED for the display value (in instant mode it
   // shows `value`, not internal state), so a value/onChange pair is required for
@@ -673,6 +720,7 @@ function DatePickerPreviewBody({
           mode={mode as never}
           direction={direction as never}
           disabled={disabled}
+          {...(placeholder ? { placeholder } : {})}
           value={value as never}
           onChange={setValue as never}
         />
@@ -682,15 +730,20 @@ function DatePickerPreviewBody({
 }
 
 function renderFieldPreview(selections: Record<string, string>) {
-  const invalid = selections.state === "invalid";
+  const invalid = selections.state === "invalid" || selections.invalid === "true";
+  const label = selections.label?.trim() ? selections.label : "Email address";
+  const required = selections.required === undefined ? true : selections.required === "true";
+  const error = selections.error?.trim()
+    ? selections.error
+    : invalid
+      ? "Enter a valid email address."
+      : undefined;
   return (
     <div style={{ width: 340 }}>
       <V1Field
-        label="Email address"
-        required
-        {...(invalid
-          ? { error: "Enter a valid email address." }
-          : { helper: "We use this for workspace updates." })}
+        label={label}
+        {...(required ? { required: true } : {})}
+        {...(error ? { error } : { helper: "We use this for workspace updates." })}
       >
         <V1Input defaultValue="team@podo.dev" />
       </V1Field>
