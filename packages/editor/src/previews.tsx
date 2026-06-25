@@ -682,8 +682,10 @@ function EditorPreviewBody({ resizable }: { resizable: boolean }) {
       return next;
     });
   const toolbar = EDITOR_TOOLBAR_ITEMS.filter((item) => enabled.has(item));
+  // Wider than other previews so the full single-line toolbar (~930px) fits
+  // without being cropped; falls back to the stage width on narrow screens.
   return (
-    <div style={{ width: "min(680px, 100%)" }} className="podo-editor-preview">
+    <div style={{ width: "min(960px, 100%)" }} className="podo-editor-preview">
       {/* Keep the v1 toolbar on a single (scrollable) line instead of wrapping. */}
       <style>{".podo-editor-preview .toolbar{flex-wrap:nowrap!important;overflow-x:auto}"}</style>
       <div style={editorToolbarToggleRowStyle}>
