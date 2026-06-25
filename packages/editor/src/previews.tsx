@@ -8,7 +8,7 @@ import "./v1-components.generated.css";
 // The actual v1 rich-text editor + datepicker components, vendored verbatim, so
 // the preview has ALL real features. They use plain class names that the scoped
 // v1 CSS styles inside `.podo-v1-stage`.
-import V1Editor from "./vendor/v1-editor.js";
+import V1Editor, { type ToolbarItem } from "./vendor/v1-editor.js";
 import V1DatePicker from "./vendor/v1-datepicker.js";
 import V1Avatar from "./vendor/v1-avatar.js";
 import V1Button from "./vendor/v1-button.js";
@@ -30,6 +30,9 @@ import V1Toast from "./vendor/v1-toast.js";
 import { cssToken, type TokenLookup } from "./token-lookup.js";
 import {
   codeStyle,
+  editorToggleChipOnStyle,
+  editorToggleChipStyle,
+  editorToolbarToggleRowStyle,
   componentMatrixCellStyle,
   componentMatrixHeaderCellStyle,
   componentMatrixHeaderStyle,
@@ -647,13 +650,67 @@ function renderEditorPreview(selections: Record<string, string>) {
 const EDITOR_INITIAL_HTML =
   "<h3>Release notes</h3><p>Write rich content here — try the full toolbar: tables, images, YouTube, links, colors and lists all work.</p>";
 
+const EDITOR_TOOLBAR_ITEMS: ToolbarItem[] = [
+  "undo-redo",
+  "paragraph",
+  "text-style",
+  "color",
+  "align",
+  "list",
+  "table",
+  "link",
+  "image",
+  "youtube",
+  "hr",
+  "format",
+  "code",
+];
+
 function EditorPreviewBody({ resizable }: { resizable: boolean }) {
   // Render the REAL vendored v1 editor so every feature actually works.
   const [value, setValue] = useState(EDITOR_INITIAL_HTML);
+  // Let the preview toggle which toolbar items show; default all on.
+  const [enabled, setEnabled] = useState<Set<ToolbarItem>>(() => new Set(EDITOR_TOOLBAR_ITEMS));
+  const toggle = (item: ToolbarItem) =>
+    setEnabled((prev) => {
+      const next = new Set(prev);
+      if (next.has(item)) {
+        next.delete(item);
+      } else {
+        next.add(item);
+      }
+      return next;
+    });
+  const toolbar = EDITOR_TOOLBAR_ITEMS.filter((item) => enabled.has(item));
   return (
-    <div style={{ width: "min(680px, 100%)" }}>
+    <div style={{ width: "min(680px, 100%)" }} className="podo-editor-preview">
+      {/* Keep the v1 toolbar on a single (scrollable) line instead of wrapping. */}
+      <style>{".podo-editor-preview .toolbar{flex-wrap:nowrap!important;overflow-x:auto}"}</style>
+      <div style={editorToolbarToggleRowStyle}>
+        {EDITOR_TOOLBAR_ITEMS.map((item) => (
+          <button
+            key={item}
+            type="button"
+            aria-pressed={enabled.has(item)}
+            style={
+              enabled.has(item)
+                ? { ...editorToggleChipStyle, ...editorToggleChipOnStyle }
+                : editorToggleChipStyle
+            }
+            onClick={() => toggle(item)}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
       <PreviewErrorBoundary>
-        <V1Editor value={value} onChange={setValue} height="360px" resizable={resizable} />
+        <V1Editor
+          value={value}
+          onChange={setValue}
+          height="360px"
+          resizable={resizable}
+          toolbar={toolbar}
+        />
       </PreviewErrorBoundary>
     </div>
   );

@@ -2128,6 +2128,29 @@ export const componentMatrixPreviewClipStyle: CSSProperties = {
   padding: 4,
 };
 
+// Editor preview: a row of toggle chips to show/hide each v1 toolbar item.
+export const editorToolbarToggleRowStyle: CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 4,
+  marginBottom: 8,
+};
+export const editorToggleChipStyle: CSSProperties = {
+  fontSize: 11,
+  lineHeight: 1.4,
+  padding: "2px 8px",
+  borderRadius: 999,
+  border: "1px solid #d4d4d8",
+  background: "#ffffff",
+  color: "#9ca3af",
+  cursor: "pointer",
+};
+export const editorToggleChipOnStyle: CSSProperties = {
+  borderColor: "#7aa7ee",
+  background: "#eef4ff",
+  color: "#1f2937",
+};
+
 export const componentTokenGroupListStyle: CSSProperties = {
   display: "grid",
   gap: 12,
