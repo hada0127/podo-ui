@@ -33,6 +33,7 @@ import { useLinkEditor } from './hooks/useLinkEditor.js';
 import { useImageEditor } from './hooks/useImageEditor.js';
 import { useYoutubeEditor } from './hooks/useYoutubeEditor.js';
 import { useTableEditor } from './hooks/useTableEditor.js';
+import { useT } from '../../i18n/context.js';
 
 /**
  * WYSIWYG 에디터 컴포넌트
@@ -120,6 +121,8 @@ const Editor = ({
   });
 
   // Phase 3: 텍스트 스타일
+  const t = useT();
+
   const textStyle = useTextStyle({
     editorRef,
     selectionManager,
@@ -548,7 +551,7 @@ const Editor = ({
               className={styles.toolbarButton}
               onClick={history.undo}
               disabled={!history.canUndo}
-              title="실행 취소"
+              title={t('v1Editor.undo')}
               style={{
                 opacity: !history.canUndo ? 0.65 : 1,
                 backgroundColor: 'transparent',
@@ -563,7 +566,7 @@ const Editor = ({
               className={styles.toolbarButton}
               onClick={history.redo}
               disabled={!history.canRedo}
-              title="다시 실행"
+              title={t('v1Editor.redo')}
               style={{
                 opacity: !history.canRedo ? 0.65 : 1,
                 backgroundColor: 'transparent',
@@ -586,10 +589,10 @@ const Editor = ({
                 closeAllDropdowns();
                 textStyle.setIsParagraphDropdownOpen(!textStyle.isParagraphDropdownOpen);
               }}
-              title="문단 형식"
+              title={t('v1Editor.paraFormat')}
             >
               <span>
-                {paragraphOptions.find(opt => opt.value === textStyle.currentParagraphStyle)?.label || '문단 형식'}
+                {t(paragraphOptions.find(opt => opt.value === textStyle.currentParagraphStyle)?.label || 'v1Editor.paraFormat')}
               </span>
               <i className={styles.dropdownArrow} />
             </button>
@@ -604,13 +607,13 @@ const Editor = ({
                     onClick={() => textStyle.applyParagraphStyle(option.value)}
                   >
                     {option.value === 'h1' ? (
-                      <h1>{option.label}</h1>
+                      <h1>{t(option.label)}</h1>
                     ) : option.value === 'h2' ? (
-                      <h2>{option.label}</h2>
+                      <h2>{t(option.label)}</h2>
                     ) : option.value === 'h3' ? (
-                      <h3>{option.label}</h3>
+                      <h3>{t(option.label)}</h3>
                     ) : (
-                      <span className={option.className || ''}>{option.label}</span>
+                      <span className={option.className || ''}>{t(option.label)}</span>
                     )}
                   </button>
                 ))}
@@ -626,7 +629,7 @@ const Editor = ({
               type="button"
               className={styles.toolbarButton}
               onClick={textStyle.toggleBold}
-              title="굵게"
+              title={t('v1Editor.bold')}
             >
               <i className={styles.bold} />
             </button>
@@ -634,7 +637,7 @@ const Editor = ({
               type="button"
               className={styles.toolbarButton}
               onClick={textStyle.toggleItalic}
-              title="기울임"
+              title={t('v1Editor.italic')}
             >
               <i className={styles.italic} />
             </button>
@@ -642,7 +645,7 @@ const Editor = ({
               type="button"
               className={styles.toolbarButton}
               onClick={textStyle.toggleUnderline}
-              title="밑줄"
+              title={t('v1Editor.underline')}
             >
               <i className={styles.underline} />
             </button>
@@ -650,7 +653,7 @@ const Editor = ({
               type="button"
               className={styles.toolbarButton}
               onClick={textStyle.toggleStrikethrough}
-              title="취소선"
+              title={t('v1Editor.strikethrough')}
             >
               <i className={styles.strikethrough} />
             </button>
@@ -672,7 +675,7 @@ const Editor = ({
                     textStyle.setIsTextColorOpen(!textStyle.isTextColorOpen);
                   }
                 }}
-                title="글꼴 색상"
+                title={t('v1Editor.fontColor')}
               >
                 <i className={styles.fontColor} />
               </button>
@@ -711,7 +714,7 @@ const Editor = ({
                     textStyle.setIsBgColorOpen(!textStyle.isBgColorOpen);
                   }
                 }}
-                title="배경 색상"
+                title={t('v1Editor.backgroundColor')}
               >
                 <i className={styles.highlight} />
               </button>
@@ -751,7 +754,7 @@ const Editor = ({
                   closeAllDropdowns();
                   textStyle.setIsAlignDropdownOpen(!textStyle.isAlignDropdownOpen);
                 }}
-                title={alignOptions.find(opt => opt.value === textStyle.currentAlign)?.label || '정렬'}
+                title={t(alignOptions.find(opt => opt.value === textStyle.currentAlign)?.label || 'v1Editor.alignLabel')}
               >
                 <i className={styles[alignOptions.find(opt => opt.value === textStyle.currentAlign)?.icon || 'alignLeft']} />
               </button>
@@ -764,7 +767,7 @@ const Editor = ({
                       type="button"
                       className={`${styles.alignOption} ${textStyle.currentAlign === option.value ? styles.active : ''}`}
                       onClick={() => textStyle.applyAlign(option.value)}
-                      title={option.label}
+                      title={t(option.label)}
                     >
                       <i className={styles[option.icon]} />
                     </button>
@@ -782,7 +785,7 @@ const Editor = ({
               type="button"
               className={styles.toolbarButton}
               onClick={insertUnorderedList}
-              title="목록"
+              title={t('v1Editor.list')}
             >
               <i className={styles.listUl} />
             </button>
@@ -790,7 +793,7 @@ const Editor = ({
               type="button"
               className={styles.toolbarButton}
               onClick={insertOrderedList}
-              title="번호 목록"
+              title={t('v1Editor.orderedList')}
             >
               <i className={styles.listOl} />
             </button>
@@ -804,7 +807,7 @@ const Editor = ({
               type="button"
               className={styles.toolbarButton}
               onClick={insertHorizontalRule}
-              title="구분선"
+              title={t('v1Editor.hr')}
             >
               <i className={styles.hr} />
             </button>
@@ -826,7 +829,7 @@ const Editor = ({
                   closeAllDropdowns();
                   tableEditor.setIsTableDropdownOpen(!tableEditor.isTableDropdownOpen);
                 }}
-                title="표 삽입"
+                title={t('v1Editor.insertTable')}
               >
                 <i className={styles.table} />
               </button>
@@ -878,7 +881,7 @@ const Editor = ({
                   closeAllDropdowns();
                   linkEditor.openLinkDropdown();
                 }}
-                title="링크"
+                title={t('v1Editor.link')}
               >
                 <i className={styles.link} />
               </button>
@@ -953,7 +956,7 @@ const Editor = ({
                   closeAllDropdowns();
                   imageEditor.openImageDropdown();
                 }}
-                title="이미지"
+                title={t('v1Editor.image')}
               >
                 <i className={styles.image} />
               </button>
@@ -1059,7 +1062,7 @@ const Editor = ({
                   closeAllDropdowns();
                   youtubeEditor.setIsYoutubeDropdownOpen(true);
                 }}
-                title="유튜브"
+                title={t('v1Editor.youtube')}
               >
                 <i className={styles.youtube} />
               </button>
@@ -1120,7 +1123,7 @@ const Editor = ({
               type="button"
               className={styles.toolbarButton}
               onClick={clearFormatting}
-              title="서식 지우기"
+              title={t('v1Editor.clearFormat')}
             >
               <i className={styles.eraser} />
             </button>
@@ -1134,7 +1137,7 @@ const Editor = ({
               type="button"
               className={`${styles.toolbarButton} ${codeView.isCodeView ? styles.active : ''}`}
               onClick={codeView.toggleCodeView}
-              title={codeView.isCodeView ? "에디터로 전환" : "HTML 코드보기"}
+              title={codeView.isCodeView ? t('v1Editor.switchToEditor') : t('v1Editor.viewHtmlCode')}
             >
               <i className={styles.code} />
             </button>

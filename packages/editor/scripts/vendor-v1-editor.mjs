@@ -45,6 +45,84 @@ const styles = new Proxy({}, {
   getOwnPropertyDescriptor: (_t, key) => ({ enumerable: true, configurable: true, value: typeof key === 'string' ? key : '' }),
 });`;
 
+// --- i18n: the dev source hard-codes Korean. Re-point the visible toolbar UI at
+// the app's locale via t('v1Editor.X') (keys in i18n/messages/v1Editor.ts) so the
+// editor follows the en/ko toggle. Toolbar button titles + the paragraph/align
+// dropdown labels are covered here; interaction-only dialog/alert strings are not
+// yet ported. ---
+const TITLE_KEYS = {
+  "실행 취소": "undo",
+  "다시 실행": "redo",
+  "문단 형식": "paraFormat",
+  굵게: "bold",
+  기울임: "italic",
+  밑줄: "underline",
+  취소선: "strikethrough",
+  "글꼴 색상": "fontColor",
+  "배경 색상": "backgroundColor",
+  목록: "list",
+  "번호 목록": "orderedList",
+  구분선: "hr",
+  "표 삽입": "insertTable",
+  링크: "link",
+  이미지: "image",
+  유튜브: "youtube",
+  "서식 지우기": "clearFormat",
+  "HTML 코드보기": "viewHtmlCode",
+  "에디터로 전환": "switchToEditor",
+};
+// Korean constants labels -> i18n keys (text-align + paragraph dropdowns; the
+// `P1`..`P5` labels stay literal and t() just falls back to them).
+const LABEL_KEYS = {
+  "왼쪽 정렬": "alignLeft",
+  "가운데 정렬": "alignCenter",
+  "오른쪽 정렬": "alignRight",
+  "제목 1": "paraH1",
+  "제목 2": "paraH2",
+  "제목 3": "paraH3",
+  본문: "paraBody",
+};
+
+function i18nConstants(src) {
+  for (const [ko, key] of Object.entries(LABEL_KEYS)) {
+    src = src.replaceAll(`label: '${ko}'`, `label: 'v1Editor.${key}'`);
+  }
+  return src;
+}
+
+function i18nIndex(src) {
+  // import useT (../../ — index.tsx is one level deeper than the old monolith)
+  src = src.replace(
+    /(import { useTableEditor } from '\.\/hooks\/useTableEditor\.js';\n)/,
+    `$1import { useT } from '../../i18n/context.js';\n`
+  );
+  // `const t = useT()` at the top of the component body (before the first hook call)
+  src = src.replace(/(\n {2}const textStyle = useTextStyle\()/, "\n  const t = useT();\n$1");
+  // Toolbar button titles: title="ko" -> title={t('v1Editor.key')}
+  for (const [ko, key] of Object.entries(TITLE_KEYS)) {
+    src = src.replaceAll(`title="${ko}"`, `title={t('v1Editor.${key}')}`);
+  }
+  // Paragraph/align option labels now hold i18n keys -> translate at render.
+  src = src.replaceAll("{option.label}", "{t(option.label)}");
+  src = src.replaceAll("?.label || '정렬'", "?.label || 'v1Editor.alignLabel'");
+  // The align trigger reads ...find(...)?.label (now a key) -> wrap with t().
+  src = src.replace(
+    /title=\{(alignOptions\.find\(opt => opt\.value === textStyle\.currentAlign\)\?\.label \|\| 'v1Editor\.alignLabel')\}/,
+    "title={t($1)}"
+  );
+  // The (always-visible) paragraph trigger shows the current style's label.
+  src = src.replace(
+    /\{(paragraphOptions\.find\(opt => opt\.value === textStyle\.currentParagraphStyle\)\?\.label) \|\| '문단 형식'\}/,
+    "{t($1 || 'v1Editor.paraFormat')}"
+  );
+  // Code-view toggle button title is a ternary, not a plain title="...".
+  src = src.replace(
+    /title=\{codeView\.isCodeView \? "에디터로 전환" : "HTML 코드보기"\}/,
+    `title={codeView.isCodeView ? t('v1Editor.switchToEditor') : t('v1Editor.viewHtmlCode')}`
+  );
+  return src;
+}
+
 rmSync(OUT, { recursive: true, force: true });
 
 for (const f of FILES) {
@@ -54,6 +132,8 @@ for (const f of FILES) {
   src = src.replace(/from '(\.\.?\/[a-zA-Z0-9/_-]+)'/g, "from '$1.js'");
   // Swap the CSS-module import for the identity proxy (index.tsx only).
   src = src.replace(/import styles from '\.\.\/editor\.module\.scss';/, STYLES_PROXY);
+  if (f === "constants.ts") src = i18nConstants(src);
+  if (f === "index.tsx") src = i18nIndex(src);
   const header = `// @ts-nocheck\n/* eslint-disable */\n// VENDORED from ${REF} ${SRC}/${f} — do not hand-edit; re-vendor via packages/editor/scripts/vendor-v1-editor.mjs.\n`;
   const dest = join(OUT, f);
   mkdirSync(dirname(dest), { recursive: true });

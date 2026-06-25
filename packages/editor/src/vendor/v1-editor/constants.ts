@@ -25,19 +25,19 @@ export const colorPalette: string[][] = [
  * 정렬 옵션
  */
 export const alignOptions: AlignOption[] = [
-  { value: 'left', label: '왼쪽 정렬', icon: 'alignLeft' },
-  { value: 'center', label: '가운데 정렬', icon: 'alignCenter' },
-  { value: 'right', label: '오른쪽 정렬', icon: 'alignRight' },
+  { value: 'left', label: 'v1Editor.alignLeft', icon: 'alignLeft' },
+  { value: 'center', label: 'v1Editor.alignCenter', icon: 'alignCenter' },
+  { value: 'right', label: 'v1Editor.alignRight', icon: 'alignRight' },
 ];
 
 /**
  * 문단 형식 옵션 (className은 메인 컴포넌트에서 styles를 통해 주입)
  */
 export const paragraphOptions: ParagraphOption[] = [
-  { value: 'h1', label: '제목 1' },
-  { value: 'h2', label: '제목 2' },
-  { value: 'h3', label: '제목 3' },
-  { value: 'p', label: '본문' },
+  { value: 'h1', label: 'v1Editor.paraH1' },
+  { value: 'h2', label: 'v1Editor.paraH2' },
+  { value: 'h3', label: 'v1Editor.paraH3' },
+  { value: 'p', label: 'v1Editor.paraBody' },
   { value: 'p1', label: 'P1' },
   { value: 'p2', label: 'P2' },
   { value: 'p3', label: 'P3' },
