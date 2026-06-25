@@ -2123,6 +2123,9 @@ export const componentMatrixPreviewClipStyle: CSSProperties = {
   overflow: "hidden",
   display: "grid",
   placeItems: "center",
+  // Breathing room so content with a negative margin (e.g. the toggle's v1
+  // `margin-top: -1px`) isn't flush against the clip edge and cropped.
+  padding: 4,
 };
 
 export const componentTokenGroupListStyle: CSSProperties = {
