@@ -672,12 +672,11 @@ export const EDITOR_TOOLBAR_ITEMS: ToolbarItem[] = [
 function EditorPreviewBody({ resizable, toolbar }: { resizable: boolean; toolbar: ToolbarItem[] }) {
   // Render the REAL vendored v1 editor so every feature actually works.
   const [value, setValue] = useState(EDITOR_INITIAL_HTML);
-  // Wider than other previews so the full single-line toolbar (~930px) fits
-  // without being cropped; falls back to the stage width on narrow screens.
+  // Wide enough that the full toolbar (~960px) fits on one row when there's room;
+  // the v1 toolbar keeps its flex-wrap so it drops to a second row (never cropped)
+  // when the stage is narrower.
   return (
-    <div style={{ width: "min(960px, 100%)" }} className="podo-editor-preview">
-      {/* Keep the v1 toolbar on a single (scrollable) line instead of wrapping. */}
-      <style>{".podo-editor-preview .toolbar{flex-wrap:nowrap!important;overflow-x:auto}"}</style>
+    <div style={{ width: "min(1000px, 100%)" }} className="podo-editor-preview">
       <PreviewErrorBoundary>
         <V1Editor
           value={value}
