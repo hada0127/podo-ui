@@ -355,11 +355,14 @@ describe("@podo/editor", () => {
     expect(button?.states.find((state) => state.name === "loading")?.tokens).toMatchObject({
       "root.opacity": "0.72",
     });
+    // Color bindings were dropped from the button base tokens so the vendored v1
+    // theme/variant classes drive colors in the single preview (binding them here
+    // overrode those classes with !important and froze the default theme).
     expect(button?.tokens).toMatchObject({
-      "root.background": "{color.default.base}",
       "root.radius": "{radius.scale.3}",
       "root.typography": "{typography.paragraph.p3}",
     });
+    expect(button?.tokens?.["root.background"]).toBeUndefined();
   });
 
   it("builds editable token matrices for natural token variation groups", () => {

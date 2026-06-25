@@ -60,10 +60,13 @@ function legacyComponent(input: LegacyComponentInput): ComponentDocument {
 }
 
 function legacyBaseComponentTokens(): ComponentDocument["tokens"] {
+  // Color bindings (background/color/borderColor) are intentionally omitted: the
+  // vendored v1 CSS drives every component's colors through its own classes
+  // (theme/type/state). Binding them here emitted `.podo-design-target X { … !important }`
+  // that overrode those classes, freezing the single preview on the default
+  // variant. Components that genuinely need a non-default surface set it
+  // explicitly (e.g. form fields bind root.background to {color.bg.block}).
   return {
-    "root.background": "{color.bg.modal}",
-    "root.color": "{color.text.body}",
-    "root.borderColor": "{color.border.base}",
     "root.radius": "{radius.scale.3}",
     "root.gap": "{spacing.scale.2}",
     "root.typography": "{typography.paragraph.p3}",
@@ -1117,10 +1120,8 @@ export const legacyComponents: ComponentDocument[] = [
       },
     ],
     tokens: {
-      "root.background": "{color.default.base}",
-      "root.color": "{color.default.reverse}",
-      "root.borderColor": "{color.default.base}",
-      "root.borderWidth": "1px",
+      // Colors (theme + variant: solid/fill/border) come from the v1 button
+      // classes; binding them here froze the single preview on the default theme.
       "root.height": "42px",
       "root.paddingX": "{spacing.scale.3}",
       "root.paddingY": "{spacing.scale.0}",
@@ -1765,9 +1766,8 @@ export const legacyComponents: ComponentDocument[] = [
     states: [{ name: "open", tokens: { "toast.background": "{color.default.fill}" } }],
     tokens: {
       ...legacyBaseComponentTokens(),
-      // v1 default toast surface is color('default-fill'), not the modal surface.
-      "toast.background": "{color.default.fill}",
-      "toast.borderColor": "{color.default.pressed}",
+      // Toast surface colors (theme) come from the v1 .toast classes; binding
+      // toast.background/borderColor here froze the single preview on default.
       "toast.shadowColor": "{color.border.alpha}",
       "header.typography": "{typography.paragraph.p3-semibold}",
       "message.typography": "{typography.paragraph.p3}",
