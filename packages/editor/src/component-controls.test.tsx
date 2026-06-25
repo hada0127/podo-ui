@@ -94,6 +94,26 @@ describe("component preview controls feed runtime props", () => {
     expect(appearance["root.borderColor"]).toBeUndefined();
   });
 
+  it("input invalid prop adds the v1 danger class (red border)", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("input"), { invalid: "true" }, lookup)}</>
+    );
+    expect(container.querySelector("input.danger")).not.toBeNull();
+  });
+
+  it("input disabled prop disables the field", () => {
+    const { container } = render(
+      <>{renderComponentInstance(pick("input"), { disabled: "true" }, lookup)}</>
+    );
+    expect(container.querySelector("input")?.disabled).toBe(true);
+  });
+
+  it("input base tokens do not bind border/background (v1 CSS drives focus/danger)", () => {
+    const appearance = resolveComponentAppearance(pick("input"), {});
+    expect(appearance["root.background"]).toBeUndefined();
+    expect(appearance["root.borderColor"]).toBeUndefined();
+  });
+
   it("variant matrix ignores preview test overrides (renders default content)", () => {
     const { container } = render(
       <>

@@ -397,22 +397,34 @@ function renderTogglePreview(s: Record<string, string>) {
   );
 }
 
-function renderInputPreview(s: Record<string, string>) {
+function renderInputPreview(s: Record<string, string>, lookup: TokenLookup) {
   const state = s.state ?? "default";
   const style = s.style ?? "border";
   const size = s.size ?? "sm";
+  // Honor both the state selector and the boolean disabled/invalid prop controls.
+  const disabled = state === "disabled" || s.disabled === "true";
+  const invalid = state === "invalid" || s.invalid === "true";
   const className =
-    v1Classes(
-      style !== "border" && style,
-      size !== "sm" && size,
-      state === "invalid" && "danger"
-    ) || undefined;
+    v1Classes(style !== "border" && style, size !== "sm" && size, invalid && "danger") || undefined;
+  // V1Input is controlled (value ?? ""), so pass `value` (not defaultValue) so the
+  // value control shows. v1 has no :disabled tint, so apply bg.disabled inline.
+  const value = s.value?.trim() ? s.value : "team@podo.dev";
+  const withIcon = previewIcon(s, "withIcon");
+  const withRightIcon = previewIcon(s, "withRightIcon");
+  const unit = s.unit?.trim() ? s.unit : undefined;
+  const disabledStyle = disabled
+    ? { background: cssToken(lookup, "color.bg.disabled", "#f4f4f5") }
+    : undefined;
   return (
     <V1Input
       {...(className ? { className } : {})}
-      defaultValue="team@podo.dev"
+      value={value}
       placeholder={s.placeholder?.trim() ? s.placeholder : "team@podo.dev"}
-      disabled={state === "disabled"}
+      disabled={disabled}
+      {...(disabledStyle ? { style: disabledStyle } : {})}
+      {...(withIcon ? { withIcon } : {})}
+      {...(withRightIcon ? { withRightIcon } : {})}
+      {...(unit ? { unit } : {})}
     />
   );
 }

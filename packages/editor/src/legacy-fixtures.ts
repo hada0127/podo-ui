@@ -1476,10 +1476,11 @@ export const legacyComponents: ComponentDocument[] = [
       { name: "invalid", tokens: { "root.borderColor": "{color.danger.base}" } },
     ],
     tokens: {
-      // v1 input: bg-block surface, faint border-disabled outline, height-driven padding.
-      "root.background": "{color.bg.block}",
+      // Surface + border colors (default / focus / danger) come from the v1 input
+      // CSS. Binding root.background/borderColor here with !important overrode the
+      // v1 focus + .danger borders, so the invalid control had no visible effect.
+      // Keep layout/text only; the disabled state still tints via its state token.
       "root.color": "{color.text.body}",
-      "root.borderColor": "{color.border.disabled}",
       "root.radius": "{radius.scale.3}",
       "root.paddingX": "{spacing.scale.4}",
       "root.paddingY": "{spacing.scale.0}",
