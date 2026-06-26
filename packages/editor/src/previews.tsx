@@ -173,12 +173,19 @@ export function renderComponentPreviewMatrix(input: {
                     textAlign: "left",
                     ...(selected ? componentMatrixPreviewButtonActiveStyle : {}),
                   }}
-                  onClick={(event) =>
+                  // This row is a DESIGN surface, not a live preview: intercept in
+                  // the capture phase so clicking a date / nav / time select selects
+                  // that part for editing instead of operating the picker. mousedown
+                  // is blocked too (stops native <select> popups, focus, drag-select).
+                  onMouseDownCapture={(event) => event.preventDefault()}
+                  onClickCapture={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
                     input.onSelect(
                       cellOnSelect,
                       componentPartForElement(input.component.id, event.target as Element)
-                    )
-                  }
+                    );
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault();
