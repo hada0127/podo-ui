@@ -186,6 +186,45 @@ const COMMON_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: stri
   { property: "typography", defaultAlias: "{typography.paragraph.p3}" },
 ];
 
+// Extra properties offered when the selected part actually renders text, so you
+// can edit its font like a Figma text layer. (color already lives in COMMON.)
+const TYPOGRAPHY_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: string }> = [
+  { property: "font-size", defaultAlias: "14px" },
+  { property: "font-weight", defaultAlias: "500" },
+  { property: "font-family", defaultAlias: "inherit" },
+  { property: "line-height", defaultAlias: "1.5" },
+  { property: "letter-spacing", defaultAlias: "0" },
+];
+
+// Parts that render text (so they get the typography controls above). Per known
+// component; falls back to a name heuristic for anything else.
+const TEXT_BEARING_PARTS: Record<string, Set<string>> = {
+  datepicker: new Set([
+    "trigger-date",
+    "time-picker",
+    "hour-select",
+    "minute-select",
+    "range-separator",
+    "calendar-title",
+    "calendar-weekday",
+    "calendar-day",
+    "calendar-today",
+    "calendar-selected",
+    "calendar-range",
+    "quick-select-item",
+    "action-summary",
+    "reset-action",
+    "apply-action",
+  ]),
+};
+
+function isTextBearingPart(componentId: string, part: string): boolean {
+  return (
+    TEXT_BEARING_PARTS[componentId]?.has(part) ??
+    /text|label|message|title|value|day|item|button|action/i.test(part)
+  );
+}
+
 // Components whose primary text is anatomy/children (not a spec prop), so the
 // preview exposes a synthetic "Text" control that feeds the reserved `text`
 // selection key (renderers read it via previewText()).
@@ -434,9 +473,17 @@ export function ComponentsPanelWorkspace({
       reference: String(reference),
     }));
   const presentProperties = new Set(partBindings.map((binding) => binding.property));
-  const addableProperties = COMMON_APPEARANCE_PROPERTIES.filter(
-    (entry) => !presentProperties.has(entry.property)
-  );
+  // Text-bearing parts also offer typography controls (font, size, weight, line
+  // height, letter spacing) — like editing a text layer in Figma.
+  const appearanceCatalog = isTextBearingPart(selectedComponentForSpec.id, activePart)
+    ? [...COMMON_APPEARANCE_PROPERTIES, ...TYPOGRAPHY_APPEARANCE_PROPERTIES]
+    : COMMON_APPEARANCE_PROPERTIES;
+  const seenProperty = new Set<string>();
+  const addableProperties = appearanceCatalog.filter((entry) => {
+    if (presentProperties.has(entry.property) || seenProperty.has(entry.property)) return false;
+    seenProperty.add(entry.property);
+    return true;
+  });
   const applyAppearanceBinding = (key: string, reference: string): void => {
     if (activeScope === "base") {
       updateComponentTokenBinding(key, reference);

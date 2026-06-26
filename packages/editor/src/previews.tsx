@@ -119,6 +119,25 @@ function partOutlineCss(componentId: string, scope: string, part: string | undef
   return `.${scope} ${selector} { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
 }
 
+// Figma-style hover: ring the part under the pointer (lighter than selection).
+// A direct DOM class (not React state) keeps it cheap; partHoverCss scopes it per
+// cell so it only paints inside the design surface.
+let hoveredPartEl: Element | null = null;
+function setHoveredPart(componentId: string, element: Element | null): void {
+  const next = componentPartMatchForElement(componentId, element)?.element ?? null;
+  if (next === hoveredPartEl) return;
+  hoveredPartEl?.classList.remove("podo-part-hover");
+  hoveredPartEl = next;
+  hoveredPartEl?.classList.add("podo-part-hover");
+}
+function clearHoveredPart(): void {
+  hoveredPartEl?.classList.remove("podo-part-hover");
+  hoveredPartEl = null;
+}
+function partHoverCss(scope: string): string {
+  return `.${scope} .podo-part-hover { outline: 1px solid rgba(76, 159, 254, 0.6); outline-offset: 1px; }`;
+}
+
 export function renderComponentPreviewMatrix(input: {
   component: ComponentDocument;
   selections: Record<string, string>;
@@ -202,17 +221,25 @@ export function renderComponentPreviewMatrix(input: {
                       input.onSelect(cellOnSelect);
                     }
                   }}
+                  onPointerMove={(event) =>
+                    setHoveredPart(input.component.id, event.target as Element)
+                  }
+                  onPointerLeave={() => clearHoveredPart()}
                 >
                   <div style={datepickerListLabelStyle}>{label}</div>
                   <span className={`podo-v1-stage podo-datepicker-design ${cellScope}`}>
                     <style>
+                      {/* includeBase=true: this is a design surface, so the part's
+                          base appearance edits must show in every row. */}
                       {componentAppearanceCss(
                         input.component,
                         input.lookup,
                         cellSelections,
                         cellScope,
-                        false
+                        true
                       ) +
+                        "\n" +
+                        partHoverCss(cellScope) +
                         (selected
                           ? "\n" + partOutlineCss(input.component.id, cellScope, input.selectedPart)
                           : "")}
@@ -1078,6 +1105,9 @@ const APPEARANCE_CSS_PROPERTY: Record<string, string> = {
   minheight: "min-height",
   fontsize: "font-size",
   fontweight: "font-weight",
+  fontfamily: "font-family",
+  lineheight: "line-height",
+  letterspacing: "letter-spacing",
   opacity: "opacity",
 };
 
@@ -1155,10 +1185,13 @@ const COMPONENT_PART_SELECTORS: Record<string, Record<string, string>> = {
 // on a calendar cell selects "calendar", on the field selects "input", and a
 // click on bare chrome falls back to "root". Used for Figma-style click-to-select
 // in the variant matrix.
-function componentPartForElement(componentId: string, element: Element | null): string | undefined {
+function componentPartMatchForElement(
+  componentId: string,
+  element: Element | null
+): { part: string; element: Element } | undefined {
   const parts = COMPONENT_PART_SELECTORS[componentId];
   if (!parts || !element) return undefined;
-  let best: string | undefined;
+  let best: { part: string; element: Element } | undefined;
   let bestDepth = -1;
   for (const [part, selector] of Object.entries(parts)) {
     const matched = element.closest(selector);
@@ -1167,11 +1200,15 @@ function componentPartForElement(componentId: string, element: Element | null): 
     for (let node = matched.parentElement; node; node = node.parentElement) depth += 1;
     // Deeper match wins; on a tie a non-root part beats root.
     if (depth > bestDepth || (depth === bestDepth && part !== "root")) {
-      best = part;
+      best = { part, element: matched };
       bestDepth = depth;
     }
   }
   return best;
+}
+
+function componentPartForElement(componentId: string, element: Element | null): string | undefined {
+  return componentPartMatchForElement(componentId, element)?.part;
 }
 
 function appearanceCssProperty(property: string): string | undefined {
