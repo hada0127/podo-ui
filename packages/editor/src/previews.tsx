@@ -645,7 +645,12 @@ function renderEditorPreview(selections: Record<string, string>) {
   // Toolbar items are toggled from the right rail (see components-panel); default
   // all on — an item is hidden only when its selection is explicitly "false".
   const toolbar = EDITOR_TOOLBAR_ITEMS.filter((item) => selections[`toolbar:${item}`] !== "false");
-  return <EditorPreviewBody resizable={selections.resize === "resizable"} toolbar={toolbar} />;
+  // The `value` prop seeds the editable content; key on it so editing that prop
+  // re-seeds while typing (local state) does not remount. The size/width/
+  // placeholder/resizable props are read live from selections in the body so they
+  // actually drive the preview instead of being hard-coded.
+  const seed = selections.value?.trim() ? selections.value : EDITOR_INITIAL_HTML;
+  return <EditorPreviewBody key={seed} seed={seed} selections={selections} toolbar={toolbar} />;
 }
 
 const EDITOR_INITIAL_HTML =
@@ -669,9 +674,23 @@ export const EDITOR_TOOLBAR_ITEMS: ToolbarItem[] = [
   "code",
 ];
 
-function EditorPreviewBody({ resizable, toolbar }: { resizable: boolean; toolbar: ToolbarItem[] }) {
+function EditorPreviewBody({
+  seed,
+  selections,
+  toolbar,
+}: {
+  seed: string;
+  selections: Record<string, string>;
+  toolbar: ToolbarItem[];
+}) {
   // Render the REAL vendored v1 editor so every feature actually works.
-  const [value, setValue] = useState(EDITOR_INITIAL_HTML);
+  const [value, setValue] = useState(seed);
+  // All sizing/text props come straight from the inspector so they drive the
+  // preview. minHeight/maxHeight are optional (conditional-spread to satisfy
+  // exactOptionalPropertyTypes); resizable honors either the prop or the variant.
+  const minHeight = selections.minHeight?.trim();
+  const maxHeight = selections.maxHeight?.trim();
+  const resizable = selections.resizable === "true" || selections.resize === "resizable";
   // Wide enough that the full toolbar (~960px) fits on one row when there's room;
   // the v1 toolbar keeps its flex-wrap so it drops to a second row (never cropped)
   // when the stage is narrower.
@@ -681,9 +700,13 @@ function EditorPreviewBody({ resizable, toolbar }: { resizable: boolean; toolbar
         <V1Editor
           value={value}
           onChange={setValue}
-          height="360px"
+          width={selections.width?.trim() || "100%"}
+          height={selections.height?.trim() || "400px"}
           resizable={resizable}
+          placeholder={selections.placeholder?.trim() || "내용을 입력하세요..."}
           toolbar={toolbar}
+          {...(minHeight ? { minHeight } : {})}
+          {...(maxHeight ? { maxHeight } : {})}
         />
       </PreviewErrorBoundary>
     </div>
