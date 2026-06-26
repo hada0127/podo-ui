@@ -18,7 +18,9 @@ interface LegacyComponentInput {
   name: string;
   category: ComponentDocument["category"];
   description: string;
-  anatomy?: string[];
+  // A part is either a bare name (flat) or { name, parent } for Figma-style
+  // nesting (e.g. the datepicker's calendar nests under its dropdown).
+  anatomy?: Array<string | { name: string; parent?: string }>;
   slots?: Array<Partial<ComponentDocument["slots"][number]> & { name: string }>;
   props?: ComponentDocument["props"];
   variants?: ComponentDocument["variants"];
@@ -37,7 +39,9 @@ function legacyComponent(input: LegacyComponentInput): ComponentDocument {
     category: input.category,
     status: "stable",
     description: input.description,
-    anatomy: (input.anatomy ?? ["root"]).map((name) => ({ name })),
+    anatomy: (input.anatomy ?? ["root"]).map((entry) =>
+      typeof entry === "string" ? { name: entry } : entry
+    ),
     slots: input.slots ?? [],
     props: input.props ?? [],
     variants: input.variants ?? [],
@@ -1245,7 +1249,39 @@ export const legacyComponents: ComponentDocument[] = [
     name: "DatePicker",
     category: "molecule",
     description: "v1 date/time picker with single and period selection modes.",
-    anatomy: ["root", "input", "calendar", "time-list", "quick-actions", "actions"],
+    // Figma-style nested anatomy: the trigger ("날짜 선택 본편") and the popup
+    // ("팝업") are separate, and the calendar / time / quick-select / actions and
+    // their inner pieces are individually selectable.
+    anatomy: [
+      "root",
+      { name: "trigger", parent: "root" },
+      { name: "trigger-nav-left", parent: "trigger" },
+      { name: "trigger-nav-right", parent: "trigger" },
+      { name: "trigger-content", parent: "trigger" },
+      { name: "trigger-date", parent: "trigger-content" },
+      { name: "range-separator", parent: "trigger-content" },
+      { name: "time-picker", parent: "trigger-content" },
+      { name: "hour-select", parent: "time-picker" },
+      { name: "minute-select", parent: "time-picker" },
+      { name: "trigger-icon", parent: "trigger" },
+      { name: "popup", parent: "root" },
+      { name: "quick-select", parent: "popup" },
+      { name: "quick-select-item", parent: "quick-select" },
+      { name: "calendar", parent: "popup" },
+      { name: "calendar-header", parent: "calendar" },
+      { name: "calendar-nav-button", parent: "calendar-header" },
+      { name: "calendar-title", parent: "calendar-header" },
+      { name: "calendar-grid", parent: "calendar" },
+      { name: "calendar-weekday", parent: "calendar-grid" },
+      { name: "calendar-day", parent: "calendar-grid" },
+      { name: "calendar-today", parent: "calendar-grid" },
+      { name: "calendar-selected", parent: "calendar-grid" },
+      { name: "calendar-range", parent: "calendar-grid" },
+      { name: "actions", parent: "popup" },
+      { name: "action-summary", parent: "actions" },
+      { name: "reset-action", parent: "actions" },
+      { name: "apply-action", parent: "actions" },
+    ],
     props: [
       enumProp("mode", ["instant", "period"], { default: "instant" }),
       enumProp("type", ["date", "time", "datetime", "hour"], { default: "date" }),
@@ -1279,18 +1315,19 @@ export const legacyComponents: ComponentDocument[] = [
       { name: "direction", values: ["down", "up", "auto"], default: "down" },
     ],
     states: [
-      { name: "open", tokens: { "root.borderColor": "{color.primary.base}" } },
-      { name: "disabled", tokens: { "root.background": "{color.bg.disabled}" } },
-      { name: "selected", tokens: { "calendar.background": "{color.primary.fill}" } },
+      // root is now the whole component; the trigger is the input surface.
+      { name: "open", tokens: { "trigger.borderColor": "{color.primary.base}" } },
+      { name: "disabled", tokens: { "trigger.background": "{color.bg.disabled}" } },
+      { name: "selected", tokens: { "calendar-selected.background": "{color.primary.fill}" } },
     ],
     tokens: {
       ...legacyBaseComponentTokens(),
       // v1 datepicker trigger surface is bg-block; the calendar popover stays modal.
-      "root.background": "{color.bg.block}",
+      "trigger.background": "{color.bg.block}",
       "calendar.background": "{color.bg.modal}",
       "calendar.borderColor": "{color.bg.modal}",
-      "selected.background": "{color.primary.base}",
-      "selected.color": "{color.primary.reverse}",
+      "calendar-selected.background": "{color.primary.base}",
+      "calendar-selected.color": "{color.primary.reverse}",
     },
     accessibility: {
       aria: ["aria-expanded", "aria-controls", "aria-selected"],

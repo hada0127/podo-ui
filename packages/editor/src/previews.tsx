@@ -884,6 +884,54 @@ export class PreviewErrorBoundary extends Component<
   }
 }
 
+// Variant-aware layers: which anatomy parts actually exist for the current
+// variant selection (e.g. type=time has no calendar; type=date has no time
+// picker). Whole subtrees are hidden together so the layer tree never orphans a
+// child. Non-datepicker components return their full anatomy unchanged.
+export function visibleComponentAnatomy(
+  component: ComponentDocument,
+  selections: Record<string, string>
+): ComponentDocument["anatomy"] {
+  if (component.id !== "datepicker") return component.anatomy;
+  const type = selections.type ?? "date";
+  const mode = selections.mode ?? "instant";
+  const hasCalendar = type === "date" || type === "datetime";
+  const hasTime = type === "time" || type === "datetime" || type === "hour";
+  const isPeriod = mode === "period";
+  const quickSelect = selections.quickSelect === "true";
+  const showActions =
+    selections.showActions === undefined ? isPeriod : selections.showActions === "true";
+  const showNav = quickSelect && isPeriod && selections.hideNavArrow !== "true";
+  const calendarParts = new Set([
+    "popup",
+    "calendar",
+    "calendar-header",
+    "calendar-nav-button",
+    "calendar-title",
+    "calendar-grid",
+    "calendar-weekday",
+    "calendar-day",
+    "calendar-today",
+    "calendar-selected",
+    "calendar-range",
+  ]);
+  const isVisible = (name: string): boolean => {
+    if (name === "trigger-nav-left" || name === "trigger-nav-right") return showNav;
+    if (name === "trigger-icon") return !showNav;
+    if (name === "trigger-date") return hasCalendar;
+    if (name === "range-separator") return isPeriod;
+    if (name === "time-picker" || name === "hour-select") return hasTime;
+    if (name === "minute-select") return hasTime && type !== "hour";
+    if (calendarParts.has(name)) return hasCalendar;
+    if (name === "quick-select" || name === "quick-select-item")
+      return quickSelect && isPeriod && hasCalendar;
+    if (["actions", "action-summary", "reset-action", "apply-action"].includes(name))
+      return showActions && hasCalendar;
+    return true; // root, trigger, trigger-content
+  };
+  return component.anatomy.filter((part) => isVisible(part.name));
+}
+
 function renderDatePickerPreview(selections: Record<string, string>) {
   return (
     <DatePickerPreviewBody
@@ -1057,11 +1105,34 @@ const COMPONENT_PART_SELECTORS: Record<string, Record<string, string>> = {
   chip: { root: ".chip", icon: ".chip i", "delete-button": ".chip button" },
   datepicker: {
     root: ".datepicker",
-    input: ".datepicker .input",
-    calendar: ".calendar",
-    "time-list": ".timeSection",
-    "quick-actions": ".quickSelectPanel",
-    actions: ".bottomActions",
+    trigger: ".datepicker > .input",
+    "trigger-nav-left": ".datepicker > .input .navArrowLeft",
+    "trigger-nav-right": ".datepicker > .input .navArrowRight",
+    "trigger-content": ".datepicker > .input .inputContent",
+    "trigger-date": ".datepicker > .input .inputPart",
+    "range-separator": ".datepicker > .input .separator",
+    "time-picker": ".datepicker > .input .timeSection",
+    "hour-select": ".datepicker > .input .timeSection select:first-of-type",
+    "minute-select": ".datepicker > .input .timeSection select:last-of-type",
+    "trigger-icon": ".datepicker > .input .inputIcon",
+    popup: ".datepicker .dropdown",
+    "quick-select": ".datepicker .dropdown .quickSelectPanel",
+    "quick-select-item": ".datepicker .dropdown .quickSelectItem",
+    calendar: ".datepicker .dropdown .calendar",
+    "calendar-header": ".datepicker .dropdown .calendarNav",
+    "calendar-nav-button": ".datepicker .dropdown .navButton",
+    "calendar-title": ".datepicker .dropdown .navTitle",
+    "calendar-grid": ".datepicker .dropdown .calendarGrid",
+    "calendar-weekday": ".datepicker .dropdown .calendarCell.header",
+    "calendar-day": ".datepicker .dropdown .calendarCell:not(.header)",
+    "calendar-today": ".datepicker .dropdown .calendarCell.today",
+    "calendar-selected":
+      ".datepicker .dropdown .calendarCell.selected, .datepicker .dropdown .calendarCell.rangeStart, .datepicker .dropdown .calendarCell.rangeEnd",
+    "calendar-range": ".datepicker .dropdown .calendarCell.inRange",
+    actions: ".datepicker .dropdown .bottomActions",
+    "action-summary": ".datepicker .dropdown .periodText",
+    "reset-action": ".datepicker .dropdown .actionButton.reset",
+    "apply-action": ".datepicker .dropdown .actionButton.apply",
   },
   "doc-tabs": { root: "ul.tabs", tab: "ul.tabs > li" },
   editor: { root: ".editor", toolbar: ".editor .toolbar", content: ".editorContent" },

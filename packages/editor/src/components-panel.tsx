@@ -19,6 +19,7 @@ import {
   EDITOR_TOOLBAR_ITEMS,
   renderComponentPreview,
   renderComponentPreviewMatrix,
+  visibleComponentAnatomy,
 } from "./previews.js";
 import { LayersPanel } from "./component-layers.js";
 import { IconPicker } from "./icon-picker.js";
@@ -388,7 +389,12 @@ export function ComponentsPanelWorkspace({
   // appearance can target just one variant like Figma). Options follow the live
   // selections, e.g. theme = primary.
   const [appearanceScope, setAppearanceScope] = useState("base");
-  const anatomyParts = anatomyPartNames(selectedComponentForSpec);
+  // Layers reflect the selected variant (e.g. type=time hides the calendar parts).
+  const visibleAnatomy = visibleComponentAnatomy(
+    selectedComponentForSpec,
+    effectiveComponentPreviewSelections
+  );
+  const anatomyParts = anatomyPartNames({ ...selectedComponentForSpec, anatomy: visibleAnatomy });
   // Default to the first part that actually has appearance bindings (so e.g. toast
   // opens on its styled "toast" layer, not an empty "provider" layer).
   const partsWithBindings = new Set(
@@ -471,7 +477,7 @@ export function ComponentsPanelWorkspace({
             </button>
           </div>
           <LayersPanel
-            anatomy={selectedComponentForSpec.anatomy}
+            anatomy={visibleAnatomy}
             selectedPart={activePart}
             onSelect={setSelectedPart}
             onRename={(from, to) => {
