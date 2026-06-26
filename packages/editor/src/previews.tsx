@@ -98,7 +98,7 @@ export function renderComponentPreview(
 // listeners (focus, click-outside, contentEditable). Rendering several live
 // instances in the variant matrix makes them fight each other, so we show only
 // the single interactive preview above and skip the matrix for them.
-const SINGLE_INSTANCE_PREVIEW_IDS = new Set(["editor", "datepicker"]);
+const SINGLE_INSTANCE_PREVIEW_IDS = new Set(["editor"]);
 
 export function renderComponentPreviewMatrix(input: {
   component: ComponentDocument;
@@ -795,9 +795,7 @@ function DatePickerPreviewBody({
   // within the scoped stage. `value` is reset when the axis (type/mode) changes.
   const [value, setValue] = useState<Record<string, unknown>>({});
   return (
-    // Extra height for the always-open dropdown so the calendar/time/quick/actions
-    // parts all sit inside the stage and stay designable.
-    <div style={{ width: "min(440px, 100%)", minHeight: 460 }}>
+    <div style={{ width: "min(440px, 100%)" }}>
       <PreviewErrorBoundary>
         <V1DatePicker
           key={`${type}-${mode}`}
@@ -808,9 +806,6 @@ function DatePickerPreviewBody({
           {...(placeholder ? { placeholder } : {})}
           value={value as never}
           onChange={setValue as never}
-          // Keep the dropdown open so every popup part (date / time / quick / actions)
-          // is visible and can be designed via its layer.
-          previewOpen
         />
       </PreviewErrorBoundary>
     </div>
@@ -1080,8 +1075,5 @@ export function defaultPreviewSelectionsForComponent(
   // Seed the editor's `value` with demo HTML so the preview isn't blank and its
   // value textarea mirrors the editor from the start (the spec default is "").
   if (component.id === "editor") base.value = EDITOR_INITIAL_HTML;
-  // Default the datepicker preview to datetime so both the calendar (date picker)
-  // and the time list (time picker) parts are visible/designable from the start.
-  if (component.id === "datepicker") base.type = "datetime";
   return base;
 }

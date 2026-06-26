@@ -1,7 +1,10 @@
-// VENDORED from main react/molecule/datepicker.tsx via packages/editor/scripts/vendor-v1-datepicker.mjs.
-// Adaptations: styles CSS-module -> identity proxy; a `previewOpen` prop forces the
-// dropdown open + ignores outside-click/selection so the component editor can show
-// and design every popup part at once. Do not hand-edit; re-run the script.
+// VENDORED VERBATIM from main branch `react/molecule/datepicker.tsx` (v1
+// datepicker) so the preview has ALL real features (calendar, range, time/hour,
+// quick-select, min/max, etc.). Only the styles import is changed: `styles.x`
+// returns the plain class `x`, matching the scoped v1 CSS in
+// v1-components.generated.css when rendered inside `.podo-v1-stage`. The dropdown
+// renders inline (no `portal` prop) so it stays inside the scoped stage.
+// Do not hand-edit; re-vendor from main.
 // @ts-nocheck
 /* eslint-disable */
 'use client';
@@ -85,8 +88,6 @@ export interface InitialCalendar {
 }
 
 export interface DatePickerProps {
-  /** Preview-only: force the dropdown open so every popup part is designable. */
-  previewOpen?: boolean;
   /** 선택 모드: instant(단일) | period(기간) */
   mode?: DatePickerMode;
   /** 값 타입: date | time | datetime */
@@ -998,9 +999,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
   hideNavArrow = false,
   direction = 'down',
   onReset,
-  previewOpen = false,
 }) => {
-  const [selectingPart, setSelectingPart] = useState<SelectingPart>(previewOpen && (type === 'date' || type === 'datetime') ? 'date' : null);
+  const [selectingPart, setSelectingPart] = useState<SelectingPart>(null);
   const [tempValue, setTempValue] = useState<DatePickerValue>(value || {});
   const [navigationStep, setNavigationStep] = useState<NavigationStep | null>(() => {
     if (value?.date && value?.endDate) {
@@ -1185,7 +1185,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         }
       }
 
-      setSelectingPart(previewOpen && (type === 'date' || type === 'datetime') ? 'date' : null);
+      setSelectingPart(null);
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -1308,7 +1308,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       if (!shouldShowActions) {
         onChange?.(newValue);
       }
-      setSelectingPart(previewOpen && (type === 'date' || type === 'datetime') ? 'date' : null);
+      setSelectingPart(null);
       return;
     }
 
@@ -1383,7 +1383,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   const handleApply = () => {
     onChange?.(tempValue);
-    setSelectingPart(previewOpen && (type === 'date' || type === 'datetime') ? 'date' : null);
+    setSelectingPart(null);
   };
 
   const handleQuickSelect = (key: QuickSelectKey) => {
@@ -1412,7 +1412,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
     if (!shouldShowActions) {
       onChange?.(newValue);
-      setSelectingPart(previewOpen && (type === 'date' || type === 'datetime') ? 'date' : null);
+      setSelectingPart(null);
     }
   };
 
