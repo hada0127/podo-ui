@@ -1594,6 +1594,9 @@ export const layerNameStyle: CSSProperties = {
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
   flex: 1,
+  // Without this a flex item won't shrink below its content, so deep/long layer
+  // names overflow the column and get clipped raw instead of ellipsised.
+  minWidth: 0,
 };
 
 export const layerRenameInputStyle: CSSProperties = {

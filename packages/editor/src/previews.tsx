@@ -119,23 +119,18 @@ function partOutlineCss(componentId: string, scope: string, part: string | undef
   return `.${scope} ${selector} { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
 }
 
-// Figma-style hover: ring the part under the pointer (lighter than selection).
-// A direct DOM class (not React state) keeps it cheap; partHoverCss scopes it per
-// cell so it only paints inside the design surface.
-let hoveredPartEl: Element | null = null;
-function setHoveredPart(componentId: string, element: Element | null): void {
-  const next = componentPartMatchForElement(componentId, element)?.element ?? null;
-  if (next === hoveredPartEl) return;
-  hoveredPartEl?.classList.remove("podo-part-hover");
-  hoveredPartEl = next;
-  hoveredPartEl?.classList.add("podo-part-hover");
+// Figma-style selection in the datepicker design list: ring ONLY the element you
+// clicked (not every element of its CSS class — so selecting one calendar day
+// doesn't outline all 30). The mark is moved to the new element on each click.
+let selectedPartEl: Element | null = null;
+function markSelectedPartEl(element: Element | null): void {
+  if (element === selectedPartEl) return;
+  selectedPartEl?.classList.remove("podo-part-selected");
+  selectedPartEl = element;
+  selectedPartEl?.classList.add("podo-part-selected");
 }
-function clearHoveredPart(): void {
-  hoveredPartEl?.classList.remove("podo-part-hover");
-  hoveredPartEl = null;
-}
-function partHoverCss(scope: string): string {
-  return `.${scope} .podo-part-hover { outline: 1px solid rgba(76, 159, 254, 0.6); outline-offset: 1px; }`;
+function selectedPartCss(scope: string): string {
+  return `.${scope} .podo-part-selected { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
 }
 
 export function renderComponentPreviewMatrix(input: {
@@ -210,10 +205,13 @@ export function renderComponentPreviewMatrix(input: {
                   onClickCapture={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
-                    input.onSelect(
-                      cellOnSelect,
-                      componentPartForElement(input.component.id, event.target as Element)
+                    const match = componentPartMatchForElement(
+                      input.component.id,
+                      event.target as Element
                     );
+                    // Ring only the clicked element (not its whole class).
+                    markSelectedPartEl(match?.element ?? null);
+                    input.onSelect(cellOnSelect, match?.part);
                   }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
@@ -221,10 +219,6 @@ export function renderComponentPreviewMatrix(input: {
                       input.onSelect(cellOnSelect);
                     }
                   }}
-                  onPointerMove={(event) =>
-                    setHoveredPart(input.component.id, event.target as Element)
-                  }
-                  onPointerLeave={() => clearHoveredPart()}
                 >
                   <div style={datepickerListLabelStyle}>{label}</div>
                   <span className={`podo-v1-stage podo-datepicker-design ${cellScope}`}>
@@ -239,10 +233,7 @@ export function renderComponentPreviewMatrix(input: {
                         true
                       ) +
                         "\n" +
-                        partHoverCss(cellScope) +
-                        (selected
-                          ? "\n" + partOutlineCss(input.component.id, cellScope, input.selectedPart)
-                          : "")}
+                        selectedPartCss(cellScope)}
                     </style>
                     {renderComponentPreviewBody(input.component, cellSelections, input.lookup)}
                   </span>
