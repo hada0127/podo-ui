@@ -100,16 +100,14 @@ export function renderComponentPreview(
 // the single interactive preview above and skip the matrix for them.
 const SINGLE_INSTANCE_PREVIEW_IDS = new Set(["editor"]);
 
-// Datepicker matrix cells render the picker EXPANDED (previewOpen). The dropdown
-// is absolutely positioned, so reserve height/width on the cell (position:relative
-// = the dropdown's offset parent) to keep each open picker inside its own cell
-// instead of overlapping neighbours.
-const datepickerMatrixCellStyle: CSSProperties = {
-  position: "relative",
-  display: "block",
-  minHeight: 420,
-  minWidth: 320,
-  padding: 8,
+// Label above each expanded picker in the datepicker design list.
+const datepickerListLabelStyle: CSSProperties = {
+  fontSize: 11,
+  fontWeight: 600,
+  color: "#616167",
+  marginBottom: 6,
+  textTransform: "uppercase",
+  letterSpacing: 0.3,
 };
 
 export function renderComponentPreviewMatrix(input: {
@@ -129,6 +127,87 @@ export function renderComponentPreviewMatrix(input: {
   const columnVariant = input.component.variants[1];
   const columns = columnVariant?.values ?? ["preview"];
   const defaultSelections = defaultPreviewSelectionsForComponent(input.component);
+
+  // Datepicker: expanded pickers overlap in a grid (an open calendar/range
+  // overflows a narrow column), so list ONE variant per full-width row. The
+  // dropdown is forced into normal flow (position:static) so each row sizes to its
+  // own open picker — no overlap. Click any element to design that part.
+  if (input.component.id === "datepicker") {
+    return (
+      <div style={componentMatrixPanelStyle}>
+        <div style={componentMatrixHeaderStyle}>
+          <strong>{input.t("previews.variantMatrix")}</strong>
+        </div>
+        <style>
+          {
+            ".podo-datepicker-design .dropdown{position:static !important;margin-top:8px;box-shadow:none}"
+          }
+        </style>
+        <div style={{ display: "grid", gap: 12 }}>
+          {rowVariant.values.flatMap((rowValue, rowIndex) =>
+            columns.map((columnValue, columnIndex) => {
+              const cellSelections = {
+                ...defaultSelections,
+                [rowVariant.name]: rowValue,
+                ...(columnVariant ? { [columnVariant.name]: columnValue } : {}),
+                previewOpen: "true",
+              };
+              const cellOnSelect = {
+                ...input.selections,
+                [rowVariant.name]: rowValue,
+                ...(columnVariant ? { [columnVariant.name]: columnValue } : {}),
+              };
+              const selected =
+                input.selections[rowVariant.name] === rowValue &&
+                (!columnVariant || input.selections[columnVariant.name] === columnValue);
+              const cellScope = `podo-design-row-${rowIndex}-${columnIndex}`;
+              const label = columnVariant ? `${rowValue} · ${columnValue}` : rowValue;
+              return (
+                <div
+                  key={cellScope}
+                  role="button"
+                  tabIndex={0}
+                  style={{
+                    ...componentMatrixPreviewButtonStyle,
+                    display: "block",
+                    textAlign: "left",
+                    ...(selected ? componentMatrixPreviewButtonActiveStyle : {}),
+                  }}
+                  onClick={(event) =>
+                    input.onSelect(
+                      cellOnSelect,
+                      componentPartForElement(input.component.id, event.target as Element)
+                    )
+                  }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      input.onSelect(cellOnSelect);
+                    }
+                  }}
+                >
+                  <div style={datepickerListLabelStyle}>{label}</div>
+                  <span className={`podo-v1-stage podo-datepicker-design ${cellScope}`}>
+                    <style>
+                      {componentAppearanceCss(
+                        input.component,
+                        input.lookup,
+                        cellSelections,
+                        cellScope,
+                        false
+                      )}
+                    </style>
+                    {renderComponentPreviewBody(input.component, cellSelections, input.lookup)}
+                  </span>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={componentMatrixPanelStyle}>
       <div style={componentMatrixHeaderStyle}>
@@ -162,9 +241,6 @@ export function renderComponentPreviewMatrix(input: {
                     ...defaultSelections,
                     [rowVariant.name]: rowValue,
                     ...(columnVariant ? { [columnVariant.name]: columnValue } : {}),
-                    // Datepicker: render each cell expanded so the calendar / time /
-                    // range parts are visible and directly clickable for design.
-                    ...(input.component.id === "datepicker" ? { previewOpen: "true" } : {}),
                   };
                   // Clicking a cell selects that variant for design — carry the
                   // current selections so the live preview keeps its overrides.
@@ -203,11 +279,7 @@ export function renderComponentPreviewMatrix(input: {
                       >
                         <span
                           className={`podo-v1-stage ${cellScope}`}
-                          style={
-                            input.component.id === "datepicker"
-                              ? datepickerMatrixCellStyle
-                              : componentMatrixPreviewClipStyle
-                          }
+                          style={componentMatrixPreviewClipStyle}
                         >
                           <style>
                             {componentAppearanceCss(
