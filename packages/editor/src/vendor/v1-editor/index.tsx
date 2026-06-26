@@ -1291,20 +1291,27 @@ const Editor = ({
         if (!wrapper) return null;
 
         const rect = wrapper.getBoundingClientRect();
-        const editorRect = editorRef.current?.getBoundingClientRect();
-        if (!editorRect) return null;
+        const popupHeight = 300;
+        let topPosition = rect.bottom + 10;
+        if (topPosition + popupHeight > window.innerHeight) {
+          topPosition = Math.max(10, rect.top - popupHeight - 10);
+        }
 
         return (
           <div
-            className={styles.imageEditPopup}
+            className={styles.imageDropdown}
             style={{
-              position: 'absolute',
-              top: rect.bottom - editorRect.top + 5,
-              left: rect.left - editorRect.left
+              position: 'fixed',
+              top: topPosition,
+              left: Math.max(10, Math.min(rect.left + rect.width / 2 - 180, window.innerWidth - 370)),
+              zIndex: 9999,
+              minWidth: '360px',
+              maxWidth: '90%'
             }}
           >
-            <div className={styles.imageEditContent}>
-              <div className={styles.imageEditRow}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', fontWeight: '600' }}>이미지 편집</h3>
+            <div className={styles.imageOptions}>
+              <div className={styles.imageOptionRow}>
                 <label>크기</label>
                 <div className={styles.imageSizeButtons}>
                   <button type="button" className={imageEditor.editImageWidth === '100%' ? styles.active : ''} onClick={() => imageEditor.setEditImageWidth('100%')}>100%</button>
@@ -1313,7 +1320,7 @@ const Editor = ({
                   <button type="button" className={imageEditor.editImageWidth === 'original' ? styles.active : ''} onClick={() => imageEditor.setEditImageWidth('original')}>원본</button>
                 </div>
               </div>
-              <div className={styles.imageEditRow}>
+              <div className={styles.imageOptionRow}>
                 <label>정렬</label>
                 <div className={styles.imageAlignButtons}>
                   <button type="button" className={imageEditor.editImageAlign === 'left' ? styles.active : ''} onClick={() => imageEditor.setEditImageAlign('left')} title="왼쪽 정렬"><i className={styles.alignLeft} /></button>
@@ -1321,11 +1328,11 @@ const Editor = ({
                   <button type="button" className={imageEditor.editImageAlign === 'right' ? styles.active : ''} onClick={() => imageEditor.setEditImageAlign('right')} title="오른쪽 정렬"><i className={styles.alignRight} /></button>
                 </div>
               </div>
-              <div className={styles.imageEditRow}>
+              <div className={styles.imageOptionRow}>
                 <label>대체 텍스트</label>
                 <input type="text" value={imageEditor.editImageAlt} onChange={(e) => imageEditor.setEditImageAlt(e.target.value)} placeholder="이미지 설명..." />
               </div>
-              <div className={styles.imageEditActions}>
+              <div className={styles.imageActions}>
                 <button type="button" onClick={imageEditor.deleteImage} className={styles.danger}>이미지 삭제</button>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button type="button" onClick={imageEditor.unselectImage} className={styles.default}>취소</button>

@@ -156,7 +156,58 @@ function patchIndexRegressions(src) {
   if (!src.includes(before)) {
     throw new Error("patchIndexRegressions: image-click block not found — dev source changed");
   }
-  return src.replace(before, after);
+  src = src.replace(before, after);
+
+  // Image EDIT popup (shown on image select) used dead class names
+  // (imageEditPopup/imageEditContent/imageEditRow/imageEditActions have no CSS)
+  // plus editor-content-relative absolute positioning whose offset parent is the
+  // toolbar-inclusive .editor — so it rendered unstyled and overlapping the image.
+  // The youtube edit popup uses the styled imageDropdown/imageOptions/
+  // imageOptionRow/imageActions classes with fixed/viewport positioning; match it.
+  // (dev source bug: youtube's popup was modernized, the image popup was left behind.)
+  const imgPopBefore = `        const rect = wrapper.getBoundingClientRect();
+        const editorRect = editorRef.current?.getBoundingClientRect();
+        if (!editorRect) return null;
+
+        return (
+          <div
+            className={styles.imageEditPopup}
+            style={{
+              position: 'absolute',
+              top: rect.bottom - editorRect.top + 5,
+              left: rect.left - editorRect.left
+            }}
+          >
+            <div className={styles.imageEditContent}>`;
+  const imgPopAfter = `        const rect = wrapper.getBoundingClientRect();
+        const popupHeight = 300;
+        let topPosition = rect.bottom + 10;
+        if (topPosition + popupHeight > window.innerHeight) {
+          topPosition = Math.max(10, rect.top - popupHeight - 10);
+        }
+
+        return (
+          <div
+            className={styles.imageDropdown}
+            style={{
+              position: 'fixed',
+              top: topPosition,
+              left: Math.max(10, Math.min(rect.left + rect.width / 2 - 180, window.innerWidth - 370)),
+              zIndex: 9999,
+              minWidth: '360px',
+              maxWidth: '90%'
+            }}
+          >
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', fontWeight: '600' }}>이미지 편집</h3>
+            <div className={styles.imageOptions}>`;
+  if (!src.includes(imgPopBefore)) {
+    throw new Error("patchIndexRegressions: image edit popup block not found — dev source changed");
+  }
+  src = src.replace(imgPopBefore, imgPopAfter);
+  src = src.replaceAll("styles.imageEditRow", "styles.imageOptionRow");
+  src = src.replaceAll("styles.imageEditActions", "styles.imageActions");
+
+  return src;
 }
 
 rmSync(OUT, { recursive: true, force: true });

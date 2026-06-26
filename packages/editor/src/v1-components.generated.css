@@ -11776,7 +11776,7 @@ html[data-color-mode=dark] {
   border: 1px solid var(--color-border);
   border-radius: 6px;
   background: var(--color-bg-modal);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
@@ -11997,7 +11997,9 @@ html[data-color-mode=dark] {
   transition: transform 0.2s;
 }
 .podo-v1-stage .paragraphDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   min-width: 200px;
   max-height: 400px;
@@ -12071,7 +12073,9 @@ html[data-color-mode=dark] {
   background: var(--color-primary-fill);
 }
 .podo-v1-stage .alignDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 4px;
   background: var(--color-bg-modal);
@@ -12136,7 +12140,9 @@ html[data-color-mode=dark] {
   color: var(--color-primary);
 }
 .podo-v1-stage .linkDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 12px;
   background: var(--color-bg-modal);
@@ -12227,7 +12233,9 @@ html[data-color-mode=dark] {
   background-color: var(--color-bg-elevation);
 }
 .podo-v1-stage .tableDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 12px;
   background: var(--color-bg-modal);
@@ -12328,7 +12336,9 @@ html[data-color-mode=dark] {
   margin: 4px 0;
 }
 .podo-v1-stage .colorPalette {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 8px;
   background: var(--color-bg-modal);
@@ -12812,7 +12822,9 @@ html[data-color-mode=dark] {
   border-top: 1px solid var(--color-danger-outline);
 }
 .podo-v1-stage .imageDropdown {
-  position: fixed;
+  position: absolute;
+  top: 100%;
+  left: 0;
   margin-top: 2px;
   padding: 16px;
   background: var(--color-bg-modal);

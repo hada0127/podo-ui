@@ -76,8 +76,17 @@ const SCSS_PATHS = [
   ...MODULE_PARTIALS,
 ];
 
+// The editor JS is vendored from origin/dev (vendor-v1-editor.mjs). Pull its CSS
+// from the same ref so the dropdowns/edit popups (dev positions them absolute
+// under their trigger; main used position: fixed) match the markup. Everything
+// else stays on main. Keyed by the full `<path>.scss` gitShow receives.
+const REF_OVERRIDES = {
+  "react/atom/editor.module.scss": "origin/dev",
+};
+
 function gitShow(path) {
-  return execFileSync("git", ["show", `main:${path}`], {
+  const ref = REF_OVERRIDES[path] ?? "main";
+  return execFileSync("git", ["show", `${ref}:${path}`], {
     cwd: repoRoot,
     encoding: "utf8",
     maxBuffer: 64 * 1024 * 1024,
