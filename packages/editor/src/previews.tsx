@@ -1,4 +1,4 @@
-import { Component, useState, type CSSProperties, type ReactNode } from "react";
+import { Component, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { ComponentDocument } from "@podo/spec";
 import type { Translate } from "./i18n/context.js";
 // Real v1 component CSS (compiled from the main branch), scoped under
@@ -68,14 +68,18 @@ export const legacyComponentPreviewIds = [
 
 type ComponentPreviewRenderer = (
   selections: Record<string, string>,
-  lookup: TokenLookup
+  lookup: TokenLookup,
+  // Editor preview only: lets edits made inside the live editor flow back to the
+  // `value` prop (and its textarea) so the inspector stays in sync.
+  onValueChange?: (value: string) => void
 ) => ReactNode;
 type LegacyComponentPreviewId = (typeof legacyComponentPreviewIds)[number];
 
 export function renderComponentPreview(
   component: ComponentDocument,
   selections: Record<string, string>,
-  lookup: TokenLookup
+  lookup: TokenLookup,
+  onValueChange?: (value: string) => void
 ) {
   return (
     <div
@@ -85,7 +89,7 @@ export function renderComponentPreview(
       data-podo-preview-kind={componentPreviewKind(component)}
     >
       <style>{componentAppearanceCss(component, lookup, selections, "podo-design-target")}</style>
-      {renderComponentPreviewBody(component, selections, lookup)}
+      {renderComponentPreviewBody(component, selections, lookup, onValueChange)}
     </div>
   );
 }
@@ -216,13 +220,14 @@ export function componentPreviewKind(component: ComponentDocument): "dedicated" 
 function renderComponentPreviewBody(
   component: ComponentDocument,
   selections: Record<string, string>,
-  lookup: TokenLookup
+  lookup: TokenLookup,
+  onValueChange?: (value: string) => void
 ) {
   const renderer = isLegacyComponentPreviewId(component.id)
     ? legacyComponentPreviewRenderers[component.id]
     : undefined;
   return renderer
-    ? renderer(selections, lookup)
+    ? renderer(selections, lookup, onValueChange)
     : renderSpecDrivenComponentPreview(component, lookup);
 }
 
@@ -641,16 +646,21 @@ function renderAvatarPreview(s: Record<string, string>) {
   );
 }
 
-function renderEditorPreview(selections: Record<string, string>) {
+function renderEditorPreview(
+  selections: Record<string, string>,
+  _lookup: TokenLookup,
+  onValueChange?: (value: string) => void
+) {
   // Toolbar items are toggled from the right rail (see components-panel); default
   // all on — an item is hidden only when its selection is explicitly "false".
   const toolbar = EDITOR_TOOLBAR_ITEMS.filter((item) => selections[`toolbar:${item}`] !== "false");
-  // The `value` prop seeds the editable content; key on it so editing that prop
-  // re-seeds while typing (local state) does not remount. The size/width/
-  // placeholder/resizable props are read live from selections in the body so they
-  // actually drive the preview instead of being hard-coded.
-  const seed = selections.value?.trim() ? selections.value : EDITOR_INITIAL_HTML;
-  return <EditorPreviewBody key={seed} seed={seed} selections={selections} toolbar={toolbar} />;
+  return (
+    <EditorPreviewBody
+      selections={selections}
+      toolbar={toolbar}
+      {...(onValueChange ? { onValueChange } : {})}
+    />
+  );
 }
 
 const EDITOR_INITIAL_HTML =
@@ -675,16 +685,35 @@ export const EDITOR_TOOLBAR_ITEMS: ToolbarItem[] = [
 ];
 
 function EditorPreviewBody({
-  seed,
   selections,
   toolbar,
+  onValueChange,
 }: {
-  seed: string;
   selections: Record<string, string>;
   toolbar: ToolbarItem[];
+  onValueChange?: (value: string) => void;
 }) {
   // Render the REAL vendored v1 editor so every feature actually works.
-  const [value, setValue] = useState(seed);
+  // Two-way `value`: keep local state (so typing is smooth + works even without a
+  // commit callback) but push every change to onValueChange, so the `value` prop
+  // and its textarea mirror edits live. An external edit of the value prop (i.e.
+  // one we did NOT just emit — lastEmit distinguishes them) is adopted back into
+  // the editor.
+  const initial = selections.value?.trim() ? selections.value : EDITOR_INITIAL_HTML;
+  const [value, setValue] = useState(initial);
+  const lastEmit = useRef(initial);
+  useEffect(() => {
+    const incoming = selections.value ?? "";
+    if (incoming && incoming !== lastEmit.current) {
+      lastEmit.current = incoming;
+      setValue(incoming);
+    }
+  }, [selections.value]);
+  const handleChange = (next: string) => {
+    lastEmit.current = next;
+    setValue(next);
+    onValueChange?.(next);
+  };
   // All sizing/text props come straight from the inspector so they drive the
   // preview. minHeight/maxHeight are optional (conditional-spread to satisfy
   // exactOptionalPropertyTypes); resizable honors either the prop or the variant.
@@ -699,7 +728,7 @@ function EditorPreviewBody({
       <PreviewErrorBoundary>
         <V1Editor
           value={value}
-          onChange={setValue}
+          onChange={handleChange}
           width={selections.width?.trim() || "100%"}
           height={selections.height?.trim() || "400px"}
           resizable={resizable}
@@ -1033,7 +1062,11 @@ function previewSpecBodyStyle(lookup: TokenLookup): CSSProperties {
 export function defaultPreviewSelectionsForComponent(
   component: ComponentDocument
 ): Record<string, string> {
-  return Object.fromEntries(
+  const base: Record<string, string> = Object.fromEntries(
     component.variants.map((variant) => [variant.name, variant.default ?? variant.values[0] ?? ""])
   );
+  // Seed the editor's `value` with demo HTML so the preview isn't blank and its
+  // value textarea mirrors the editor from the start (the spec default is "").
+  if (component.id === "editor") base.value = EDITOR_INITIAL_HTML;
+  return base;
 }

@@ -594,7 +594,10 @@ export function ComponentsPanelWorkspace({
           {renderComponentPreview(
             selectedComponentForSpec,
             effectiveComponentPreviewSelections,
-            previewTokenLookup
+            previewTokenLookup,
+            // Editor preview: edits inside the live editor flow back to the `value`
+            // prop (and its textarea) so the inspector stays in sync.
+            (value) => commitPreviewSelection("value", value)
           )}
         </div>
         {(() => {
@@ -933,6 +936,22 @@ export function ComponentsPanelWorkspace({
                               onChange={(next) => commitPreviewSelection(prop.name, next)}
                             />
                           </div>
+                        </label>
+                      );
+                    }
+                    // The editor's `value` holds HTML content, so give it a
+                    // multiline textarea; it stays two-way bound to the live editor.
+                    if (selectedComponentForSpec.id === "editor" && prop.name === "value") {
+                      return (
+                        <label key={prop.name} style={{ ...propRowStyle, alignItems: "start" }}>
+                          <span style={propLabelStyle}>{prop.name}</span>
+                          <textarea
+                            style={textareaStyle}
+                            value={raw ?? fallback}
+                            onChange={(event) =>
+                              commitPreviewSelection(prop.name, event.currentTarget.value)
+                            }
+                          />
                         </label>
                       );
                     }
