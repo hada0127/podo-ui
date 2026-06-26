@@ -123,6 +123,42 @@ function i18nIndex(src) {
   return src;
 }
 
+// Behavior fixes for regressions the dev refactor introduced vs the main monolith.
+function patchIndexRegressions(src) {
+  // Image selection: main detected clicks on a bare <img> (target.tagName ===
+  // 'IMG'); the dev refactor narrowed this to target.closest('.image-wrapper'),
+  // but insertImage drops a bare <img> (no .image-wrapper until handleImageClick
+  // runs), so a freshly-inserted image could never be selected/resized. Restore
+  // the bare-<img> path; handleImageClick wraps it on first click.
+  const before = `    // 이미지 클릭 처리
+    const imageWrapper = target.closest('.image-wrapper') as HTMLElement;
+    if (imageWrapper && editorRef.current?.contains(imageWrapper)) {
+      e.preventDefault();
+      const img = imageWrapper.querySelector('img') as HTMLImageElement;
+      if (img) {
+        imageEditor.handleImageClick(img);
+      }
+      return;
+    }`;
+  const after = `    // 이미지 클릭 처리: 갓 삽입된 bare <img> 또는 이미 선택된(.image-wrapper) 이미지.
+    // (dev 리팩터가 main 의 target.tagName === 'IMG' 감지를 .image-wrapper 한정으로 바꿔,
+    // 래핑 전인 삽입 직후 이미지를 선택할 수 없던 회귀를 복구. 이미 래핑됐으면 재래핑 안 함.)
+    const imageWrapper = target.closest('.image-wrapper') as HTMLElement;
+    const bareImg =
+      !imageWrapper && target.tagName === 'IMG' ? (target as HTMLImageElement) : null;
+    if ((imageWrapper || bareImg) && editorRef.current?.contains(target)) {
+      e.preventDefault();
+      if (bareImg) {
+        imageEditor.handleImageClick(bareImg);
+      }
+      return;
+    }`;
+  if (!src.includes(before)) {
+    throw new Error("patchIndexRegressions: image-click block not found — dev source changed");
+  }
+  return src.replace(before, after);
+}
+
 rmSync(OUT, { recursive: true, force: true });
 
 for (const f of FILES) {
@@ -133,7 +169,7 @@ for (const f of FILES) {
   // Swap the CSS-module import for the identity proxy (index.tsx only).
   src = src.replace(/import styles from '\.\.\/editor\.module\.scss';/, STYLES_PROXY);
   if (f === "constants.ts") src = i18nConstants(src);
-  if (f === "index.tsx") src = i18nIndex(src);
+  if (f === "index.tsx") src = patchIndexRegressions(i18nIndex(src));
   const header = `// @ts-nocheck\n/* eslint-disable */\n// VENDORED from ${REF} ${SRC}/${f} — do not hand-edit; re-vendor via packages/editor/scripts/vendor-v1-editor.mjs.\n`;
   const dest = join(OUT, f);
   mkdirSync(dirname(dest), { recursive: true });

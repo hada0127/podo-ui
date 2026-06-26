@@ -288,13 +288,16 @@ const Editor = ({
       return;
     }
 
-    // 이미지 클릭 처리
+    // 이미지 클릭 처리: 갓 삽입된 bare <img> 또는 이미 선택된(.image-wrapper) 이미지.
+    // (dev 리팩터가 main 의 target.tagName === 'IMG' 감지를 .image-wrapper 한정으로 바꿔,
+    // 래핑 전인 삽입 직후 이미지를 선택할 수 없던 회귀를 복구. 이미 래핑됐으면 재래핑 안 함.)
     const imageWrapper = target.closest('.image-wrapper') as HTMLElement;
-    if (imageWrapper && editorRef.current?.contains(imageWrapper)) {
+    const bareImg =
+      !imageWrapper && target.tagName === 'IMG' ? (target as HTMLImageElement) : null;
+    if ((imageWrapper || bareImg) && editorRef.current?.contains(target)) {
       e.preventDefault();
-      const img = imageWrapper.querySelector('img') as HTMLImageElement;
-      if (img) {
-        imageEditor.handleImageClick(img);
+      if (bareImg) {
+        imageEditor.handleImageClick(bareImg);
       }
       return;
     }
