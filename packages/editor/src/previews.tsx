@@ -100,11 +100,23 @@ export function renderComponentPreview(
 // the single interactive preview above and skip the matrix for them.
 const SINGLE_INSTANCE_PREVIEW_IDS = new Set(["editor"]);
 
+// Datepicker matrix cells render the picker EXPANDED (previewOpen). The dropdown
+// is absolutely positioned, so reserve height/width on the cell (position:relative
+// = the dropdown's offset parent) to keep each open picker inside its own cell
+// instead of overlapping neighbours.
+const datepickerMatrixCellStyle: CSSProperties = {
+  position: "relative",
+  display: "block",
+  minHeight: 420,
+  minWidth: 320,
+  padding: 8,
+};
+
 export function renderComponentPreviewMatrix(input: {
   component: ComponentDocument;
   selections: Record<string, string>;
   lookup: TokenLookup;
-  onSelect(selections: Record<string, string>): void;
+  onSelect(selections: Record<string, string>, part?: string): void;
   t: Translate;
 }) {
   if (SINGLE_INSTANCE_PREVIEW_IDS.has(input.component.id)) {
@@ -150,6 +162,9 @@ export function renderComponentPreviewMatrix(input: {
                     ...defaultSelections,
                     [rowVariant.name]: rowValue,
                     ...(columnVariant ? { [columnVariant.name]: columnValue } : {}),
+                    // Datepicker: render each cell expanded so the calendar / time /
+                    // range parts are visible and directly clickable for design.
+                    ...(input.component.id === "datepicker" ? { previewOpen: "true" } : {}),
                   };
                   // Clicking a cell selects that variant for design — carry the
                   // current selections so the live preview keeps its overrides.
@@ -173,7 +188,12 @@ export function renderComponentPreviewMatrix(input: {
                           ...componentMatrixPreviewButtonStyle,
                           ...(selected ? componentMatrixPreviewButtonActiveStyle : {}),
                         }}
-                        onClick={() => input.onSelect(cellOnSelect)}
+                        onClick={(event) =>
+                          input.onSelect(
+                            cellOnSelect,
+                            componentPartForElement(input.component.id, event.target as Element)
+                          )
+                        }
                         onKeyDown={(event) => {
                           if (event.key === "Enter" || event.key === " ") {
                             event.preventDefault();
@@ -183,7 +203,11 @@ export function renderComponentPreviewMatrix(input: {
                       >
                         <span
                           className={`podo-v1-stage ${cellScope}`}
-                          style={componentMatrixPreviewClipStyle}
+                          style={
+                            input.component.id === "datepicker"
+                              ? datepickerMatrixCellStyle
+                              : componentMatrixPreviewClipStyle
+                          }
                         >
                           <style>
                             {componentAppearanceCss(
@@ -771,6 +795,10 @@ function renderDatePickerPreview(selections: Record<string, string>) {
       mode={selections.mode ?? "instant"}
       direction={selections.direction ?? "down"}
       disabled={selections.state === "disabled" || selections.disabled === "true"}
+      // The matrix sets this on its cells so each variant renders expanded
+      // (calendar / time / range visible) for direct element selection. The single
+      // top preview leaves it off, so it stays a plain interactive preview.
+      previewOpen={selections.previewOpen === "true"}
       {...(selections.placeholder?.trim() ? { placeholder: selections.placeholder } : {})}
     />
   );
@@ -782,12 +810,14 @@ function DatePickerPreviewBody({
   direction,
   disabled,
   placeholder,
+  previewOpen = false,
 }: {
   type: string;
   mode: string;
   direction: string;
   disabled: boolean;
   placeholder?: string;
+  previewOpen?: boolean;
 }) {
   // The v1 datepicker is CONTROLLED for the display value (in instant mode it
   // shows `value`, not internal state), so a value/onChange pair is required for
@@ -804,6 +834,7 @@ function DatePickerPreviewBody({
           direction={direction as never}
           disabled={disabled}
           {...(placeholder ? { placeholder } : {})}
+          {...(previewOpen ? { previewOpen: true } : {})}
           value={value as never}
           onChange={setValue as never}
         />
@@ -951,6 +982,30 @@ const COMPONENT_PART_SELECTORS: Record<string, Record<string, string>> = {
   toggle: { root: ".toggle" },
   tooltip: { root: ".tooltipBox" },
 };
+
+// Reverse of COMPONENT_PART_SELECTORS: which anatomy part does a clicked element
+// belong to? Picks the deepest (most specific) matching selector so e.g. a click
+// on a calendar cell selects "calendar", on the field selects "input", and a
+// click on bare chrome falls back to "root". Used for Figma-style click-to-select
+// in the variant matrix.
+function componentPartForElement(componentId: string, element: Element | null): string | undefined {
+  const parts = COMPONENT_PART_SELECTORS[componentId];
+  if (!parts || !element) return undefined;
+  let best: string | undefined;
+  let bestDepth = -1;
+  for (const [part, selector] of Object.entries(parts)) {
+    const matched = element.closest(selector);
+    if (!matched) continue;
+    let depth = 0;
+    for (let node = matched.parentElement; node; node = node.parentElement) depth += 1;
+    // Deeper match wins; on a tie a non-root part beats root.
+    if (depth > bestDepth || (depth === bestDepth && part !== "root")) {
+      best = part;
+      bestDepth = depth;
+    }
+  }
+  return best;
+}
 
 function appearanceCssProperty(property: string): string | undefined {
   return APPEARANCE_CSS_PROPERTY[property.toLowerCase().replace(/[-_]/g, "")];

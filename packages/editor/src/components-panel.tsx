@@ -605,8 +605,11 @@ export function ComponentsPanelWorkspace({
             component: selectedComponentForSpec,
             selections: effectiveComponentPreviewSelections,
             lookup: previewTokenLookup,
-            onSelect: (next) => {
+            onSelect: (next, part) => {
               setComponentPreviewSelections(next);
+              // Figma-style: clicking an element in a matrix cell selects that part
+              // (e.g. the calendar / time list) so its design opens directly.
+              if (part) setSelectedPart(part);
               setInspectorTarget("design");
             },
             t,
