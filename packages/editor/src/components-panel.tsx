@@ -1,4 +1,9 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import {
+  useState,
+  type Dispatch,
+  type PointerEvent as ReactPointerEvent,
+  type SetStateAction,
+} from "react";
 import type { ComponentDocument } from "@podo/spec";
 import { editorPropKinds, type EditorTokenRecord } from "./spec-editing.js";
 import { TokenPicker, type TokenPickerOption } from "./token-picker.js";
@@ -36,6 +41,7 @@ import {
   cardStyle,
   checkboxFieldStyle,
   compactFormGridStyle,
+  layerResizeHandleStyle,
   layersColumnStyle,
   swatchStyle,
   componentEditModeBarStyle,
@@ -428,6 +434,21 @@ export function ComponentsPanelWorkspace({
   // appearance can target just one variant like Figma). Options follow the live
   // selections, e.g. theme = primary.
   const [appearanceScope, setAppearanceScope] = useState("base");
+  // Draggable layers-column width (drag the handle on its right edge).
+  const [layersWidth, setLayersWidth] = useState(200);
+  const startLayersResize = (event: ReactPointerEvent): void => {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = layersWidth;
+    const onMove = (move: PointerEvent): void =>
+      setLayersWidth(Math.max(150, Math.min(460, startWidth + move.clientX - startX)));
+    const onUp = (): void => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
   // Layers reflect the selected variant (e.g. type=time hides the calendar parts).
   const visibleAnatomy = visibleComponentAnatomy(
     selectedComponentForSpec,
@@ -509,8 +530,19 @@ export function ComponentsPanelWorkspace({
     });
   };
   return (
-    <section style={componentPanelWorkspaceLayout}>
+    <section
+      style={{
+        ...componentPanelWorkspaceLayout,
+        gridTemplateColumns: `${layersWidth}px minmax(0, 1fr) 320px`,
+      }}
+    >
       <aside style={layersColumnStyle}>
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          onPointerDown={startLayersResize}
+          style={layerResizeHandleStyle}
+        />
         <div style={cardStyle}>
           <div style={cardHeaderStyle}>
             <strong style={railSectionTitleStyle}>{t("components.layers")}</strong>

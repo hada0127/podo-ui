@@ -4,7 +4,7 @@ export const editorShellStyle: CSSProperties = {
   height: "100vh",
   display: "grid",
   gridTemplateRows: "52px minmax(0, 1fr)",
-  gridTemplateColumns: "280px minmax(0, 1fr)",
+  gridTemplateColumns: "200px minmax(0, 1fr)",
   overflow: "hidden",
   background: "#eef2f7",
   color: "#171a20",
@@ -1517,6 +1517,18 @@ export const layersColumnStyle: CSSProperties = {
   minWidth: 0,
 };
 
+// Drag handle straddling the gap on the layers column's right edge.
+export const layerResizeHandleStyle: CSSProperties = {
+  position: "absolute",
+  top: 0,
+  bottom: 0,
+  right: -9,
+  width: 10,
+  cursor: "col-resize",
+  borderRight: "2px solid transparent",
+  zIndex: 5,
+};
+
 export const stickyPreviewColumnStyle: CSSProperties = {
   position: "sticky",
   top: 12,
@@ -1557,6 +1569,9 @@ export const layersListStyle: CSSProperties = {
 // Figma-style hierarchical layers tree (vertical rows, indent by depth).
 export const layerTreeStyle: CSSProperties = {
   display: "grid",
+  // Cap the column at the container width (min 0) so deep/long rows can't blow the
+  // grid out past the panel — without this an auto column grows to the widest row.
+  gridTemplateColumns: "minmax(0, 1fr)",
   gap: 1,
 };
 
@@ -1564,6 +1579,8 @@ export const layerRowStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 6,
+  // Grid item must be allowed to shrink below its content so the name ellipsises.
+  minWidth: 0,
   padding: "4px 6px",
   borderRadius: 4,
   cursor: "pointer",

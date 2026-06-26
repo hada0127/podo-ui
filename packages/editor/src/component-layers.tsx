@@ -256,7 +256,9 @@ export function LayersPanel({
                 }}
               />
             ) : (
-              <span style={layerNameStyle}>{humanizeLabel(node.name)}</span>
+              <span style={layerNameStyle} title={humanizeLabel(node.name)}>
+                {humanizeLabel(node.name)}
+              </span>
             )}
           </div>
         );
