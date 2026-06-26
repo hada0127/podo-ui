@@ -612,6 +612,9 @@ export function ComponentsPanelWorkspace({
               if (part) setSelectedPart(part);
               setInspectorTarget("design");
             },
+            // Outline the selected part in the matrix only while it's actually the
+            // editing target (design mode); keeps the grid clean in preview mode.
+            ...(inspectorTarget === "design" ? { selectedPart } : {}),
             t,
           });
           return matrix ? (

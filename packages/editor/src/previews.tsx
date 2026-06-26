@@ -110,11 +110,21 @@ const datepickerListLabelStyle: CSSProperties = {
   letterSpacing: 0.3,
 };
 
+// Figma-style selection outline: ring the currently-selected part's element so
+// you can see what you're editing in the preview/list.
+function partOutlineCss(componentId: string, scope: string, part: string | undefined): string {
+  if (!part) return "";
+  const selector = COMPONENT_PART_SELECTORS[componentId]?.[part];
+  if (!selector) return "";
+  return `.${scope} ${selector} { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
+}
+
 export function renderComponentPreviewMatrix(input: {
   component: ComponentDocument;
   selections: Record<string, string>;
   lookup: TokenLookup;
   onSelect(selections: Record<string, string>, part?: string): void;
+  selectedPart?: string;
   t: Translate;
 }) {
   if (SINGLE_INSTANCE_PREVIEW_IDS.has(input.component.id)) {
@@ -202,7 +212,10 @@ export function renderComponentPreviewMatrix(input: {
                         cellSelections,
                         cellScope,
                         false
-                      )}
+                      ) +
+                        (selected
+                          ? "\n" + partOutlineCss(input.component.id, cellScope, input.selectedPart)
+                          : "")}
                     </style>
                     {renderComponentPreviewBody(input.component, cellSelections, input.lookup)}
                   </span>
@@ -295,7 +308,11 @@ export function renderComponentPreviewMatrix(input: {
                               cellSelections,
                               cellScope,
                               false
-                            )}
+                            ) +
+                              (selected
+                                ? "\n" +
+                                  partOutlineCss(input.component.id, cellScope, input.selectedPart)
+                                : "")}
                           </style>
                           {renderComponentPreviewBody(
                             input.component,
