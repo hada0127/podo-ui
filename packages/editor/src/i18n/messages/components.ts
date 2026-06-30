@@ -73,6 +73,7 @@ export const componentsEn = {
   "components.removeProperty": "Remove {property}",
   "components.rawValuePlaceholder": "e.g. 42px or {token}",
   "components.noAppearanceProps": "No appearance properties on this layer yet.",
+  "components.setProperty": "Click to set",
   "components.addPropertyOption": "+ Add property…",
   "components.addAppearanceProperty": "Add appearance property",
 
@@ -201,6 +202,7 @@ export const componentsKo: Record<keyof typeof componentsEn, string> = {
   "components.removeProperty": "{property} 제거",
   "components.rawValuePlaceholder": "예: 42px 또는 {token}",
   "components.noAppearanceProps": "이 레이어에 아직 외형 속성이 없습니다.",
+  "components.setProperty": "클릭해서 설정",
   "components.addPropertyOption": "+ 속성 추가…",
   "components.addAppearanceProperty": "외형 속성 추가",
 

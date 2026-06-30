@@ -538,6 +538,26 @@ export function ComponentsPanelWorkspace({
     seenProperty.add(entry.property);
     return true;
   });
+  // Figma-style inspector: show EVERY relevant appearance property for the selected
+  // part as an editable row — bound ones with their token/value, the rest as empty
+  // placeholders you click to set. So selecting any layer always opens an editor,
+  // instead of an empty "no properties" panel that hides behind a "+ Add" dropdown.
+  const appearanceRows: Array<{
+    key: string;
+    property: string;
+    reference: string;
+    bound: boolean;
+    defaultAlias?: string;
+  }> = [
+    ...partBindings.map((binding) => ({ ...binding, bound: true })),
+    ...addableProperties.map((entry) => ({
+      key: `${activePart}.${entry.property}`,
+      property: entry.property,
+      reference: "",
+      bound: false,
+      defaultAlias: entry.defaultAlias,
+    })),
+  ];
   const applyAppearanceBinding = (key: string, reference: string): void => {
     if (activeScope === "base") {
       updateComponentTokenBinding(key, reference);
@@ -797,50 +817,54 @@ export function ComponentsPanelWorkspace({
               </label>
             ) : null}
             <div style={appearanceGroupsStyle}>
-              {partBindings.length ? (
+              {appearanceRows.length ? (
                 APPEARANCE_GROUP_ORDER.filter((group) =>
-                  partBindings.some((binding) => appearanceGroup(binding.property) === group)
+                  appearanceRows.some((row) => appearanceGroup(row.property) === group)
                 ).map((group) => (
                   <div key={group} style={appearanceGroupStyle}>
                     <span style={appearanceGroupTitleStyle}>{t(`components.group.${group}`)}</span>
-                    {partBindings
-                      .filter((binding) => appearanceGroup(binding.property) === group)
-                      .map((binding) => {
-                        const isColor = isColorAppearanceProperty(binding.property);
+                    {appearanceRows
+                      .filter((row) => appearanceGroup(row.property) === group)
+                      .map((row) => {
+                        const isColor = isColorAppearanceProperty(row.property);
                         // A binding is a {token} alias or a raw CSS value.
-                        const isAlias = binding.reference.startsWith("{");
+                        const isAlias = row.reference.startsWith("{");
                         const resolved = isAlias
-                          ? cssToken(previewTokenLookup, binding.reference.slice(1, -1), "")
-                          : binding.reference;
-                        const tokenName = isAlias ? binding.reference.slice(1, -1) : "";
-                        const raw = isRawValueProperty(binding.property);
+                          ? cssToken(previewTokenLookup, row.reference.slice(1, -1), "")
+                          : row.reference;
+                        const tokenName = isAlias ? row.reference.slice(1, -1) : "";
+                        const raw = isRawValueProperty(row.property);
                         return (
-                          <div key={binding.key} style={appearanceRowStyle}>
+                          <div key={row.key} style={appearanceRowStyle}>
                             <div style={appearanceHeaderStyle}>
                               <span style={propLabelStyle}>
-                                {appearancePropertyLabel(binding.property, t)}
+                                {appearancePropertyLabel(row.property, t)}
                               </span>
-                              <button
-                                type="button"
-                                aria-label={t("components.removeProperty", {
-                                  property: binding.property,
-                                })}
-                                style={appearanceRemoveStyle}
-                                onClick={() => applyAppearanceBinding(binding.key, "")}
-                              >
-                                ×
-                              </button>
+                              {row.bound ? (
+                                <button
+                                  type="button"
+                                  aria-label={t("components.removeProperty", {
+                                    property: row.property,
+                                  })}
+                                  style={appearanceRemoveStyle}
+                                  onClick={() => applyAppearanceBinding(row.key, "")}
+                                >
+                                  ×
+                                </button>
+                              ) : null}
                             </div>
-                            {editingBindingKey === binding.key ? (
+                            {editingBindingKey === row.key ? (
                               raw ? (
                                 <input
                                   autoFocus
                                   type="text"
-                                  defaultValue={binding.reference}
+                                  // Unbound raw rows start from the catalog default (e.g. 14px)
+                                  // so there's a sensible value to tweak.
+                                  defaultValue={row.reference || row.defaultAlias || ""}
                                   placeholder={t("components.rawValuePlaceholder")}
                                   style={inputStyle}
                                   onBlur={(event) => {
-                                    applyAppearanceBinding(binding.key, event.currentTarget.value);
+                                    applyAppearanceBinding(row.key, event.currentTarget.value);
                                     setEditingBindingKey(null);
                                   }}
                                   onKeyDown={(event) => {
@@ -851,10 +875,10 @@ export function ComponentsPanelWorkspace({
                               ) : (
                                 <TokenPicker
                                   autoFocus
-                                  options={optionsForProperty(binding.property)}
+                                  options={optionsForProperty(row.property)}
                                   placeholder={tokenName}
                                   onPick={(reference) => {
-                                    applyAppearanceBinding(binding.key, reference);
+                                    applyAppearanceBinding(row.key, reference);
                                     setEditingBindingKey(null);
                                   }}
                                   onCancel={() => setEditingBindingKey(null)}
@@ -864,8 +888,8 @@ export function ComponentsPanelWorkspace({
                               <button
                                 type="button"
                                 style={tokenChipStyle}
-                                title={tokenName || resolved}
-                                onClick={() => setEditingBindingKey(binding.key)}
+                                title={tokenName || resolved || t("components.setProperty")}
+                                onClick={() => setEditingBindingKey(row.key)}
                               >
                                 <span
                                   style={{
@@ -887,28 +911,6 @@ export function ComponentsPanelWorkspace({
               ) : (
                 <span style={appearanceValueStyle}>{t("components.noAppearanceProps")}</span>
               )}
-              {addableProperties.length ? (
-                <select
-                  aria-label={t("components.addAppearanceProperty")}
-                  style={selectStyle}
-                  value=""
-                  onChange={(event) => {
-                    const entry = addableProperties.find(
-                      (item) => item.property === event.currentTarget.value
-                    );
-                    if (entry) {
-                      applyAppearanceBinding(`${activePart}.${entry.property}`, entry.defaultAlias);
-                    }
-                  }}
-                >
-                  <option value="">{t("components.addPropertyOption")}</option>
-                  {addableProperties.map((entry) => (
-                    <option key={entry.property} value={entry.property}>
-                      {appearancePropertyLabel(entry.property, t)}
-                    </option>
-                  ))}
-                </select>
-              ) : null}
             </div>
           </div>
         ) : null}
