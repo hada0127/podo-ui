@@ -59,6 +59,8 @@ pnpm check
 
 If a command cannot run because dependencies are not installed or the current phase has not implemented the required package yet, state that clearly in the review request and final update.
 
+For ad-hoc visual checks of the running editor UI (not regression tests), use the `agent-browser` CLI per `docs/browser-testing.md`. Reproducible regression stays in Playwright/Vitest.
+
 ## Review Standard
 
 Claude Code and Agy reviews must be strict. Ask reviewers to focus on:
