@@ -119,16 +119,16 @@ function partOutlineCss(componentId: string, scope: string, part: string | undef
   return `.${scope} ${selector} { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
 }
 
-// Figma-style selection in the datepicker design list: ring ONLY the element you
-// clicked (not every element of its CSS class — so selecting one calendar day
-// doesn't outline all 30). The mark is moved to the new element on each click.
-let selectedPartEl: Element | null = null;
-function markSelectedPartEl(element: Element | null): void {
-  if (element === selectedPartEl) return;
-  selectedPartEl?.classList.remove("podo-part-selected");
-  selectedPartEl = element;
-  selectedPartEl?.classList.add("podo-part-selected");
+// The CSS selector for an anatomy part, so callers (e.g. the editor's layer↔preview
+// sync effect) can find that part's element in the rendered preview.
+export function componentPartSelector(componentId: string, part: string): string | undefined {
+  return COMPONENT_PART_SELECTORS[componentId]?.[part];
 }
+
+// Rings exactly ONE element (the `.podo-part-selected` mark), so selecting a part
+// that renders many elements (e.g. calendar-day → 35 cells) highlights a single
+// representative instead of lighting up the whole class. The mark is placed by the
+// editor effect that keeps the layer selection and this preview in sync.
 function selectedPartCss(scope: string): string {
   return `.${scope} .podo-part-selected { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
 }
@@ -191,6 +191,9 @@ export function renderComponentPreviewMatrix(input: {
                   key={cellScope}
                   role="button"
                   tabIndex={0}
+                  // Marks the selected variant row so the layer↔preview sync effect
+                  // knows which row's element to ring (the row the user is designing).
+                  data-podo-selected-cell={selected ? "true" : undefined}
                   style={{
                     ...componentMatrixPreviewButtonStyle,
                     display: "block",
@@ -205,13 +208,10 @@ export function renderComponentPreviewMatrix(input: {
                   onClickCapture={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
-                    const match = componentPartMatchForElement(
-                      input.component.id,
-                      event.target as Element
+                    input.onSelect(
+                      cellOnSelect,
+                      componentPartForElement(input.component.id, event.target as Element)
                     );
-                    // Ring only the clicked element (not its whole class).
-                    markSelectedPartEl(match?.element ?? null);
-                    input.onSelect(cellOnSelect, match?.part);
                   }}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
@@ -232,6 +232,9 @@ export function renderComponentPreviewMatrix(input: {
                         cellScope,
                         true
                       ) +
+                        // Ring the single marked element (set by the layer↔preview sync
+                        // effect): selecting a layer on the left rings its element here,
+                        // and clicking an element here selects its layer. Both in sync.
                         "\n" +
                         selectedPartCss(cellScope)}
                     </style>

@@ -1542,6 +1542,15 @@ export const propertiesRailStyle: CSSProperties = {
   gap: 10,
   alignContent: "start",
   minWidth: 0,
+  // Pin the inspector and give it its own scroll, so you can scroll the (tall)
+  // variant matrix in the center while editing properties here — instead of the
+  // rail scrolling off the top with the page. (main is the scroll container,
+  // 100vh − 52px header; 12px sticky top + 12px bottom breathing.)
+  position: "sticky",
+  top: 12,
+  maxHeight: "calc(100vh - 76px)",
+  overflowY: "auto",
+  overscrollBehavior: "contain",
 };
 
 // Figma-style section title: small uppercase muted label.
@@ -1593,7 +1602,11 @@ export const layerRowStyle: CSSProperties = {
 
 export const layerRowActiveStyle: CSSProperties = {
   background: "#edf4ff",
-  borderColor: "#bcd4ff",
+  // Override the base `border` SHORTHAND with the shorthand (not the `borderColor`
+  // longhand): when a row goes active→inactive, React clears a removed longhand to
+  // its initial value (currentColor — the dark text), leaving a black border on the
+  // previously-selected row. Toggling the same shorthand swaps the whole value clean.
+  border: "1px solid #bcd4ff",
   color: "#1d4ed8",
   fontWeight: 600,
 };

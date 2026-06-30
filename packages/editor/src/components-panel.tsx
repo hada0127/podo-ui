@@ -1,4 +1,6 @@
 import {
+  useEffect,
+  useRef,
   useState,
   type Dispatch,
   type PointerEvent as ReactPointerEvent,
@@ -21,6 +23,7 @@ import { tokenRecordKey, type ComponentTokenEditorModel } from "./token-model.js
 import { cssToken, type TokenLookup } from "./token-lookup.js";
 import { renderComponentTokenEditor } from "./token-editor.js";
 import {
+  componentPartSelector,
   EDITOR_TOOLBAR_ITEMS,
   renderComponentPreview,
   renderComponentPreviewMatrix,
@@ -436,6 +439,9 @@ export function ComponentsPanelWorkspace({
   const [appearanceScope, setAppearanceScope] = useState("base");
   // Draggable layers-column width (drag the handle on its right edge).
   const [layersWidth, setLayersWidth] = useState(200);
+  // Wraps the variant matrix so the layer↔preview sync effect can find and ring the
+  // selected part's element inside it.
+  const matrixRef = useRef<HTMLDivElement>(null);
   const startLayersResize = (event: ReactPointerEvent): void => {
     event.preventDefault();
     const startX = event.clientX;
@@ -464,6 +470,33 @@ export function ComponentsPanelWorkspace({
     ? selectedPart
     : (anatomyParts.find((part) => partsWithBindings.has(part)) ??
       (anatomyParts.includes("root") ? "root" : (anatomyParts[0] ?? "root")));
+  // Keep the layer selection and the variant-matrix preview in sync: ring ONE
+  // representative element of the active part, inside the selected variant row, so
+  // selecting a layer on the left highlights its element on the right (and clicking
+  // an element on the right — which sets the active part — highlights here too).
+  // Single element, not the whole class, so a part with many instances (calendar
+  // days) doesn't light up dozens of cells at once.
+  // Depend on the whole spec object (not just .id): editing a token replaces the
+  // component object, so the matrix re-renders and the effect re-marks — keeping the
+  // ring from going stale. The object is a stable .find() reference otherwise, so
+  // this doesn't over-run. (React doesn't clobber an unchanged className on reuse;
+  // when a marked node IS recreated, this re-run re-applies the mark after commit.)
+  useEffect(() => {
+    const root = matrixRef.current;
+    if (!root) return;
+    root
+      .querySelectorAll(".podo-part-selected")
+      .forEach((element) => element.classList.remove("podo-part-selected"));
+    if (inspectorTarget !== "design") return;
+    const selector = componentPartSelector(selectedComponentForSpec.id, activePart);
+    if (!selector) return;
+    const cell = root.querySelector("[data-podo-selected-cell]") ?? root;
+    const matches = Array.from(cell.querySelectorAll(selector));
+    // Prefer a non-muted instance as the representative — e.g. an in-month day, not a
+    // faded prev/next-month ".other" calendar cell.
+    const target = matches.find((element) => !element.classList.contains("other")) ?? matches[0];
+    target?.classList.add("podo-part-selected");
+  }, [activePart, inspectorTarget, selectedComponentForSpec, effectiveComponentPreviewSelections]);
   const appearanceScopeOptions = selectedComponentForSpec.variants.map((variant) => {
     const value =
       effectiveComponentPreviewSelections[variant.name] ??
@@ -558,7 +591,13 @@ export function ComponentsPanelWorkspace({
           <LayersPanel
             anatomy={visibleAnatomy}
             selectedPart={activePart}
-            onSelect={setSelectedPart}
+            onSelect={(part) => {
+              // Selecting a layer is a design action: switch to the design inspector
+              // so the matrix rings the matching element (it only passes selectedPart
+              // through in design mode).
+              setSelectedPart(part);
+              setInspectorTarget("design");
+            }}
             onRename={(from, to) => {
               renameAnatomyPart(from, to);
               setSelectedPart(to.trim() || from);
@@ -697,13 +736,15 @@ export function ComponentsPanelWorkspace({
               if (part) setSelectedPart(part);
               setInspectorTarget("design");
             },
-            // Outline the selected part in the matrix only while it's actually the
-            // editing target (design mode); keeps the grid clean in preview mode.
-            ...(inspectorTarget === "design" ? { selectedPart } : {}),
+            // Outline the selected part only while it's actually the editing target
+            // (design mode); keeps the grid clean in preview mode. RESOLVED activePart
+            // matches what the layers panel highlights. (Datepicker rings a single
+            // element via the sync effect; other components' matrices ring via this.)
+            ...(inspectorTarget === "design" ? { selectedPart: activePart } : {}),
             t,
           });
           return matrix ? (
-            <div style={componentPreviewPanelStyle}>
+            <div ref={matrixRef} style={componentPreviewPanelStyle}>
               <div style={cardHeaderStyle}>
                 <strong style={railSectionTitleStyle}>{t("components.variantSet")}</strong>
               </div>
