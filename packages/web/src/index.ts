@@ -126,16 +126,16 @@ input {
 
 .podo-text {
   color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
-  font-family: var(--podo-typography-body-fontFamily, inherit);
-  font-size: var(--podo-typography-body-fontSize, 1rem);
-  line-height: var(--podo-typography-body-lineHeight, 1.5);
+  font-family: var(--podo-typography-body-medium-fontFamily, inherit);
+  font-size: var(--podo-typography-body-medium-fontSize, 1rem);
+  line-height: var(--podo-typography-body-medium-lineHeight, 1.5);
 }
 
 .podo-text[data-as="h1"] {
-  font-family: var(--podo-typography-h1-fontFamily, inherit);
-  font-size: var(--podo-typography-h1-fontSize, 2rem);
-  font-weight: var(--podo-typography-h1-fontWeight, 700);
-  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+  font-family: var(--podo-typography-heading-xlarge-fontFamily, inherit);
+  font-size: var(--podo-typography-heading-xlarge-fontSize, 2rem);
+  font-weight: var(--podo-typography-heading-xlarge-fontWeight, 700);
+  line-height: var(--podo-typography-heading-xlarge-lineHeight, 1.2);
 }`;
 
 // The spec-driven component token CSS layer (@podo/codegen emitComponentTokenCss,

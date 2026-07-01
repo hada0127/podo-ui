@@ -82,16 +82,16 @@ input {
 
 .podo-text {
   color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
-  font-family: var(--podo-typography-body-fontFamily, inherit);
-  font-size: var(--podo-typography-body-fontSize, 1rem);
-  line-height: var(--podo-typography-body-lineHeight, 1.5);
+  font-family: var(--podo-typography-body-medium-fontFamily, inherit);
+  font-size: var(--podo-typography-body-medium-fontSize, 1rem);
+  line-height: var(--podo-typography-body-medium-lineHeight, 1.5);
 }
 
 .podo-text[data-as="h1"] {
-  font-family: var(--podo-typography-h1-fontFamily, inherit);
-  font-size: var(--podo-typography-h1-fontSize, 2rem);
-  font-weight: var(--podo-typography-h1-fontWeight, 700);
-  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+  font-family: var(--podo-typography-heading-xlarge-fontFamily, inherit);
+  font-size: var(--podo-typography-heading-xlarge-fontSize, 2rem);
+  font-weight: var(--podo-typography-heading-xlarge-fontWeight, 700);
+  line-height: var(--podo-typography-heading-xlarge-lineHeight, 1.2);
 }</style>
 <button class="podo-button" part="root" data-variant="solid" data-size="md">
   <span class="podo-button__icon" part="leftIcon"><slot name="leftIcon"></slot></span>
@@ -182,16 +182,16 @@ input {
 
 .podo-text {
   color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
-  font-family: var(--podo-typography-body-fontFamily, inherit);
-  font-size: var(--podo-typography-body-fontSize, 1rem);
-  line-height: var(--podo-typography-body-lineHeight, 1.5);
+  font-family: var(--podo-typography-body-medium-fontFamily, inherit);
+  font-size: var(--podo-typography-body-medium-fontSize, 1rem);
+  line-height: var(--podo-typography-body-medium-lineHeight, 1.5);
 }
 
 .podo-text[data-as="h1"] {
-  font-family: var(--podo-typography-h1-fontFamily, inherit);
-  font-size: var(--podo-typography-h1-fontSize, 2rem);
-  font-weight: var(--podo-typography-h1-fontWeight, 700);
-  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+  font-family: var(--podo-typography-heading-xlarge-fontFamily, inherit);
+  font-size: var(--podo-typography-heading-xlarge-fontSize, 2rem);
+  font-weight: var(--podo-typography-heading-xlarge-fontWeight, 700);
+  line-height: var(--podo-typography-heading-xlarge-lineHeight, 1.2);
 }</style>
 <div class="podo-field" part="root" id="email" data-state="invalid">
   <label class="podo-field__label" part="label" id="email-label" for="email-control">
@@ -289,16 +289,16 @@ input {
 
 .podo-text {
   color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
-  font-family: var(--podo-typography-body-fontFamily, inherit);
-  font-size: var(--podo-typography-body-fontSize, 1rem);
-  line-height: var(--podo-typography-body-lineHeight, 1.5);
+  font-family: var(--podo-typography-body-medium-fontFamily, inherit);
+  font-size: var(--podo-typography-body-medium-fontSize, 1rem);
+  line-height: var(--podo-typography-body-medium-lineHeight, 1.5);
 }
 
 .podo-text[data-as="h1"] {
-  font-family: var(--podo-typography-h1-fontFamily, inherit);
-  font-size: var(--podo-typography-h1-fontSize, 2rem);
-  font-weight: var(--podo-typography-h1-fontWeight, 700);
-  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+  font-family: var(--podo-typography-heading-xlarge-fontFamily, inherit);
+  font-size: var(--podo-typography-heading-xlarge-fontSize, 2rem);
+  font-weight: var(--podo-typography-heading-xlarge-fontWeight, 700);
+  line-height: var(--podo-typography-heading-xlarge-lineHeight, 1.2);
 }</style><span class="podo-icon podo-icon-menu" part="icon" aria-hidden="true"></span>"
 `;
 
@@ -384,16 +384,16 @@ input {
 
 .podo-text {
   color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
-  font-family: var(--podo-typography-body-fontFamily, inherit);
-  font-size: var(--podo-typography-body-fontSize, 1rem);
-  line-height: var(--podo-typography-body-lineHeight, 1.5);
+  font-family: var(--podo-typography-body-medium-fontFamily, inherit);
+  font-size: var(--podo-typography-body-medium-fontSize, 1rem);
+  line-height: var(--podo-typography-body-medium-lineHeight, 1.5);
 }
 
 .podo-text[data-as="h1"] {
-  font-family: var(--podo-typography-h1-fontFamily, inherit);
-  font-size: var(--podo-typography-h1-fontSize, 2rem);
-  font-weight: var(--podo-typography-h1-fontWeight, 700);
-  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+  font-family: var(--podo-typography-heading-xlarge-fontFamily, inherit);
+  font-size: var(--podo-typography-heading-xlarge-fontSize, 2rem);
+  font-weight: var(--podo-typography-heading-xlarge-fontWeight, 700);
+  line-height: var(--podo-typography-heading-xlarge-lineHeight, 1.2);
 }</style>
 <input class="podo-input" part="control" data-state="invalid" value="hello" placeholder="" aria-invalid="true">"
 `;
@@ -480,15 +480,15 @@ input {
 
 .podo-text {
   color: var(--podo-typography-root-color, var(--podo-semantic-color-text-default, #14151A));
-  font-family: var(--podo-typography-body-fontFamily, inherit);
-  font-size: var(--podo-typography-body-fontSize, 1rem);
-  line-height: var(--podo-typography-body-lineHeight, 1.5);
+  font-family: var(--podo-typography-body-medium-fontFamily, inherit);
+  font-size: var(--podo-typography-body-medium-fontSize, 1rem);
+  line-height: var(--podo-typography-body-medium-lineHeight, 1.5);
 }
 
 .podo-text[data-as="h1"] {
-  font-family: var(--podo-typography-h1-fontFamily, inherit);
-  font-size: var(--podo-typography-h1-fontSize, 2rem);
-  font-weight: var(--podo-typography-h1-fontWeight, 700);
-  line-height: var(--podo-typography-h1-lineHeight, 1.2);
+  font-family: var(--podo-typography-heading-xlarge-fontFamily, inherit);
+  font-size: var(--podo-typography-heading-xlarge-fontSize, 2rem);
+  font-weight: var(--podo-typography-heading-xlarge-fontWeight, 700);
+  line-height: var(--podo-typography-heading-xlarge-lineHeight, 1.2);
 }</style><span class="podo-text podo-typography" data-as="h1" part="text"><slot></slot></span>"
 `;

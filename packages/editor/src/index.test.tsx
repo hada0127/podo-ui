@@ -297,13 +297,13 @@ describe("@podo/editor", () => {
     expect(tokenPaths).toContain("color.primary.hover");
     expect(tokenPaths).toContain("spacing.scale.5");
     expect(tokenPaths).toContain("radius.scale.3");
-    expect(tokenPaths).toContain("typography.display.display3");
-    // Display + the v1 paragraph (p1~p5) scale ship by default so components can
-    // bind to the same typography v1 uses; headings stay project-set.
-    expect(tokenPaths).toContain("typography.paragraph.p3");
-    expect(tokenPaths).toContain("typography.paragraph.p3-semibold");
-    expect(tokenPaths).toContain("typography.paragraph.p1");
-    expect(tokenPaths.some((path) => path.startsWith("typography.heading"))).toBe(false);
+    // Figma v2 Display/Heading/Body type scale (size-only); components bind to body.
+    expect(tokenPaths).toContain("typography.display.xlarge");
+    expect(tokenPaths.some((path) => path.startsWith("typography.heading"))).toBe(true);
+    expect(tokenPaths).toContain("typography.body.medium");
+    expect(tokenPaths).toContain("typography.body.medium-bold");
+    // Base palette ("베이스 컬러") ships separately from the basic colors.
+    expect(tokenPaths).toContain("color.base.red.50");
     expect(tokenPaths).toContain("component.button.theme.primary.solid.background");
     expect(tokenPaths).toContain("component.button.theme.primary.solid.hover.background");
     expect(tokenPaths).toContain("component.button.theme.primary.solid.active.background");
@@ -378,7 +378,8 @@ describe("@podo/editor", () => {
       "reverse",
     ]);
     expect(primary?.cells.base?.path).toBe("color.primary.base");
-    expect(primary?.cells.hover?.token.$value).toBe("#6d28d9");
+    // Basic colors now reference the base palette (primary → base.royal-blue).
+    expect(primary?.cells.hover?.token.$value).toBe("{color.base.royal-blue.60}");
     expect(darkPrimary?.cells.hover?.path).toBe("dark.color.primary.hover");
     expect(colorMatrix.rows.some((row) => row.id.startsWith("component.button"))).toBe(false);
 
@@ -483,7 +484,7 @@ describe("@podo/editor", () => {
       expect.arrayContaining(["font.weight.regular", "font.weight.bold"])
     );
     expect(workspace.sizes.some((record) => record.path.startsWith("font.size."))).toBe(true);
-    expect(workspace.styles.some((record) => record.path === "typography.display.display1")).toBe(
+    expect(workspace.styles.some((record) => record.path === "typography.display.xlarge")).toBe(
       true
     );
     expect(fontFormatFromFileName("podo-sans.otf")).toBe("opentype");
@@ -605,9 +606,10 @@ describe("@podo/editor", () => {
     expect(effectiveEditorColorScheme("dark", "light")).toBe("dark");
     expect(tokenPaths).toContain("dark.color.primary.hover");
     expect(tokenPaths.some((path) => path.startsWith("warm."))).toBe(false);
-    expect(lightLookup.get("color.primary.hover")?.$value).toBe("#6d28d9");
-    expect(darkLookup.get("color.primary.hover")?.$value).toBe("#8b5cf6");
-    expect(darkLookup.get("color.bg.elevation")?.$value).toBe("#09090b");
+    // Basic colors reference the base palette; light/dark map to base steps.
+    expect(lightLookup.get("color.primary.hover")?.$value).toBe("{color.base.royal-blue.60}");
+    expect(darkLookup.get("color.primary.hover")?.$value).toBe("{color.base.royal-blue.40}");
+    expect(darkLookup.get("color.bg.elevation")?.$value).toBe("{color.base.gray.90}");
     expect(darkLookup.has("dark.color.primary.hover")).toBe(false);
   });
 

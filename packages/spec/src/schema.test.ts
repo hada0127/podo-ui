@@ -31,7 +31,7 @@ describe("Podo spec schemas", () => {
     const color = parseTokenDocument(loadSample("tokens/color.tokens.json"));
     const foundation = parseTokenDocument(loadSample("tokens/foundation.tokens.json"));
 
-    expect(typography.category).toBe("theme");
+    expect(typography.category).toBe("semantic");
     expect(color.category).toBe("semantic");
     expect(foundation.category).toBe("primitive");
     expect(validateTokenReferences(typography)).toEqual([]);
@@ -99,7 +99,7 @@ describe("Podo spec schemas", () => {
     expect(input.states.some((state) => state.name === "invalid")).toBe(true);
     expect(field.slots.some((slot) => slot.name === "control" && slot.required)).toBe(true);
     expect(icon.props.some((prop) => prop.name === "name" && prop.required)).toBe(true);
-    expect(typography.tokens["heading.typography"]).toBe("{typography.h1.dashboard}");
+    expect(typography.tokens["heading.typography"]).toBe("{typography.heading.xlarge}");
   });
 
   it("parses valid icon and .podo sample documents", () => {

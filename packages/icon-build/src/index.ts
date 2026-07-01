@@ -15,6 +15,7 @@ export {
   type ViewBox,
 } from "./font.js";
 export { canNormalizeIconSvg, normalizeIconSvg, sanitizeIconSvg } from "./svg.js";
+export { svgToFillPathData } from "./stroke.js";
 
 // Re-export the shared validators so icon hosts depend on one source of truth.
 export { computeIconsHash, validateInlineSvg } from "@podo/spec";

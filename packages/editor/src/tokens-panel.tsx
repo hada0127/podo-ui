@@ -2,10 +2,10 @@ import type { Dispatch, SetStateAction } from "react";
 import type { DesignToken } from "@podo/spec";
 import { type EditorTokenDraft, type EditorTokenRecord } from "./spec-editing.js";
 import {
-  groupTokenRecordsByType,
   tokenRecordKey,
   type ColorComparisonMatrixModel,
   type TokenMatrixModel,
+  type TokenTypeGroup,
   type TypographyTokenField,
   type TypographyWorkspaceModel,
 } from "./token-model.js";
@@ -36,12 +36,14 @@ export function TokensPanelControls({
   tokenGroups,
   tokenDraft,
   typographyWorkspaceActive,
-  selectTokenType,
+  baseColorView,
+  onSelectGroup,
 }: {
-  tokenGroups: ReturnType<typeof groupTokenRecordsByType>;
+  tokenGroups: TokenTypeGroup[];
   tokenDraft: EditorTokenDraft;
   typographyWorkspaceActive: boolean;
-  selectTokenType: (type: DesignToken["$type"]) => void;
+  baseColorView: boolean;
+  onSelectGroup: (group: TokenTypeGroup) => void;
 }) {
   const t = useT();
   return (
@@ -50,18 +52,20 @@ export function TokensPanelControls({
       <div style={listStyle}>
         {tokenGroups.map((group) => {
           const active =
-            group.type === "typography"
-              ? typographyWorkspaceActive
-              : tokenDraft.type === group.type;
+            group.view === "baseColor"
+              ? baseColorView
+              : group.type === "typography"
+                ? typographyWorkspaceActive
+                : !baseColorView && tokenDraft.type === group.type;
           return (
             <button
-              key={group.type}
+              key={group.view ?? group.type}
               type="button"
               style={{
                 ...tokenTypeButtonStyle,
                 ...(active ? tokenTypeButtonActiveStyle : {}),
               }}
-              onClick={() => selectTokenType(group.type)}
+              onClick={() => onSelectGroup(group)}
             >
               <span style={tokenTypeNameStyle}>{group.label}</span>
               <small style={tokenTypeMetaStyle}>
@@ -85,9 +89,11 @@ export function TokensPanelWorkspace({
   selectedTokenKey,
   setSelectedTokenKey,
   typographyWorkspaceActive,
+  baseColorView,
   typographyWorkspace,
   tokenMatrix,
-  colorComparisonMatrix,
+  basicColorMatrix,
+  baseColorMatrix,
   colorTokenPickerOptions,
   previewTokenLookup,
   lightTokenLookup,
@@ -111,9 +117,11 @@ export function TokensPanelWorkspace({
   selectedTokenKey: string | undefined;
   setSelectedTokenKey: Dispatch<SetStateAction<string | undefined>>;
   typographyWorkspaceActive: boolean;
+  baseColorView: boolean;
   typographyWorkspace: TypographyWorkspaceModel;
   tokenMatrix: TokenMatrixModel;
-  colorComparisonMatrix: ColorComparisonMatrixModel;
+  basicColorMatrix: ColorComparisonMatrixModel;
+  baseColorMatrix: ColorComparisonMatrixModel;
   colorTokenPickerOptions: TokenPickerOption[];
   previewTokenLookup: TokenLookup;
   lightTokenLookup: TokenLookup;
@@ -174,10 +182,11 @@ export function TokensPanelWorkspace({
             onDeleteToken: deleteTokenRecord,
             onToggleFamilyWeight: toggleFamilyWeight,
           })
-        : tokenDraft.type === "color"
+        : baseColorView || tokenDraft.type === "color"
           ? renderColorComparisonMatrix({
               t,
-              model: colorComparisonMatrix,
+              model: baseColorView ? baseColorMatrix : basicColorMatrix,
+              ...(baseColorView ? { title: t("tokenEditor.baseColorMatrix") } : {}),
               lightLookup: lightTokenLookup,
               darkLookup: darkTokenLookup,
               tokenOptions: colorTokenPickerOptions,

@@ -116,6 +116,7 @@ export const tokenEditorEn = {
 
   // renderColorComparisonMatrix — color matrix header.
   "tokenEditor.colorMatrix": "color matrix",
+  "tokenEditor.baseColorMatrix": "base color",
   "tokenEditor.colorMatrixHelp":
     "{count} color tokens across {sections} {groupWord}. Variations stack; light and dark sit side by side.",
   "tokenEditor.legendLight": "light",
@@ -228,6 +229,7 @@ export const tokenEditorKo: Record<keyof typeof tokenEditorEn, string> = {
   "tokenEditor.cellColorAria": "{path} 색상",
 
   "tokenEditor.colorMatrix": "색상 매트릭스",
+  "tokenEditor.baseColorMatrix": "베이스 색상",
   "tokenEditor.colorMatrixHelp":
     "{sections} {groupWord}에 걸쳐 색상 토큰 {count}개. 변형은 세로로 쌓이고 라이트와 다크는 나란히 배치됩니다.",
   "tokenEditor.legendLight": "라이트",

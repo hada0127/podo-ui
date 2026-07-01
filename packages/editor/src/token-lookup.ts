@@ -49,14 +49,19 @@ export function isHexColorInputValue(value: string): boolean {
   return /^#[0-9a-fA-F]{6}$/.test(value);
 }
 
-export function isTypographyValue(value: unknown): value is {
+/** A typography size: a single unit string or a responsive `{ pc, tablet?, mobile? }`. */
+export type ResponsiveSize = string | { pc: string; tablet?: string; mobile?: string };
+
+export interface TypographyValue {
   fontFamily: string;
-  fontSize: string;
+  fontSize: ResponsiveSize;
   lineHeight: string;
   fontWeight: string | number;
   letterSpacing: string;
   paragraphSpacing?: string;
-} {
+}
+
+export function isTypographyValue(value: unknown): value is TypographyValue {
   return (
     Boolean(value) &&
     typeof value === "object" &&
@@ -69,17 +74,15 @@ export function isTypographyValue(value: unknown): value is {
   );
 }
 
-export function typographyToCss(value: {
-  fontFamily: string;
-  fontSize: string;
-  lineHeight: string;
-  fontWeight: string | number;
-  letterSpacing: string;
-  paragraphSpacing?: string;
-}): CSSProperties {
+/** The desktop (`pc`) value of a size, or the value itself when it is scalar. */
+export function responsiveSizePc(size: ResponsiveSize): string {
+  return typeof size === "object" && size !== null ? (size.pc ?? "") : String(size ?? "");
+}
+
+export function typographyToCss(value: TypographyValue): CSSProperties {
   return {
     fontFamily: `${value.fontFamily}, ui-sans-serif, system-ui, sans-serif`,
-    fontSize: value.fontSize,
+    fontSize: responsiveSizePc(value.fontSize),
     lineHeight: value.lineHeight,
     fontWeight: value.fontWeight,
     letterSpacing: value.letterSpacing,

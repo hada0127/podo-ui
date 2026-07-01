@@ -220,20 +220,42 @@ export function selectThemeTokens(
   return { tokens: selected, origins: bundle.origins };
 }
 
+// Breakpoints mirror the legacy grid so type scale and layout switch together:
+// desktop (pc) is the base, tablet 768–1279px, mobile ≤767px.
+const RESPONSIVE_BREAKPOINTS: Array<{ key: "tablet" | "mobile"; media: string }> = [
+  { key: "tablet", media: "screen and (min-width: 768px) and (max-width: 1279px)" },
+  { key: "mobile", media: "screen and (max-width: 767px)" },
+];
+
 export function emitCssVariables(
   bundle: ResolvedTokenBundle,
   options: { themes: string[]; colorSchemes: Array<"light" | "dark">; prefix?: string }
 ): string {
   const prefix = options.prefix ?? "podo";
-  const blocks = options.themes.flatMap((theme) =>
-    options.colorSchemes.map((colorScheme) => {
+  const blocks: string[] = [];
+  for (const theme of options.themes) {
+    for (const colorScheme of options.colorSchemes) {
       const scoped = selectThemeTokens(bundle, { theme, colorScheme });
-      const lines = flattenCssVariables(scoped, prefix).map(
+      const selector = `[data-podo-theme="${theme}"][data-color-scheme="${colorScheme}"]`;
+      const baseLines = flattenCssVariables(scoped, prefix).map(
         ([name, value]) => `  ${name}: ${value};`
       );
-      return `[data-podo-theme="${theme}"][data-color-scheme="${colorScheme}"] {\n${lines.join("\n")}\n}`;
-    })
-  );
+      blocks.push(`${selector} {\n${baseLines.join("\n")}\n}`);
+
+      // Responsive sizes (e.g. typography fontSize) emit their pc value as the base
+      // var above and a media-query override per breakpoint here.
+      for (const breakpoint of RESPONSIVE_BREAKPOINTS) {
+        const overrides = flattenResponsiveOverrides(scoped, prefix, breakpoint.key);
+        if (overrides.length === 0) {
+          continue;
+        }
+        const overrideLines = overrides.map(([name, value]) => `    ${name}: ${value};`);
+        blocks.push(
+          `@media ${breakpoint.media} {\n  ${selector} {\n${overrideLines.join("\n")}\n  }\n}`
+        );
+      }
+    }
+  }
 
   return `${blocks.join("\n\n")}\n`;
 }
@@ -425,12 +447,61 @@ function flattenCssVariables(bundle: ResolvedTokenBundle, prefix: string): Array
     .map(([path, value]) => [`--${prefix}-${path.replaceAll(".", "-")}`, toCssValue(value)]);
 }
 
+const RESPONSIVE_KEYS = new Set(["pc", "tablet", "mobile"]);
+
+/** A `{ pc, tablet?, mobile? }` breakpoint map (the base value lives under `pc`). */
+function isResponsiveValue(value: unknown): value is Record<string, unknown> {
+  return (
+    Boolean(value) &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    "pc" in (value as Record<string, unknown>) &&
+    Object.keys(value as Record<string, unknown>).every((key) => RESPONSIVE_KEYS.has(key))
+  );
+}
+
 function flattenValue(path: string, value: unknown): Array<[string, unknown]> {
+  if (isResponsiveValue(value)) {
+    // The base CSS var carries the pc value; breakpoint overrides are emitted
+    // separately as media queries, so don't expand into -pc/-tablet/-mobile vars.
+    return [[path, value.pc]];
+  }
+
   if (value && typeof value === "object" && !Array.isArray(value)) {
     return Object.entries(value).flatMap(([key, child]) => flattenValue(`${path}.${key}`, child));
   }
 
   return [[path, value]];
+}
+
+function flattenResponsiveOverrides(
+  bundle: ResolvedTokenBundle,
+  prefix: string,
+  breakpoint: "tablet" | "mobile"
+): Array<[string, string]> {
+  return Object.values(bundle.tokens)
+    .flatMap((token) => collectResponsiveOverrides(token.path, token.value, breakpoint))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([path, value]) => [`--${prefix}-${path.replaceAll(".", "-")}`, toCssValue(value)]);
+}
+
+function collectResponsiveOverrides(
+  path: string,
+  value: unknown,
+  breakpoint: "tablet" | "mobile"
+): Array<[string, unknown]> {
+  if (isResponsiveValue(value)) {
+    const override = value[breakpoint];
+    return override === undefined ? [] : [[path, override]];
+  }
+
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return Object.entries(value).flatMap(([key, child]) =>
+      collectResponsiveOverrides(`${path}.${key}`, child, breakpoint)
+    );
+  }
+
+  return [];
 }
 
 function toCssValue(value: unknown): string {

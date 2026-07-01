@@ -153,227 +153,155 @@ function eventProp(
   };
 }
 
+// Basic ("기본") colors reference the base palette so the semantic layer is built
+// from base color (Figma 색상 → 베이스 색상). Hue mapping matches Figma:
+// primary→royal-blue, info/link→blue, success→green, warning→gold, danger→red,
+// default/bg/border/text→gray.
+const baseRef = (hue: string, step: number): string => `{color.base.${hue}.${step}}`;
+const lightTone = (hue: string): Record<string, string> => ({
+  base: baseRef(hue, 50),
+  hover: baseRef(hue, 60),
+  pressed: baseRef(hue, 70),
+  focus: baseRef(hue, 60),
+  fill: baseRef(hue, 5),
+  reverse: baseRef("gray", 0),
+  outline: baseRef(hue, 20),
+});
+const darkTone = (hue: string): Record<string, string> => ({
+  base: baseRef(hue, 50),
+  hover: baseRef(hue, 40),
+  pressed: baseRef(hue, 50),
+  focus: baseRef(hue, 40),
+  fill: baseRef("gray", 90),
+  reverse: baseRef("gray", 0),
+  outline: baseRef(hue, 30),
+});
+
 const legacyColorValues = {
-  primary: {
-    base: "#7c3aed",
-    hover: "#6d28d9",
-    pressed: "#5b21b6",
-    focus: "#6d28d9",
-    fill: "#f3e8ff",
-    reverse: "#ffffff",
-    outline: "rgba(124, 58, 237, 0.3)",
-  },
+  primary: lightTone("royal-blue"),
   default: {
-    base: "#f4f4f5",
-    hover: "#ececef",
-    pressed: "#e3e3e8",
-    focus: "#d1d1d7",
-    fill: "#f4f4f5",
-    reverse: "#2c2c31",
-    outline: "rgba(209, 209, 215, 0.3)",
+    base: baseRef("gray", 10),
+    hover: baseRef("gray", 20),
+    pressed: baseRef("gray", 30),
+    focus: baseRef("gray", 30),
+    fill: baseRef("gray", 10),
+    reverse: baseRef("gray", 80),
+    outline: baseRef("gray", 30),
   },
   "default-deep": {
-    base: "#52525b",
-    hover: "#3f3f46",
-    pressed: "#2c2c31",
-    focus: "#3f3f46",
-    fill: "#f4f4f5",
-    reverse: "#ffffff",
-    outline: "rgba(63, 63, 70, 0.3)",
+    base: baseRef("gray", 60),
+    hover: baseRef("gray", 70),
+    pressed: baseRef("gray", 80),
+    focus: baseRef("gray", 70),
+    fill: baseRef("gray", 10),
+    reverse: baseRef("gray", 0),
+    outline: baseRef("gray", 40),
   },
-  info: {
-    base: "#1890ff",
-    hover: "#0a73eb",
-    pressed: "#144de1",
-    focus: "#0a73eb",
-    fill: "#eef6ff",
-    reverse: "#ffffff",
-    outline: "rgba(10, 115, 235, 0.3)",
-  },
-  link: {
-    base: "#0ea5e9",
-    hover: "#0284c7",
-    pressed: "#0369a1",
-    focus: "#0284c7",
-    fill: "#f0f9ff",
-    reverse: "#ffffff",
-    outline: "rgba(2, 132, 199, 0.3)",
-  },
-  success: {
-    base: "#0d9488",
-    hover: "#0f766e",
-    pressed: "#115e59",
-    focus: "#0f766e",
-    fill: "#f0fdfa",
-    reverse: "#ffffff",
-    outline: "rgba(15, 118, 110, 0.3)",
-  },
-  warning: {
-    base: "#f19b0b",
-    hover: "#e8840f",
-    pressed: "#cd740b",
-    focus: "#e8840f",
-    fill: "#fffbeb",
-    reverse: "#ffffff",
-    outline: "rgba(232, 132, 15, 0.3)",
-  },
-  danger: {
-    base: "#f04646",
-    hover: "#dc2626",
-    pressed: "#b91c1c",
-    focus: "#dc2626",
-    fill: "#fef2f2",
-    reverse: "#ffffff",
-    outline: "rgba(220, 38, 38, 0.3)",
-  },
-} as const;
+  info: lightTone("blue"),
+  link: lightTone("blue"),
+  success: lightTone("green"),
+  warning: lightTone("gold"),
+  danger: lightTone("red"),
+};
 
 const systemColorValues = {
   bg: {
-    modal: "#ffffff",
-    disabled: "#e4e4e7",
-    toggle: "#a1a1aa",
-    indicator: "rgba(0, 0, 0, 0.09)",
-    block: "#ffffff",
-    "reverse-wb": "#ffffff",
-    "reverse-bw": "#000000",
-    elevation: "#fafafa",
-    "elevation-1": "#ffffff",
-    "elevation-2": "#ffffff",
-    "elevation-3": "#ffffff",
+    modal: baseRef("gray", 0),
+    disabled: baseRef("gray", 20),
+    toggle: baseRef("gray", 40),
+    indicator: baseRef("alpha-black", 10),
+    block: baseRef("gray", 0),
+    "reverse-wb": baseRef("gray", 0),
+    "reverse-bw": baseRef("gray", 100),
+    elevation: baseRef("gray", 5),
+    "elevation-1": baseRef("gray", 0),
+    "elevation-2": baseRef("gray", 0),
+    "elevation-3": baseRef("gray", 0),
   },
   border: {
-    base: "#e4e4e7",
-    hover: "#d1d1d7",
-    pressed: "#a1a1aa",
-    focus: "#d1d1d7",
-    disabled: "rgba(0, 0, 0, 0.09)",
-    alpha: "rgba(0, 0, 0, 0.18)",
+    base: baseRef("gray", 20),
+    hover: baseRef("gray", 30),
+    pressed: baseRef("gray", 40),
+    focus: baseRef("gray", 30),
+    disabled: baseRef("alpha-black", 10),
+    alpha: baseRef("alpha-black", 20),
   },
   text: {
-    header: "#1c1c20",
-    body: "#2c2c31",
-    sub: "#71717a",
-    action: "#71717a",
-    "action-hover": "#52525b",
-    "action-pressed": "#3f3f46",
-    "action-focus": "#52525b",
-    "action-disabled": "#a1a1aa",
-    "action-reverse": "#ffffff",
+    header: baseRef("gray", 90),
+    body: baseRef("gray", 80),
+    sub: baseRef("gray", 50),
+    action: baseRef("gray", 50),
+    "action-hover": baseRef("gray", 60),
+    "action-pressed": baseRef("gray", 70),
+    "action-focus": baseRef("gray", 60),
+    "action-disabled": baseRef("gray", 40),
+    "action-reverse": baseRef("gray", 0),
   },
-} as const;
+};
 
 const legacyDarkColorValues = {
-  primary: {
-    base: "#7c3aed",
-    hover: "#8b5cf6",
-    pressed: "#7c3aed",
-    focus: "#8b5cf6",
-    fill: "#111827",
-    reverse: "#ffffff",
-    outline: "rgba(158, 115, 254, 0.3)",
-  },
+  primary: darkTone("royal-blue"),
   default: {
-    base: "#34343a",
-    hover: "#3f3f46",
-    pressed: "#34343a",
-    focus: "#3f3f46",
-    fill: "#34343a",
-    reverse: "#ffffff",
-    outline: "rgba(63, 63, 70, 0.3)",
+    base: baseRef("gray", 80),
+    hover: baseRef("gray", 70),
+    pressed: baseRef("gray", 80),
+    focus: baseRef("gray", 70),
+    fill: baseRef("gray", 80),
+    reverse: baseRef("gray", 0),
+    outline: baseRef("gray", 60),
   },
   "default-deep": {
-    base: "#a1a1aa",
-    hover: "#d1d1d7",
-    pressed: "#a1a1aa",
-    focus: "#d1d1d7",
-    fill: "#52525b",
-    reverse: "#2c2c31",
-    outline: "rgba(209, 209, 215, 0.3)",
+    base: baseRef("gray", 40),
+    hover: baseRef("gray", 30),
+    pressed: baseRef("gray", 40),
+    focus: baseRef("gray", 30),
+    fill: baseRef("gray", 60),
+    reverse: baseRef("gray", 80),
+    outline: baseRef("gray", 30),
   },
-  info: {
-    base: "#0a73eb",
-    hover: "#1890ff",
-    pressed: "#0a73eb",
-    focus: "#1890ff",
-    fill: "#1c1c20",
-    reverse: "#ffffff",
-    outline: "rgba(24, 144, 255, 0.3)",
-  },
-  link: {
-    base: "#0284c7",
-    hover: "#0ea5e9",
-    pressed: "#0284c7",
-    focus: "#0ea5e9",
-    fill: "#1c1c20",
-    reverse: "#ffffff",
-    outline: "rgba(14, 165, 233, 0.3)",
-  },
-  success: {
-    base: "#0d9488",
-    hover: "#1bb0a2",
-    pressed: "#0d9488",
-    focus: "#1bb0a2",
-    fill: "#1c1c20",
-    reverse: "#ffffff",
-    outline: "rgba(27, 176, 162, 0.3)",
-  },
-  warning: {
-    base: "#e8840f",
-    hover: "#f19b0b",
-    pressed: "#e8840f",
-    focus: "#f19b0b",
-    fill: "#1c1c20",
-    reverse: "#ffffff",
-    outline: "rgba(241, 155, 11, 0.3)",
-  },
-  danger: {
-    base: "#f04646",
-    hover: "#f25959",
-    pressed: "#f04646",
-    focus: "#f25959",
-    fill: "#1c1c20",
-    reverse: "#ffffff",
-    outline: "rgba(242, 89, 89, 0.3)",
-  },
-} as const;
+  info: darkTone("blue"),
+  link: darkTone("blue"),
+  success: darkTone("green"),
+  warning: darkTone("gold"),
+  danger: darkTone("red"),
+};
 
 const darkSystemColorValues = {
   bg: {
-    modal: "#2c2c31",
-    disabled: "#2c2c31",
-    toggle: "#52525b",
-    indicator: "rgba(255, 255, 255, 0.36)",
-    block: "rgba(0, 0, 0, 0.09)",
-    "reverse-wb": "#000000",
-    "reverse-bw": "#ffffff",
-    wt: "#ffffff",
-    bk: "#000000",
-    elevation: "#09090b",
-    "elevation-1": "#18181b",
-    "elevation-2": "#242429",
-    "elevation-3": "#2c2c31",
+    modal: baseRef("gray", 80),
+    disabled: baseRef("gray", 80),
+    toggle: baseRef("gray", 60),
+    indicator: baseRef("alpha-white", 40),
+    block: baseRef("alpha-black", 10),
+    "reverse-wb": baseRef("gray", 100),
+    "reverse-bw": baseRef("gray", 0),
+    wt: baseRef("gray", 0),
+    bk: baseRef("gray", 100),
+    elevation: baseRef("gray", 90),
+    "elevation-1": baseRef("gray", 90),
+    "elevation-2": baseRef("gray", 80),
+    "elevation-3": baseRef("gray", 80),
   },
   border: {
-    base: "#52525b",
-    hover: "#71717a",
-    pressed: "#52525b",
-    focus: "#71717a",
-    disabled: "rgba(255, 255, 255, 0.09)",
-    alpha: "rgba(255, 255, 255, 0.18)",
+    base: baseRef("gray", 60),
+    hover: baseRef("gray", 50),
+    pressed: baseRef("gray", 60),
+    focus: baseRef("gray", 50),
+    disabled: baseRef("alpha-white", 10),
+    alpha: baseRef("alpha-white", 20),
   },
   text: {
-    header: "#f4f4f5",
-    body: "#e4e4e7",
-    sub: "#a1a1aa",
-    action: "#d1d1d7",
-    "action-hover": "#f4f4f5",
-    "action-pressed": "#d1d1d7",
-    "action-focus": "#f4f4f5",
-    "action-disabled": "#52525b",
-    "action-reverse": "#ffffff",
+    header: baseRef("gray", 10),
+    body: baseRef("gray", 20),
+    sub: baseRef("gray", 40),
+    action: baseRef("gray", 30),
+    "action-hover": baseRef("gray", 10),
+    "action-pressed": baseRef("gray", 30),
+    "action-focus": baseRef("gray", 10),
+    "action-disabled": baseRef("gray", 60),
+    "action-reverse": baseRef("gray", 0),
   },
-} as const;
+};
 
 const spacingScale = {
   "0": "0px",
@@ -423,25 +351,35 @@ const fontSizeScale = {
 // Display ships the v1 display scale; paragraph ships the v1 p1~p5 (+semibold)
 // scale so components can bind to the same typography v1 uses. Headings stay
 // project-set (see the Typography tokens screen).
+// Figma v2 type scale (size-only; tag binding is project/theme work). fontSize is
+// responsive (pc/tablet/mobile); line-height is a percentage that scales with it.
 const typographyMixins = {
   display: [
-    ["display1", "60px", 600, "36px", "72px"],
-    ["display2", "54px", 600, "32px", "66px"],
-    ["display3", "48px", 600, "28px", "60px"],
-    ["display4", "42px", 600, "24px", "50px"],
-    ["display5", "36px", 600, "20px", "44px"],
-    ["display6", "24px", 600, "18px", "32px"],
-    ["display7", "20px", 600, "16px", "28px"],
+    ["xlarge", { pc: "60px", tablet: "48px", mobile: "36px" }, 700, "120%"],
+    ["large", { pc: "52px", tablet: "42px", mobile: "32px" }, 700, "120%"],
+    ["medium", { pc: "44px", tablet: "36px", mobile: "28px" }, 700, "120%"],
+    ["small", { pc: "38px", tablet: "34px", mobile: "26px" }, 700, "120%"],
+    ["xsmall", { pc: "34px", tablet: "30px", mobile: "24px" }, 700, "120%"],
   ],
-  paragraph: [
-    ["p1", "24px", 400, "20px", "1.4"],
-    ["p2", "20px", 400, "16px", "1.6"],
-    ["p3", "16px", 400, "14px", "1.6"],
-    ["p3-semibold", "16px", 600, "14px", "1.6"],
-    ["p4", "14px", 400, "12px", "1.6"],
-    ["p4-semibold", "14px", 600, "12px", "1.6"],
-    ["p5", "12px", 400, "12px", "1.6"],
-    ["p5-semibold", "12px", 600, "12px", "1.6"],
+  heading: [
+    ["xlarge", { pc: "32px", tablet: "28px", mobile: "24px" }, 700, "120%"],
+    ["large", { pc: "28px", tablet: "24px", mobile: "20px" }, 700, "120%"],
+    ["medium", { pc: "24px", tablet: "20px", mobile: "18px" }, 700, "120%"],
+    ["small", { pc: "20px", tablet: "18px", mobile: "16px" }, 700, "120%"],
+    ["xsmall", { pc: "16px", tablet: "16px", mobile: "14px" }, 700, "120%"],
+    ["xxsmall", { pc: "14px", tablet: "14px", mobile: "13px" }, 700, "120%"],
+  ],
+  body: [
+    ["xlarge", { pc: "20px", tablet: "20px", mobile: "18px" }, 400, "150%"],
+    ["xlarge-bold", { pc: "20px", tablet: "20px", mobile: "18px" }, 600, "150%"],
+    ["large", { pc: "18px", tablet: "18px", mobile: "16px" }, 400, "160%"],
+    ["large-bold", { pc: "18px", tablet: "18px", mobile: "16px" }, 600, "160%"],
+    ["medium", { pc: "16px", tablet: "16px", mobile: "14px" }, 400, "160%"],
+    ["medium-bold", { pc: "16px", tablet: "16px", mobile: "14px" }, 600, "160%"],
+    ["small", { pc: "14px", tablet: "14px", mobile: "13px" }, 400, "160%"],
+    ["small-bold", { pc: "14px", tablet: "14px", mobile: "13px" }, 600, "160%"],
+    ["xsmall", { pc: "13px", tablet: "13px", mobile: "12px" }, 400, "160%"],
+    ["xsmall-bold", { pc: "13px", tablet: "13px", mobile: "12px" }, 600, "160%"],
   ],
 } as const;
 
@@ -678,6 +616,22 @@ function buttonDisabledTokens(variant: LegacyButtonVariant) {
   });
 }
 
+// Figma "베이스 컬러" raw palette — the colors the basic colors are built from.
+// Managed separately (color.base.*) and offered after basic colors in the picker.
+const baseColorRamps: Record<string, Record<string, string>> = {
+  red: { 5: "#FEF1F1", 10: "#FFE0DF", 20: "#FFADAD", 30: "#FF8985", 40: "#F56666", 50: "#F23B3B", 60: "#EE1818", 70: "#CD0404", 80: "#8F0000", 90: "#5F0000" }, // prettier-ignore
+  rose: { 5: "#FEF1F2", 10: "#FCD9DC", 20: "#FAB7BD", 30: "#F8969E", 40: "#F66F7A", 50: "#F15764", 60: "#D63D4A", 70: "#BF3742", 80: "#992C35", 90: "#732128" }, // prettier-ignore
+  green: { 5: "#ECF8EF", 10: "#C5E9CD", 20: "#A9DEB4", 30: "#81CF92", 40: "#57C16F", 50: "#3EA856", 60: "#38994E", 70: "#308242", 80: "#256533", 90: "#1C4D27" }, // prettier-ignore
+  gold: { 5: "#FFF7E6", 10: "#FFEBC2", 20: "#FFD88A", 30: "#FFC654", 40: "#FFBB33", 50: "#FFAA00", 60: "#E89B00", 70: "#B57900", 80: "#8C5E00", 90: "#6B4700" }, // prettier-ignore
+  orange: { 5: "#FFF4F0", 10: "#FFDACC", 20: "#FFB599", 30: "#FE9975", 40: "#FE8052", 50: "#FF6A33", 60: "#FF5212", 70: "#DB3B00", 80: "#992900", 90: "#661C00" }, // prettier-ignore
+  blue: { 5: "#EBF5FF", 10: "#C7E3FF", 20: "#8FC8FF", 30: "#70B9FF", 40: "#56ACFF", 50: "#0095FF", 60: "#0074E5", 70: "#0056AA", 80: "#00407F", 90: "#002B55" }, // prettier-ignore
+  "royal-blue": { 5: "#F1F4FD", 10: "#D0DBFB", 20: "#ABBEF7", 30: "#819EF3", 40: "#577DEF", 50: "#426CED", 60: "#1245E2", 70: "#123BBA", 80: "#0D2C8B", 90: "#091D5D" }, // prettier-ignore
+  "classic-blue": { 5: "#F5F9FF", 10: "#E6F0FE", 20: "#CEE2FD", 30: "#A0C2EE", 40: "#76A0D8", 50: "#4A78B5", 60: "#34547E", 70: "#2D486C", 80: "#253C5A", 90: "#1E3048" }, // prettier-ignore
+  gray: { 0: "#FFFFFF", 5: "#F9F9F9", 10: "#F4F4F5", 20: "#E4E4E7", 30: "#D1D2D6", 40: "#9FA2AD", 50: "#767985", 60: "#50555E", 70: "#3E424B", 80: "#27272A", 90: "#18181B", 100: "#000000" }, // prettier-ignore
+  "alpha-white": { 5: "rgba(255, 255, 255, 0.05)", 10: "rgba(255, 255, 255, 0.1)", 20: "rgba(255, 255, 255, 0.25)", 30: "rgba(255, 255, 255, 0.3)", 40: "rgba(255, 255, 255, 0.4)", 50: "rgba(255, 255, 255, 0.5)", 60: "rgba(255, 255, 255, 0.6)", 70: "rgba(255, 255, 255, 0.7)", 80: "rgba(255, 255, 255, 0.8)", 90: "rgba(255, 255, 255, 0.9)" }, // prettier-ignore
+  "alpha-black": { 5: "rgba(0, 0, 0, 0.05)", 10: "rgba(0, 0, 0, 0.1)", 20: "rgba(0, 0, 0, 0.25)", 30: "rgba(0, 0, 0, 0.3)", 40: "rgba(0, 0, 0, 0.4)", 50: "rgba(0, 0, 0, 0.5)", 60: "rgba(0, 0, 0, 0.6)", 70: "rgba(0, 0, 0, 0.7)", 80: "rgba(0, 0, 0, 0.8)", 90: "rgba(0, 0, 0, 0.9)" }, // prettier-ignore
+};
+
 export const legacyTokenDocuments: TokenDocument[] = [
   parseTokenDocument({
     schemaVersion: PODO_SCHEMA_VERSION,
@@ -729,6 +683,21 @@ export const legacyTokenDocuments: TokenDocument[] = [
             ),
           ])
         ),
+        base: Object.fromEntries(
+          Object.entries(baseColorRamps).map(([hue, steps]) => [
+            hue,
+            Object.fromEntries(
+              Object.entries(steps).map(([step, value]) => [
+                step,
+                {
+                  $type: "color",
+                  $value: value,
+                  $extensions: { podo: { scope: "primitive", roles: ["base", hue] } },
+                },
+              ])
+            ),
+          ])
+        ),
       },
       component: {
         button: {
@@ -750,35 +719,35 @@ export const legacyTokenDocuments: TokenDocument[] = [
               paddingX: { $type: "spacing", $value: "{spacing.scale.2}" },
               paddingY: { $type: "spacing", $value: "0px" },
               radius: { $type: "radius", $value: "{radius.scale.2}" },
-              typography: { $type: "typography", $value: "{typography.paragraph.p5}" },
+              typography: { $type: "typography", $value: "{typography.body.xsmall}" },
             },
             xs: {
               height: { $type: "dimension", $value: "30px" },
               paddingX: { $type: "spacing", $value: "{spacing.scale.3}" },
               paddingY: { $type: "spacing", $value: "0px" },
               radius: { $type: "radius", $value: "{radius.scale.2}" },
-              typography: { $type: "typography", $value: "{typography.paragraph.p4}" },
+              typography: { $type: "typography", $value: "{typography.body.small}" },
             },
             sm: {
               height: { $type: "dimension", $value: "42px" },
               paddingX: { $type: "spacing", $value: "{spacing.scale.3}" },
               paddingY: { $type: "spacing", $value: "0px" },
               radius: { $type: "radius", $value: "{radius.scale.3}" },
-              typography: { $type: "typography", $value: "{typography.paragraph.p3}" },
+              typography: { $type: "typography", $value: "{typography.body.medium}" },
             },
             md: {
               height: { $type: "dimension", $value: "56px" },
               paddingX: { $type: "spacing", $value: "{spacing.scale.4}" },
               paddingY: { $type: "spacing", $value: "0px" },
               radius: { $type: "radius", $value: "{radius.scale.5}" },
-              typography: { $type: "typography", $value: "{typography.paragraph.p2}" },
+              typography: { $type: "typography", $value: "{typography.body.xlarge}" },
             },
             lg: {
               height: { $type: "dimension", $value: "66px" },
               paddingX: { $type: "spacing", $value: "{spacing.scale.5}" },
               paddingY: { $type: "spacing", $value: "0px" },
               radius: { $type: "radius", $value: "{radius.scale.6}" },
-              typography: { $type: "typography", $value: "{typography.paragraph.p1}" },
+              typography: { $type: "typography", $value: "{typography.body.xlarge}" },
             },
           },
         },
@@ -907,21 +876,20 @@ export const legacyTokenDocuments: TokenDocument[] = [
         Object.entries(typographyMixins).map(([group, entries]) => [
           group,
           Object.fromEntries(
-            entries.map(([name, size, weight, mobile, lineHeight]) => [
+            entries.map(([name, fontSize, weight, lineHeight]) => [
               name,
               {
                 $type: "typography",
                 $value: {
                   fontFamily: "Pretendard",
-                  fontSize: size,
+                  fontSize,
                   lineHeight,
                   fontWeight: weight,
                   letterSpacing: "0px",
-                  paragraphSpacing: "0px",
                 },
-                $description: `v1 ${name} mixin; mobile font-size ${mobile}.`,
+                $description: `Figma ${group} ${name} type style.`,
                 $extensions: {
-                  podo: { themeable: true, scope: "theme", roles: ["typography", group, name] },
+                  podo: { themeable: true, scope: "semantic", roles: ["typography", group, name] },
                 },
               },
             ])
@@ -1356,7 +1324,7 @@ export const legacyComponents: ComponentDocument[] = [
     states: [{ name: "selected", tokens: { "tab.color": "{color.primary.base}" } }],
     tokens: {
       ...legacyBaseComponentTokens(),
-      "tab.typography": "{typography.paragraph.p3}",
+      "tab.typography": "{typography.body.medium}",
       "panel.padding": "{spacing.scale.5}",
     },
     accessibility: {
@@ -1395,7 +1363,7 @@ export const legacyComponents: ComponentDocument[] = [
       ...legacyBaseComponentTokens(),
       "toolbar.background": "{color.bg.elevation}",
       "content.minHeight": "{spacing.scale.13}",
-      "content.typography": "{typography.paragraph.p3}",
+      "content.typography": "{typography.body.medium}",
     },
     accessibility: {
       aria: ["aria-label", "aria-invalid"],
@@ -1433,9 +1401,9 @@ export const legacyComponents: ComponentDocument[] = [
     tokens: {
       // v1 Field column gap is s(3)=8px.
       "root.gap": "{spacing.scale.3}",
-      "label.typography": "{typography.paragraph.p4}",
+      "label.typography": "{typography.body.small}",
       "label.color": "{color.text.body}",
-      "message.typography": "{typography.paragraph.p4}",
+      "message.typography": "{typography.body.small}",
       "message.color": "{color.text.sub}",
     },
     accessibility: { aria: ["aria-describedby", "aria-invalid", "aria-required"], keyboard: [] },
@@ -1466,7 +1434,7 @@ export const legacyComponents: ComponentDocument[] = [
       "root.borderColor": "{color.border.disabled}",
       "button.background": "{color.default-deep.base}",
       "button.color": "{color.default-deep.reverse}",
-      "button.typography": "{typography.paragraph.p3}",
+      "button.typography": "{typography.body.medium}",
     },
     accessibility: { aria: ["aria-disabled"], keyboard: ["Enter opens file picker"] },
     examples: [{ target: "react", title: "File", code: '<File accept="image/*" multiple />' }],
@@ -1536,7 +1504,7 @@ export const legacyComponents: ComponentDocument[] = [
     states: [{ name: "disabled", tokens: { "root.color": "{color.text.action-disabled}" } }],
     tokens: {
       ...legacyBaseComponentTokens(),
-      "root.typography": "{typography.paragraph.p4}",
+      "root.typography": "{typography.body.small}",
       "required-mark.color": "{color.danger.base}",
     },
     accessibility: { aria: ["for"], keyboard: [] },
@@ -1565,7 +1533,7 @@ export const legacyComponents: ComponentDocument[] = [
       ...legacyBaseComponentTokens(),
       "page-button.size": "{spacing.scale.8}",
       "page-button.radius": "{radius.scale.2}",
-      "page-button.typography": "{typography.paragraph.p3}",
+      "page-button.typography": "{typography.body.medium}",
     },
     accessibility: {
       role: "navigation",
@@ -1642,7 +1610,7 @@ export const legacyComponents: ComponentDocument[] = [
     tokens: {
       ...legacyBaseComponentTokens(),
       "tab.paddingX": "{spacing.scale.5}",
-      "tab.typography": "{typography.paragraph.p3}",
+      "tab.typography": "{typography.body.medium}",
       "panel.padding": "{spacing.scale.5}",
     },
     accessibility: {
@@ -1678,7 +1646,7 @@ export const legacyComponents: ComponentDocument[] = [
     tokens: {
       ...legacyBaseComponentTokens(),
       "header.background": "{color.bg.elevation}",
-      "header.typography": "{typography.paragraph.p3}",
+      "header.typography": "{typography.body.medium}",
       "cell.paddingX": "{spacing.scale.4}",
       "cell.paddingY": "{spacing.scale.3}",
     },
@@ -1794,8 +1762,8 @@ export const legacyComponents: ComponentDocument[] = [
       // Toast surface colors (theme) come from the v1 .toast classes; binding
       // toast.background/borderColor here froze the single preview on default.
       "toast.shadowColor": "{color.border.alpha}",
-      "header.typography": "{typography.paragraph.p3-semibold}",
-      "message.typography": "{typography.paragraph.p3}",
+      "header.typography": "{typography.body.medium-bold}",
+      "message.typography": "{typography.body.medium}",
     },
     accessibility: {
       role: "status",

@@ -1,5 +1,6 @@
 import type { Glyph, Path } from "opentype.js";
 import { ICON_FONT_ASCENDER, ICON_FONT_DESCENDER, ICON_FONT_UNITS_PER_EM } from "./constants.js";
+import { svgToFillPathData } from "./stroke.js";
 
 export interface ViewBox {
   minX: number;
@@ -237,7 +238,9 @@ export async function buildIconFontTtf(input: {
 
   for (const icon of ordered) {
     const viewBox = parseSvgViewBox(icon.svg);
-    const pathData = extractSvgPathData(icon.svg);
+    // Expand strokes to fills (and even-odd holes to nonzero) so stroke-authored
+    // icons render in the font; pure nonzero fill paths pass through unchanged.
+    const pathData = svgToFillPathData(icon.svg);
     const glyphPath = pathDataToGlyphPath(pathData, viewBox, new opentype.Path());
     glyphs.push(
       new opentype.Glyph({

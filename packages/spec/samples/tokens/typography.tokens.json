@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.0.0",
   "kind": "tokens",
-  "category": "theme",
+  "category": "semantic",
   "tokens": {
     "font": {
       "family": {
@@ -27,82 +27,241 @@
       }
     },
     "typography": {
-      "h1": {
-        "landing": {
+      "display": {
+        "xlarge": {
           "$type": "typography",
           "$value": {
             "fontFamily": "{font.family.sans}",
-            "fontSize": "64px",
-            "lineHeight": "72px",
+            "fontSize": { "pc": "60px", "tablet": "48px", "mobile": "36px" },
+            "lineHeight": "120%",
             "fontWeight": 700,
-            "letterSpacing": "0px",
-            "paragraphSpacing": "24px"
+            "letterSpacing": "0px"
           },
-          "$description": "Landing page h1 typography.",
-          "$extensions": {
-            "podo": {
-              "themeable": true,
-              "roles": ["heading", "landing"],
-              "scope": "theme"
-            }
-          }
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["display", "xlarge"] } }
         },
-        "dashboard": {
+        "large": {
           "$type": "typography",
           "$value": {
             "fontFamily": "{font.family.sans}",
-            "fontSize": "28px",
-            "lineHeight": "36px",
-            "fontWeight": 600,
-            "letterSpacing": "0px",
-            "paragraphSpacing": "12px"
+            "fontSize": { "pc": "52px", "tablet": "42px", "mobile": "32px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
           },
-          "$description": "Dashboard h1 typography.",
-          "$extensions": {
-            "podo": {
-              "themeable": true,
-              "roles": ["heading", "dashboard"],
-              "scope": "theme"
-            }
-          }
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["display", "large"] } }
+        },
+        "medium": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "44px", "tablet": "36px", "mobile": "28px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["display", "medium"] } }
+        },
+        "small": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "38px", "tablet": "34px", "mobile": "26px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["display", "small"] } }
+        },
+        "xsmall": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "34px", "tablet": "30px", "mobile": "24px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["display", "xsmall"] } }
+        }
+      },
+      "heading": {
+        "xlarge": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "32px", "tablet": "28px", "mobile": "24px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["heading", "xlarge"] } }
+        },
+        "large": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "28px", "tablet": "24px", "mobile": "20px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["heading", "large"] } }
+        },
+        "medium": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "24px", "tablet": "20px", "mobile": "18px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["heading", "medium"] } }
+        },
+        "small": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "20px", "tablet": "18px", "mobile": "16px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["heading", "small"] } }
+        },
+        "xsmall": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "16px", "tablet": "16px", "mobile": "14px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["heading", "xsmall"] } }
+        },
+        "xxsmall": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "14px", "tablet": "14px", "mobile": "13px" },
+            "lineHeight": "120%",
+            "fontWeight": 700,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["heading", "xxsmall"] } }
         }
       },
       "body": {
-        "landing": {
+        "xlarge": {
           "$type": "typography",
           "$value": {
             "fontFamily": "{font.family.sans}",
-            "fontSize": "20px",
-            "lineHeight": "32px",
+            "fontSize": { "pc": "20px", "tablet": "20px", "mobile": "18px" },
+            "lineHeight": "150%",
             "fontWeight": 400,
-            "letterSpacing": "0px",
-            "paragraphSpacing": "16px"
+            "letterSpacing": "0px"
           },
-          "$extensions": {
-            "podo": {
-              "themeable": true,
-              "roles": ["body", "landing"],
-              "scope": "theme"
-            }
-          }
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "xlarge"] } }
         },
-        "dashboard": {
+        "xlarge-bold": {
           "$type": "typography",
           "$value": {
             "fontFamily": "{font.family.sans}",
-            "fontSize": "14px",
-            "lineHeight": "20px",
-            "fontWeight": 400,
-            "letterSpacing": "0px",
-            "paragraphSpacing": "8px"
+            "fontSize": { "pc": "20px", "tablet": "20px", "mobile": "18px" },
+            "lineHeight": "150%",
+            "fontWeight": 600,
+            "letterSpacing": "0px"
           },
-          "$extensions": {
-            "podo": {
-              "themeable": true,
-              "roles": ["body", "dashboard"],
-              "scope": "theme"
-            }
-          }
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "xlarge", "bold"] } }
+        },
+        "large": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "18px", "tablet": "18px", "mobile": "16px" },
+            "lineHeight": "160%",
+            "fontWeight": 400,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "large"] } }
+        },
+        "large-bold": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "18px", "tablet": "18px", "mobile": "16px" },
+            "lineHeight": "160%",
+            "fontWeight": 600,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "large", "bold"] } }
+        },
+        "medium": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "16px", "tablet": "16px", "mobile": "14px" },
+            "lineHeight": "160%",
+            "fontWeight": 400,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "medium"] } }
+        },
+        "medium-bold": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "16px", "tablet": "16px", "mobile": "14px" },
+            "lineHeight": "160%",
+            "fontWeight": 600,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "medium", "bold"] } }
+        },
+        "small": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "14px", "tablet": "14px", "mobile": "13px" },
+            "lineHeight": "160%",
+            "fontWeight": 400,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "small"] } }
+        },
+        "small-bold": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "14px", "tablet": "14px", "mobile": "13px" },
+            "lineHeight": "160%",
+            "fontWeight": 600,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "small", "bold"] } }
+        },
+        "xsmall": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "13px", "tablet": "13px", "mobile": "12px" },
+            "lineHeight": "160%",
+            "fontWeight": 400,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "xsmall"] } }
+        },
+        "xsmall-bold": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.sans}",
+            "fontSize": { "pc": "13px", "tablet": "13px", "mobile": "12px" },
+            "lineHeight": "160%",
+            "fontWeight": 600,
+            "letterSpacing": "0px"
+          },
+          "$extensions": { "podo": { "scope": "semantic", "roles": ["body", "xsmall", "bold"] } }
         }
       }
     }

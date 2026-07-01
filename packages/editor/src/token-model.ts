@@ -66,8 +66,10 @@ export interface ColorComparisonMatrixModel {
  * stripped) so they line up in the same row/column. See report.md theming model.
  */
 export function createColorComparisonMatrix(
-  records: EditorTokenRecord[]
+  records: EditorTokenRecord[],
+  options: { include?: "basic" | "base" | "all" } = {}
 ): ColorComparisonMatrixModel {
+  const include = options.include ?? "all";
   const columns: string[] = [];
   const rows = new Map<string, ColorComparisonRow>();
   let totalRecords = 0;
@@ -81,6 +83,12 @@ export function createColorComparisonMatrix(
       continue;
     }
     const neutralPath = isDark ? record.path.slice("dark.".length) : record.path;
+    // Basic colors ("기본 컬러") and the base palette ("베이스 컬러") are managed in
+    // separate sections, so each matrix takes only its own kind.
+    const isBase = isBaseColorTokenPath(neutralPath);
+    if ((include === "basic" && isBase) || (include === "base" && !isBase)) {
+      continue;
+    }
     const parentPath = tokenParentPath(neutralPath);
     const column = tokenVariationName(neutralPath);
     if (!columns.includes(column)) {
@@ -103,9 +111,23 @@ export function createColorComparisonMatrix(
   }
   return {
     columns: sortTokenMatrixColumns(columns, "color"),
-    rows: [...rows.values()],
+    // Base palette ("베이스 컬러") is managed separately: its color sets sort below
+    // the basic colors so they read as a distinct group at the bottom of the editor.
+    rows: [...rows.values()].sort(
+      (a, b) => Number(isBaseColorTokenPath(a.id)) - Number(isBaseColorTokenPath(b.id))
+    ),
     totalRecords,
   };
+}
+
+/**
+ * Whether a color token belongs to the base palette ("베이스 컬러" — the raw colors
+ * the basic colors are built from), identified by a `color.base.*` path. Used to
+ * keep base colors grouped after the basic colors in the editor and the picker.
+ */
+export function isBaseColorTokenPath(path: string): boolean {
+  const neutral = path.startsWith("dark.") ? path.slice("dark.".length) : path;
+  return neutral.startsWith("color.base.");
 }
 
 /** Derive the dark counterpart path for a light color path (and vice versa). */
@@ -123,9 +145,14 @@ export interface ComponentTokenEditorModel {
   groups: Array<{ type: DesignToken["$type"]; records: EditorTokenRecord[] }>;
 }
 
+// fontSize is responsive: the base field edits the pc value; `fontSize.tablet` /
+// `fontSize.mobile` edit the breakpoint overrides (dotted so the commit handler
+// stays a single `(record, field, value)` signature).
 export type TypographyTokenField =
   | "fontFamily"
   | "fontSize"
+  | "fontSize.tablet"
+  | "fontSize.mobile"
   | "lineHeight"
   | "fontWeight"
   | "letterSpacing"
@@ -293,21 +320,53 @@ const colorMatrixColumnOrder = [
   "elevation",
 ] as const;
 
-export function groupTokenRecordsByType(records: EditorTokenRecord[]): Array<{
+export interface TokenTypeGroup {
   type: DesignToken["$type"];
   label: string;
   count: number;
   sections: Array<{ parentPath: string; records: EditorTokenRecord[] }>;
-}> {
+  // Set on the base-palette ("base color") group so it is a distinct sidebar entry
+  // from the basic "color" group even though both are $type "color".
+  view?: "baseColor";
+}
+
+export function groupTokenRecordsByType(records: EditorTokenRecord[]): TokenTypeGroup[] {
   const buckets = new Map<DesignToken["$type"], EditorTokenRecord[]>();
   for (const record of records) {
     const bucket = buckets.get(record.token.$type) ?? [];
     bucket.push(record);
     buckets.set(record.token.$type, bucket);
   }
-  return editorTokenTypes.flatMap((type) => {
+  return editorTokenTypes.flatMap((type): TokenTypeGroup[] => {
     if (type === "fontFamily" || type === "fontWeight") {
       return [];
+    }
+    if (type === "color") {
+      // "color" (basic) and "base color" are completely separate token entries.
+      const colorRecords = buckets.get("color") ?? [];
+      const basic = colorRecords.filter((record) => !isBaseColorTokenPath(record.path));
+      const base = colorRecords.filter((record) => isBaseColorTokenPath(record.path));
+      // Base color leads the sidebar (it is the foundation the basic colors are
+      // built from); the basic "color" entry follows.
+      const groups: TokenTypeGroup[] = [];
+      if (base.length) {
+        groups.push({
+          type: "color",
+          label: "base color",
+          view: "baseColor",
+          count: base.length,
+          sections: groupTokenRecordsByParentPath(base),
+        });
+      }
+      if (basic.length) {
+        groups.push({
+          type: "color",
+          label: "color",
+          count: basic.length,
+          sections: groupTokenRecordsByParentPath(basic),
+        });
+      }
+      return groups;
     }
     const typedRecords =
       type === "typography"

@@ -118,9 +118,24 @@ export const tokenExtensionsSchema = z
   })
   .catchall(z.unknown());
 
+// A size that can vary by breakpoint. `pc` (desktop) is the base/required value;
+// `tablet`/`mobile` are optional overrides emitted as CSS media queries. A plain
+// unit string stays valid, so non-responsive sizes need no change.
+export const responsiveDimensionSchema = z.object({
+  pc: unitValueSchema,
+  tablet: unitValueSchema.optional(),
+  mobile: unitValueSchema.optional(),
+});
+
+const responsiveOrUnitSchema = z.union([unitValueSchema, responsiveDimensionSchema]);
+
+export type ResponsiveDimension = z.infer<typeof responsiveDimensionSchema>;
+
 export const typographyValueSchema = z.object({
   fontFamily: z.string().min(1),
-  fontSize: unitValueSchema,
+  // Type scale is responsive (pc/tablet/mobile); other metrics are not — line
+  // height is a percentage that scales with the font size at every breakpoint.
+  fontSize: responsiveOrUnitSchema,
   lineHeight: unitValueSchema,
   fontWeight: z.union([z.number().int().min(1), z.string().min(1)]),
   letterSpacing: unitValueSchema,

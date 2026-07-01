@@ -3,6 +3,1238 @@
 exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > json-bundle 1`] = `
 "{
   "tokens": {
+    "color.base.red.5": {
+      "path": "color.base.red.5",
+      "type": "color",
+      "value": "#FEF1F1",
+      "rawValue": "#FEF1F1",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.red.10": {
+      "path": "color.base.red.10",
+      "type": "color",
+      "value": "#FFE0DF",
+      "rawValue": "#FFE0DF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.red.20": {
+      "path": "color.base.red.20",
+      "type": "color",
+      "value": "#FFADAD",
+      "rawValue": "#FFADAD",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.red.30": {
+      "path": "color.base.red.30",
+      "type": "color",
+      "value": "#FF8985",
+      "rawValue": "#FF8985",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.red.40": {
+      "path": "color.base.red.40",
+      "type": "color",
+      "value": "#F56666",
+      "rawValue": "#F56666",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.red.50": {
+      "path": "color.base.red.50",
+      "type": "color",
+      "value": "#F23B3B",
+      "rawValue": "#F23B3B",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.red.60": {
+      "path": "color.base.red.60",
+      "type": "color",
+      "value": "#EE1818",
+      "rawValue": "#EE1818",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.red.70": {
+      "path": "color.base.red.70",
+      "type": "color",
+      "value": "#CD0404",
+      "rawValue": "#CD0404",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.red.80": {
+      "path": "color.base.red.80",
+      "type": "color",
+      "value": "#8F0000",
+      "rawValue": "#8F0000",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.red.90": {
+      "path": "color.base.red.90",
+      "type": "color",
+      "value": "#5F0000",
+      "rawValue": "#5F0000",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.5": {
+      "path": "color.base.rose.5",
+      "type": "color",
+      "value": "#FEF1F2",
+      "rawValue": "#FEF1F2",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.10": {
+      "path": "color.base.rose.10",
+      "type": "color",
+      "value": "#FCD9DC",
+      "rawValue": "#FCD9DC",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.20": {
+      "path": "color.base.rose.20",
+      "type": "color",
+      "value": "#FAB7BD",
+      "rawValue": "#FAB7BD",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.30": {
+      "path": "color.base.rose.30",
+      "type": "color",
+      "value": "#F8969E",
+      "rawValue": "#F8969E",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.40": {
+      "path": "color.base.rose.40",
+      "type": "color",
+      "value": "#F66F7A",
+      "rawValue": "#F66F7A",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.50": {
+      "path": "color.base.rose.50",
+      "type": "color",
+      "value": "#F15764",
+      "rawValue": "#F15764",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.60": {
+      "path": "color.base.rose.60",
+      "type": "color",
+      "value": "#D63D4A",
+      "rawValue": "#D63D4A",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.70": {
+      "path": "color.base.rose.70",
+      "type": "color",
+      "value": "#BF3742",
+      "rawValue": "#BF3742",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.80": {
+      "path": "color.base.rose.80",
+      "type": "color",
+      "value": "#992C35",
+      "rawValue": "#992C35",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.rose.90": {
+      "path": "color.base.rose.90",
+      "type": "color",
+      "value": "#732128",
+      "rawValue": "#732128",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.5": {
+      "path": "color.base.green.5",
+      "type": "color",
+      "value": "#ECF8EF",
+      "rawValue": "#ECF8EF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.10": {
+      "path": "color.base.green.10",
+      "type": "color",
+      "value": "#C5E9CD",
+      "rawValue": "#C5E9CD",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.20": {
+      "path": "color.base.green.20",
+      "type": "color",
+      "value": "#A9DEB4",
+      "rawValue": "#A9DEB4",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.30": {
+      "path": "color.base.green.30",
+      "type": "color",
+      "value": "#81CF92",
+      "rawValue": "#81CF92",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.40": {
+      "path": "color.base.green.40",
+      "type": "color",
+      "value": "#57C16F",
+      "rawValue": "#57C16F",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.50": {
+      "path": "color.base.green.50",
+      "type": "color",
+      "value": "#3EA856",
+      "rawValue": "#3EA856",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.60": {
+      "path": "color.base.green.60",
+      "type": "color",
+      "value": "#38994E",
+      "rawValue": "#38994E",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.70": {
+      "path": "color.base.green.70",
+      "type": "color",
+      "value": "#308242",
+      "rawValue": "#308242",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.80": {
+      "path": "color.base.green.80",
+      "type": "color",
+      "value": "#256533",
+      "rawValue": "#256533",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.green.90": {
+      "path": "color.base.green.90",
+      "type": "color",
+      "value": "#1C4D27",
+      "rawValue": "#1C4D27",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.5": {
+      "path": "color.base.gold.5",
+      "type": "color",
+      "value": "#FFF7E6",
+      "rawValue": "#FFF7E6",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.10": {
+      "path": "color.base.gold.10",
+      "type": "color",
+      "value": "#FFEBC2",
+      "rawValue": "#FFEBC2",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.20": {
+      "path": "color.base.gold.20",
+      "type": "color",
+      "value": "#FFD88A",
+      "rawValue": "#FFD88A",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.30": {
+      "path": "color.base.gold.30",
+      "type": "color",
+      "value": "#FFC654",
+      "rawValue": "#FFC654",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.40": {
+      "path": "color.base.gold.40",
+      "type": "color",
+      "value": "#FFBB33",
+      "rawValue": "#FFBB33",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.50": {
+      "path": "color.base.gold.50",
+      "type": "color",
+      "value": "#FFAA00",
+      "rawValue": "#FFAA00",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.60": {
+      "path": "color.base.gold.60",
+      "type": "color",
+      "value": "#E89B00",
+      "rawValue": "#E89B00",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.70": {
+      "path": "color.base.gold.70",
+      "type": "color",
+      "value": "#B57900",
+      "rawValue": "#B57900",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.80": {
+      "path": "color.base.gold.80",
+      "type": "color",
+      "value": "#8C5E00",
+      "rawValue": "#8C5E00",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gold.90": {
+      "path": "color.base.gold.90",
+      "type": "color",
+      "value": "#6B4700",
+      "rawValue": "#6B4700",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.5": {
+      "path": "color.base.orange.5",
+      "type": "color",
+      "value": "#FFF4F0",
+      "rawValue": "#FFF4F0",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.10": {
+      "path": "color.base.orange.10",
+      "type": "color",
+      "value": "#FFDACC",
+      "rawValue": "#FFDACC",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.20": {
+      "path": "color.base.orange.20",
+      "type": "color",
+      "value": "#FFB599",
+      "rawValue": "#FFB599",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.30": {
+      "path": "color.base.orange.30",
+      "type": "color",
+      "value": "#FE9975",
+      "rawValue": "#FE9975",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.40": {
+      "path": "color.base.orange.40",
+      "type": "color",
+      "value": "#FE8052",
+      "rawValue": "#FE8052",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.50": {
+      "path": "color.base.orange.50",
+      "type": "color",
+      "value": "#FF6A33",
+      "rawValue": "#FF6A33",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.60": {
+      "path": "color.base.orange.60",
+      "type": "color",
+      "value": "#FF5212",
+      "rawValue": "#FF5212",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.70": {
+      "path": "color.base.orange.70",
+      "type": "color",
+      "value": "#DB3B00",
+      "rawValue": "#DB3B00",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.80": {
+      "path": "color.base.orange.80",
+      "type": "color",
+      "value": "#992900",
+      "rawValue": "#992900",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.orange.90": {
+      "path": "color.base.orange.90",
+      "type": "color",
+      "value": "#661C00",
+      "rawValue": "#661C00",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.5": {
+      "path": "color.base.blue.5",
+      "type": "color",
+      "value": "#EBF5FF",
+      "rawValue": "#EBF5FF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.10": {
+      "path": "color.base.blue.10",
+      "type": "color",
+      "value": "#C7E3FF",
+      "rawValue": "#C7E3FF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.20": {
+      "path": "color.base.blue.20",
+      "type": "color",
+      "value": "#8FC8FF",
+      "rawValue": "#8FC8FF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.30": {
+      "path": "color.base.blue.30",
+      "type": "color",
+      "value": "#70B9FF",
+      "rawValue": "#70B9FF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.40": {
+      "path": "color.base.blue.40",
+      "type": "color",
+      "value": "#56ACFF",
+      "rawValue": "#56ACFF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.50": {
+      "path": "color.base.blue.50",
+      "type": "color",
+      "value": "#0095FF",
+      "rawValue": "#0095FF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.60": {
+      "path": "color.base.blue.60",
+      "type": "color",
+      "value": "#0074E5",
+      "rawValue": "#0074E5",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.70": {
+      "path": "color.base.blue.70",
+      "type": "color",
+      "value": "#0056AA",
+      "rawValue": "#0056AA",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.80": {
+      "path": "color.base.blue.80",
+      "type": "color",
+      "value": "#00407F",
+      "rawValue": "#00407F",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.blue.90": {
+      "path": "color.base.blue.90",
+      "type": "color",
+      "value": "#002B55",
+      "rawValue": "#002B55",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.5": {
+      "path": "color.base.royal-blue.5",
+      "type": "color",
+      "value": "#F1F4FD",
+      "rawValue": "#F1F4FD",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.10": {
+      "path": "color.base.royal-blue.10",
+      "type": "color",
+      "value": "#D0DBFB",
+      "rawValue": "#D0DBFB",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.20": {
+      "path": "color.base.royal-blue.20",
+      "type": "color",
+      "value": "#ABBEF7",
+      "rawValue": "#ABBEF7",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.30": {
+      "path": "color.base.royal-blue.30",
+      "type": "color",
+      "value": "#819EF3",
+      "rawValue": "#819EF3",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.40": {
+      "path": "color.base.royal-blue.40",
+      "type": "color",
+      "value": "#577DEF",
+      "rawValue": "#577DEF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.50": {
+      "path": "color.base.royal-blue.50",
+      "type": "color",
+      "value": "#426CED",
+      "rawValue": "#426CED",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.60": {
+      "path": "color.base.royal-blue.60",
+      "type": "color",
+      "value": "#1245E2",
+      "rawValue": "#1245E2",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.70": {
+      "path": "color.base.royal-blue.70",
+      "type": "color",
+      "value": "#123BBA",
+      "rawValue": "#123BBA",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.80": {
+      "path": "color.base.royal-blue.80",
+      "type": "color",
+      "value": "#0D2C8B",
+      "rawValue": "#0D2C8B",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.royal-blue.90": {
+      "path": "color.base.royal-blue.90",
+      "type": "color",
+      "value": "#091D5D",
+      "rawValue": "#091D5D",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.5": {
+      "path": "color.base.classic-blue.5",
+      "type": "color",
+      "value": "#F5F9FF",
+      "rawValue": "#F5F9FF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.10": {
+      "path": "color.base.classic-blue.10",
+      "type": "color",
+      "value": "#E6F0FE",
+      "rawValue": "#E6F0FE",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.20": {
+      "path": "color.base.classic-blue.20",
+      "type": "color",
+      "value": "#CEE2FD",
+      "rawValue": "#CEE2FD",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.30": {
+      "path": "color.base.classic-blue.30",
+      "type": "color",
+      "value": "#A0C2EE",
+      "rawValue": "#A0C2EE",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.40": {
+      "path": "color.base.classic-blue.40",
+      "type": "color",
+      "value": "#76A0D8",
+      "rawValue": "#76A0D8",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.50": {
+      "path": "color.base.classic-blue.50",
+      "type": "color",
+      "value": "#4A78B5",
+      "rawValue": "#4A78B5",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.60": {
+      "path": "color.base.classic-blue.60",
+      "type": "color",
+      "value": "#34547E",
+      "rawValue": "#34547E",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.70": {
+      "path": "color.base.classic-blue.70",
+      "type": "color",
+      "value": "#2D486C",
+      "rawValue": "#2D486C",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.80": {
+      "path": "color.base.classic-blue.80",
+      "type": "color",
+      "value": "#253C5A",
+      "rawValue": "#253C5A",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.classic-blue.90": {
+      "path": "color.base.classic-blue.90",
+      "type": "color",
+      "value": "#1E3048",
+      "rawValue": "#1E3048",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.0": {
+      "path": "color.base.gray.0",
+      "type": "color",
+      "value": "#FFFFFF",
+      "rawValue": "#FFFFFF",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.5": {
+      "path": "color.base.gray.5",
+      "type": "color",
+      "value": "#F9F9F9",
+      "rawValue": "#F9F9F9",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.10": {
+      "path": "color.base.gray.10",
+      "type": "color",
+      "value": "#F4F4F5",
+      "rawValue": "#F4F4F5",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.20": {
+      "path": "color.base.gray.20",
+      "type": "color",
+      "value": "#E4E4E7",
+      "rawValue": "#E4E4E7",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.30": {
+      "path": "color.base.gray.30",
+      "type": "color",
+      "value": "#D1D2D6",
+      "rawValue": "#D1D2D6",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.40": {
+      "path": "color.base.gray.40",
+      "type": "color",
+      "value": "#9FA2AD",
+      "rawValue": "#9FA2AD",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.50": {
+      "path": "color.base.gray.50",
+      "type": "color",
+      "value": "#767985",
+      "rawValue": "#767985",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.60": {
+      "path": "color.base.gray.60",
+      "type": "color",
+      "value": "#50555E",
+      "rawValue": "#50555E",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.70": {
+      "path": "color.base.gray.70",
+      "type": "color",
+      "value": "#3E424B",
+      "rawValue": "#3E424B",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.80": {
+      "path": "color.base.gray.80",
+      "type": "color",
+      "value": "#27272A",
+      "rawValue": "#27272A",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.90": {
+      "path": "color.base.gray.90",
+      "type": "color",
+      "value": "#18181B",
+      "rawValue": "#18181B",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.gray.100": {
+      "path": "color.base.gray.100",
+      "type": "color",
+      "value": "#000000",
+      "rawValue": "#000000",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.5": {
+      "path": "color.base.alpha-white.5",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.05)",
+      "rawValue": "rgba(255, 255, 255, 0.05)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.10": {
+      "path": "color.base.alpha-white.10",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.1)",
+      "rawValue": "rgba(255, 255, 255, 0.1)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.20": {
+      "path": "color.base.alpha-white.20",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.25)",
+      "rawValue": "rgba(255, 255, 255, 0.25)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.30": {
+      "path": "color.base.alpha-white.30",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.3)",
+      "rawValue": "rgba(255, 255, 255, 0.3)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.40": {
+      "path": "color.base.alpha-white.40",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.4)",
+      "rawValue": "rgba(255, 255, 255, 0.4)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.50": {
+      "path": "color.base.alpha-white.50",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.5)",
+      "rawValue": "rgba(255, 255, 255, 0.5)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.60": {
+      "path": "color.base.alpha-white.60",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.6)",
+      "rawValue": "rgba(255, 255, 255, 0.6)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.70": {
+      "path": "color.base.alpha-white.70",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.7)",
+      "rawValue": "rgba(255, 255, 255, 0.7)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.80": {
+      "path": "color.base.alpha-white.80",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.8)",
+      "rawValue": "rgba(255, 255, 255, 0.8)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-white.90": {
+      "path": "color.base.alpha-white.90",
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.9)",
+      "rawValue": "rgba(255, 255, 255, 0.9)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.5": {
+      "path": "color.base.alpha-black.5",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.05)",
+      "rawValue": "rgba(0, 0, 0, 0.05)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.10": {
+      "path": "color.base.alpha-black.10",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.1)",
+      "rawValue": "rgba(0, 0, 0, 0.1)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.20": {
+      "path": "color.base.alpha-black.20",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.25)",
+      "rawValue": "rgba(0, 0, 0, 0.25)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.30": {
+      "path": "color.base.alpha-black.30",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.3)",
+      "rawValue": "rgba(0, 0, 0, 0.3)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.40": {
+      "path": "color.base.alpha-black.40",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.4)",
+      "rawValue": "rgba(0, 0, 0, 0.4)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.50": {
+      "path": "color.base.alpha-black.50",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.5)",
+      "rawValue": "rgba(0, 0, 0, 0.5)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.60": {
+      "path": "color.base.alpha-black.60",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.6)",
+      "rawValue": "rgba(0, 0, 0, 0.6)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.70": {
+      "path": "color.base.alpha-black.70",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.7)",
+      "rawValue": "rgba(0, 0, 0, 0.7)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.80": {
+      "path": "color.base.alpha-black.80",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.8)",
+      "rawValue": "rgba(0, 0, 0, 0.8)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
+    "color.base.alpha-black.90": {
+      "path": "color.base.alpha-black.90",
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.9)",
+      "rawValue": "rgba(0, 0, 0, 0.9)",
+      "references": [],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+        "tier": "package"
+      }
+    },
     "color.palette.purple.600": {
       "path": "color.palette.purple.600",
       "type": "color",
@@ -333,24 +1565,30 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
         "tier": "package"
       }
     },
-    "typography.h1.landing": {
-      "path": "typography.h1.landing",
+    "typography.display.xlarge": {
+      "path": "typography.display.xlarge",
       "type": "typography",
       "value": {
         "fontFamily": "Pretendard",
-        "fontSize": "64px",
-        "lineHeight": "72px",
+        "fontSize": {
+          "pc": "60px",
+          "tablet": "48px",
+          "mobile": "36px"
+        },
+        "lineHeight": "120%",
         "fontWeight": 700,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "24px"
+        "letterSpacing": "0px"
       },
       "rawValue": {
         "fontFamily": "{font.family.sans}",
-        "fontSize": "64px",
-        "lineHeight": "72px",
+        "fontSize": {
+          "pc": "60px",
+          "tablet": "48px",
+          "mobile": "36px"
+        },
+        "lineHeight": "120%",
         "fontWeight": 700,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "24px"
+        "letterSpacing": "0px"
       },
       "references": [
         "font.family.sans"
@@ -360,24 +1598,393 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
         "tier": "package"
       }
     },
-    "typography.h1.dashboard": {
-      "path": "typography.h1.dashboard",
+    "typography.display.large": {
+      "path": "typography.display.large",
       "type": "typography",
       "value": {
         "fontFamily": "Pretendard",
-        "fontSize": "28px",
-        "lineHeight": "36px",
+        "fontSize": {
+          "pc": "52px",
+          "tablet": "42px",
+          "mobile": "32px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "52px",
+          "tablet": "42px",
+          "mobile": "32px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.display.medium": {
+      "path": "typography.display.medium",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "44px",
+          "tablet": "36px",
+          "mobile": "28px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "44px",
+          "tablet": "36px",
+          "mobile": "28px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.display.small": {
+      "path": "typography.display.small",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "38px",
+          "tablet": "34px",
+          "mobile": "26px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "38px",
+          "tablet": "34px",
+          "mobile": "26px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.display.xsmall": {
+      "path": "typography.display.xsmall",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "34px",
+          "tablet": "30px",
+          "mobile": "24px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "34px",
+          "tablet": "30px",
+          "mobile": "24px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.heading.xlarge": {
+      "path": "typography.heading.xlarge",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "32px",
+          "tablet": "28px",
+          "mobile": "24px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "32px",
+          "tablet": "28px",
+          "mobile": "24px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.heading.large": {
+      "path": "typography.heading.large",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "28px",
+          "tablet": "24px",
+          "mobile": "20px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "28px",
+          "tablet": "24px",
+          "mobile": "20px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.heading.medium": {
+      "path": "typography.heading.medium",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "24px",
+          "tablet": "20px",
+          "mobile": "18px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "24px",
+          "tablet": "20px",
+          "mobile": "18px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.heading.small": {
+      "path": "typography.heading.small",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "20px",
+          "tablet": "18px",
+          "mobile": "16px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "20px",
+          "tablet": "18px",
+          "mobile": "16px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.heading.xsmall": {
+      "path": "typography.heading.xsmall",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "16px",
+          "tablet": "16px",
+          "mobile": "14px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "16px",
+          "tablet": "16px",
+          "mobile": "14px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.heading.xxsmall": {
+      "path": "typography.heading.xxsmall",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "14px",
+          "tablet": "14px",
+          "mobile": "13px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "14px",
+          "tablet": "14px",
+          "mobile": "13px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.xlarge": {
+      "path": "typography.body.xlarge",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "20px",
+          "tablet": "20px",
+          "mobile": "18px"
+        },
+        "lineHeight": "150%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "20px",
+          "tablet": "20px",
+          "mobile": "18px"
+        },
+        "lineHeight": "150%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.xlarge-bold": {
+      "path": "typography.body.xlarge-bold",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "20px",
+          "tablet": "20px",
+          "mobile": "18px"
+        },
+        "lineHeight": "150%",
         "fontWeight": 600,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "12px"
+        "letterSpacing": "0px"
       },
       "rawValue": {
         "fontFamily": "{font.family.sans}",
-        "fontSize": "28px",
-        "lineHeight": "36px",
+        "fontSize": {
+          "pc": "20px",
+          "tablet": "20px",
+          "mobile": "18px"
+        },
+        "lineHeight": "150%",
         "fontWeight": 600,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "12px"
+        "letterSpacing": "0px"
       },
       "references": [
         "font.family.sans"
@@ -387,24 +1994,30 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
         "tier": "package"
       }
     },
-    "typography.body.landing": {
-      "path": "typography.body.landing",
+    "typography.body.large": {
+      "path": "typography.body.large",
       "type": "typography",
       "value": {
         "fontFamily": "Pretendard",
-        "fontSize": "20px",
-        "lineHeight": "32px",
+        "fontSize": {
+          "pc": "18px",
+          "tablet": "18px",
+          "mobile": "16px"
+        },
+        "lineHeight": "160%",
         "fontWeight": 400,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "16px"
+        "letterSpacing": "0px"
       },
       "rawValue": {
         "fontFamily": "{font.family.sans}",
-        "fontSize": "20px",
-        "lineHeight": "32px",
+        "fontSize": {
+          "pc": "18px",
+          "tablet": "18px",
+          "mobile": "16px"
+        },
+        "lineHeight": "160%",
         "fontWeight": 400,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "16px"
+        "letterSpacing": "0px"
       },
       "references": [
         "font.family.sans"
@@ -414,24 +2027,228 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
         "tier": "package"
       }
     },
-    "typography.body.dashboard": {
-      "path": "typography.body.dashboard",
+    "typography.body.large-bold": {
+      "path": "typography.body.large-bold",
       "type": "typography",
       "value": {
         "fontFamily": "Pretendard",
-        "fontSize": "14px",
-        "lineHeight": "20px",
-        "fontWeight": 400,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "8px"
+        "fontSize": {
+          "pc": "18px",
+          "tablet": "18px",
+          "mobile": "16px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
       },
       "rawValue": {
         "fontFamily": "{font.family.sans}",
-        "fontSize": "14px",
-        "lineHeight": "20px",
+        "fontSize": {
+          "pc": "18px",
+          "tablet": "18px",
+          "mobile": "16px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.medium": {
+      "path": "typography.body.medium",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "16px",
+          "tablet": "16px",
+          "mobile": "14px"
+        },
+        "lineHeight": "160%",
         "fontWeight": 400,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "8px"
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "16px",
+          "tablet": "16px",
+          "mobile": "14px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.medium-bold": {
+      "path": "typography.body.medium-bold",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "16px",
+          "tablet": "16px",
+          "mobile": "14px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "16px",
+          "tablet": "16px",
+          "mobile": "14px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.small": {
+      "path": "typography.body.small",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "14px",
+          "tablet": "14px",
+          "mobile": "13px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "14px",
+          "tablet": "14px",
+          "mobile": "13px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.small-bold": {
+      "path": "typography.body.small-bold",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "14px",
+          "tablet": "14px",
+          "mobile": "13px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "14px",
+          "tablet": "14px",
+          "mobile": "13px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.xsmall": {
+      "path": "typography.body.xsmall",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "13px",
+          "tablet": "13px",
+          "mobile": "12px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "13px",
+          "tablet": "13px",
+          "mobile": "12px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "references": [
+        "font.family.sans"
+      ],
+      "origin": {
+        "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+        "tier": "package"
+      }
+    },
+    "typography.body.xsmall-bold": {
+      "path": "typography.body.xsmall-bold",
+      "type": "typography",
+      "value": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "13px",
+          "tablet": "13px",
+          "mobile": "12px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "rawValue": {
+        "fontFamily": "{font.family.sans}",
+        "fontSize": {
+          "pc": "13px",
+          "tablet": "13px",
+          "mobile": "12px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
       },
       "references": [
         "font.family.sans"
@@ -443,6 +2260,454 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
     }
   },
   "origins": {
+    "color.base.red.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.red.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.red.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.red.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.red.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.red.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.red.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.red.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.red.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.red.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.rose.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.green.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gold.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.orange.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.blue.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.royal-blue.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.classic-blue.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.0": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.gray.100": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-white.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.5": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.10": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.20": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.30": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.40": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.50": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.60": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.70": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.80": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
+    "color.base.alpha-black.90": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/base-palette.tokens.json",
+      "tier": "package"
+    },
     "color.palette.purple.600": {
       "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/color.tokens.json",
       "tier": "package"
@@ -539,19 +2804,87 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
       "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
       "tier": "package"
     },
-    "typography.h1.landing": {
+    "typography.display.xlarge": {
       "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
       "tier": "package"
     },
-    "typography.h1.dashboard": {
+    "typography.display.large": {
       "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
       "tier": "package"
     },
-    "typography.body.landing": {
+    "typography.display.medium": {
       "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
       "tier": "package"
     },
-    "typography.body.dashboard": {
+    "typography.display.small": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.display.xsmall": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.heading.xlarge": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.heading.large": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.heading.medium": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.heading.small": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.heading.xsmall": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.heading.xxsmall": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.xlarge": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.xlarge-bold": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.large": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.large-bold": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.medium": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.medium-bold": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.small": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.small-bold": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.xsmall": {
+      "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
+      "tier": "package"
+    },
+    "typography.body.xsmall-bold": {
       "filePath": "/Users/ourteam/project/podo-ui/packages/spec/samples/tokens/typography.tokens.json",
       "tier": "package"
     }
@@ -563,6 +2896,142 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
 exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > react-native-tokens 1`] = `
 "export const tokens = {
   "color": {
+    "base": {
+      "red": {
+        "5": "#FEF1F1",
+        "10": "#FFE0DF",
+        "20": "#FFADAD",
+        "30": "#FF8985",
+        "40": "#F56666",
+        "50": "#F23B3B",
+        "60": "#EE1818",
+        "70": "#CD0404",
+        "80": "#8F0000",
+        "90": "#5F0000"
+      },
+      "rose": {
+        "5": "#FEF1F2",
+        "10": "#FCD9DC",
+        "20": "#FAB7BD",
+        "30": "#F8969E",
+        "40": "#F66F7A",
+        "50": "#F15764",
+        "60": "#D63D4A",
+        "70": "#BF3742",
+        "80": "#992C35",
+        "90": "#732128"
+      },
+      "green": {
+        "5": "#ECF8EF",
+        "10": "#C5E9CD",
+        "20": "#A9DEB4",
+        "30": "#81CF92",
+        "40": "#57C16F",
+        "50": "#3EA856",
+        "60": "#38994E",
+        "70": "#308242",
+        "80": "#256533",
+        "90": "#1C4D27"
+      },
+      "gold": {
+        "5": "#FFF7E6",
+        "10": "#FFEBC2",
+        "20": "#FFD88A",
+        "30": "#FFC654",
+        "40": "#FFBB33",
+        "50": "#FFAA00",
+        "60": "#E89B00",
+        "70": "#B57900",
+        "80": "#8C5E00",
+        "90": "#6B4700"
+      },
+      "orange": {
+        "5": "#FFF4F0",
+        "10": "#FFDACC",
+        "20": "#FFB599",
+        "30": "#FE9975",
+        "40": "#FE8052",
+        "50": "#FF6A33",
+        "60": "#FF5212",
+        "70": "#DB3B00",
+        "80": "#992900",
+        "90": "#661C00"
+      },
+      "blue": {
+        "5": "#EBF5FF",
+        "10": "#C7E3FF",
+        "20": "#8FC8FF",
+        "30": "#70B9FF",
+        "40": "#56ACFF",
+        "50": "#0095FF",
+        "60": "#0074E5",
+        "70": "#0056AA",
+        "80": "#00407F",
+        "90": "#002B55"
+      },
+      "royal-blue": {
+        "5": "#F1F4FD",
+        "10": "#D0DBFB",
+        "20": "#ABBEF7",
+        "30": "#819EF3",
+        "40": "#577DEF",
+        "50": "#426CED",
+        "60": "#1245E2",
+        "70": "#123BBA",
+        "80": "#0D2C8B",
+        "90": "#091D5D"
+      },
+      "classic-blue": {
+        "5": "#F5F9FF",
+        "10": "#E6F0FE",
+        "20": "#CEE2FD",
+        "30": "#A0C2EE",
+        "40": "#76A0D8",
+        "50": "#4A78B5",
+        "60": "#34547E",
+        "70": "#2D486C",
+        "80": "#253C5A",
+        "90": "#1E3048"
+      },
+      "gray": {
+        "0": "#FFFFFF",
+        "5": "#F9F9F9",
+        "10": "#F4F4F5",
+        "20": "#E4E4E7",
+        "30": "#D1D2D6",
+        "40": "#9FA2AD",
+        "50": "#767985",
+        "60": "#50555E",
+        "70": "#3E424B",
+        "80": "#27272A",
+        "90": "#18181B",
+        "100": "#000000"
+      },
+      "alpha-white": {
+        "5": "rgba(255, 255, 255, 0.05)",
+        "10": "rgba(255, 255, 255, 0.1)",
+        "20": "rgba(255, 255, 255, 0.25)",
+        "30": "rgba(255, 255, 255, 0.3)",
+        "40": "rgba(255, 255, 255, 0.4)",
+        "50": "rgba(255, 255, 255, 0.5)",
+        "60": "rgba(255, 255, 255, 0.6)",
+        "70": "rgba(255, 255, 255, 0.7)",
+        "80": "rgba(255, 255, 255, 0.8)",
+        "90": "rgba(255, 255, 255, 0.9)"
+      },
+      "alpha-black": {
+        "5": "rgba(0, 0, 0, 0.05)",
+        "10": "rgba(0, 0, 0, 0.1)",
+        "20": "rgba(0, 0, 0, 0.25)",
+        "30": "rgba(0, 0, 0, 0.3)",
+        "40": "rgba(0, 0, 0, 0.4)",
+        "50": "rgba(0, 0, 0, 0.5)",
+        "60": "rgba(0, 0, 0, 0.6)",
+        "70": "rgba(0, 0, 0, 0.7)",
+        "80": "rgba(0, 0, 0, 0.8)",
+        "90": "rgba(0, 0, 0, 0.9)"
+      }
+    },
     "palette": {
       "purple": {
         "600": "#5B5BD6"
@@ -661,21 +3130,242 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
     }
   },
   "typography": {
-    "h1": {
-      "fontFamily": "Pretendard",
-      "fontSize": 28,
-      "lineHeight": 36,
-      "fontWeight": 600,
-      "letterSpacing": 0,
-      "paragraphSpacing": 12
+    "display": {
+      "xlarge": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 60,
+          "tablet": 48,
+          "mobile": 36
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      },
+      "large": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 52,
+          "tablet": 42,
+          "mobile": 32
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      },
+      "medium": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 44,
+          "tablet": 36,
+          "mobile": 28
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      },
+      "small": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 38,
+          "tablet": 34,
+          "mobile": 26
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      },
+      "xsmall": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 34,
+          "tablet": 30,
+          "mobile": 24
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      }
+    },
+    "heading": {
+      "xlarge": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 32,
+          "tablet": 28,
+          "mobile": 24
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      },
+      "large": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 28,
+          "tablet": 24,
+          "mobile": 20
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      },
+      "medium": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 24,
+          "tablet": 20,
+          "mobile": 18
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      },
+      "small": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 20,
+          "tablet": 18,
+          "mobile": 16
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      },
+      "xsmall": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 16,
+          "tablet": 16,
+          "mobile": 14
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      },
+      "xxsmall": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 14,
+          "tablet": 14,
+          "mobile": 13
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": 0
+      }
     },
     "body": {
-      "fontFamily": "Pretendard",
-      "fontSize": 14,
-      "lineHeight": 20,
-      "fontWeight": 400,
-      "letterSpacing": 0,
-      "paragraphSpacing": 8
+      "xlarge": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 20,
+          "tablet": 20,
+          "mobile": 18
+        },
+        "lineHeight": "150%",
+        "fontWeight": 400,
+        "letterSpacing": 0
+      },
+      "xlarge-bold": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 20,
+          "tablet": 20,
+          "mobile": 18
+        },
+        "lineHeight": "150%",
+        "fontWeight": 600,
+        "letterSpacing": 0
+      },
+      "large": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 18,
+          "tablet": 18,
+          "mobile": 16
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": 0
+      },
+      "large-bold": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 18,
+          "tablet": 18,
+          "mobile": 16
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": 0
+      },
+      "medium": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 16,
+          "tablet": 16,
+          "mobile": 14
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": 0
+      },
+      "medium-bold": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 16,
+          "tablet": 16,
+          "mobile": 14
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": 0
+      },
+      "small": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 14,
+          "tablet": 14,
+          "mobile": 13
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": 0
+      },
+      "small-bold": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 14,
+          "tablet": 14,
+          "mobile": 13
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": 0
+      },
+      "xsmall": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 13,
+          "tablet": 13,
+          "mobile": 12
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": 0
+      },
+      "xsmall-bold": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": 13,
+          "tablet": 13,
+          "mobile": 12
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": 0
+      }
     }
   }
 } as const;
@@ -687,6 +3377,118 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
   --podo-border-control-default-color: #14151A;
   --podo-border-control-default-style: solid;
   --podo-border-control-default-width: 1px;
+  --podo-color-base-alpha-black-10: rgba(0, 0, 0, 0.1);
+  --podo-color-base-alpha-black-20: rgba(0, 0, 0, 0.25);
+  --podo-color-base-alpha-black-30: rgba(0, 0, 0, 0.3);
+  --podo-color-base-alpha-black-40: rgba(0, 0, 0, 0.4);
+  --podo-color-base-alpha-black-5: rgba(0, 0, 0, 0.05);
+  --podo-color-base-alpha-black-50: rgba(0, 0, 0, 0.5);
+  --podo-color-base-alpha-black-60: rgba(0, 0, 0, 0.6);
+  --podo-color-base-alpha-black-70: rgba(0, 0, 0, 0.7);
+  --podo-color-base-alpha-black-80: rgba(0, 0, 0, 0.8);
+  --podo-color-base-alpha-black-90: rgba(0, 0, 0, 0.9);
+  --podo-color-base-alpha-white-10: rgba(255, 255, 255, 0.1);
+  --podo-color-base-alpha-white-20: rgba(255, 255, 255, 0.25);
+  --podo-color-base-alpha-white-30: rgba(255, 255, 255, 0.3);
+  --podo-color-base-alpha-white-40: rgba(255, 255, 255, 0.4);
+  --podo-color-base-alpha-white-5: rgba(255, 255, 255, 0.05);
+  --podo-color-base-alpha-white-50: rgba(255, 255, 255, 0.5);
+  --podo-color-base-alpha-white-60: rgba(255, 255, 255, 0.6);
+  --podo-color-base-alpha-white-70: rgba(255, 255, 255, 0.7);
+  --podo-color-base-alpha-white-80: rgba(255, 255, 255, 0.8);
+  --podo-color-base-alpha-white-90: rgba(255, 255, 255, 0.9);
+  --podo-color-base-blue-10: #C7E3FF;
+  --podo-color-base-blue-20: #8FC8FF;
+  --podo-color-base-blue-30: #70B9FF;
+  --podo-color-base-blue-40: #56ACFF;
+  --podo-color-base-blue-5: #EBF5FF;
+  --podo-color-base-blue-50: #0095FF;
+  --podo-color-base-blue-60: #0074E5;
+  --podo-color-base-blue-70: #0056AA;
+  --podo-color-base-blue-80: #00407F;
+  --podo-color-base-blue-90: #002B55;
+  --podo-color-base-classic-blue-10: #E6F0FE;
+  --podo-color-base-classic-blue-20: #CEE2FD;
+  --podo-color-base-classic-blue-30: #A0C2EE;
+  --podo-color-base-classic-blue-40: #76A0D8;
+  --podo-color-base-classic-blue-5: #F5F9FF;
+  --podo-color-base-classic-blue-50: #4A78B5;
+  --podo-color-base-classic-blue-60: #34547E;
+  --podo-color-base-classic-blue-70: #2D486C;
+  --podo-color-base-classic-blue-80: #253C5A;
+  --podo-color-base-classic-blue-90: #1E3048;
+  --podo-color-base-gold-10: #FFEBC2;
+  --podo-color-base-gold-20: #FFD88A;
+  --podo-color-base-gold-30: #FFC654;
+  --podo-color-base-gold-40: #FFBB33;
+  --podo-color-base-gold-5: #FFF7E6;
+  --podo-color-base-gold-50: #FFAA00;
+  --podo-color-base-gold-60: #E89B00;
+  --podo-color-base-gold-70: #B57900;
+  --podo-color-base-gold-80: #8C5E00;
+  --podo-color-base-gold-90: #6B4700;
+  --podo-color-base-gray-0: #FFFFFF;
+  --podo-color-base-gray-10: #F4F4F5;
+  --podo-color-base-gray-100: #000000;
+  --podo-color-base-gray-20: #E4E4E7;
+  --podo-color-base-gray-30: #D1D2D6;
+  --podo-color-base-gray-40: #9FA2AD;
+  --podo-color-base-gray-5: #F9F9F9;
+  --podo-color-base-gray-50: #767985;
+  --podo-color-base-gray-60: #50555E;
+  --podo-color-base-gray-70: #3E424B;
+  --podo-color-base-gray-80: #27272A;
+  --podo-color-base-gray-90: #18181B;
+  --podo-color-base-green-10: #C5E9CD;
+  --podo-color-base-green-20: #A9DEB4;
+  --podo-color-base-green-30: #81CF92;
+  --podo-color-base-green-40: #57C16F;
+  --podo-color-base-green-5: #ECF8EF;
+  --podo-color-base-green-50: #3EA856;
+  --podo-color-base-green-60: #38994E;
+  --podo-color-base-green-70: #308242;
+  --podo-color-base-green-80: #256533;
+  --podo-color-base-green-90: #1C4D27;
+  --podo-color-base-orange-10: #FFDACC;
+  --podo-color-base-orange-20: #FFB599;
+  --podo-color-base-orange-30: #FE9975;
+  --podo-color-base-orange-40: #FE8052;
+  --podo-color-base-orange-5: #FFF4F0;
+  --podo-color-base-orange-50: #FF6A33;
+  --podo-color-base-orange-60: #FF5212;
+  --podo-color-base-orange-70: #DB3B00;
+  --podo-color-base-orange-80: #992900;
+  --podo-color-base-orange-90: #661C00;
+  --podo-color-base-red-10: #FFE0DF;
+  --podo-color-base-red-20: #FFADAD;
+  --podo-color-base-red-30: #FF8985;
+  --podo-color-base-red-40: #F56666;
+  --podo-color-base-red-5: #FEF1F1;
+  --podo-color-base-red-50: #F23B3B;
+  --podo-color-base-red-60: #EE1818;
+  --podo-color-base-red-70: #CD0404;
+  --podo-color-base-red-80: #8F0000;
+  --podo-color-base-red-90: #5F0000;
+  --podo-color-base-rose-10: #FCD9DC;
+  --podo-color-base-rose-20: #FAB7BD;
+  --podo-color-base-rose-30: #F8969E;
+  --podo-color-base-rose-40: #F66F7A;
+  --podo-color-base-rose-5: #FEF1F2;
+  --podo-color-base-rose-50: #F15764;
+  --podo-color-base-rose-60: #D63D4A;
+  --podo-color-base-rose-70: #BF3742;
+  --podo-color-base-rose-80: #992C35;
+  --podo-color-base-rose-90: #732128;
+  --podo-color-base-royal-blue-10: #D0DBFB;
+  --podo-color-base-royal-blue-20: #ABBEF7;
+  --podo-color-base-royal-blue-30: #819EF3;
+  --podo-color-base-royal-blue-40: #577DEF;
+  --podo-color-base-royal-blue-5: #F1F4FD;
+  --podo-color-base-royal-blue-50: #426CED;
+  --podo-color-base-royal-blue-60: #1245E2;
+  --podo-color-base-royal-blue-70: #123BBA;
+  --podo-color-base-royal-blue-80: #0D2C8B;
+  --podo-color-base-royal-blue-90: #091D5D;
   --podo-color-palette-gray-0: #FFFFFF;
   --podo-color-palette-gray-900: #14151A;
   --podo-color-palette-purple-600: #5B5BD6;
@@ -714,24 +3516,281 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
   --podo-spacing-component-field-gap: 8px;
   --podo-spacing-scale-1: 4px;
   --podo-spacing-scale-2: 8px;
-  --podo-typography-body-fontFamily: Pretendard;
-  --podo-typography-body-fontSize: 20px;
-  --podo-typography-body-fontWeight: 400;
-  --podo-typography-body-letterSpacing: 0px;
-  --podo-typography-body-lineHeight: 32px;
-  --podo-typography-body-paragraphSpacing: 16px;
-  --podo-typography-h1-fontFamily: Pretendard;
-  --podo-typography-h1-fontSize: 64px;
-  --podo-typography-h1-fontWeight: 700;
-  --podo-typography-h1-letterSpacing: 0px;
-  --podo-typography-h1-lineHeight: 72px;
-  --podo-typography-h1-paragraphSpacing: 24px;
+  --podo-typography-body-large-bold-fontFamily: Pretendard;
+  --podo-typography-body-large-bold-fontSize: 18px;
+  --podo-typography-body-large-bold-fontWeight: 600;
+  --podo-typography-body-large-bold-letterSpacing: 0px;
+  --podo-typography-body-large-bold-lineHeight: 160%;
+  --podo-typography-body-large-fontFamily: Pretendard;
+  --podo-typography-body-large-fontSize: 18px;
+  --podo-typography-body-large-fontWeight: 400;
+  --podo-typography-body-large-letterSpacing: 0px;
+  --podo-typography-body-large-lineHeight: 160%;
+  --podo-typography-body-medium-bold-fontFamily: Pretendard;
+  --podo-typography-body-medium-bold-fontSize: 16px;
+  --podo-typography-body-medium-bold-fontWeight: 600;
+  --podo-typography-body-medium-bold-letterSpacing: 0px;
+  --podo-typography-body-medium-bold-lineHeight: 160%;
+  --podo-typography-body-medium-fontFamily: Pretendard;
+  --podo-typography-body-medium-fontSize: 16px;
+  --podo-typography-body-medium-fontWeight: 400;
+  --podo-typography-body-medium-letterSpacing: 0px;
+  --podo-typography-body-medium-lineHeight: 160%;
+  --podo-typography-body-small-bold-fontFamily: Pretendard;
+  --podo-typography-body-small-bold-fontSize: 14px;
+  --podo-typography-body-small-bold-fontWeight: 600;
+  --podo-typography-body-small-bold-letterSpacing: 0px;
+  --podo-typography-body-small-bold-lineHeight: 160%;
+  --podo-typography-body-small-fontFamily: Pretendard;
+  --podo-typography-body-small-fontSize: 14px;
+  --podo-typography-body-small-fontWeight: 400;
+  --podo-typography-body-small-letterSpacing: 0px;
+  --podo-typography-body-small-lineHeight: 160%;
+  --podo-typography-body-xlarge-bold-fontFamily: Pretendard;
+  --podo-typography-body-xlarge-bold-fontSize: 20px;
+  --podo-typography-body-xlarge-bold-fontWeight: 600;
+  --podo-typography-body-xlarge-bold-letterSpacing: 0px;
+  --podo-typography-body-xlarge-bold-lineHeight: 150%;
+  --podo-typography-body-xlarge-fontFamily: Pretendard;
+  --podo-typography-body-xlarge-fontSize: 20px;
+  --podo-typography-body-xlarge-fontWeight: 400;
+  --podo-typography-body-xlarge-letterSpacing: 0px;
+  --podo-typography-body-xlarge-lineHeight: 150%;
+  --podo-typography-body-xsmall-bold-fontFamily: Pretendard;
+  --podo-typography-body-xsmall-bold-fontSize: 13px;
+  --podo-typography-body-xsmall-bold-fontWeight: 600;
+  --podo-typography-body-xsmall-bold-letterSpacing: 0px;
+  --podo-typography-body-xsmall-bold-lineHeight: 160%;
+  --podo-typography-body-xsmall-fontFamily: Pretendard;
+  --podo-typography-body-xsmall-fontSize: 13px;
+  --podo-typography-body-xsmall-fontWeight: 400;
+  --podo-typography-body-xsmall-letterSpacing: 0px;
+  --podo-typography-body-xsmall-lineHeight: 160%;
+  --podo-typography-display-large-fontFamily: Pretendard;
+  --podo-typography-display-large-fontSize: 52px;
+  --podo-typography-display-large-fontWeight: 700;
+  --podo-typography-display-large-letterSpacing: 0px;
+  --podo-typography-display-large-lineHeight: 120%;
+  --podo-typography-display-medium-fontFamily: Pretendard;
+  --podo-typography-display-medium-fontSize: 44px;
+  --podo-typography-display-medium-fontWeight: 700;
+  --podo-typography-display-medium-letterSpacing: 0px;
+  --podo-typography-display-medium-lineHeight: 120%;
+  --podo-typography-display-small-fontFamily: Pretendard;
+  --podo-typography-display-small-fontSize: 38px;
+  --podo-typography-display-small-fontWeight: 700;
+  --podo-typography-display-small-letterSpacing: 0px;
+  --podo-typography-display-small-lineHeight: 120%;
+  --podo-typography-display-xlarge-fontFamily: Pretendard;
+  --podo-typography-display-xlarge-fontSize: 60px;
+  --podo-typography-display-xlarge-fontWeight: 700;
+  --podo-typography-display-xlarge-letterSpacing: 0px;
+  --podo-typography-display-xlarge-lineHeight: 120%;
+  --podo-typography-display-xsmall-fontFamily: Pretendard;
+  --podo-typography-display-xsmall-fontSize: 34px;
+  --podo-typography-display-xsmall-fontWeight: 700;
+  --podo-typography-display-xsmall-letterSpacing: 0px;
+  --podo-typography-display-xsmall-lineHeight: 120%;
+  --podo-typography-heading-large-fontFamily: Pretendard;
+  --podo-typography-heading-large-fontSize: 28px;
+  --podo-typography-heading-large-fontWeight: 700;
+  --podo-typography-heading-large-letterSpacing: 0px;
+  --podo-typography-heading-large-lineHeight: 120%;
+  --podo-typography-heading-medium-fontFamily: Pretendard;
+  --podo-typography-heading-medium-fontSize: 24px;
+  --podo-typography-heading-medium-fontWeight: 700;
+  --podo-typography-heading-medium-letterSpacing: 0px;
+  --podo-typography-heading-medium-lineHeight: 120%;
+  --podo-typography-heading-small-fontFamily: Pretendard;
+  --podo-typography-heading-small-fontSize: 20px;
+  --podo-typography-heading-small-fontWeight: 700;
+  --podo-typography-heading-small-letterSpacing: 0px;
+  --podo-typography-heading-small-lineHeight: 120%;
+  --podo-typography-heading-xlarge-fontFamily: Pretendard;
+  --podo-typography-heading-xlarge-fontSize: 32px;
+  --podo-typography-heading-xlarge-fontWeight: 700;
+  --podo-typography-heading-xlarge-letterSpacing: 0px;
+  --podo-typography-heading-xlarge-lineHeight: 120%;
+  --podo-typography-heading-xsmall-fontFamily: Pretendard;
+  --podo-typography-heading-xsmall-fontSize: 16px;
+  --podo-typography-heading-xsmall-fontWeight: 700;
+  --podo-typography-heading-xsmall-letterSpacing: 0px;
+  --podo-typography-heading-xsmall-lineHeight: 120%;
+  --podo-typography-heading-xxsmall-fontFamily: Pretendard;
+  --podo-typography-heading-xxsmall-fontSize: 14px;
+  --podo-typography-heading-xxsmall-fontWeight: 700;
+  --podo-typography-heading-xxsmall-letterSpacing: 0px;
+  --podo-typography-heading-xxsmall-lineHeight: 120%;
+}
+
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  [data-podo-theme="landing"][data-color-scheme="light"] {
+    --podo-typography-body-large-bold-fontSize: 18px;
+    --podo-typography-body-large-fontSize: 18px;
+    --podo-typography-body-medium-bold-fontSize: 16px;
+    --podo-typography-body-medium-fontSize: 16px;
+    --podo-typography-body-small-bold-fontSize: 14px;
+    --podo-typography-body-small-fontSize: 14px;
+    --podo-typography-body-xlarge-bold-fontSize: 20px;
+    --podo-typography-body-xlarge-fontSize: 20px;
+    --podo-typography-body-xsmall-bold-fontSize: 13px;
+    --podo-typography-body-xsmall-fontSize: 13px;
+    --podo-typography-display-large-fontSize: 42px;
+    --podo-typography-display-medium-fontSize: 36px;
+    --podo-typography-display-small-fontSize: 34px;
+    --podo-typography-display-xlarge-fontSize: 48px;
+    --podo-typography-display-xsmall-fontSize: 30px;
+    --podo-typography-heading-large-fontSize: 24px;
+    --podo-typography-heading-medium-fontSize: 20px;
+    --podo-typography-heading-small-fontSize: 18px;
+    --podo-typography-heading-xlarge-fontSize: 28px;
+    --podo-typography-heading-xsmall-fontSize: 16px;
+    --podo-typography-heading-xxsmall-fontSize: 14px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  [data-podo-theme="landing"][data-color-scheme="light"] {
+    --podo-typography-body-large-bold-fontSize: 16px;
+    --podo-typography-body-large-fontSize: 16px;
+    --podo-typography-body-medium-bold-fontSize: 14px;
+    --podo-typography-body-medium-fontSize: 14px;
+    --podo-typography-body-small-bold-fontSize: 13px;
+    --podo-typography-body-small-fontSize: 13px;
+    --podo-typography-body-xlarge-bold-fontSize: 18px;
+    --podo-typography-body-xlarge-fontSize: 18px;
+    --podo-typography-body-xsmall-bold-fontSize: 12px;
+    --podo-typography-body-xsmall-fontSize: 12px;
+    --podo-typography-display-large-fontSize: 32px;
+    --podo-typography-display-medium-fontSize: 28px;
+    --podo-typography-display-small-fontSize: 26px;
+    --podo-typography-display-xlarge-fontSize: 36px;
+    --podo-typography-display-xsmall-fontSize: 24px;
+    --podo-typography-heading-large-fontSize: 20px;
+    --podo-typography-heading-medium-fontSize: 18px;
+    --podo-typography-heading-small-fontSize: 16px;
+    --podo-typography-heading-xlarge-fontSize: 24px;
+    --podo-typography-heading-xsmall-fontSize: 14px;
+    --podo-typography-heading-xxsmall-fontSize: 13px;
+  }
 }
 
 [data-podo-theme="landing"][data-color-scheme="dark"] {
   --podo-border-control-default-color: #14151A;
   --podo-border-control-default-style: solid;
   --podo-border-control-default-width: 1px;
+  --podo-color-base-alpha-black-10: rgba(0, 0, 0, 0.1);
+  --podo-color-base-alpha-black-20: rgba(0, 0, 0, 0.25);
+  --podo-color-base-alpha-black-30: rgba(0, 0, 0, 0.3);
+  --podo-color-base-alpha-black-40: rgba(0, 0, 0, 0.4);
+  --podo-color-base-alpha-black-5: rgba(0, 0, 0, 0.05);
+  --podo-color-base-alpha-black-50: rgba(0, 0, 0, 0.5);
+  --podo-color-base-alpha-black-60: rgba(0, 0, 0, 0.6);
+  --podo-color-base-alpha-black-70: rgba(0, 0, 0, 0.7);
+  --podo-color-base-alpha-black-80: rgba(0, 0, 0, 0.8);
+  --podo-color-base-alpha-black-90: rgba(0, 0, 0, 0.9);
+  --podo-color-base-alpha-white-10: rgba(255, 255, 255, 0.1);
+  --podo-color-base-alpha-white-20: rgba(255, 255, 255, 0.25);
+  --podo-color-base-alpha-white-30: rgba(255, 255, 255, 0.3);
+  --podo-color-base-alpha-white-40: rgba(255, 255, 255, 0.4);
+  --podo-color-base-alpha-white-5: rgba(255, 255, 255, 0.05);
+  --podo-color-base-alpha-white-50: rgba(255, 255, 255, 0.5);
+  --podo-color-base-alpha-white-60: rgba(255, 255, 255, 0.6);
+  --podo-color-base-alpha-white-70: rgba(255, 255, 255, 0.7);
+  --podo-color-base-alpha-white-80: rgba(255, 255, 255, 0.8);
+  --podo-color-base-alpha-white-90: rgba(255, 255, 255, 0.9);
+  --podo-color-base-blue-10: #C7E3FF;
+  --podo-color-base-blue-20: #8FC8FF;
+  --podo-color-base-blue-30: #70B9FF;
+  --podo-color-base-blue-40: #56ACFF;
+  --podo-color-base-blue-5: #EBF5FF;
+  --podo-color-base-blue-50: #0095FF;
+  --podo-color-base-blue-60: #0074E5;
+  --podo-color-base-blue-70: #0056AA;
+  --podo-color-base-blue-80: #00407F;
+  --podo-color-base-blue-90: #002B55;
+  --podo-color-base-classic-blue-10: #E6F0FE;
+  --podo-color-base-classic-blue-20: #CEE2FD;
+  --podo-color-base-classic-blue-30: #A0C2EE;
+  --podo-color-base-classic-blue-40: #76A0D8;
+  --podo-color-base-classic-blue-5: #F5F9FF;
+  --podo-color-base-classic-blue-50: #4A78B5;
+  --podo-color-base-classic-blue-60: #34547E;
+  --podo-color-base-classic-blue-70: #2D486C;
+  --podo-color-base-classic-blue-80: #253C5A;
+  --podo-color-base-classic-blue-90: #1E3048;
+  --podo-color-base-gold-10: #FFEBC2;
+  --podo-color-base-gold-20: #FFD88A;
+  --podo-color-base-gold-30: #FFC654;
+  --podo-color-base-gold-40: #FFBB33;
+  --podo-color-base-gold-5: #FFF7E6;
+  --podo-color-base-gold-50: #FFAA00;
+  --podo-color-base-gold-60: #E89B00;
+  --podo-color-base-gold-70: #B57900;
+  --podo-color-base-gold-80: #8C5E00;
+  --podo-color-base-gold-90: #6B4700;
+  --podo-color-base-gray-0: #FFFFFF;
+  --podo-color-base-gray-10: #F4F4F5;
+  --podo-color-base-gray-100: #000000;
+  --podo-color-base-gray-20: #E4E4E7;
+  --podo-color-base-gray-30: #D1D2D6;
+  --podo-color-base-gray-40: #9FA2AD;
+  --podo-color-base-gray-5: #F9F9F9;
+  --podo-color-base-gray-50: #767985;
+  --podo-color-base-gray-60: #50555E;
+  --podo-color-base-gray-70: #3E424B;
+  --podo-color-base-gray-80: #27272A;
+  --podo-color-base-gray-90: #18181B;
+  --podo-color-base-green-10: #C5E9CD;
+  --podo-color-base-green-20: #A9DEB4;
+  --podo-color-base-green-30: #81CF92;
+  --podo-color-base-green-40: #57C16F;
+  --podo-color-base-green-5: #ECF8EF;
+  --podo-color-base-green-50: #3EA856;
+  --podo-color-base-green-60: #38994E;
+  --podo-color-base-green-70: #308242;
+  --podo-color-base-green-80: #256533;
+  --podo-color-base-green-90: #1C4D27;
+  --podo-color-base-orange-10: #FFDACC;
+  --podo-color-base-orange-20: #FFB599;
+  --podo-color-base-orange-30: #FE9975;
+  --podo-color-base-orange-40: #FE8052;
+  --podo-color-base-orange-5: #FFF4F0;
+  --podo-color-base-orange-50: #FF6A33;
+  --podo-color-base-orange-60: #FF5212;
+  --podo-color-base-orange-70: #DB3B00;
+  --podo-color-base-orange-80: #992900;
+  --podo-color-base-orange-90: #661C00;
+  --podo-color-base-red-10: #FFE0DF;
+  --podo-color-base-red-20: #FFADAD;
+  --podo-color-base-red-30: #FF8985;
+  --podo-color-base-red-40: #F56666;
+  --podo-color-base-red-5: #FEF1F1;
+  --podo-color-base-red-50: #F23B3B;
+  --podo-color-base-red-60: #EE1818;
+  --podo-color-base-red-70: #CD0404;
+  --podo-color-base-red-80: #8F0000;
+  --podo-color-base-red-90: #5F0000;
+  --podo-color-base-rose-10: #FCD9DC;
+  --podo-color-base-rose-20: #FAB7BD;
+  --podo-color-base-rose-30: #F8969E;
+  --podo-color-base-rose-40: #F66F7A;
+  --podo-color-base-rose-5: #FEF1F2;
+  --podo-color-base-rose-50: #F15764;
+  --podo-color-base-rose-60: #D63D4A;
+  --podo-color-base-rose-70: #BF3742;
+  --podo-color-base-rose-80: #992C35;
+  --podo-color-base-rose-90: #732128;
+  --podo-color-base-royal-blue-10: #D0DBFB;
+  --podo-color-base-royal-blue-20: #ABBEF7;
+  --podo-color-base-royal-blue-30: #819EF3;
+  --podo-color-base-royal-blue-40: #577DEF;
+  --podo-color-base-royal-blue-5: #F1F4FD;
+  --podo-color-base-royal-blue-50: #426CED;
+  --podo-color-base-royal-blue-60: #1245E2;
+  --podo-color-base-royal-blue-70: #123BBA;
+  --podo-color-base-royal-blue-80: #0D2C8B;
+  --podo-color-base-royal-blue-90: #091D5D;
   --podo-color-palette-gray-0: #FFFFFF;
   --podo-color-palette-gray-900: #14151A;
   --podo-color-palette-purple-600: #5B5BD6;
@@ -759,24 +3818,281 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
   --podo-spacing-component-field-gap: 8px;
   --podo-spacing-scale-1: 4px;
   --podo-spacing-scale-2: 8px;
-  --podo-typography-body-fontFamily: Pretendard;
-  --podo-typography-body-fontSize: 20px;
-  --podo-typography-body-fontWeight: 400;
-  --podo-typography-body-letterSpacing: 0px;
-  --podo-typography-body-lineHeight: 32px;
-  --podo-typography-body-paragraphSpacing: 16px;
-  --podo-typography-h1-fontFamily: Pretendard;
-  --podo-typography-h1-fontSize: 64px;
-  --podo-typography-h1-fontWeight: 700;
-  --podo-typography-h1-letterSpacing: 0px;
-  --podo-typography-h1-lineHeight: 72px;
-  --podo-typography-h1-paragraphSpacing: 24px;
+  --podo-typography-body-large-bold-fontFamily: Pretendard;
+  --podo-typography-body-large-bold-fontSize: 18px;
+  --podo-typography-body-large-bold-fontWeight: 600;
+  --podo-typography-body-large-bold-letterSpacing: 0px;
+  --podo-typography-body-large-bold-lineHeight: 160%;
+  --podo-typography-body-large-fontFamily: Pretendard;
+  --podo-typography-body-large-fontSize: 18px;
+  --podo-typography-body-large-fontWeight: 400;
+  --podo-typography-body-large-letterSpacing: 0px;
+  --podo-typography-body-large-lineHeight: 160%;
+  --podo-typography-body-medium-bold-fontFamily: Pretendard;
+  --podo-typography-body-medium-bold-fontSize: 16px;
+  --podo-typography-body-medium-bold-fontWeight: 600;
+  --podo-typography-body-medium-bold-letterSpacing: 0px;
+  --podo-typography-body-medium-bold-lineHeight: 160%;
+  --podo-typography-body-medium-fontFamily: Pretendard;
+  --podo-typography-body-medium-fontSize: 16px;
+  --podo-typography-body-medium-fontWeight: 400;
+  --podo-typography-body-medium-letterSpacing: 0px;
+  --podo-typography-body-medium-lineHeight: 160%;
+  --podo-typography-body-small-bold-fontFamily: Pretendard;
+  --podo-typography-body-small-bold-fontSize: 14px;
+  --podo-typography-body-small-bold-fontWeight: 600;
+  --podo-typography-body-small-bold-letterSpacing: 0px;
+  --podo-typography-body-small-bold-lineHeight: 160%;
+  --podo-typography-body-small-fontFamily: Pretendard;
+  --podo-typography-body-small-fontSize: 14px;
+  --podo-typography-body-small-fontWeight: 400;
+  --podo-typography-body-small-letterSpacing: 0px;
+  --podo-typography-body-small-lineHeight: 160%;
+  --podo-typography-body-xlarge-bold-fontFamily: Pretendard;
+  --podo-typography-body-xlarge-bold-fontSize: 20px;
+  --podo-typography-body-xlarge-bold-fontWeight: 600;
+  --podo-typography-body-xlarge-bold-letterSpacing: 0px;
+  --podo-typography-body-xlarge-bold-lineHeight: 150%;
+  --podo-typography-body-xlarge-fontFamily: Pretendard;
+  --podo-typography-body-xlarge-fontSize: 20px;
+  --podo-typography-body-xlarge-fontWeight: 400;
+  --podo-typography-body-xlarge-letterSpacing: 0px;
+  --podo-typography-body-xlarge-lineHeight: 150%;
+  --podo-typography-body-xsmall-bold-fontFamily: Pretendard;
+  --podo-typography-body-xsmall-bold-fontSize: 13px;
+  --podo-typography-body-xsmall-bold-fontWeight: 600;
+  --podo-typography-body-xsmall-bold-letterSpacing: 0px;
+  --podo-typography-body-xsmall-bold-lineHeight: 160%;
+  --podo-typography-body-xsmall-fontFamily: Pretendard;
+  --podo-typography-body-xsmall-fontSize: 13px;
+  --podo-typography-body-xsmall-fontWeight: 400;
+  --podo-typography-body-xsmall-letterSpacing: 0px;
+  --podo-typography-body-xsmall-lineHeight: 160%;
+  --podo-typography-display-large-fontFamily: Pretendard;
+  --podo-typography-display-large-fontSize: 52px;
+  --podo-typography-display-large-fontWeight: 700;
+  --podo-typography-display-large-letterSpacing: 0px;
+  --podo-typography-display-large-lineHeight: 120%;
+  --podo-typography-display-medium-fontFamily: Pretendard;
+  --podo-typography-display-medium-fontSize: 44px;
+  --podo-typography-display-medium-fontWeight: 700;
+  --podo-typography-display-medium-letterSpacing: 0px;
+  --podo-typography-display-medium-lineHeight: 120%;
+  --podo-typography-display-small-fontFamily: Pretendard;
+  --podo-typography-display-small-fontSize: 38px;
+  --podo-typography-display-small-fontWeight: 700;
+  --podo-typography-display-small-letterSpacing: 0px;
+  --podo-typography-display-small-lineHeight: 120%;
+  --podo-typography-display-xlarge-fontFamily: Pretendard;
+  --podo-typography-display-xlarge-fontSize: 60px;
+  --podo-typography-display-xlarge-fontWeight: 700;
+  --podo-typography-display-xlarge-letterSpacing: 0px;
+  --podo-typography-display-xlarge-lineHeight: 120%;
+  --podo-typography-display-xsmall-fontFamily: Pretendard;
+  --podo-typography-display-xsmall-fontSize: 34px;
+  --podo-typography-display-xsmall-fontWeight: 700;
+  --podo-typography-display-xsmall-letterSpacing: 0px;
+  --podo-typography-display-xsmall-lineHeight: 120%;
+  --podo-typography-heading-large-fontFamily: Pretendard;
+  --podo-typography-heading-large-fontSize: 28px;
+  --podo-typography-heading-large-fontWeight: 700;
+  --podo-typography-heading-large-letterSpacing: 0px;
+  --podo-typography-heading-large-lineHeight: 120%;
+  --podo-typography-heading-medium-fontFamily: Pretendard;
+  --podo-typography-heading-medium-fontSize: 24px;
+  --podo-typography-heading-medium-fontWeight: 700;
+  --podo-typography-heading-medium-letterSpacing: 0px;
+  --podo-typography-heading-medium-lineHeight: 120%;
+  --podo-typography-heading-small-fontFamily: Pretendard;
+  --podo-typography-heading-small-fontSize: 20px;
+  --podo-typography-heading-small-fontWeight: 700;
+  --podo-typography-heading-small-letterSpacing: 0px;
+  --podo-typography-heading-small-lineHeight: 120%;
+  --podo-typography-heading-xlarge-fontFamily: Pretendard;
+  --podo-typography-heading-xlarge-fontSize: 32px;
+  --podo-typography-heading-xlarge-fontWeight: 700;
+  --podo-typography-heading-xlarge-letterSpacing: 0px;
+  --podo-typography-heading-xlarge-lineHeight: 120%;
+  --podo-typography-heading-xsmall-fontFamily: Pretendard;
+  --podo-typography-heading-xsmall-fontSize: 16px;
+  --podo-typography-heading-xsmall-fontWeight: 700;
+  --podo-typography-heading-xsmall-letterSpacing: 0px;
+  --podo-typography-heading-xsmall-lineHeight: 120%;
+  --podo-typography-heading-xxsmall-fontFamily: Pretendard;
+  --podo-typography-heading-xxsmall-fontSize: 14px;
+  --podo-typography-heading-xxsmall-fontWeight: 700;
+  --podo-typography-heading-xxsmall-letterSpacing: 0px;
+  --podo-typography-heading-xxsmall-lineHeight: 120%;
+}
+
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  [data-podo-theme="landing"][data-color-scheme="dark"] {
+    --podo-typography-body-large-bold-fontSize: 18px;
+    --podo-typography-body-large-fontSize: 18px;
+    --podo-typography-body-medium-bold-fontSize: 16px;
+    --podo-typography-body-medium-fontSize: 16px;
+    --podo-typography-body-small-bold-fontSize: 14px;
+    --podo-typography-body-small-fontSize: 14px;
+    --podo-typography-body-xlarge-bold-fontSize: 20px;
+    --podo-typography-body-xlarge-fontSize: 20px;
+    --podo-typography-body-xsmall-bold-fontSize: 13px;
+    --podo-typography-body-xsmall-fontSize: 13px;
+    --podo-typography-display-large-fontSize: 42px;
+    --podo-typography-display-medium-fontSize: 36px;
+    --podo-typography-display-small-fontSize: 34px;
+    --podo-typography-display-xlarge-fontSize: 48px;
+    --podo-typography-display-xsmall-fontSize: 30px;
+    --podo-typography-heading-large-fontSize: 24px;
+    --podo-typography-heading-medium-fontSize: 20px;
+    --podo-typography-heading-small-fontSize: 18px;
+    --podo-typography-heading-xlarge-fontSize: 28px;
+    --podo-typography-heading-xsmall-fontSize: 16px;
+    --podo-typography-heading-xxsmall-fontSize: 14px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  [data-podo-theme="landing"][data-color-scheme="dark"] {
+    --podo-typography-body-large-bold-fontSize: 16px;
+    --podo-typography-body-large-fontSize: 16px;
+    --podo-typography-body-medium-bold-fontSize: 14px;
+    --podo-typography-body-medium-fontSize: 14px;
+    --podo-typography-body-small-bold-fontSize: 13px;
+    --podo-typography-body-small-fontSize: 13px;
+    --podo-typography-body-xlarge-bold-fontSize: 18px;
+    --podo-typography-body-xlarge-fontSize: 18px;
+    --podo-typography-body-xsmall-bold-fontSize: 12px;
+    --podo-typography-body-xsmall-fontSize: 12px;
+    --podo-typography-display-large-fontSize: 32px;
+    --podo-typography-display-medium-fontSize: 28px;
+    --podo-typography-display-small-fontSize: 26px;
+    --podo-typography-display-xlarge-fontSize: 36px;
+    --podo-typography-display-xsmall-fontSize: 24px;
+    --podo-typography-heading-large-fontSize: 20px;
+    --podo-typography-heading-medium-fontSize: 18px;
+    --podo-typography-heading-small-fontSize: 16px;
+    --podo-typography-heading-xlarge-fontSize: 24px;
+    --podo-typography-heading-xsmall-fontSize: 14px;
+    --podo-typography-heading-xxsmall-fontSize: 13px;
+  }
 }
 
 [data-podo-theme="dashboard"][data-color-scheme="light"] {
   --podo-border-control-default-color: #14151A;
   --podo-border-control-default-style: solid;
   --podo-border-control-default-width: 1px;
+  --podo-color-base-alpha-black-10: rgba(0, 0, 0, 0.1);
+  --podo-color-base-alpha-black-20: rgba(0, 0, 0, 0.25);
+  --podo-color-base-alpha-black-30: rgba(0, 0, 0, 0.3);
+  --podo-color-base-alpha-black-40: rgba(0, 0, 0, 0.4);
+  --podo-color-base-alpha-black-5: rgba(0, 0, 0, 0.05);
+  --podo-color-base-alpha-black-50: rgba(0, 0, 0, 0.5);
+  --podo-color-base-alpha-black-60: rgba(0, 0, 0, 0.6);
+  --podo-color-base-alpha-black-70: rgba(0, 0, 0, 0.7);
+  --podo-color-base-alpha-black-80: rgba(0, 0, 0, 0.8);
+  --podo-color-base-alpha-black-90: rgba(0, 0, 0, 0.9);
+  --podo-color-base-alpha-white-10: rgba(255, 255, 255, 0.1);
+  --podo-color-base-alpha-white-20: rgba(255, 255, 255, 0.25);
+  --podo-color-base-alpha-white-30: rgba(255, 255, 255, 0.3);
+  --podo-color-base-alpha-white-40: rgba(255, 255, 255, 0.4);
+  --podo-color-base-alpha-white-5: rgba(255, 255, 255, 0.05);
+  --podo-color-base-alpha-white-50: rgba(255, 255, 255, 0.5);
+  --podo-color-base-alpha-white-60: rgba(255, 255, 255, 0.6);
+  --podo-color-base-alpha-white-70: rgba(255, 255, 255, 0.7);
+  --podo-color-base-alpha-white-80: rgba(255, 255, 255, 0.8);
+  --podo-color-base-alpha-white-90: rgba(255, 255, 255, 0.9);
+  --podo-color-base-blue-10: #C7E3FF;
+  --podo-color-base-blue-20: #8FC8FF;
+  --podo-color-base-blue-30: #70B9FF;
+  --podo-color-base-blue-40: #56ACFF;
+  --podo-color-base-blue-5: #EBF5FF;
+  --podo-color-base-blue-50: #0095FF;
+  --podo-color-base-blue-60: #0074E5;
+  --podo-color-base-blue-70: #0056AA;
+  --podo-color-base-blue-80: #00407F;
+  --podo-color-base-blue-90: #002B55;
+  --podo-color-base-classic-blue-10: #E6F0FE;
+  --podo-color-base-classic-blue-20: #CEE2FD;
+  --podo-color-base-classic-blue-30: #A0C2EE;
+  --podo-color-base-classic-blue-40: #76A0D8;
+  --podo-color-base-classic-blue-5: #F5F9FF;
+  --podo-color-base-classic-blue-50: #4A78B5;
+  --podo-color-base-classic-blue-60: #34547E;
+  --podo-color-base-classic-blue-70: #2D486C;
+  --podo-color-base-classic-blue-80: #253C5A;
+  --podo-color-base-classic-blue-90: #1E3048;
+  --podo-color-base-gold-10: #FFEBC2;
+  --podo-color-base-gold-20: #FFD88A;
+  --podo-color-base-gold-30: #FFC654;
+  --podo-color-base-gold-40: #FFBB33;
+  --podo-color-base-gold-5: #FFF7E6;
+  --podo-color-base-gold-50: #FFAA00;
+  --podo-color-base-gold-60: #E89B00;
+  --podo-color-base-gold-70: #B57900;
+  --podo-color-base-gold-80: #8C5E00;
+  --podo-color-base-gold-90: #6B4700;
+  --podo-color-base-gray-0: #FFFFFF;
+  --podo-color-base-gray-10: #F4F4F5;
+  --podo-color-base-gray-100: #000000;
+  --podo-color-base-gray-20: #E4E4E7;
+  --podo-color-base-gray-30: #D1D2D6;
+  --podo-color-base-gray-40: #9FA2AD;
+  --podo-color-base-gray-5: #F9F9F9;
+  --podo-color-base-gray-50: #767985;
+  --podo-color-base-gray-60: #50555E;
+  --podo-color-base-gray-70: #3E424B;
+  --podo-color-base-gray-80: #27272A;
+  --podo-color-base-gray-90: #18181B;
+  --podo-color-base-green-10: #C5E9CD;
+  --podo-color-base-green-20: #A9DEB4;
+  --podo-color-base-green-30: #81CF92;
+  --podo-color-base-green-40: #57C16F;
+  --podo-color-base-green-5: #ECF8EF;
+  --podo-color-base-green-50: #3EA856;
+  --podo-color-base-green-60: #38994E;
+  --podo-color-base-green-70: #308242;
+  --podo-color-base-green-80: #256533;
+  --podo-color-base-green-90: #1C4D27;
+  --podo-color-base-orange-10: #FFDACC;
+  --podo-color-base-orange-20: #FFB599;
+  --podo-color-base-orange-30: #FE9975;
+  --podo-color-base-orange-40: #FE8052;
+  --podo-color-base-orange-5: #FFF4F0;
+  --podo-color-base-orange-50: #FF6A33;
+  --podo-color-base-orange-60: #FF5212;
+  --podo-color-base-orange-70: #DB3B00;
+  --podo-color-base-orange-80: #992900;
+  --podo-color-base-orange-90: #661C00;
+  --podo-color-base-red-10: #FFE0DF;
+  --podo-color-base-red-20: #FFADAD;
+  --podo-color-base-red-30: #FF8985;
+  --podo-color-base-red-40: #F56666;
+  --podo-color-base-red-5: #FEF1F1;
+  --podo-color-base-red-50: #F23B3B;
+  --podo-color-base-red-60: #EE1818;
+  --podo-color-base-red-70: #CD0404;
+  --podo-color-base-red-80: #8F0000;
+  --podo-color-base-red-90: #5F0000;
+  --podo-color-base-rose-10: #FCD9DC;
+  --podo-color-base-rose-20: #FAB7BD;
+  --podo-color-base-rose-30: #F8969E;
+  --podo-color-base-rose-40: #F66F7A;
+  --podo-color-base-rose-5: #FEF1F2;
+  --podo-color-base-rose-50: #F15764;
+  --podo-color-base-rose-60: #D63D4A;
+  --podo-color-base-rose-70: #BF3742;
+  --podo-color-base-rose-80: #992C35;
+  --podo-color-base-rose-90: #732128;
+  --podo-color-base-royal-blue-10: #D0DBFB;
+  --podo-color-base-royal-blue-20: #ABBEF7;
+  --podo-color-base-royal-blue-30: #819EF3;
+  --podo-color-base-royal-blue-40: #577DEF;
+  --podo-color-base-royal-blue-5: #F1F4FD;
+  --podo-color-base-royal-blue-50: #426CED;
+  --podo-color-base-royal-blue-60: #1245E2;
+  --podo-color-base-royal-blue-70: #123BBA;
+  --podo-color-base-royal-blue-80: #0D2C8B;
+  --podo-color-base-royal-blue-90: #091D5D;
   --podo-color-palette-gray-0: #FFFFFF;
   --podo-color-palette-gray-900: #14151A;
   --podo-color-palette-purple-600: #5B5BD6;
@@ -804,24 +4120,281 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
   --podo-spacing-component-field-gap: 8px;
   --podo-spacing-scale-1: 4px;
   --podo-spacing-scale-2: 8px;
-  --podo-typography-body-fontFamily: Pretendard;
-  --podo-typography-body-fontSize: 14px;
-  --podo-typography-body-fontWeight: 400;
-  --podo-typography-body-letterSpacing: 0px;
-  --podo-typography-body-lineHeight: 20px;
-  --podo-typography-body-paragraphSpacing: 8px;
-  --podo-typography-h1-fontFamily: Pretendard;
-  --podo-typography-h1-fontSize: 28px;
-  --podo-typography-h1-fontWeight: 600;
-  --podo-typography-h1-letterSpacing: 0px;
-  --podo-typography-h1-lineHeight: 36px;
-  --podo-typography-h1-paragraphSpacing: 12px;
+  --podo-typography-body-large-bold-fontFamily: Pretendard;
+  --podo-typography-body-large-bold-fontSize: 18px;
+  --podo-typography-body-large-bold-fontWeight: 600;
+  --podo-typography-body-large-bold-letterSpacing: 0px;
+  --podo-typography-body-large-bold-lineHeight: 160%;
+  --podo-typography-body-large-fontFamily: Pretendard;
+  --podo-typography-body-large-fontSize: 18px;
+  --podo-typography-body-large-fontWeight: 400;
+  --podo-typography-body-large-letterSpacing: 0px;
+  --podo-typography-body-large-lineHeight: 160%;
+  --podo-typography-body-medium-bold-fontFamily: Pretendard;
+  --podo-typography-body-medium-bold-fontSize: 16px;
+  --podo-typography-body-medium-bold-fontWeight: 600;
+  --podo-typography-body-medium-bold-letterSpacing: 0px;
+  --podo-typography-body-medium-bold-lineHeight: 160%;
+  --podo-typography-body-medium-fontFamily: Pretendard;
+  --podo-typography-body-medium-fontSize: 16px;
+  --podo-typography-body-medium-fontWeight: 400;
+  --podo-typography-body-medium-letterSpacing: 0px;
+  --podo-typography-body-medium-lineHeight: 160%;
+  --podo-typography-body-small-bold-fontFamily: Pretendard;
+  --podo-typography-body-small-bold-fontSize: 14px;
+  --podo-typography-body-small-bold-fontWeight: 600;
+  --podo-typography-body-small-bold-letterSpacing: 0px;
+  --podo-typography-body-small-bold-lineHeight: 160%;
+  --podo-typography-body-small-fontFamily: Pretendard;
+  --podo-typography-body-small-fontSize: 14px;
+  --podo-typography-body-small-fontWeight: 400;
+  --podo-typography-body-small-letterSpacing: 0px;
+  --podo-typography-body-small-lineHeight: 160%;
+  --podo-typography-body-xlarge-bold-fontFamily: Pretendard;
+  --podo-typography-body-xlarge-bold-fontSize: 20px;
+  --podo-typography-body-xlarge-bold-fontWeight: 600;
+  --podo-typography-body-xlarge-bold-letterSpacing: 0px;
+  --podo-typography-body-xlarge-bold-lineHeight: 150%;
+  --podo-typography-body-xlarge-fontFamily: Pretendard;
+  --podo-typography-body-xlarge-fontSize: 20px;
+  --podo-typography-body-xlarge-fontWeight: 400;
+  --podo-typography-body-xlarge-letterSpacing: 0px;
+  --podo-typography-body-xlarge-lineHeight: 150%;
+  --podo-typography-body-xsmall-bold-fontFamily: Pretendard;
+  --podo-typography-body-xsmall-bold-fontSize: 13px;
+  --podo-typography-body-xsmall-bold-fontWeight: 600;
+  --podo-typography-body-xsmall-bold-letterSpacing: 0px;
+  --podo-typography-body-xsmall-bold-lineHeight: 160%;
+  --podo-typography-body-xsmall-fontFamily: Pretendard;
+  --podo-typography-body-xsmall-fontSize: 13px;
+  --podo-typography-body-xsmall-fontWeight: 400;
+  --podo-typography-body-xsmall-letterSpacing: 0px;
+  --podo-typography-body-xsmall-lineHeight: 160%;
+  --podo-typography-display-large-fontFamily: Pretendard;
+  --podo-typography-display-large-fontSize: 52px;
+  --podo-typography-display-large-fontWeight: 700;
+  --podo-typography-display-large-letterSpacing: 0px;
+  --podo-typography-display-large-lineHeight: 120%;
+  --podo-typography-display-medium-fontFamily: Pretendard;
+  --podo-typography-display-medium-fontSize: 44px;
+  --podo-typography-display-medium-fontWeight: 700;
+  --podo-typography-display-medium-letterSpacing: 0px;
+  --podo-typography-display-medium-lineHeight: 120%;
+  --podo-typography-display-small-fontFamily: Pretendard;
+  --podo-typography-display-small-fontSize: 38px;
+  --podo-typography-display-small-fontWeight: 700;
+  --podo-typography-display-small-letterSpacing: 0px;
+  --podo-typography-display-small-lineHeight: 120%;
+  --podo-typography-display-xlarge-fontFamily: Pretendard;
+  --podo-typography-display-xlarge-fontSize: 60px;
+  --podo-typography-display-xlarge-fontWeight: 700;
+  --podo-typography-display-xlarge-letterSpacing: 0px;
+  --podo-typography-display-xlarge-lineHeight: 120%;
+  --podo-typography-display-xsmall-fontFamily: Pretendard;
+  --podo-typography-display-xsmall-fontSize: 34px;
+  --podo-typography-display-xsmall-fontWeight: 700;
+  --podo-typography-display-xsmall-letterSpacing: 0px;
+  --podo-typography-display-xsmall-lineHeight: 120%;
+  --podo-typography-heading-large-fontFamily: Pretendard;
+  --podo-typography-heading-large-fontSize: 28px;
+  --podo-typography-heading-large-fontWeight: 700;
+  --podo-typography-heading-large-letterSpacing: 0px;
+  --podo-typography-heading-large-lineHeight: 120%;
+  --podo-typography-heading-medium-fontFamily: Pretendard;
+  --podo-typography-heading-medium-fontSize: 24px;
+  --podo-typography-heading-medium-fontWeight: 700;
+  --podo-typography-heading-medium-letterSpacing: 0px;
+  --podo-typography-heading-medium-lineHeight: 120%;
+  --podo-typography-heading-small-fontFamily: Pretendard;
+  --podo-typography-heading-small-fontSize: 20px;
+  --podo-typography-heading-small-fontWeight: 700;
+  --podo-typography-heading-small-letterSpacing: 0px;
+  --podo-typography-heading-small-lineHeight: 120%;
+  --podo-typography-heading-xlarge-fontFamily: Pretendard;
+  --podo-typography-heading-xlarge-fontSize: 32px;
+  --podo-typography-heading-xlarge-fontWeight: 700;
+  --podo-typography-heading-xlarge-letterSpacing: 0px;
+  --podo-typography-heading-xlarge-lineHeight: 120%;
+  --podo-typography-heading-xsmall-fontFamily: Pretendard;
+  --podo-typography-heading-xsmall-fontSize: 16px;
+  --podo-typography-heading-xsmall-fontWeight: 700;
+  --podo-typography-heading-xsmall-letterSpacing: 0px;
+  --podo-typography-heading-xsmall-lineHeight: 120%;
+  --podo-typography-heading-xxsmall-fontFamily: Pretendard;
+  --podo-typography-heading-xxsmall-fontSize: 14px;
+  --podo-typography-heading-xxsmall-fontWeight: 700;
+  --podo-typography-heading-xxsmall-letterSpacing: 0px;
+  --podo-typography-heading-xxsmall-lineHeight: 120%;
+}
+
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  [data-podo-theme="dashboard"][data-color-scheme="light"] {
+    --podo-typography-body-large-bold-fontSize: 18px;
+    --podo-typography-body-large-fontSize: 18px;
+    --podo-typography-body-medium-bold-fontSize: 16px;
+    --podo-typography-body-medium-fontSize: 16px;
+    --podo-typography-body-small-bold-fontSize: 14px;
+    --podo-typography-body-small-fontSize: 14px;
+    --podo-typography-body-xlarge-bold-fontSize: 20px;
+    --podo-typography-body-xlarge-fontSize: 20px;
+    --podo-typography-body-xsmall-bold-fontSize: 13px;
+    --podo-typography-body-xsmall-fontSize: 13px;
+    --podo-typography-display-large-fontSize: 42px;
+    --podo-typography-display-medium-fontSize: 36px;
+    --podo-typography-display-small-fontSize: 34px;
+    --podo-typography-display-xlarge-fontSize: 48px;
+    --podo-typography-display-xsmall-fontSize: 30px;
+    --podo-typography-heading-large-fontSize: 24px;
+    --podo-typography-heading-medium-fontSize: 20px;
+    --podo-typography-heading-small-fontSize: 18px;
+    --podo-typography-heading-xlarge-fontSize: 28px;
+    --podo-typography-heading-xsmall-fontSize: 16px;
+    --podo-typography-heading-xxsmall-fontSize: 14px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  [data-podo-theme="dashboard"][data-color-scheme="light"] {
+    --podo-typography-body-large-bold-fontSize: 16px;
+    --podo-typography-body-large-fontSize: 16px;
+    --podo-typography-body-medium-bold-fontSize: 14px;
+    --podo-typography-body-medium-fontSize: 14px;
+    --podo-typography-body-small-bold-fontSize: 13px;
+    --podo-typography-body-small-fontSize: 13px;
+    --podo-typography-body-xlarge-bold-fontSize: 18px;
+    --podo-typography-body-xlarge-fontSize: 18px;
+    --podo-typography-body-xsmall-bold-fontSize: 12px;
+    --podo-typography-body-xsmall-fontSize: 12px;
+    --podo-typography-display-large-fontSize: 32px;
+    --podo-typography-display-medium-fontSize: 28px;
+    --podo-typography-display-small-fontSize: 26px;
+    --podo-typography-display-xlarge-fontSize: 36px;
+    --podo-typography-display-xsmall-fontSize: 24px;
+    --podo-typography-heading-large-fontSize: 20px;
+    --podo-typography-heading-medium-fontSize: 18px;
+    --podo-typography-heading-small-fontSize: 16px;
+    --podo-typography-heading-xlarge-fontSize: 24px;
+    --podo-typography-heading-xsmall-fontSize: 14px;
+    --podo-typography-heading-xxsmall-fontSize: 13px;
+  }
 }
 
 [data-podo-theme="dashboard"][data-color-scheme="dark"] {
   --podo-border-control-default-color: #14151A;
   --podo-border-control-default-style: solid;
   --podo-border-control-default-width: 1px;
+  --podo-color-base-alpha-black-10: rgba(0, 0, 0, 0.1);
+  --podo-color-base-alpha-black-20: rgba(0, 0, 0, 0.25);
+  --podo-color-base-alpha-black-30: rgba(0, 0, 0, 0.3);
+  --podo-color-base-alpha-black-40: rgba(0, 0, 0, 0.4);
+  --podo-color-base-alpha-black-5: rgba(0, 0, 0, 0.05);
+  --podo-color-base-alpha-black-50: rgba(0, 0, 0, 0.5);
+  --podo-color-base-alpha-black-60: rgba(0, 0, 0, 0.6);
+  --podo-color-base-alpha-black-70: rgba(0, 0, 0, 0.7);
+  --podo-color-base-alpha-black-80: rgba(0, 0, 0, 0.8);
+  --podo-color-base-alpha-black-90: rgba(0, 0, 0, 0.9);
+  --podo-color-base-alpha-white-10: rgba(255, 255, 255, 0.1);
+  --podo-color-base-alpha-white-20: rgba(255, 255, 255, 0.25);
+  --podo-color-base-alpha-white-30: rgba(255, 255, 255, 0.3);
+  --podo-color-base-alpha-white-40: rgba(255, 255, 255, 0.4);
+  --podo-color-base-alpha-white-5: rgba(255, 255, 255, 0.05);
+  --podo-color-base-alpha-white-50: rgba(255, 255, 255, 0.5);
+  --podo-color-base-alpha-white-60: rgba(255, 255, 255, 0.6);
+  --podo-color-base-alpha-white-70: rgba(255, 255, 255, 0.7);
+  --podo-color-base-alpha-white-80: rgba(255, 255, 255, 0.8);
+  --podo-color-base-alpha-white-90: rgba(255, 255, 255, 0.9);
+  --podo-color-base-blue-10: #C7E3FF;
+  --podo-color-base-blue-20: #8FC8FF;
+  --podo-color-base-blue-30: #70B9FF;
+  --podo-color-base-blue-40: #56ACFF;
+  --podo-color-base-blue-5: #EBF5FF;
+  --podo-color-base-blue-50: #0095FF;
+  --podo-color-base-blue-60: #0074E5;
+  --podo-color-base-blue-70: #0056AA;
+  --podo-color-base-blue-80: #00407F;
+  --podo-color-base-blue-90: #002B55;
+  --podo-color-base-classic-blue-10: #E6F0FE;
+  --podo-color-base-classic-blue-20: #CEE2FD;
+  --podo-color-base-classic-blue-30: #A0C2EE;
+  --podo-color-base-classic-blue-40: #76A0D8;
+  --podo-color-base-classic-blue-5: #F5F9FF;
+  --podo-color-base-classic-blue-50: #4A78B5;
+  --podo-color-base-classic-blue-60: #34547E;
+  --podo-color-base-classic-blue-70: #2D486C;
+  --podo-color-base-classic-blue-80: #253C5A;
+  --podo-color-base-classic-blue-90: #1E3048;
+  --podo-color-base-gold-10: #FFEBC2;
+  --podo-color-base-gold-20: #FFD88A;
+  --podo-color-base-gold-30: #FFC654;
+  --podo-color-base-gold-40: #FFBB33;
+  --podo-color-base-gold-5: #FFF7E6;
+  --podo-color-base-gold-50: #FFAA00;
+  --podo-color-base-gold-60: #E89B00;
+  --podo-color-base-gold-70: #B57900;
+  --podo-color-base-gold-80: #8C5E00;
+  --podo-color-base-gold-90: #6B4700;
+  --podo-color-base-gray-0: #FFFFFF;
+  --podo-color-base-gray-10: #F4F4F5;
+  --podo-color-base-gray-100: #000000;
+  --podo-color-base-gray-20: #E4E4E7;
+  --podo-color-base-gray-30: #D1D2D6;
+  --podo-color-base-gray-40: #9FA2AD;
+  --podo-color-base-gray-5: #F9F9F9;
+  --podo-color-base-gray-50: #767985;
+  --podo-color-base-gray-60: #50555E;
+  --podo-color-base-gray-70: #3E424B;
+  --podo-color-base-gray-80: #27272A;
+  --podo-color-base-gray-90: #18181B;
+  --podo-color-base-green-10: #C5E9CD;
+  --podo-color-base-green-20: #A9DEB4;
+  --podo-color-base-green-30: #81CF92;
+  --podo-color-base-green-40: #57C16F;
+  --podo-color-base-green-5: #ECF8EF;
+  --podo-color-base-green-50: #3EA856;
+  --podo-color-base-green-60: #38994E;
+  --podo-color-base-green-70: #308242;
+  --podo-color-base-green-80: #256533;
+  --podo-color-base-green-90: #1C4D27;
+  --podo-color-base-orange-10: #FFDACC;
+  --podo-color-base-orange-20: #FFB599;
+  --podo-color-base-orange-30: #FE9975;
+  --podo-color-base-orange-40: #FE8052;
+  --podo-color-base-orange-5: #FFF4F0;
+  --podo-color-base-orange-50: #FF6A33;
+  --podo-color-base-orange-60: #FF5212;
+  --podo-color-base-orange-70: #DB3B00;
+  --podo-color-base-orange-80: #992900;
+  --podo-color-base-orange-90: #661C00;
+  --podo-color-base-red-10: #FFE0DF;
+  --podo-color-base-red-20: #FFADAD;
+  --podo-color-base-red-30: #FF8985;
+  --podo-color-base-red-40: #F56666;
+  --podo-color-base-red-5: #FEF1F1;
+  --podo-color-base-red-50: #F23B3B;
+  --podo-color-base-red-60: #EE1818;
+  --podo-color-base-red-70: #CD0404;
+  --podo-color-base-red-80: #8F0000;
+  --podo-color-base-red-90: #5F0000;
+  --podo-color-base-rose-10: #FCD9DC;
+  --podo-color-base-rose-20: #FAB7BD;
+  --podo-color-base-rose-30: #F8969E;
+  --podo-color-base-rose-40: #F66F7A;
+  --podo-color-base-rose-5: #FEF1F2;
+  --podo-color-base-rose-50: #F15764;
+  --podo-color-base-rose-60: #D63D4A;
+  --podo-color-base-rose-70: #BF3742;
+  --podo-color-base-rose-80: #992C35;
+  --podo-color-base-rose-90: #732128;
+  --podo-color-base-royal-blue-10: #D0DBFB;
+  --podo-color-base-royal-blue-20: #ABBEF7;
+  --podo-color-base-royal-blue-30: #819EF3;
+  --podo-color-base-royal-blue-40: #577DEF;
+  --podo-color-base-royal-blue-5: #F1F4FD;
+  --podo-color-base-royal-blue-50: #426CED;
+  --podo-color-base-royal-blue-60: #1245E2;
+  --podo-color-base-royal-blue-70: #123BBA;
+  --podo-color-base-royal-blue-80: #0D2C8B;
+  --podo-color-base-royal-blue-90: #091D5D;
   --podo-color-palette-gray-0: #FFFFFF;
   --podo-color-palette-gray-900: #14151A;
   --podo-color-palette-purple-600: #5B5BD6;
@@ -849,18 +4422,163 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
   --podo-spacing-component-field-gap: 8px;
   --podo-spacing-scale-1: 4px;
   --podo-spacing-scale-2: 8px;
-  --podo-typography-body-fontFamily: Pretendard;
-  --podo-typography-body-fontSize: 14px;
-  --podo-typography-body-fontWeight: 400;
-  --podo-typography-body-letterSpacing: 0px;
-  --podo-typography-body-lineHeight: 20px;
-  --podo-typography-body-paragraphSpacing: 8px;
-  --podo-typography-h1-fontFamily: Pretendard;
-  --podo-typography-h1-fontSize: 28px;
-  --podo-typography-h1-fontWeight: 600;
-  --podo-typography-h1-letterSpacing: 0px;
-  --podo-typography-h1-lineHeight: 36px;
-  --podo-typography-h1-paragraphSpacing: 12px;
+  --podo-typography-body-large-bold-fontFamily: Pretendard;
+  --podo-typography-body-large-bold-fontSize: 18px;
+  --podo-typography-body-large-bold-fontWeight: 600;
+  --podo-typography-body-large-bold-letterSpacing: 0px;
+  --podo-typography-body-large-bold-lineHeight: 160%;
+  --podo-typography-body-large-fontFamily: Pretendard;
+  --podo-typography-body-large-fontSize: 18px;
+  --podo-typography-body-large-fontWeight: 400;
+  --podo-typography-body-large-letterSpacing: 0px;
+  --podo-typography-body-large-lineHeight: 160%;
+  --podo-typography-body-medium-bold-fontFamily: Pretendard;
+  --podo-typography-body-medium-bold-fontSize: 16px;
+  --podo-typography-body-medium-bold-fontWeight: 600;
+  --podo-typography-body-medium-bold-letterSpacing: 0px;
+  --podo-typography-body-medium-bold-lineHeight: 160%;
+  --podo-typography-body-medium-fontFamily: Pretendard;
+  --podo-typography-body-medium-fontSize: 16px;
+  --podo-typography-body-medium-fontWeight: 400;
+  --podo-typography-body-medium-letterSpacing: 0px;
+  --podo-typography-body-medium-lineHeight: 160%;
+  --podo-typography-body-small-bold-fontFamily: Pretendard;
+  --podo-typography-body-small-bold-fontSize: 14px;
+  --podo-typography-body-small-bold-fontWeight: 600;
+  --podo-typography-body-small-bold-letterSpacing: 0px;
+  --podo-typography-body-small-bold-lineHeight: 160%;
+  --podo-typography-body-small-fontFamily: Pretendard;
+  --podo-typography-body-small-fontSize: 14px;
+  --podo-typography-body-small-fontWeight: 400;
+  --podo-typography-body-small-letterSpacing: 0px;
+  --podo-typography-body-small-lineHeight: 160%;
+  --podo-typography-body-xlarge-bold-fontFamily: Pretendard;
+  --podo-typography-body-xlarge-bold-fontSize: 20px;
+  --podo-typography-body-xlarge-bold-fontWeight: 600;
+  --podo-typography-body-xlarge-bold-letterSpacing: 0px;
+  --podo-typography-body-xlarge-bold-lineHeight: 150%;
+  --podo-typography-body-xlarge-fontFamily: Pretendard;
+  --podo-typography-body-xlarge-fontSize: 20px;
+  --podo-typography-body-xlarge-fontWeight: 400;
+  --podo-typography-body-xlarge-letterSpacing: 0px;
+  --podo-typography-body-xlarge-lineHeight: 150%;
+  --podo-typography-body-xsmall-bold-fontFamily: Pretendard;
+  --podo-typography-body-xsmall-bold-fontSize: 13px;
+  --podo-typography-body-xsmall-bold-fontWeight: 600;
+  --podo-typography-body-xsmall-bold-letterSpacing: 0px;
+  --podo-typography-body-xsmall-bold-lineHeight: 160%;
+  --podo-typography-body-xsmall-fontFamily: Pretendard;
+  --podo-typography-body-xsmall-fontSize: 13px;
+  --podo-typography-body-xsmall-fontWeight: 400;
+  --podo-typography-body-xsmall-letterSpacing: 0px;
+  --podo-typography-body-xsmall-lineHeight: 160%;
+  --podo-typography-display-large-fontFamily: Pretendard;
+  --podo-typography-display-large-fontSize: 52px;
+  --podo-typography-display-large-fontWeight: 700;
+  --podo-typography-display-large-letterSpacing: 0px;
+  --podo-typography-display-large-lineHeight: 120%;
+  --podo-typography-display-medium-fontFamily: Pretendard;
+  --podo-typography-display-medium-fontSize: 44px;
+  --podo-typography-display-medium-fontWeight: 700;
+  --podo-typography-display-medium-letterSpacing: 0px;
+  --podo-typography-display-medium-lineHeight: 120%;
+  --podo-typography-display-small-fontFamily: Pretendard;
+  --podo-typography-display-small-fontSize: 38px;
+  --podo-typography-display-small-fontWeight: 700;
+  --podo-typography-display-small-letterSpacing: 0px;
+  --podo-typography-display-small-lineHeight: 120%;
+  --podo-typography-display-xlarge-fontFamily: Pretendard;
+  --podo-typography-display-xlarge-fontSize: 60px;
+  --podo-typography-display-xlarge-fontWeight: 700;
+  --podo-typography-display-xlarge-letterSpacing: 0px;
+  --podo-typography-display-xlarge-lineHeight: 120%;
+  --podo-typography-display-xsmall-fontFamily: Pretendard;
+  --podo-typography-display-xsmall-fontSize: 34px;
+  --podo-typography-display-xsmall-fontWeight: 700;
+  --podo-typography-display-xsmall-letterSpacing: 0px;
+  --podo-typography-display-xsmall-lineHeight: 120%;
+  --podo-typography-heading-large-fontFamily: Pretendard;
+  --podo-typography-heading-large-fontSize: 28px;
+  --podo-typography-heading-large-fontWeight: 700;
+  --podo-typography-heading-large-letterSpacing: 0px;
+  --podo-typography-heading-large-lineHeight: 120%;
+  --podo-typography-heading-medium-fontFamily: Pretendard;
+  --podo-typography-heading-medium-fontSize: 24px;
+  --podo-typography-heading-medium-fontWeight: 700;
+  --podo-typography-heading-medium-letterSpacing: 0px;
+  --podo-typography-heading-medium-lineHeight: 120%;
+  --podo-typography-heading-small-fontFamily: Pretendard;
+  --podo-typography-heading-small-fontSize: 20px;
+  --podo-typography-heading-small-fontWeight: 700;
+  --podo-typography-heading-small-letterSpacing: 0px;
+  --podo-typography-heading-small-lineHeight: 120%;
+  --podo-typography-heading-xlarge-fontFamily: Pretendard;
+  --podo-typography-heading-xlarge-fontSize: 32px;
+  --podo-typography-heading-xlarge-fontWeight: 700;
+  --podo-typography-heading-xlarge-letterSpacing: 0px;
+  --podo-typography-heading-xlarge-lineHeight: 120%;
+  --podo-typography-heading-xsmall-fontFamily: Pretendard;
+  --podo-typography-heading-xsmall-fontSize: 16px;
+  --podo-typography-heading-xsmall-fontWeight: 700;
+  --podo-typography-heading-xsmall-letterSpacing: 0px;
+  --podo-typography-heading-xsmall-lineHeight: 120%;
+  --podo-typography-heading-xxsmall-fontFamily: Pretendard;
+  --podo-typography-heading-xxsmall-fontSize: 14px;
+  --podo-typography-heading-xxsmall-fontWeight: 700;
+  --podo-typography-heading-xxsmall-letterSpacing: 0px;
+  --podo-typography-heading-xxsmall-lineHeight: 120%;
+}
+
+@media screen and (min-width: 768px) and (max-width: 1279px) {
+  [data-podo-theme="dashboard"][data-color-scheme="dark"] {
+    --podo-typography-body-large-bold-fontSize: 18px;
+    --podo-typography-body-large-fontSize: 18px;
+    --podo-typography-body-medium-bold-fontSize: 16px;
+    --podo-typography-body-medium-fontSize: 16px;
+    --podo-typography-body-small-bold-fontSize: 14px;
+    --podo-typography-body-small-fontSize: 14px;
+    --podo-typography-body-xlarge-bold-fontSize: 20px;
+    --podo-typography-body-xlarge-fontSize: 20px;
+    --podo-typography-body-xsmall-bold-fontSize: 13px;
+    --podo-typography-body-xsmall-fontSize: 13px;
+    --podo-typography-display-large-fontSize: 42px;
+    --podo-typography-display-medium-fontSize: 36px;
+    --podo-typography-display-small-fontSize: 34px;
+    --podo-typography-display-xlarge-fontSize: 48px;
+    --podo-typography-display-xsmall-fontSize: 30px;
+    --podo-typography-heading-large-fontSize: 24px;
+    --podo-typography-heading-medium-fontSize: 20px;
+    --podo-typography-heading-small-fontSize: 18px;
+    --podo-typography-heading-xlarge-fontSize: 28px;
+    --podo-typography-heading-xsmall-fontSize: 16px;
+    --podo-typography-heading-xxsmall-fontSize: 14px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  [data-podo-theme="dashboard"][data-color-scheme="dark"] {
+    --podo-typography-body-large-bold-fontSize: 16px;
+    --podo-typography-body-large-fontSize: 16px;
+    --podo-typography-body-medium-bold-fontSize: 14px;
+    --podo-typography-body-medium-fontSize: 14px;
+    --podo-typography-body-small-bold-fontSize: 13px;
+    --podo-typography-body-small-fontSize: 13px;
+    --podo-typography-body-xlarge-bold-fontSize: 18px;
+    --podo-typography-body-xlarge-fontSize: 18px;
+    --podo-typography-body-xsmall-bold-fontSize: 12px;
+    --podo-typography-body-xsmall-fontSize: 12px;
+    --podo-typography-display-large-fontSize: 32px;
+    --podo-typography-display-medium-fontSize: 28px;
+    --podo-typography-display-small-fontSize: 26px;
+    --podo-typography-display-xlarge-fontSize: 36px;
+    --podo-typography-display-xsmall-fontSize: 24px;
+    --podo-typography-heading-large-fontSize: 20px;
+    --podo-typography-heading-medium-fontSize: 18px;
+    --podo-typography-heading-small-fontSize: 16px;
+    --podo-typography-heading-xlarge-fontSize: 24px;
+    --podo-typography-heading-xsmall-fontSize: 14px;
+    --podo-typography-heading-xxsmall-fontSize: 13px;
+  }
 }
 "
 `;
@@ -868,6 +4586,142 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
 exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > typescript-tokens 1`] = `
 "export const tokens = {
   "color": {
+    "base": {
+      "red": {
+        "5": "#FEF1F1",
+        "10": "#FFE0DF",
+        "20": "#FFADAD",
+        "30": "#FF8985",
+        "40": "#F56666",
+        "50": "#F23B3B",
+        "60": "#EE1818",
+        "70": "#CD0404",
+        "80": "#8F0000",
+        "90": "#5F0000"
+      },
+      "rose": {
+        "5": "#FEF1F2",
+        "10": "#FCD9DC",
+        "20": "#FAB7BD",
+        "30": "#F8969E",
+        "40": "#F66F7A",
+        "50": "#F15764",
+        "60": "#D63D4A",
+        "70": "#BF3742",
+        "80": "#992C35",
+        "90": "#732128"
+      },
+      "green": {
+        "5": "#ECF8EF",
+        "10": "#C5E9CD",
+        "20": "#A9DEB4",
+        "30": "#81CF92",
+        "40": "#57C16F",
+        "50": "#3EA856",
+        "60": "#38994E",
+        "70": "#308242",
+        "80": "#256533",
+        "90": "#1C4D27"
+      },
+      "gold": {
+        "5": "#FFF7E6",
+        "10": "#FFEBC2",
+        "20": "#FFD88A",
+        "30": "#FFC654",
+        "40": "#FFBB33",
+        "50": "#FFAA00",
+        "60": "#E89B00",
+        "70": "#B57900",
+        "80": "#8C5E00",
+        "90": "#6B4700"
+      },
+      "orange": {
+        "5": "#FFF4F0",
+        "10": "#FFDACC",
+        "20": "#FFB599",
+        "30": "#FE9975",
+        "40": "#FE8052",
+        "50": "#FF6A33",
+        "60": "#FF5212",
+        "70": "#DB3B00",
+        "80": "#992900",
+        "90": "#661C00"
+      },
+      "blue": {
+        "5": "#EBF5FF",
+        "10": "#C7E3FF",
+        "20": "#8FC8FF",
+        "30": "#70B9FF",
+        "40": "#56ACFF",
+        "50": "#0095FF",
+        "60": "#0074E5",
+        "70": "#0056AA",
+        "80": "#00407F",
+        "90": "#002B55"
+      },
+      "royal-blue": {
+        "5": "#F1F4FD",
+        "10": "#D0DBFB",
+        "20": "#ABBEF7",
+        "30": "#819EF3",
+        "40": "#577DEF",
+        "50": "#426CED",
+        "60": "#1245E2",
+        "70": "#123BBA",
+        "80": "#0D2C8B",
+        "90": "#091D5D"
+      },
+      "classic-blue": {
+        "5": "#F5F9FF",
+        "10": "#E6F0FE",
+        "20": "#CEE2FD",
+        "30": "#A0C2EE",
+        "40": "#76A0D8",
+        "50": "#4A78B5",
+        "60": "#34547E",
+        "70": "#2D486C",
+        "80": "#253C5A",
+        "90": "#1E3048"
+      },
+      "gray": {
+        "0": "#FFFFFF",
+        "5": "#F9F9F9",
+        "10": "#F4F4F5",
+        "20": "#E4E4E7",
+        "30": "#D1D2D6",
+        "40": "#9FA2AD",
+        "50": "#767985",
+        "60": "#50555E",
+        "70": "#3E424B",
+        "80": "#27272A",
+        "90": "#18181B",
+        "100": "#000000"
+      },
+      "alpha-white": {
+        "5": "rgba(255, 255, 255, 0.05)",
+        "10": "rgba(255, 255, 255, 0.1)",
+        "20": "rgba(255, 255, 255, 0.25)",
+        "30": "rgba(255, 255, 255, 0.3)",
+        "40": "rgba(255, 255, 255, 0.4)",
+        "50": "rgba(255, 255, 255, 0.5)",
+        "60": "rgba(255, 255, 255, 0.6)",
+        "70": "rgba(255, 255, 255, 0.7)",
+        "80": "rgba(255, 255, 255, 0.8)",
+        "90": "rgba(255, 255, 255, 0.9)"
+      },
+      "alpha-black": {
+        "5": "rgba(0, 0, 0, 0.05)",
+        "10": "rgba(0, 0, 0, 0.1)",
+        "20": "rgba(0, 0, 0, 0.25)",
+        "30": "rgba(0, 0, 0, 0.3)",
+        "40": "rgba(0, 0, 0, 0.4)",
+        "50": "rgba(0, 0, 0, 0.5)",
+        "60": "rgba(0, 0, 0, 0.6)",
+        "70": "rgba(0, 0, 0, 0.7)",
+        "80": "rgba(0, 0, 0, 0.8)",
+        "90": "rgba(0, 0, 0, 0.9)"
+      }
+    },
     "palette": {
       "purple": {
         "600": "#5B5BD6"
@@ -969,45 +4823,246 @@ exports[`@podo/tokens > emits CSS, TypeScript, React Native, and JSON bundles > 
     }
   },
   "typography": {
-    "h1": {
-      "landing": {
+    "display": {
+      "xlarge": {
         "fontFamily": "Pretendard",
-        "fontSize": "64px",
-        "lineHeight": "72px",
+        "fontSize": {
+          "pc": "60px",
+          "tablet": "48px",
+          "mobile": "36px"
+        },
+        "lineHeight": "120%",
         "fontWeight": 700,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "24px"
+        "letterSpacing": "0px"
       },
-      "dashboard": {
+      "large": {
         "fontFamily": "Pretendard",
-        "fontSize": "28px",
-        "lineHeight": "36px",
-        "fontWeight": 600,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "12px"
+        "fontSize": {
+          "pc": "52px",
+          "tablet": "42px",
+          "mobile": "32px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "medium": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "44px",
+          "tablet": "36px",
+          "mobile": "28px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "small": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "38px",
+          "tablet": "34px",
+          "mobile": "26px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "xsmall": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "34px",
+          "tablet": "30px",
+          "mobile": "24px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      }
+    },
+    "heading": {
+      "xlarge": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "32px",
+          "tablet": "28px",
+          "mobile": "24px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "large": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "28px",
+          "tablet": "24px",
+          "mobile": "20px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "medium": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "24px",
+          "tablet": "20px",
+          "mobile": "18px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "small": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "20px",
+          "tablet": "18px",
+          "mobile": "16px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "xsmall": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "16px",
+          "tablet": "16px",
+          "mobile": "14px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "xxsmall": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "14px",
+          "tablet": "14px",
+          "mobile": "13px"
+        },
+        "lineHeight": "120%",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
       }
     },
     "body": {
-      "landing": {
+      "xlarge": {
         "fontFamily": "Pretendard",
-        "fontSize": "20px",
-        "lineHeight": "32px",
+        "fontSize": {
+          "pc": "20px",
+          "tablet": "20px",
+          "mobile": "18px"
+        },
+        "lineHeight": "150%",
         "fontWeight": 400,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "16px"
+        "letterSpacing": "0px"
       },
-      "dashboard": {
+      "xlarge-bold": {
         "fontFamily": "Pretendard",
-        "fontSize": "14px",
-        "lineHeight": "20px",
+        "fontSize": {
+          "pc": "20px",
+          "tablet": "20px",
+          "mobile": "18px"
+        },
+        "lineHeight": "150%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "large": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "18px",
+          "tablet": "18px",
+          "mobile": "16px"
+        },
+        "lineHeight": "160%",
         "fontWeight": 400,
-        "letterSpacing": "0px",
-        "paragraphSpacing": "8px"
+        "letterSpacing": "0px"
+      },
+      "large-bold": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "18px",
+          "tablet": "18px",
+          "mobile": "16px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "medium": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "16px",
+          "tablet": "16px",
+          "mobile": "14px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "medium-bold": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "16px",
+          "tablet": "16px",
+          "mobile": "14px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "small": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "14px",
+          "tablet": "14px",
+          "mobile": "13px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "small-bold": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "14px",
+          "tablet": "14px",
+          "mobile": "13px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
+      },
+      "xsmall": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "13px",
+          "tablet": "13px",
+          "mobile": "12px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 400,
+        "letterSpacing": "0px"
+      },
+      "xsmall-bold": {
+        "fontFamily": "Pretendard",
+        "fontSize": {
+          "pc": "13px",
+          "tablet": "13px",
+          "mobile": "12px"
+        },
+        "lineHeight": "160%",
+        "fontWeight": 600,
+        "letterSpacing": "0px"
       }
     }
   }
 } as const;
 
-export type TokenPath = "border.control.default" | "color.palette.gray.0" | "color.palette.gray.900" | "color.palette.purple.600" | "color.palette.red.600" | "component.button.background" | "component.button.text" | "component.input.background" | "component.input.border" | "font.family.sans" | "motion.duration.fast" | "motion.easing.standard" | "motion.transition.fast" | "radius.control.md" | "semantic.color.action.primary" | "semantic.color.dark.surface" | "semantic.color.surface" | "semantic.color.text.danger" | "semantic.color.text.default" | "semantic.color.text.inverse" | "shadow.popover" | "spacing.component.field-gap" | "spacing.scale.1" | "spacing.scale.2" | "typography.body.dashboard" | "typography.body.landing" | "typography.h1.dashboard" | "typography.h1.landing";
+export type TokenPath = "border.control.default" | "color.base.alpha-black.10" | "color.base.alpha-black.20" | "color.base.alpha-black.30" | "color.base.alpha-black.40" | "color.base.alpha-black.5" | "color.base.alpha-black.50" | "color.base.alpha-black.60" | "color.base.alpha-black.70" | "color.base.alpha-black.80" | "color.base.alpha-black.90" | "color.base.alpha-white.10" | "color.base.alpha-white.20" | "color.base.alpha-white.30" | "color.base.alpha-white.40" | "color.base.alpha-white.5" | "color.base.alpha-white.50" | "color.base.alpha-white.60" | "color.base.alpha-white.70" | "color.base.alpha-white.80" | "color.base.alpha-white.90" | "color.base.blue.10" | "color.base.blue.20" | "color.base.blue.30" | "color.base.blue.40" | "color.base.blue.5" | "color.base.blue.50" | "color.base.blue.60" | "color.base.blue.70" | "color.base.blue.80" | "color.base.blue.90" | "color.base.classic-blue.10" | "color.base.classic-blue.20" | "color.base.classic-blue.30" | "color.base.classic-blue.40" | "color.base.classic-blue.5" | "color.base.classic-blue.50" | "color.base.classic-blue.60" | "color.base.classic-blue.70" | "color.base.classic-blue.80" | "color.base.classic-blue.90" | "color.base.gold.10" | "color.base.gold.20" | "color.base.gold.30" | "color.base.gold.40" | "color.base.gold.5" | "color.base.gold.50" | "color.base.gold.60" | "color.base.gold.70" | "color.base.gold.80" | "color.base.gold.90" | "color.base.gray.0" | "color.base.gray.10" | "color.base.gray.100" | "color.base.gray.20" | "color.base.gray.30" | "color.base.gray.40" | "color.base.gray.5" | "color.base.gray.50" | "color.base.gray.60" | "color.base.gray.70" | "color.base.gray.80" | "color.base.gray.90" | "color.base.green.10" | "color.base.green.20" | "color.base.green.30" | "color.base.green.40" | "color.base.green.5" | "color.base.green.50" | "color.base.green.60" | "color.base.green.70" | "color.base.green.80" | "color.base.green.90" | "color.base.orange.10" | "color.base.orange.20" | "color.base.orange.30" | "color.base.orange.40" | "color.base.orange.5" | "color.base.orange.50" | "color.base.orange.60" | "color.base.orange.70" | "color.base.orange.80" | "color.base.orange.90" | "color.base.red.10" | "color.base.red.20" | "color.base.red.30" | "color.base.red.40" | "color.base.red.5" | "color.base.red.50" | "color.base.red.60" | "color.base.red.70" | "color.base.red.80" | "color.base.red.90" | "color.base.rose.10" | "color.base.rose.20" | "color.base.rose.30" | "color.base.rose.40" | "color.base.rose.5" | "color.base.rose.50" | "color.base.rose.60" | "color.base.rose.70" | "color.base.rose.80" | "color.base.rose.90" | "color.base.royal-blue.10" | "color.base.royal-blue.20" | "color.base.royal-blue.30" | "color.base.royal-blue.40" | "color.base.royal-blue.5" | "color.base.royal-blue.50" | "color.base.royal-blue.60" | "color.base.royal-blue.70" | "color.base.royal-blue.80" | "color.base.royal-blue.90" | "color.palette.gray.0" | "color.palette.gray.900" | "color.palette.purple.600" | "color.palette.red.600" | "component.button.background" | "component.button.text" | "component.input.background" | "component.input.border" | "font.family.sans" | "motion.duration.fast" | "motion.easing.standard" | "motion.transition.fast" | "radius.control.md" | "semantic.color.action.primary" | "semantic.color.dark.surface" | "semantic.color.surface" | "semantic.color.text.danger" | "semantic.color.text.default" | "semantic.color.text.inverse" | "shadow.popover" | "spacing.component.field-gap" | "spacing.scale.1" | "spacing.scale.2" | "typography.body.large" | "typography.body.large-bold" | "typography.body.medium" | "typography.body.medium-bold" | "typography.body.small" | "typography.body.small-bold" | "typography.body.xlarge" | "typography.body.xlarge-bold" | "typography.body.xsmall" | "typography.body.xsmall-bold" | "typography.display.large" | "typography.display.medium" | "typography.display.small" | "typography.display.xlarge" | "typography.display.xsmall" | "typography.heading.large" | "typography.heading.medium" | "typography.heading.small" | "typography.heading.xlarge" | "typography.heading.xsmall" | "typography.heading.xxsmall";
 "
 `;

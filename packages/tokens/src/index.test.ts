@@ -93,8 +93,13 @@ describe("@podo/tokens", () => {
     expect(dashboard.tokens["component.input.background"]?.references).toEqual([
       "semantic.color.surface",
     ]);
-    expect(landing.tokens["typography.h1"]?.value).toMatchObject({ fontSize: "64px" });
-    expect(dashboard.tokens["typography.h1"]?.value).toMatchObject({ fontSize: "28px" });
+    // Typography is theme-independent now (size-only scale); fontSize is responsive.
+    expect(landing.tokens["typography.display.xlarge"]?.value).toMatchObject({
+      fontSize: { pc: "60px", tablet: "48px", mobile: "36px" },
+    });
+    expect(dashboard.tokens["typography.body.medium"]?.value).toMatchObject({
+      fontSize: { pc: "16px" },
+    });
   });
 
   it("lets the most specific selected theme and color-scheme token override base tokens", () => {
@@ -129,16 +134,21 @@ describe("@podo/tokens", () => {
     );
     const json = emitTokenJsonBundle(bundle);
 
-    expect(css.match(/\[data-podo-theme=/g)).toHaveLength(4);
+    // Four base theme×scheme blocks (anchored to column 0; media-query overrides
+    // also carry the selector but are indented).
+    expect(css.match(/^\[data-podo-theme=/gm)).toHaveLength(4);
     expect(css).toContain('[data-podo-theme="landing"][data-color-scheme="light"]');
-    expect(css).toContain("--podo-typography-h1-fontSize: 64px;");
-    expect(css).toContain("--podo-typography-h1-fontSize: 28px;");
+    // Responsive type scale: pc value is the base var; tablet/mobile are media queries.
+    expect(css).toContain("--podo-typography-display-xlarge-fontSize: 60px;");
+    expect(css).toContain("@media screen and (min-width: 768px) and (max-width: 1279px)");
+    expect(css).toContain("--podo-typography-display-xlarge-fontSize: 48px;");
+    expect(css).toContain("--podo-typography-display-xlarge-fontSize: 36px;");
     expect(css).toMatchSnapshot("theme-css");
     expect(ts).toMatchSnapshot("typescript-tokens");
     expect(rn).toMatchSnapshot("react-native-tokens");
     expect(json).toMatchSnapshot("json-bundle");
     expect(ts).toContain("export type TokenPath");
-    expect(rn).toContain('"fontSize": 28');
+    expect(rn).toContain('"pc": 60');
     expect(json).toContain('"origin"');
   });
 

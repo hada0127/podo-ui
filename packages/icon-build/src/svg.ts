@@ -7,7 +7,21 @@ export function canNormalizeIconSvg(): boolean {
   return typeof DOMParser !== "undefined";
 }
 
-const SANITIZE_SAFE_TAGS = new Set(["svg", "g", "path"]);
+// Icons are authored as stroke outlines, so the safelist keeps stroke geometry
+// (stroke, stroke-width, round caps/joins) and the basic shape elements — not
+// just filled <path>. Geometry is preserved exactly; only non-geometry markup
+// (scripts, handlers, external refs) is stripped.
+const SANITIZE_SAFE_TAGS = new Set([
+  "svg",
+  "g",
+  "path",
+  "rect",
+  "circle",
+  "ellipse",
+  "line",
+  "polyline",
+  "polygon",
+]);
 const SANITIZE_SAFE_ATTRS = new Set([
   "viewbox",
   "d",
@@ -18,6 +32,28 @@ const SANITIZE_SAFE_ATTRS = new Set([
   "xmlns",
   "width",
   "height",
+  "stroke",
+  "stroke-width",
+  "stroke-linecap",
+  "stroke-linejoin",
+  "stroke-miterlimit",
+  "stroke-dasharray",
+  "opacity",
+  "fill-opacity",
+  "stroke-opacity",
+  // shape geometry attributes
+  "x",
+  "y",
+  "rx",
+  "ry",
+  "cx",
+  "cy",
+  "r",
+  "x1",
+  "y1",
+  "x2",
+  "y2",
+  "points",
 ]);
 
 function sanitizeElement(element: Element): void {
@@ -47,18 +83,24 @@ function stripUnsafeSvgMarkup(svg: string): string {
     .replace(/\s(?:xlink:href|href|src)\s*=\s*("[^"]*"|'[^']*')/gi, "");
 }
 
+/** Drop fixed width/height from the *root* <svg> only (icons must scale to em). */
+function stripRootSvgSize(svg: string): string {
+  return svg.replace(/<svg\b[^>]*?>/i, (tag) =>
+    tag.replace(/\s+(?:width|height)\s*=\s*"[^"]*"/gi, "")
+  );
+}
+
 /**
- * Strip everything but icon geometry from an SVG: keeps only `<svg>/<g>/<path>`
- * elements and a safelist of geometry attributes, dropping event handlers,
- * `<script>/<foreignObject>/<image>/<use>/<a>`, and external references. The
- * editor's create/replace path already produces canonical geometry-only SVG via
- * {@link normalizeIconSvg}; this guards SVG that enters from an untrusted source
- * (a host-supplied manifest loaded from disk/HTTP) before it is rendered. Sync,
- * so it can run at model ingress; falls back to a denylist strip without a DOM.
+ * Strip everything but icon geometry from an SVG: keeps only geometry elements
+ * (`<svg>/<g>/<path>` plus the basic shapes) and a safelist of geometry attributes
+ * (including stroke), dropping event handlers, `<script>/<foreignObject>/<image>/
+ * <use>/<a>`, and external references. Stroke-authored icons keep their strokes;
+ * the font build expands them at build time. Sync, so it can run at model ingress;
+ * falls back to a denylist strip without a DOM.
  */
 export function sanitizeIconSvg(svg: string): string {
   if (typeof DOMParser === "undefined" || typeof XMLSerializer === "undefined") {
-    return stripUnsafeSvgMarkup(svg);
+    return stripRootSvgSize(stripUnsafeSvgMarkup(svg));
   }
   let doc: Document;
   try {
@@ -75,6 +117,10 @@ export function sanitizeIconSvg(svg: string): string {
     return "";
   }
   sanitizeElement(root);
+  // Icons must be scalable: width/height belongs to child shapes (rect), never the
+  // root, where it would conflict with the viewBox-only contract the font assumes.
+  root.removeAttribute("width");
+  root.removeAttribute("height");
   return new XMLSerializer().serializeToString(root);
 }
 

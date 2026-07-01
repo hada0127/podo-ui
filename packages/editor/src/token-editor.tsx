@@ -13,10 +13,12 @@ import {
   parseColor,
   resolveTokenPath,
   resolveTokenValue,
+  responsiveSizePc,
   rgbToHsv,
   tokenVariationName,
   typographyToCss,
   type HsvColor,
+  type ResponsiveSize,
   type RgbaColor,
   type TokenLookup,
 } from "./token-lookup.js";
@@ -689,11 +691,11 @@ function typographyStyleLabel(path: string): string {
 }
 
 function typographySummary(typography: {
-  fontSize: string;
+  fontSize: ResponsiveSize;
   lineHeight: string;
   fontWeight: string | number;
 }): string {
-  return `${typography.fontSize}/${typography.lineHeight} · ${typography.fontWeight}`;
+  return `${responsiveSizePc(typography.fontSize)}/${typography.lineHeight} · ${typography.fontWeight}`;
 }
 
 function renderTokenPathButton(
@@ -821,8 +823,31 @@ export function renderTypographyStyleCard(record: EditorTokenRecord, input: Typo
               {renderTypographyFieldInput(record, "fontFamily", typography.fontFamily, input)}
             </label>
             <label style={styleFieldStyle}>
-              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldSize")}</span>
-              {renderTypographyFieldInput(record, "fontSize", typography.fontSize, input)}
+              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldSize")} · pc</span>
+              {renderTypographyFieldInput(
+                record,
+                "fontSize",
+                responsiveSizePc(typography.fontSize),
+                input
+              )}
+            </label>
+            <label style={styleFieldStyle}>
+              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldSize")} · tablet</span>
+              {renderTypographyFieldInput(
+                record,
+                "fontSize.tablet",
+                typeof typography.fontSize === "object" ? (typography.fontSize.tablet ?? "") : "",
+                input
+              )}
+            </label>
+            <label style={styleFieldStyle}>
+              <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldSize")} · mobile</span>
+              {renderTypographyFieldInput(
+                record,
+                "fontSize.mobile",
+                typeof typography.fontSize === "object" ? (typography.fontSize.mobile ?? "") : "",
+                input
+              )}
             </label>
             <label style={styleFieldStyle}>
               <span style={styleFieldLabelStyle}>{input.t("tokenEditor.fieldLine")}</span>
@@ -1405,6 +1430,7 @@ function ColorGroupHeader({
 
 export function renderColorComparisonMatrix(input: {
   t: Translate;
+  title?: string;
   model: ColorComparisonMatrixModel;
   lightLookup: TokenLookup;
   darkLookup: TokenLookup;
@@ -1425,7 +1451,7 @@ export function renderColorComparisonMatrix(input: {
     <div style={tokenMatrixPanelStyle}>
       <div style={cardHeaderStyle}>
         <div>
-          <strong>{input.t("tokenEditor.colorMatrix")}</strong>
+          <strong>{input.title ?? input.t("tokenEditor.colorMatrix")}</strong>
           <p style={inlineHelpStyle}>
             {input.t("tokenEditor.colorMatrixHelp", {
               count: input.model.totalRecords,

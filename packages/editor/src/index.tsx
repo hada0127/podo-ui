@@ -18,7 +18,7 @@ import {
   type IconManifest,
   type TokenDocument,
 } from "@podo/spec";
-import { buildIconFontWoff2, normalizeIconSvg } from "@podo/icon-build";
+import { buildIconFontWoff2, sanitizeIconSvg } from "@podo/icon-build";
 import {
   collectTokenUsages,
   renameTokenGroupInDocuments,
@@ -73,11 +73,13 @@ import {
   createTokenMatrix,
   createTypographyWorkspaceModel,
   groupTokenRecordsByType,
+  isBaseColorTokenPath,
   TOKEN_REFERENCE_LIST_ID,
   tokenReferenceOptions,
   isTypographyWorkspaceTokenRecord,
   isTypographyWorkspaceType,
   tokenRecordKey,
+  type TokenTypeGroup,
   type TypographyTokenField,
 } from "./token-model.js";
 export {
@@ -414,6 +416,7 @@ export function PodoEditorApp({
   const [selectedTokenKey, setSelectedTokenKey] = useState<string | undefined>();
   const [tokenDraft, setTokenDraft] = useState<EditorTokenDraft>(() => createNewTokenDraft());
   const [typographyView, setTypographyView] = useState(false);
+  const [baseColorView, setBaseColorView] = useState(false);
   const [tokenDraftError, setTokenDraftError] = useState<string | undefined>();
   // Selection is controlled when `selectedComponentIdProp` is provided (host owns
   // URL routing), otherwise it falls back to internal state.
@@ -559,8 +562,12 @@ export function PodoEditorApp({
     [tokenRecords]
   );
   const previewTokenLookup = effectiveColorScheme === "dark" ? darkTokenLookup : lightTokenLookup;
-  const colorComparisonMatrix = useMemo(
-    () => createColorComparisonMatrix(baseTokenRecords),
+  const basicColorMatrix = useMemo(
+    () => createColorComparisonMatrix(baseTokenRecords, { include: "basic" }),
+    [baseTokenRecords]
+  );
+  const baseColorMatrix = useMemo(
+    () => createColorComparisonMatrix(baseTokenRecords, { include: "base" }),
     [baseTokenRecords]
   );
   const tokenPickerOptions = useMemo<TokenPickerOption[]>(
@@ -585,10 +592,14 @@ export function PodoEditorApp({
   // Color-only reference options for the color matrix token picker. Only tokens
   // that resolve to a color carry a swatch, which are exactly the references a
   // color value should be allowed to point at.
-  const colorTokenPickerOptions = useMemo<TokenPickerOption[]>(
-    () => tokenPickerOptions.filter((option) => option.swatch !== undefined),
-    [tokenPickerOptions]
-  );
+  const colorTokenPickerOptions = useMemo<TokenPickerOption[]>(() => {
+    const colors = tokenPickerOptions.filter((option) => option.swatch !== undefined);
+    // Base palette tokens are usable everywhere but are offered AFTER the basic
+    // colors when picking a token reference, per the base-color contract.
+    const basic = colors.filter((option) => !isBaseColorTokenPath(option.label));
+    const base = colors.filter((option) => isBaseColorTokenPath(option.label));
+    return [...basic, ...base];
+  }, [tokenPickerOptions]);
   const selectedToken = selectedTokenKey
     ? tokenRecords.find((record) => tokenRecordKey(record) === selectedTokenKey)
     : undefined;
@@ -931,6 +942,7 @@ export function PodoEditorApp({
     }
   };
   const selectTokenType = (type: DesignToken["$type"]): void => {
+    setBaseColorView(false);
     setTypographyView(isTypographyWorkspaceType(type));
     const firstRecord =
       type === "typography"
@@ -946,6 +958,20 @@ export function PodoEditorApp({
       type,
       path: `${type}.example.value`,
     });
+  };
+  // "color" and "base color" are separate sidebar entries (both $type "color");
+  // the base-color entry switches to a dedicated view of the base palette.
+  const selectTokenGroup = (group: TokenTypeGroup): void => {
+    if (group.view === "baseColor") {
+      setBaseColorView(true);
+      setTypographyView(false);
+      const firstBase = baseTokenRecords.find(
+        (record) => record.token.$type === "color" && isBaseColorTokenPath(record.path)
+      );
+      setSelectedTokenKey(firstBase ? tokenRecordKey(firstBase) : undefined);
+      return;
+    }
+    selectTokenType(group.type);
   };
   const commitTokenRecordDraft = (
     record: EditorTokenRecord,
@@ -995,6 +1021,25 @@ export function PodoEditorApp({
       } else {
         delete nextValue.paragraphSpacing;
       }
+    } else if (field === "fontSize" || field === "fontSize.tablet" || field === "fontSize.mobile") {
+      // fontSize is responsive: edit the pc base or a breakpoint override.
+      const current = nextValue.fontSize;
+      const size =
+        typeof current === "object" && current !== null
+          ? { ...current }
+          : { pc: typeof current === "string" ? current : "" };
+      const text = valueText.trim();
+      if (field === "fontSize") {
+        size.pc = valueText;
+      } else {
+        const breakpoint = field === "fontSize.tablet" ? "tablet" : "mobile";
+        if (text) {
+          size[breakpoint] = valueText;
+        } else {
+          delete size[breakpoint];
+        }
+      }
+      nextValue.fontSize = size;
     } else {
       nextValue[field] = valueText;
     }
@@ -1525,21 +1570,24 @@ export function PodoEditorApp({
     setIconModel(model);
   };
   const addIconFromSvg = (rawSvg: string, name?: string): void => {
-    void (async () => {
-      try {
-        const normalized = await normalizeIconSvg(rawSvg);
-        const result = addIcon(iconModelRef.current, {
-          name: name && name.trim() ? name : "icon",
-          svg: normalized,
-          floor: DEFAULT_ICON_CODEPOINT_FLOOR,
-        });
-        applyIconModel(result.model);
-        setSelectedIconName(result.name);
-        setIconDraftError(undefined);
-      } catch (error) {
-        setIconDraftError(localizeError(error, t, "chrome.error.svgAdd"));
+    try {
+      // Icons are stored as stroke SVG and only expanded to a fill font at build
+      // time, so ingress sanitizes (keeps stroke geometry) rather than flattening.
+      const svg = sanitizeIconSvg(rawSvg);
+      if (!svg.trim()) {
+        throw new Error("The SVG has no drawable geometry.");
       }
-    })();
+      const result = addIcon(iconModelRef.current, {
+        name: name && name.trim() ? name : "icon",
+        svg,
+        floor: DEFAULT_ICON_CODEPOINT_FLOOR,
+      });
+      applyIconModel(result.model);
+      setSelectedIconName(result.name);
+      setIconDraftError(undefined);
+    } catch (error) {
+      setIconDraftError(localizeError(error, t, "chrome.error.svgAdd"));
+    }
   };
   const renameSelectedIcon = (to: string): void => {
     if (!selectedIconName) {
@@ -1554,15 +1602,16 @@ export function PodoEditorApp({
       return;
     }
     const name = selectedIconName;
-    void (async () => {
-      try {
-        const normalized = await normalizeIconSvg(rawSvg);
-        applyIconModel(replaceIconSvg(iconModelRef.current, name, normalized));
-        setIconDraftError(undefined);
-      } catch (error) {
-        setIconDraftError(localizeError(error, t, "chrome.error.svgReplace"));
+    try {
+      const svg = sanitizeIconSvg(rawSvg);
+      if (!svg.trim()) {
+        throw new Error("The SVG has no drawable geometry.");
       }
-    })();
+      applyIconModel(replaceIconSvg(iconModelRef.current, name, svg));
+      setIconDraftError(undefined);
+    } catch (error) {
+      setIconDraftError(localizeError(error, t, "chrome.error.svgReplace"));
+    }
   };
   const updateSelectedIconTags = (tags: string[]): void => {
     if (!selectedIconName) {
@@ -1790,7 +1839,8 @@ export function PodoEditorApp({
               tokenGroups={tokenGroups}
               tokenDraft={tokenDraft}
               typographyWorkspaceActive={typographyWorkspaceActive}
-              selectTokenType={selectTokenType}
+              baseColorView={baseColorView}
+              onSelectGroup={selectTokenGroup}
             />
           ) : null}
           {effectiveActivePanel === "icons" ? (
@@ -1860,9 +1910,11 @@ export function PodoEditorApp({
               selectedTokenKey={selectedTokenKey}
               setSelectedTokenKey={setSelectedTokenKey}
               typographyWorkspaceActive={typographyWorkspaceActive}
+              baseColorView={baseColorView}
               typographyWorkspace={typographyWorkspace}
               tokenMatrix={tokenMatrix}
-              colorComparisonMatrix={colorComparisonMatrix}
+              basicColorMatrix={basicColorMatrix}
+              baseColorMatrix={baseColorMatrix}
               colorTokenPickerOptions={colorTokenPickerOptions}
               previewTokenLookup={previewTokenLookup}
               lightTokenLookup={lightTokenLookup}

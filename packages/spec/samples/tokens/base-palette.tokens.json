@@ -1,0 +1,1153 @@
+{
+  "schemaVersion": "2.0.0",
+  "kind": "tokens",
+  "category": "primitive",
+  "tokens": {
+    "color": {
+      "base": {
+        "red": {
+          "5": {
+            "$type": "color",
+            "$value": "#FEF1F1",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "#FFE0DF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "#FFADAD",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "#FF8985",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "#F56666",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "#F23B3B",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "#EE1818",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "#CD0404",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "#8F0000",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "#5F0000",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "red"]
+              }
+            }
+          }
+        },
+        "rose": {
+          "5": {
+            "$type": "color",
+            "$value": "#FEF1F2",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "#FCD9DC",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "#FAB7BD",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "#F8969E",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "#F66F7A",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "#F15764",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "#D63D4A",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "#BF3742",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "#992C35",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "#732128",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "rose"]
+              }
+            }
+          }
+        },
+        "green": {
+          "5": {
+            "$type": "color",
+            "$value": "#ECF8EF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "#C5E9CD",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "#A9DEB4",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "#81CF92",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "#57C16F",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "#3EA856",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "#38994E",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "#308242",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "#256533",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "#1C4D27",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "green"]
+              }
+            }
+          }
+        },
+        "gold": {
+          "5": {
+            "$type": "color",
+            "$value": "#FFF7E6",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "#FFEBC2",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "#FFD88A",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "#FFC654",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "#FFBB33",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "#FFAA00",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "#E89B00",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "#B57900",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "#8C5E00",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "#6B4700",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gold"]
+              }
+            }
+          }
+        },
+        "orange": {
+          "5": {
+            "$type": "color",
+            "$value": "#FFF4F0",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "#FFDACC",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "#FFB599",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "#FE9975",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "#FE8052",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "#FF6A33",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "#FF5212",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "#DB3B00",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "#992900",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "#661C00",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "orange"]
+              }
+            }
+          }
+        },
+        "blue": {
+          "5": {
+            "$type": "color",
+            "$value": "#EBF5FF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "#C7E3FF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "#8FC8FF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "#70B9FF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "#56ACFF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "#0095FF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "#0074E5",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "#0056AA",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "#00407F",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "#002B55",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "blue"]
+              }
+            }
+          }
+        },
+        "royal-blue": {
+          "5": {
+            "$type": "color",
+            "$value": "#F1F4FD",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "#D0DBFB",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "#ABBEF7",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "#819EF3",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "#577DEF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "#426CED",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "#1245E2",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "#123BBA",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "#0D2C8B",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "#091D5D",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "royal-blue"]
+              }
+            }
+          }
+        },
+        "classic-blue": {
+          "5": {
+            "$type": "color",
+            "$value": "#F5F9FF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "#E6F0FE",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "#CEE2FD",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "#A0C2EE",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "#76A0D8",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "#4A78B5",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "#34547E",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "#2D486C",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "#253C5A",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "#1E3048",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "classic-blue"]
+              }
+            }
+          }
+        },
+        "gray": {
+          "0": {
+            "$type": "color",
+            "$value": "#FFFFFF",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "5": {
+            "$type": "color",
+            "$value": "#F9F9F9",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "#F4F4F5",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "#E4E4E7",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "#D1D2D6",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "#9FA2AD",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "#767985",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "#50555E",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "#3E424B",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "#27272A",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "#18181B",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          },
+          "100": {
+            "$type": "color",
+            "$value": "#000000",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "gray"]
+              }
+            }
+          }
+        },
+        "alpha-white": {
+          "5": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.05)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.1)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.25)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.3)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.4)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.5)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.6)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.7)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.8)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.9)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-white"]
+              }
+            }
+          }
+        },
+        "alpha-black": {
+          "5": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.05)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          },
+          "10": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.1)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          },
+          "20": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.25)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          },
+          "30": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.3)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          },
+          "40": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.4)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          },
+          "50": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.5)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          },
+          "60": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.6)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          },
+          "70": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.7)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          },
+          "80": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.8)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          },
+          "90": {
+            "$type": "color",
+            "$value": "rgba(0, 0, 0, 0.9)",
+            "$extensions": {
+              "podo": {
+                "scope": "primitive",
+                "roles": ["base", "alpha-black"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

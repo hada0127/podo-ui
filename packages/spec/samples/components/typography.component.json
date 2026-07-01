@@ -46,8 +46,8 @@
   "states": [],
   "tokens": {
     "root.color": "{semantic.color.text.default}",
-    "body.typography": "{typography.body.dashboard}",
-    "heading.typography": "{typography.h1.dashboard}"
+    "body.typography": "{typography.body.medium}",
+    "heading.typography": "{typography.heading.xlarge}"
   },
   "targets": {
     "web": { "supported": true, "limitations": [] },

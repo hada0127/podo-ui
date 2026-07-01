@@ -52,11 +52,14 @@ async function buildFontAsset(model: EditorIconManifest): Promise<EmbeddedFontAs
 }
 
 describe("icons-model", () => {
-  it("imports the generated v1 default manifest", () => {
+  it("imports the generated Figma default manifest", () => {
     const model = fromIconManifest(DEFAULT_ICON_MANIFEST);
-    expect(Object.keys(model.icons).length).toBe(168);
-    expect(model.icons.star?.codepoint).toBe("E900");
-    expect(DEFAULT_ICON_CODEPOINT_FLOOR).toBe(0xe9b8);
+    expect(Object.keys(model.icons).length).toBe(77);
+    // Codepoints are allocated from 0xE001 in sorted-name order.
+    expect(model.icons.airplane?.codepoint).toBe("E001");
+    expect(model.icons.close).toBeDefined();
+    expect(model.groups.arrow).toContain("arrow-left");
+    expect(DEFAULT_ICON_CODEPOINT_FLOOR).toBe(0xe04e);
   });
 
   it("allocates fresh codepoints that never collide", () => {
