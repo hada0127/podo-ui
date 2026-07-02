@@ -54,6 +54,7 @@ import {
   updateComponentMeta,
   upsertComponentProp,
   upsertComponentSlot,
+  upsertComponentCombinationTokenBinding,
   upsertComponentStateTokenBinding,
   upsertComponentTokenBinding,
   upsertComponentVariant,
@@ -1543,45 +1544,6 @@ export function PodoEditorApp({
       setComponentDraftError(localizeError(error, t, "chrome.error.componentMeta"));
     }
   };
-  // Design editor: set/clear a `<part>.<property>` appearance binding and commit
-  // so the live preview re-renders (bridged onto v1 CSS vars in previews.tsx).
-  const updateComponentTokenBinding = (key: string, reference: string): void => {
-    if (!selectedComponentForSpec) {
-      return;
-    }
-    try {
-      commitComponentSpec(upsertComponentTokenBinding(selectedComponentForSpec, key, reference));
-      setComponentDraftError(undefined);
-    } catch (error) {
-      setComponentDraftError(localizeError(error, t, "chrome.error.appearanceBinding"));
-    }
-  };
-  // Writes an appearance binding into a specific variant value's overrides
-  // (variant.valueTokens[value]) so one variant can be styled independently.
-  const updateComponentVariantValueTokenBinding = (
-    variantName: string,
-    value: string,
-    key: string,
-    reference: string
-  ): void => {
-    if (!selectedComponentForSpec) {
-      return;
-    }
-    try {
-      commitComponentSpec(
-        upsertComponentVariantValueTokenBinding(
-          selectedComponentForSpec,
-          variantName,
-          value,
-          key,
-          reference
-        )
-      );
-      setComponentDraftError(undefined);
-    } catch (error) {
-      setComponentDraftError(localizeError(error, t, "chrome.error.variantBinding"));
-    }
-  };
   // Figma-style layer rename: renames an anatomy part + migrates its token keys.
   // Returns success so the panel only moves its selection to a name that exists.
   const renameAnatomyPart = (fromName: string, toName: string): boolean => {
@@ -1611,8 +1573,6 @@ export function PodoEditorApp({
   };
   const addAnatomyPart = (name: string, parent?: string): void =>
     runAnatomyEdit((component) => addComponentAnatomyPart(component, name, parent));
-  const removeAnatomyPart = (partName: string): void =>
-    runAnatomyEdit((component) => removeComponentAnatomyPart(component, partName));
   const reorderAnatomyPart = (partName: string, beforeName: string | null): void =>
     runAnatomyEdit((component) => reorderComponentAnatomyPart(component, partName, beforeName));
   const reparentAnatomyPart = (partName: string, newParent: string | null): void =>
@@ -1626,27 +1586,40 @@ export function PodoEditorApp({
     runAnatomyEdit((component) =>
       moveComponentAnatomyPart(component, partName, newParent, beforeName)
     );
-  // Figma-style deep duplicate (subtree + bindings); returns the copy's name so
-  // the panel can select it.
-  const duplicateAnatomyPart = (partName: string): string | undefined => {
-    if (!selectedComponentForSpec) return undefined;
+  // Multi-select bulk ops: ONE derivation + ONE commit across all parts.
+  const setAnatomyPartsFlags = (
+    partNames: string[],
+    flags: { hidden?: boolean; locked?: boolean }
+  ) =>
+    runAnatomyEdit((component) =>
+      partNames.reduce(
+        (next, partName) => setComponentAnatomyPartFlags(next, partName, flags),
+        component
+      )
+    );
+  const removeAnatomyParts = (partNames: string[]) =>
+    runAnatomyEdit((component) =>
+      partNames.reduce((next, partName) => removeComponentAnatomyPart(next, partName), component)
+    );
+  const duplicateAnatomyParts = (partNames: string[]): string[] => {
+    if (!selectedComponentForSpec) return [];
     try {
-      const { component, copiedName } = duplicateComponentAnatomyPart(
-        selectedComponentForSpec,
-        partName
-      );
-      if (component === selectedComponentForSpec) return undefined; // unknown part → no-op
-      commitComponentSpec(component);
+      let next = selectedComponentForSpec;
+      const copied: string[] = [];
+      for (const partName of partNames) {
+        const result = duplicateComponentAnatomyPart(next, partName);
+        if (result.component !== next) copied.push(result.copiedName);
+        next = result.component;
+      }
+      if (next === selectedComponentForSpec) return [];
+      commitComponentSpec(next);
       setComponentDraftError(undefined);
-      return copiedName;
+      return copied;
     } catch (error) {
       setComponentDraftError(localizeError(error, t, "chrome.error.layerEdit"));
-      return undefined;
+      return [];
     }
   };
-  // Figma-style eye/lock flags on a layer.
-  const setAnatomyPartFlags = (partName: string, flags: { hidden?: boolean; locked?: boolean }) =>
-    runAnatomyEdit((component) => setComponentAnatomyPartFlags(component, partName, flags));
   // Inline (Figma Properties panel) variant axis/value operations. All commit
   // immediately; errors surface in the shared component draft banner.
   const runVariantEdit = (next: (component: ComponentDocument) => ComponentDocument): void => {
@@ -1676,24 +1649,6 @@ export function PodoEditorApp({
     runVariantEdit((component) => removeComponentVariantValue(component, axisName, value));
   const setVariantDefault = (axisName: string, value: string): void =>
     runVariantEdit((component) => setComponentVariantDefault(component, axisName, value));
-  // Writes an appearance binding into a state's tokens (Apply to: hover/disabled…).
-  const updateComponentStateTokenBinding = (
-    stateName: string,
-    key: string,
-    reference: string
-  ): void => {
-    if (!selectedComponentForSpec) {
-      return;
-    }
-    try {
-      commitComponentSpec(
-        upsertComponentStateTokenBinding(selectedComponentForSpec, stateName, key, reference)
-      );
-      setComponentDraftError(undefined);
-    } catch (error) {
-      setComponentDraftError(localizeError(error, t, "chrome.error.appearanceBinding"));
-    }
-  };
   // Applies SEVERAL bindings in one derivation + one commit. Sequential calls to
   // the single-binding handlers within one event would all derive from the same
   // stale spec and clobber each other — auto layout add/remove needs this.
@@ -1701,7 +1656,8 @@ export function PodoEditorApp({
     scope:
       | { kind: "base" }
       | { kind: "variant"; axis: string; value: string }
-      | { kind: "state"; state: string },
+      | { kind: "state"; state: string }
+      | { kind: "combination"; when: Record<string, string> },
     entries: Array<[key: string, reference: string]>
   ): void => {
     if (!selectedComponentForSpec || !entries.length) {
@@ -1721,7 +1677,9 @@ export function PodoEditorApp({
                   key,
                   reference
                 )
-              : upsertComponentStateTokenBinding(next, scope.state, key, reference);
+              : scope.kind === "state"
+                ? upsertComponentStateTokenBinding(next, scope.state, key, reference)
+                : upsertComponentCombinationTokenBinding(next, scope.when, key, reference);
       }
       commitComponentSpec(next);
       setComponentDraftError(undefined);
@@ -2265,18 +2223,15 @@ export function PodoEditorApp({
               selectedTokenKey={selectedTokenKey}
               setSelectedTokenKey={setSelectedTokenKey}
               updateTokenMatrixCell={updateTokenMatrixCell}
-              updateComponentTokenBinding={updateComponentTokenBinding}
-              updateComponentVariantValueTokenBinding={updateComponentVariantValueTokenBinding}
-              updateComponentStateTokenBinding={updateComponentStateTokenBinding}
               updateComponentBindingsBatch={updateComponentBindingsBatch}
               renameAnatomyPart={renameAnatomyPart}
               addAnatomyPart={addAnatomyPart}
-              removeAnatomyPart={removeAnatomyPart}
               reorderAnatomyPart={reorderAnatomyPart}
               reparentAnatomyPart={reparentAnatomyPart}
               moveAnatomyPart={moveAnatomyPart}
-              duplicateAnatomyPart={duplicateAnatomyPart}
-              setAnatomyPartFlags={setAnatomyPartFlags}
+              duplicateAnatomyParts={duplicateAnatomyParts}
+              setAnatomyPartsFlags={setAnatomyPartsFlags}
+              removeAnatomyParts={removeAnatomyParts}
               addVariantAxis={addVariantAxis}
               renameVariantAxis={renameVariantAxis}
               removeVariantAxis={removeVariantAxis}

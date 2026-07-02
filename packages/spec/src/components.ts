@@ -109,6 +109,14 @@ export const componentVariantSchema = z
     }
   });
 
+// Compound variant condition (Figma: styling a specific combination like
+// theme=primary AND size=lg): `when` names one value per (subset of) variant
+// axes; `tokens` are the extra bindings applied when EVERY named axis matches.
+export const componentCombinationSchema = z.object({
+  when: z.record(identifierSchema, z.string().min(1)),
+  tokens: z.record(dottedPathSchema, componentBindingValueSchema),
+});
+
 export const componentStateSchema = z.object({
   name: z.enum([
     "hover",
@@ -159,6 +167,8 @@ export const componentDocumentSchema = z
     variants: z.array(componentVariantSchema).default([]),
     states: z.array(componentStateSchema).default([]),
     tokens: z.record(dottedPathSchema, componentBindingValueSchema).default({}),
+    // Compound variant conditions, applied after per-axis tokens (later wins).
+    combinations: z.array(componentCombinationSchema).default([]),
     targets: z.object({
       web: targetSupportSchema,
       react: targetSupportSchema,
@@ -169,6 +179,27 @@ export const componentDocumentSchema = z
     examples: z.array(componentExampleSchema).default([]),
   })
   .superRefine((component, ctx) => {
+    // Compound conditions must reference declared axes and declared values.
+    for (const [index, combination] of component.combinations.entries()) {
+      for (const [axisName, value] of Object.entries(combination.when)) {
+        const axis = component.variants.find((variant) => variant.name === axisName);
+        if (!axis) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["combinations", index, "when", axisName],
+            message: `Combination references unknown variant "${axisName}".`,
+            params: { i18n: "spec.combinationAxis", name: axisName },
+          });
+        } else if (!axis.values.includes(value)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["combinations", index, "when", axisName],
+            message: `Combination value "${value}" is not declared on variant "${axisName}".`,
+            params: { i18n: "spec.combinationValue", value, name: axisName },
+          });
+        }
+      }
+    }
     const names = new Set<string>();
     for (const [index, part] of component.anatomy.entries()) {
       if (names.has(part.name)) {
@@ -239,6 +270,12 @@ export function collectComponentTokenBindings(component: ComponentDocument): Map
       for (const [path, reference] of Object.entries(map)) {
         bindings.set(`variants.${variant.name}.${value}.${path}`, reference);
       }
+    }
+  }
+
+  for (const [index, combination] of component.combinations.entries()) {
+    for (const [path, reference] of Object.entries(combination.tokens)) {
+      bindings.set(`combinations.${index}.${path}`, reference);
     }
   }
 

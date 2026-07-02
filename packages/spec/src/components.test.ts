@@ -184,6 +184,36 @@ describe("component anatomy schema validation", () => {
     ).toThrow();
   });
 
+  it("accepts compound variant combinations and validates axes/values", () => {
+    const base = componentWithAnatomy([{ name: "root" }]) as Record<string, unknown>;
+    const withCombo = {
+      ...base,
+      variants: [
+        { name: "variant", values: ["a", "b"], default: "a" },
+        { name: "size", values: ["sm", "lg"], default: "sm" },
+      ],
+      combinations: [
+        { when: { variant: "b", size: "lg" }, tokens: { "root.background": "#000000" } },
+      ],
+    };
+    const parsed = parseComponentDocument(withCombo) as {
+      combinations: Array<{ when: Record<string, string> }>;
+    };
+    expect(parsed.combinations[0]?.when).toEqual({ variant: "b", size: "lg" });
+    expect(() =>
+      parseComponentDocument({
+        ...withCombo,
+        combinations: [{ when: { ghost: "x" }, tokens: {} }],
+      })
+    ).toThrow(/unknown variant/i);
+    expect(() =>
+      parseComponentDocument({
+        ...withCombo,
+        combinations: [{ when: { size: "xl" }, tokens: {} }],
+      })
+    ).toThrow(/not declared/i);
+  });
+
   it("attaches an i18n code to anatomy validation issues", () => {
     try {
       parseComponentDocument(

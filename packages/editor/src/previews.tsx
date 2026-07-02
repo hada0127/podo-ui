@@ -179,7 +179,11 @@ export function renderComponentPreviewMatrix(input: {
   component: ComponentDocument;
   selections: Record<string, string>;
   lookup: TokenLookup;
-  onSelect(selections: Record<string, string>, part?: string): void;
+  onSelect(
+    selections: Record<string, string>,
+    part?: string,
+    modifiers?: { toggle?: boolean }
+  ): void;
   // Figma-style "add variant" straight from the set: renders a small + next to
   // each axis name in the header. Omitted for style-only components.
   onAddValue?(axisName: string): void;
@@ -255,7 +259,9 @@ export function renderComponentPreviewMatrix(input: {
                     event.stopPropagation();
                     input.onSelect(
                       cellOnSelect,
-                      componentPartForElement(input.component.id, event.target as Element)
+                      componentPartForElement(input.component.id, event.target as Element),
+                      // Shift/Cmd extends the layer multi-selection (Figma canvas).
+                      { toggle: event.shiftKey || event.metaKey || event.ctrlKey }
                     );
                   }}
                   onKeyDown={(event) => {
@@ -373,7 +379,8 @@ export function renderComponentPreviewMatrix(input: {
                         onClick={(event) =>
                           input.onSelect(
                             cellOnSelect,
-                            componentPartForElement(input.component.id, event.target as Element)
+                            componentPartForElement(input.component.id, event.target as Element),
+                            { toggle: event.shiftKey || event.metaKey || event.ctrlKey }
                           )
                         }
                         onKeyDown={(event) => {
@@ -1244,6 +1251,23 @@ const APPEARANCE_CSS_PROPERTY: Record<string, string> = {
   blendmode: "mix-blend-mode",
   mixblendmode: "mix-blend-mode",
   border: "border",
+  // Gradient fills (Figma linear/radial/angular -> CSS gradients).
+  gradient: "background-image",
+  backgroundimage: "background-image",
+  // Grid auto layout mode.
+  gridtemplatecolumns: "grid-template-columns",
+  gridtemplaterows: "grid-template-rows",
+  gridautoflow: "grid-auto-flow",
+  justifyitems: "justify-items",
+  gridcolumn: "grid-column",
+  gridrow: "grid-row",
+  // Absolute positioning (Figma auto-layout child "absolute position").
+  position: "position",
+  top: "top",
+  right: "right",
+  bottom: "bottom",
+  left: "left",
+  zindex: "z-index",
 };
 
 // Per-component anatomy-part -> CSS selector (descendant of the preview). Filled
@@ -1461,6 +1485,16 @@ export function resolveComponentAppearance(
     if (!value) continue;
     Object.assign(merged, variant.tokens ?? {});
     Object.assign(merged, variant.valueTokens?.[value] ?? {});
+  }
+  // Compound conditions (theme=primary AND size=lg): applied when EVERY named
+  // axis matches the current selection; document order, later wins.
+  for (const combination of component.combinations ?? []) {
+    const matches = Object.entries(combination.when).every(([axisName, value]) => {
+      const axis = (component.variants ?? []).find((item) => item.name === axisName);
+      const selected = selections[axisName] ?? axis?.default ?? axis?.values[0];
+      return selected === value;
+    });
+    if (matches) Object.assign(merged, combination.tokens);
   }
   const stateName = selections.state;
   if (stateName && stateName !== "default") {

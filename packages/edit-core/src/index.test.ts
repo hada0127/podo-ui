@@ -20,6 +20,7 @@ import {
   reparentComponentAnatomyPart,
   setComponentAnatomyPartFlags,
   setComponentVariantDefault,
+  upsertComponentCombinationTokenBinding,
   upsertComponentSlot,
   upsertComponentStateTokenBinding,
   upsertComponentTokenBinding,
@@ -538,6 +539,63 @@ describe("inline variant axis/value operations", () => {
     const next = setComponentVariantDefault(hierarchyComponent, "tone", "b");
     expect(next.variants[0]?.default).toBe("b");
     expect(() => setComponentVariantDefault(next, "tone", "zzz")).toThrow(/default/i);
+  });
+});
+
+describe("compound combination bindings", () => {
+  const twoAxis = parseComponentDocument({
+    ...JSON.parse(JSON.stringify(hierarchyComponent)),
+    variants: [
+      { name: "tone", values: ["a", "b"], default: "a" },
+      { name: "size", values: ["sm", "lg"], default: "sm" },
+    ],
+  });
+
+  it("creates, updates, and removes a combination entry", () => {
+    const when = { tone: "b", size: "lg" };
+    const set = upsertComponentCombinationTokenBinding(
+      twoAxis,
+      when,
+      "root.background",
+      "{color.combo}"
+    );
+    expect(set.combinations).toHaveLength(1);
+    expect(set.combinations[0]?.tokens["root.background"]).toBe("{color.combo}");
+    // Same `when` in a different key order updates the SAME entry.
+    const updated = upsertComponentCombinationTokenBinding(
+      set,
+      { size: "lg", tone: "b" },
+      "root.color",
+      "#ffffff"
+    );
+    expect(updated.combinations).toHaveLength(1);
+    expect(Object.keys(updated.combinations[0]?.tokens ?? {})).toHaveLength(2);
+    // Clearing the last binding drops the entry entirely.
+    const cleared = upsertComponentCombinationTokenBinding(
+      upsertComponentCombinationTokenBinding(updated, when, "root.background", ""),
+      when,
+      "root.color",
+      ""
+    );
+    expect(cleared.combinations).toHaveLength(0);
+  });
+
+  it("rejects combinations naming unknown axes/values via zod", () => {
+    expect(() =>
+      upsertComponentCombinationTokenBinding(twoAxis, { ghost: "x" }, "root.color", "#fff")
+    ).toThrow();
+  });
+
+  it("part rename migrates combination binding keys", () => {
+    const seeded = upsertComponentCombinationTokenBinding(
+      twoAxis,
+      { tone: "b" },
+      "icon.color",
+      "{color.combo}"
+    );
+    const renamed = renameComponentAnatomyPart(seeded, "icon", "glyph");
+    expect(renamed.combinations[0]?.tokens["glyph.color"]).toBe("{color.combo}");
+    expect(renamed.combinations[0]?.tokens["icon.color"]).toBeUndefined();
   });
 });
 

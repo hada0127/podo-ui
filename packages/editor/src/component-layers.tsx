@@ -130,7 +130,7 @@ interface LayerMenu {
  *  pure selection surface: no rename/drag/menu/flag edits. */
 export function LayersPanel({
   anatomy,
-  selectedPart,
+  selectedParts,
   highlightPart,
   structureLocked = false,
   onSelect,
@@ -148,11 +148,13 @@ export function LayersPanel({
   onPasteAppearance,
 }: {
   anatomy: ComponentDocument["anatomy"];
-  selectedPart: string;
+  // Ordered multi-selection; the LAST entry is the primary part (Figma-style
+  // Shift+click range / Cmd+click toggle).
+  selectedParts: string[];
   // Row to tint while its preview element is hovered (preview → layers sync).
   highlightPart?: string | null;
   structureLocked?: boolean;
-  onSelect: (part: string) => void;
+  onSelect: (part: string, options?: { toggle?: boolean; range?: string[] }) => void;
   onHover?: (part: string | null) => void;
   onRename: (from: string, to: string) => void;
   onAdd: (name: string, parent?: string) => void;
@@ -363,7 +365,8 @@ export function LayersPanel({
       <div style={layerTreeStyle} role="tree">
         {visible.map((node) => {
           const hasChildren = node.children.length > 0;
-          const isActive = node.name === selectedPart;
+          const isActive = selectedParts.includes(node.name);
+          const isPrimary = selectedParts.at(-1) === node.name;
           const isHovered = hovered === node.name;
           const hint = dropHint?.part === node.name ? dropHint.zone : null;
           return (
@@ -380,12 +383,37 @@ export function LayersPanel({
                 ...layerRowStyle,
                 ...(node.name === highlightPart && !isActive ? { background: "#f1f5fb" } : {}),
                 ...(isActive ? layerRowActiveStyle : {}),
+                ...(isActive && !isPrimary ? { border: "1px solid transparent" } : {}),
                 paddingLeft: 6 + node.depth * 14,
                 position: "relative",
                 ...(node.hidden ? { opacity: 0.45 } : {}),
                 ...(hint === "inside" ? { outline: "2px solid #c4b5fd", outlineOffset: -2 } : {}),
               }}
-              onClick={() => onSelect(node.name)}
+              onClick={(event) => {
+                if (event.shiftKey && selectedParts.length) {
+                  // Figma Shift+click: contiguous range over the VISIBLE rows
+                  // from the primary selection to the clicked row.
+                  const anchor = selectedParts.at(-1) as string;
+                  const anchorIndex = visible.findIndex((item) => item.name === anchor);
+                  const targetIndex = visible.findIndex((item) => item.name === node.name);
+                  if (anchorIndex >= 0 && targetIndex >= 0) {
+                    const [low, high] =
+                      anchorIndex < targetIndex
+                        ? [anchorIndex, targetIndex]
+                        : [targetIndex, anchorIndex];
+                    const range = visible.slice(low, high + 1).map((item) => item.name);
+                    // Clicked row last = primary.
+                    const ordered = [...range.filter((name) => name !== node.name), node.name];
+                    onSelect(node.name, { range: ordered });
+                    return;
+                  }
+                }
+                if (event.metaKey || event.ctrlKey) {
+                  onSelect(node.name, { toggle: true });
+                  return;
+                }
+                onSelect(node.name);
+              }}
               onDoubleClick={() => {
                 if (!structureLocked) setRenaming(node.name);
               }}

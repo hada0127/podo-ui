@@ -9,8 +9,10 @@ import {
 } from "./previews.js";
 import { LayersPanel } from "./component-layers.js";
 import {
+  parseGradient,
   parseShadowLayer,
   resizeModeFromValue,
+  serializeGradient,
   serializeShadowLayers,
   splitShadowLayers,
 } from "./components-panel.js";
@@ -352,6 +354,43 @@ describe("Figma-style layer flags, slot content, and variant add", () => {
     );
   });
 
+  it("gradient parse/serialize round-trips linear gradients with rgba stops", () => {
+    const value = "linear-gradient(45deg, rgba(124, 58, 237, 0.9) 0%, #4c9ffe 100%)";
+    const gradient = parseGradient(value);
+    expect(gradient).not.toBeNull();
+    expect(gradient?.type).toBe("linear");
+    expect(gradient?.angle).toBe("45deg");
+    expect(gradient?.stops).toEqual([
+      { color: "rgba(124, 58, 237, 0.9)", position: "0%" },
+      { color: "#4c9ffe", position: "100%" },
+    ]);
+    expect(serializeGradient(gradient!)).toBe(value);
+    expect(parseGradient("not-a-gradient")).toBeNull();
+  });
+
+  it("compound combinations apply only when every axis matches", () => {
+    const button = pick("button");
+    const withCombo = {
+      ...button,
+      combinations: [
+        {
+          when: { theme: "primary", variant: "solid" },
+          tokens: { "root.background": "#123456" },
+        },
+      ],
+    };
+    const matching = resolveComponentAppearance(withCombo, {
+      theme: "primary",
+      variant: "solid",
+    });
+    expect(matching["root.background"]).toBe("#123456");
+    const notMatching = resolveComponentAppearance(withCombo, {
+      theme: "primary",
+      variant: "text",
+    });
+    expect(notMatching["root.background"]).not.toBe("#123456");
+  });
+
   it("resizing modes map width/height values to auto/fixed/hug/fill", () => {
     expect(resizeModeFromValue("")).toBe("auto");
     expect(resizeModeFromValue("  ")).toBe("auto");
@@ -461,7 +500,7 @@ describe("LayersPanel Figma parity", () => {
   ];
   const noop = () => {};
   const baseProps = {
-    selectedPart: "root",
+    selectedParts: ["root"],
     onSelect: noop,
     onRename: noop,
     onAdd: noop,

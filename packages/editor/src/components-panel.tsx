@@ -170,7 +170,11 @@ function allowedTokenTypes(property: string): string[] {
   if (/background|^color$|fill|border-?color|stroke/.test(value)) return ["color"];
   if (/radius|corner/.test(value)) return ["radius"];
   if (/padding|gap|margin/.test(value)) return ["spacing"];
-  if (/border-?style|text-?decoration|text-?transform|blend|blur|overflow/.test(value))
+  if (
+    /border-?style|text-?decoration|text-?transform|blend|blur|overflow|gradient|grid|position/.test(
+      value
+    )
+  )
     return ["string"];
   if (/border-?width|outline-?width|width|height/.test(value)) return ["dimension"];
   if (/font-?family/.test(value)) return ["fontFamily"];
@@ -229,7 +233,7 @@ function appearanceGroup(property: string): (typeof APPEARANCE_GROUP_ORDER)[numb
   if (/radius|corner/.test(value)) return "Corners";
   if (/border|stroke|outline/.test(value)) return "Stroke";
   if (/background-?blur/.test(value)) return "Effects";
-  if (/background|^color$|fill/.test(value)) return "Fill";
+  if (/background|^color$|fill|gradient/.test(value)) return "Fill";
   if (/font|typography|line-?height|letter|text-?decoration|text-?transform/.test(value))
     return "Typography";
   if (/padding|gap|margin|width|height/.test(value)) return "Layout";
@@ -252,6 +256,8 @@ const COMMON_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: stri
   { property: "typography", defaultAlias: "{typography.paragraph.p3}" },
   { property: "opacity", defaultAlias: "1" },
   { property: "shadow", defaultAlias: "0 2px 8px rgba(0, 0, 0, 0.16)" },
+  // Figma gradient fill (background-image), edited structurally.
+  { property: "gradient", defaultAlias: "linear-gradient(90deg, #7c3aed 0%, #4c9ffe 100%)" },
   // Figma Effects: layer blur / background blur / blend mode.
   { property: "blur", defaultAlias: "blur(4px)" },
   { property: "background-blur", defaultAlias: "blur(8px)" },
@@ -320,11 +326,22 @@ const SIZE_SECTION_EXTRA_PROPERTIES = [
 ] as const;
 const normalizedProperty = (property: string): string =>
   property.toLowerCase().replace(/[-_]/g, "");
+// Everything the auto layout remove (×) clears — flex AND grid encodings.
+const AUTO_LAYOUT_CLEAR_PROPERTIES = [
+  ...AUTO_LAYOUT_FLEX_PROPERTIES,
+  "grid-template-columns",
+  "grid-template-rows",
+  "grid-auto-flow",
+  "justify-items",
+] as const;
+// Absolute positioning (Size section) owns the position/inset properties.
+const POSITION_PROPERTIES = ["position", "top", "right", "bottom", "left", "z-index"] as const;
 const AUTO_LAYOUT_HIDDEN_ALWAYS = new Set(
   [
-    ...AUTO_LAYOUT_FLEX_PROPERTIES,
+    ...AUTO_LAYOUT_CLEAR_PROPERTIES,
     ...SIZE_SECTION_PROPERTIES,
     ...SIZE_SECTION_EXTRA_PROPERTIES,
+    ...POSITION_PROPERTIES,
   ].map(normalizedProperty)
 );
 const AUTO_LAYOUT_HIDDEN_ACTIVE = new Set(
@@ -406,6 +423,9 @@ function stepDimensionValue(text: string, delta: number): string | undefined {
   const stepped = Math.round((Number.parseFloat(match[0]) + delta) * 100) / 100;
   return `${text.slice(0, match.index)}${stepped}${text.slice(match.index + match[0].length)}`;
 }
+
+// Sentinel for a property whose value differs across the multi-selection.
+const MIXED_VALUE = "__podo-mixed__";
 
 // In-app appearance clipboard (Figma Cmd+Alt+C / Cmd+Alt+V): the copied part's
 // effective property→value map, pasted onto another layer in one batch commit.
@@ -511,7 +531,7 @@ function ShadowStackEditor({
     <div style={{ display: "grid", gap: 6 }}>
       {layers.map((layer, index) => (
         <div
-          key={index}
+          key={`${layers.length}-${index}`}
           style={{
             display: "grid",
             gap: 4,
@@ -596,6 +616,178 @@ function ShadowStackEditor({
           }
         >
           {t("components.shadowAdd")}
+        </button>
+        <button type="button" style={smallButtonStyle} onClick={onClose}>
+          {t("components.done")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ---- Figma gradient fills: structured editor over CSS gradient() strings ----
+
+export interface GradientStop {
+  color: string;
+  position: string;
+}
+
+export interface GradientValue {
+  type: "linear" | "radial" | "conic";
+  angle: string;
+  stops: GradientStop[];
+}
+
+// Splits at top-level separators (commas or spaces), leaving rgba() intact.
+function splitTopLevel(value: string, separator: "," | " "): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = "";
+  for (const char of value) {
+    if (char === "(") depth += 1;
+    if (char === ")") depth -= 1;
+    const isSeparator = separator === "," ? char === "," : /\s/.test(char);
+    if (isSeparator && depth === 0) {
+      if (current.trim()) parts.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  if (current.trim()) parts.push(current.trim());
+  return parts;
+}
+
+export function parseGradient(value: string): GradientValue | null {
+  const match = /^(linear|radial|conic)-gradient\((.*)\)$/s.exec(value.trim());
+  if (!match) return null;
+  const type = match[1] as GradientValue["type"];
+  const args = splitTopLevel(match[2] ?? "", ",");
+  let angle = "90deg";
+  let stopArgs = args;
+  const first = args[0]?.trim() ?? "";
+  if (/deg$|^to |^from |rad$|turn$/.test(first) && type !== "radial") {
+    angle = first;
+    stopArgs = args.slice(1);
+  }
+  const stops = stopArgs.map((arg) => {
+    const parts = splitTopLevel(arg, " ");
+    const last = parts.at(-1) ?? "";
+    const hasPosition = parts.length > 1 && /%$|px$|em$/.test(last);
+    const position = hasPosition ? (parts.pop() as string) : "";
+    return { color: parts.join(" "), position };
+  });
+  return { type, angle, stops };
+}
+
+export function serializeGradient(gradient: GradientValue): string {
+  const stops = gradient.stops
+    .map((stop) => `${stop.color}${stop.position ? ` ${stop.position}` : ""}`)
+    .join(", ");
+  if (gradient.type === "linear") return `linear-gradient(${gradient.angle}, ${stops})`;
+  return `${gradient.type}-gradient(${stops})`;
+}
+
+const DEFAULT_GRADIENT: GradientValue = {
+  type: "linear",
+  angle: "90deg",
+  stops: [
+    { color: "#7c3aed", position: "0%" },
+    { color: "#4c9ffe", position: "100%" },
+  ],
+};
+
+/** Figma-style gradient editor: type, angle (linear), and a color-stop list. */
+function GradientEditor({
+  value,
+  onChange,
+  onClose,
+}: {
+  value: string;
+  onChange: (next: string) => void;
+  onClose: () => void;
+}) {
+  const t = useT();
+  const gradient = parseGradient(value) ?? DEFAULT_GRADIENT;
+  const commit = (next: GradientValue): void => onChange(serializeGradient(next));
+  const updateStop = (index: number, patch: Partial<GradientStop>): void =>
+    commit({
+      ...gradient,
+      stops: gradient.stops.map((stop, i) => (i === index ? { ...stop, ...patch } : stop)),
+    });
+  return (
+    <div style={{ display: "grid", gap: 6 }}>
+      <div style={autoLayoutRowStyle}>
+        <select
+          aria-label={t("components.gradientType")}
+          style={{ ...selectStyle, flex: 1, minWidth: 0 }}
+          value={gradient.type}
+          onChange={(event) =>
+            commit({ ...gradient, type: event.currentTarget.value as GradientValue["type"] })
+          }
+        >
+          <option value="linear">linear</option>
+          <option value="radial">radial</option>
+          <option value="conic">conic</option>
+        </select>
+        {gradient.type === "linear" ? (
+          <input
+            type="text"
+            aria-label={t("components.gradientAngle")}
+            defaultValue={gradient.angle}
+            style={{ ...inputStyle, width: 70, flexShrink: 0 }}
+            onBlur={(event) => commit({ ...gradient, angle: event.currentTarget.value || "90deg" })}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") event.currentTarget.blur();
+            }}
+          />
+        ) : null}
+      </div>
+      {gradient.stops.map((stop, index) => (
+        <div key={`${gradient.stops.length}-${index}`} style={autoLayoutRowStyle}>
+          <ColorSwatchPicker
+            label={t("components.gradientStop")}
+            swatchColor={stop.color}
+            value={parseColor(stop.color) ?? { r: 127, g: 127, b: 127, a: 1 }}
+            onOpen={() => {}}
+            onChange={(next) => updateStop(index, { color: formatColorValue(next) })}
+          />
+          <input
+            type="text"
+            aria-label={t("components.gradientStopPosition")}
+            defaultValue={stop.position}
+            placeholder="%"
+            style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+            onBlur={(event) => updateStop(index, { position: event.currentTarget.value })}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") event.currentTarget.blur();
+            }}
+          />
+          <button
+            type="button"
+            aria-label={t("components.gradientRemoveStop")}
+            style={appearanceRemoveStyle}
+            disabled={gradient.stops.length <= 2}
+            onClick={() =>
+              commit({ ...gradient, stops: gradient.stops.filter((_, i) => i !== index) })
+            }
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <div style={{ display: "flex", gap: 6 }}>
+        <button
+          type="button"
+          style={smallButtonStyle}
+          onClick={() =>
+            commit({
+              ...gradient,
+              stops: [...gradient.stops, { color: "#ffffff", position: "100%" }],
+            })
+          }
+        >
+          {t("components.gradientAddStop")}
         </button>
         <button type="button" style={smallButtonStyle} onClick={onClose}>
           {t("components.done")}
@@ -842,18 +1034,15 @@ export function ComponentsPanelWorkspace({
   selectedTokenKey,
   setSelectedTokenKey,
   updateTokenMatrixCell,
-  updateComponentTokenBinding,
-  updateComponentVariantValueTokenBinding,
-  updateComponentStateTokenBinding,
   updateComponentBindingsBatch,
   renameAnatomyPart,
   addAnatomyPart,
-  removeAnatomyPart,
   reorderAnatomyPart,
   reparentAnatomyPart,
   moveAnatomyPart,
-  duplicateAnatomyPart,
-  setAnatomyPartFlags,
+  duplicateAnatomyParts,
+  setAnatomyPartsFlags,
+  removeAnatomyParts,
   addVariantAxis,
   renameVariantAxis,
   removeVariantAxis,
@@ -896,29 +1085,25 @@ export function ComponentsPanelWorkspace({
   selectedTokenKey: string | undefined;
   setSelectedTokenKey: Dispatch<SetStateAction<string | undefined>>;
   updateTokenMatrixCell: (record: EditorTokenRecord, valueText: string) => void;
-  updateComponentTokenBinding: (key: string, reference: string) => void;
-  updateComponentVariantValueTokenBinding: (
-    variantName: string,
-    value: string,
-    key: string,
-    reference: string
-  ) => void;
-  updateComponentStateTokenBinding: (stateName: string, key: string, reference: string) => void;
   updateComponentBindingsBatch: (
     scope:
       | { kind: "base" }
       | { kind: "variant"; axis: string; value: string }
-      | { kind: "state"; state: string },
+      | { kind: "state"; state: string }
+      | { kind: "combination"; when: Record<string, string> },
     entries: Array<[key: string, reference: string]>
   ) => void;
   renameAnatomyPart: (fromName: string, toName: string) => boolean;
   addAnatomyPart: (name: string, parent?: string) => void;
-  removeAnatomyPart: (partName: string) => void;
   reorderAnatomyPart: (partName: string, beforeName: string | null) => void;
   reparentAnatomyPart: (partName: string, newParent: string | null) => void;
   moveAnatomyPart: (partName: string, newParent: string | null, beforeName: string | null) => void;
-  duplicateAnatomyPart: (partName: string) => string | undefined;
-  setAnatomyPartFlags: (partName: string, flags: { hidden?: boolean; locked?: boolean }) => void;
+  duplicateAnatomyParts: (partNames: string[]) => string[];
+  setAnatomyPartsFlags: (
+    partNames: string[],
+    flags: { hidden?: boolean; locked?: boolean }
+  ) => void;
+  removeAnatomyParts: (partNames: string[]) => void;
   addVariantAxis: (name: string, values: string[]) => void;
   renameVariantAxis: (fromName: string, toName: string) => void;
   removeVariantAxis: (name: string) => void;
@@ -976,8 +1161,27 @@ export function ComponentsPanelWorkspace({
       return next;
     });
   };
-  // Figma-style layers (anatomy parts) + per-part appearance editing.
-  const [selectedPart, setSelectedPart] = useState("");
+  // Figma-style layers (anatomy parts) + per-part appearance editing. Ordered
+  // multi-selection: the LAST entry is the primary part the sections read from;
+  // edits fan out to every selected part (Figma multi-select).
+  const [selectedParts, setSelectedParts] = useState<string[]>([]);
+  const setSelectedPart = (part: string): void => setSelectedParts(part ? [part] : []);
+  const handleLayerSelect = (
+    part: string,
+    options?: { toggle?: boolean; range?: string[] }
+  ): void => {
+    setInspectorTarget("design");
+    setSelectedParts((previous) => {
+      // Shift+click REPLACES the selection with the anchor→target range (Figma).
+      if (options?.range) return options.range;
+      if (options?.toggle) {
+        return previous.includes(part)
+          ? previous.filter((name) => name !== part)
+          : [...previous, part];
+      }
+      return [part];
+    });
+  };
   // Hovered layer/part (layers row ↔ preview element, both directions).
   const [hoveredPart, setHoveredPart] = useState<string | null>(null);
   // Selection-driven right rail: "preview" (clicking the live preview) shows the
@@ -1002,7 +1206,7 @@ export function ComponentsPanelWorkspace({
   // scope like "variant::size" or an open picker row silently carries over to a
   // different component that happens to share the axis/part name.
   useEffect(() => {
-    setSelectedPart("");
+    setSelectedParts([]);
     setHoveredPart(null);
     setInspectorTarget("design");
     setEditingBindingKey(null);
@@ -1037,10 +1241,19 @@ export function ComponentsPanelWorkspace({
   const partsWithBindings = new Set(
     Object.keys(selectedComponentForSpec.tokens ?? {}).map((key) => key.split(".")[0])
   );
-  const activePart = anatomyParts.includes(selectedPart)
-    ? selectedPart
-    : (anatomyParts.find((part) => partsWithBindings.has(part)) ??
-      (anatomyParts.includes("root") ? "root" : (anatomyParts[0] ?? "root")));
+  const validSelectedParts = selectedParts.filter((part) => anatomyParts.includes(part));
+  const primarySelected = validSelectedParts.at(-1);
+  const activePart =
+    primarySelected ??
+    anatomyParts.find((part) => partsWithBindings.has(part)) ??
+    (anatomyParts.includes("root") ? "root" : (anatomyParts[0] ?? "root"));
+  // The parts an edit applies to: the multi-selection, or just the active part.
+  const editTargets = validSelectedParts.length ? validSelectedParts : [activePart];
+  // Bulk layer ops act on the whole selection when the target row is in it.
+  const partsFor = (part: string): string[] =>
+    validSelectedParts.includes(part) && validSelectedParts.length > 1
+      ? validSelectedParts
+      : [part];
   // Keep the layer selection and the variant-matrix preview in sync: ring ONE
   // representative element of the active part, inside the selected variant row, so
   // selecting a layer on the left highlights its element on the right (and clicking
@@ -1072,10 +1285,11 @@ export function ComponentsPanelWorkspace({
       const target = matches.find((element) => !element.classList.contains("other")) ?? matches[0];
       target?.classList.add(className);
     };
-    mark(activePart, "podo-part-selected");
-    if (hoveredPart && hoveredPart !== activePart) mark(hoveredPart, "podo-part-hovered");
+    for (const part of editTargets) mark(part, "podo-part-selected");
+    if (hoveredPart && !editTargets.includes(hoveredPart)) mark(hoveredPart, "podo-part-hovered");
   }, [
     activePart,
+    editTargets.join("|"),
     hoveredPart,
     effectiveInspectorTarget,
     selectedComponentForSpec,
@@ -1089,11 +1303,33 @@ export function ComponentsPanelWorkspace({
     const axis = selectedComponentForSpec.variants.find((variant) => variant.name === axisName);
     return effectiveComponentPreviewSelections[axisName] ?? axis?.default ?? axis?.values[0] ?? "";
   };
+  // The FULL current axis-value combination (compound variant condition).
+  const currentCombinationWhen = (): Record<string, string> =>
+    Object.fromEntries(
+      selectedComponentForSpec.variants.map((variant) => [
+        variant.name,
+        scopedVariantValue(variant.name),
+      ])
+    );
+  const combinationLabel = (): string =>
+    selectedComponentForSpec.variants
+      .map((variant) => `${variant.name}=${scopedVariantValue(variant.name)}`)
+      .join(" · ");
   const appearanceScopeOptions = [
     ...selectedComponentForSpec.variants.map((variant) => ({
       key: `variant::${variant.name}`,
       label: `${variant.name} = ${scopedVariantValue(variant.name)}`,
     })),
+    // Compound condition: the exact current combination of ALL axes (Figma:
+    // styling theme=primary AND size=lg without touching either axis alone).
+    ...(selectedComponentForSpec.variants.length >= 2
+      ? [
+          {
+            key: "combination::current",
+            label: `${t("components.comboLabel")} (${combinationLabel()})`,
+          },
+        ]
+      : []),
     // Declared states are scopes too (Figma-style: style the hover/disabled look).
     ...selectedComponentForSpec.states.map((state) => ({
       key: `state::${state.name}`,
@@ -1119,6 +1355,15 @@ export function ComponentsPanelWorkspace({
   const scopeTokens: Record<string, string> = (() => {
     const base = { ...(selectedComponentForSpec.tokens ?? {}) } as Record<string, string>;
     if (activeScope === "base") return base;
+    if (activeScope === "combination::current") {
+      const when = currentCombinationWhen();
+      const entry = (selectedComponentForSpec.combinations ?? []).find(
+        (combination) =>
+          Object.keys(combination.when).length === Object.keys(when).length &&
+          Object.entries(combination.when).every(([axis, value]) => when[axis] === value)
+      );
+      return { ...base, ...((entry?.tokens ?? {}) as Record<string, string>) };
+    }
     if (activeScope.startsWith("state::")) {
       const state = selectedComponentForSpec.states.find(
         (item) => item.name === activeScope.slice(7)
@@ -1136,7 +1381,9 @@ export function ComponentsPanelWorkspace({
   const scopeValue = (property: string): string =>
     String(scopeTokens[`${activePart}.${property}`] ?? "");
   const autoLayoutActive =
-    scopeValue("display") === "flex" || scopeValue("flex-direction").length > 0;
+    scopeValue("display") === "flex" ||
+    scopeValue("display") === "grid" ||
+    scopeValue("flex-direction").length > 0;
   // Flex props live only in the Auto layout section; while it's on, the section
   // also owns gap / padding X·Y so they don't appear twice.
   const sectionOwnedProperty = (property: string): boolean => {
@@ -1146,14 +1393,31 @@ export function ComponentsPanelWorkspace({
       (autoLayoutActive && AUTO_LAYOUT_HIDDEN_ACTIVE.has(normalized))
     );
   };
-  const partBindings = Object.entries(scopeTokens)
-    .filter(([key]) => key.startsWith(`${activePart}.`))
-    .map(([key, reference]) => ({
-      key,
-      property: key.slice(activePart.length + 1),
-      reference: String(reference),
-    }))
-    .filter((binding) => !sectionOwnedProperty(binding.property));
+  // Union of bound properties across the multi-selection; a property whose value
+  // differs between selected parts renders as "Mixed" (editing normalizes all).
+  const boundProperties: string[] = [];
+  const seenBoundProperty = new Set<string>();
+  for (const part of editTargets) {
+    for (const key of Object.keys(scopeTokens)) {
+      if (!key.startsWith(`${part}.`)) continue;
+      const property = key.slice(part.length + 1);
+      if (sectionOwnedProperty(property) || seenBoundProperty.has(property)) continue;
+      seenBoundProperty.add(property);
+      boundProperties.push(property);
+    }
+  }
+  const partBindings = boundProperties.map((property) => {
+    const values = editTargets.map((part) => {
+      const value = scopeTokens[`${part}.${property}`];
+      return value === undefined ? undefined : String(value);
+    });
+    const uniform = values.every((value) => value === values[0]);
+    return {
+      key: `${activePart}.${property}`,
+      property,
+      reference: uniform ? (values[0] as string) : MIXED_VALUE,
+    };
+  });
   const presentProperties = new Set(partBindings.map((binding) => binding.property));
   // Figma corner/stroke/padding expanders: manual toggle, or auto-open when a
   // per-corner (per-side) binding already exists so bound rows stay visible.
@@ -1203,18 +1467,6 @@ export function ComponentsPanelWorkspace({
       defaultAlias: entry.defaultAlias,
     })),
   ];
-  const applyAppearanceBinding = (key: string, reference: string): void => {
-    if (activeScope === "base") {
-      updateComponentTokenBinding(key, reference);
-      return;
-    }
-    if (activeScope.startsWith("state::")) {
-      updateComponentStateTokenBinding(activeScope.slice(7), key, reference);
-      return;
-    }
-    const axisName = activeScope.slice("variant::".length);
-    updateComponentVariantValueTokenBinding(axisName, scopedVariantValue(axisName), key, reference);
-  };
   // Figma copy/paste appearance: copy grabs the part's EFFECTIVE bindings in the
   // active scope; paste fans them onto the target part in one commit.
   const copyPartAppearance = (part: string): void => {
@@ -1226,15 +1478,28 @@ export function ComponentsPanelWorkspace({
     if (entries.length) appearanceClipboard = entries;
   };
   const pastePartAppearance = (part: string): void => {
-    if (!appearanceClipboard) return;
+    const clipboard = appearanceClipboard;
+    if (!clipboard) return;
+    // Fan the paste out to the whole multi-selection in ONE commit.
     applyAppearanceBindings(
-      appearanceClipboard.map(([property, reference]) => [`${part}.${property}`, reference])
+      partsFor(part).flatMap((target) =>
+        clipboard.map(
+          ([property, reference]) => [`${target}.${property}`, reference] as [string, string]
+        )
+      )
     );
   };
   // Batch variant: N bindings, ONE commit (auto layout add/remove, alignment).
   const applyAppearanceBindings = (entries: Array<[key: string, reference: string]>): void => {
     if (activeScope === "base") {
       updateComponentBindingsBatch({ kind: "base" }, entries);
+      return;
+    }
+    if (activeScope === "combination::current") {
+      updateComponentBindingsBatch(
+        { kind: "combination", when: currentCombinationWhen() },
+        entries
+      );
       return;
     }
     if (activeScope.startsWith("state::")) {
@@ -1247,12 +1512,25 @@ export function ComponentsPanelWorkspace({
       entries
     );
   };
+  // Fan an edit out to every selected part (Figma multi-select editing): one
+  // property value, N `<part>.<property>` bindings, ONE commit.
+  const applyToSelection = (property: string, reference: string): void =>
+    applyAppearanceBindings(editTargets.map((part) => [`${part}.${property}`, reference]));
   // The active scope's OWN token bucket (no base overlay): base tokens, the
   // scoped variant value's overrides, or the state's overrides. Used to decide
   // whether an "off"/"remove" edit can be expressed as a key deletion here.
   const scopeOwnTokens: Record<string, string> = (() => {
     if (activeScope === "base") {
       return (selectedComponentForSpec.tokens ?? {}) as Record<string, string>;
+    }
+    if (activeScope === "combination::current") {
+      const when = currentCombinationWhen();
+      const entry = (selectedComponentForSpec.combinations ?? []).find(
+        (combination) =>
+          Object.keys(combination.when).length === Object.keys(when).length &&
+          Object.entries(combination.when).every(([axis, value]) => when[axis] === value)
+      );
+      return (entry?.tokens ?? {}) as Record<string, string>;
     }
     if (activeScope.startsWith("state::")) {
       const state = selectedComponentForSpec.states.find(
@@ -1269,28 +1547,44 @@ export function ComponentsPanelWorkspace({
   // instead of committing md's stale text into lg on blur.
   const scopeInstanceKey = activeScope.startsWith("variant::")
     ? `${activeScope}=${scopedVariantValue(activeScope.slice("variant::".length))}`
-    : activeScope;
+    : activeScope === "combination::current"
+      ? `combination::${combinationLabel()}`
+      : activeScope;
   // Figma-style Size section: W/H resizing modes (auto/fixed/hug/fill) writing
   // width/height bindings. Switching to Fixed seeds the input with the part's
   // MEASURED rendered size (like Figma showing the current px), read from the
   // selected matrix cell's representative element.
-  const measurePartSize = (property: "width" | "height"): string => {
-    const fallback = property === "width" ? "100px" : "40px";
-    const selector = componentPartSelector(selectedComponentForSpec.id, activePart);
+  const partElement = (part: string): Element | undefined => {
+    const selector = componentPartSelector(selectedComponentForSpec.id, part);
     const root = matrixRef.current;
-    if (!selector || !root) return fallback;
+    if (!selector || !root) return undefined;
     const cell = root.querySelector("[data-podo-selected-cell]") ?? root;
     const matches = Array.from(cell.querySelectorAll(selector));
-    const target = matches.find((element) => !element.classList.contains("other")) ?? matches[0];
-    const size = target?.getBoundingClientRect()[property];
+    return matches.find((element) => !element.classList.contains("other")) ?? matches[0];
+  };
+  const measurePartSize = (property: "width" | "height", part = activePart): string => {
+    const fallback = property === "width" ? "100px" : "40px";
+    const size = partElement(part)?.getBoundingClientRect()[property];
     return size ? `${Math.round(size)}px` : fallback;
+  };
+  // Offset of a part inside its anatomy parent's element (absolute positioning
+  // seed). Approximation: the anatomy parent's DOM element may not be the CSS
+  // offset parent; 0px fallback keeps it predictable.
+  const measurePartOffset = (part: string, side: "top" | "left"): string => {
+    const parentName = selectedComponentForSpec.anatomy.find(
+      (entry) => entry.name === part
+    )?.parent;
+    const child = partElement(part)?.getBoundingClientRect();
+    const parent = parentName ? partElement(parentName)?.getBoundingClientRect() : undefined;
+    if (!child || !parent) return "0px";
+    return `${Math.round(child[side] - parent[side])}px`;
   };
   // Direction of the anatomy PARENT's auto layout (if any) — decides how Fill
   // is encoded: flex:1 on the parent's main axis, align-self:stretch on the
   // cross axis, width/height:100% when the parent isn't a flex container.
-  const flexParentDirection = (): "row" | "column" | null => {
+  const flexParentDirection = (part = activePart): "row" | "column" | null => {
     const parentName = selectedComponentForSpec.anatomy.find(
-      (part) => part.name === activePart
+      (entry) => entry.name === part
     )?.parent;
     if (!parentName) return null;
     const display = String(scopeTokens[`${parentName}.display`] ?? "");
@@ -1344,33 +1638,44 @@ export function ComponentsPanelWorkspace({
         const ownsBinding =
           `${activePart}.${property}` in scopeOwnTokens ||
           `${activePart}.${fillKey}` in scopeOwnTokens;
+        // Applies the mode to EVERY selected part, each with its own parent
+        // direction (a row-parent child gets flex:1 while a column-parent child
+        // gets align-self:stretch in the same gesture).
         const setResizeMode = (next: ResizeMode): void => {
-          const key = `${activePart}.${property}`;
-          // In overlay scopes, deleting ("") a binding the BASE owns is a silent
-          // no-op and the base value shines through — write an explicit neutral
-          // instead so the override actually takes effect.
-          const clearSize = activeScope !== "base" && !(key in scopeOwnTokens) && raw ? "auto" : "";
-          const fillKeyFull = `${activePart}.${fillKey}`;
-          const fillValueNow = axisIsMain ? scopeValue("flex") : scopeValue("align-self");
-          const clearFill =
-            activeScope !== "base" && !(fillKeyFull in scopeOwnTokens) && fillValueNow
-              ? axisIsMain
-                ? "0 0 auto"
-                : "auto"
-              : "";
           const entries: Array<[string, string]> = [];
-          // Clear any previous flex-based fill encoding for this axis first.
-          if (parentDirection !== null) entries.push([fillKeyFull, clearFill]);
-          if (next === "auto") entries.push([key, clearSize]);
-          else if (next === "hug") entries.push([key, "fit-content"]);
-          else if (next === "fixed") entries.push([key, measurePartSize(property)]);
-          else if (parentDirection !== null) {
-            entries.push([key, clearSize]);
-            entries.push(
-              axisIsMain ? [`${activePart}.flex`, "1 1 0"] : [`${activePart}.align-self`, "stretch"]
-            );
-          } else {
-            entries.push([key, "100%"]);
+          for (const part of editTargets) {
+            const partParentDirection = flexParentDirection(part);
+            const partAxisIsMain =
+              partParentDirection !== null &&
+              (property === "width") === (partParentDirection === "row");
+            const partFillKey = partAxisIsMain ? "flex" : "align-self";
+            const key = `${part}.${property}`;
+            const rawPart = String(scopeTokens[key] ?? "");
+            // In overlay scopes, deleting ("") a binding the BASE owns is a
+            // silent no-op — write an explicit neutral instead.
+            const clearSize =
+              activeScope !== "base" && !(key in scopeOwnTokens) && rawPart ? "auto" : "";
+            const fillKeyFull = `${part}.${partFillKey}`;
+            const fillValueNow = String(scopeTokens[fillKeyFull] ?? "");
+            const clearFill =
+              activeScope !== "base" && !(fillKeyFull in scopeOwnTokens) && fillValueNow
+                ? partAxisIsMain
+                  ? "0 0 auto"
+                  : "auto"
+                : "";
+            // Clear any previous flex-based fill encoding for this axis first.
+            if (partParentDirection !== null) entries.push([fillKeyFull, clearFill]);
+            if (next === "auto") entries.push([key, clearSize]);
+            else if (next === "hug") entries.push([key, "fit-content"]);
+            else if (next === "fixed") entries.push([key, measurePartSize(property, part)]);
+            else if (partParentDirection !== null) {
+              entries.push([key, clearSize]);
+              entries.push(
+                partAxisIsMain ? [`${part}.flex`, "1 1 0"] : [`${part}.align-self`, "stretch"]
+              );
+            } else {
+              entries.push([key, "100%"]);
+            }
           }
           applyAppearanceBindings(entries);
         };
@@ -1399,9 +1704,7 @@ export function ComponentsPanelWorkspace({
                 aria-label={t("components.resizeValueFor", { axis })}
                 defaultValue={raw}
                 style={{ ...inputStyle, width: 76, flexShrink: 0 }}
-                onBlur={(event) =>
-                  applyAppearanceBinding(`${activePart}.${property}`, event.currentTarget.value)
-                }
+                onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") event.currentTarget.blur();
                   if (event.key === "ArrowUp" || event.key === "ArrowDown") {
@@ -1410,7 +1713,7 @@ export function ComponentsPanelWorkspace({
                     if (next !== undefined) {
                       event.preventDefault();
                       event.currentTarget.value = next;
-                      applyAppearanceBinding(`${activePart}.${property}`, next);
+                      applyToSelection(property, next);
                     }
                   }
                 }}
@@ -1429,9 +1732,7 @@ export function ComponentsPanelWorkspace({
                 defaultValue={scopeValue(property)}
                 placeholder={t("components.rawValuePlaceholder")}
                 style={{ ...inputStyle, flex: 1, minWidth: 0 }}
-                onBlur={(event) =>
-                  applyAppearanceBinding(`${activePart}.${property}`, event.currentTarget.value)
-                }
+                onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") event.currentTarget.blur();
                   if (event.key === "ArrowUp" || event.key === "ArrowDown") {
@@ -1440,7 +1741,7 @@ export function ComponentsPanelWorkspace({
                     if (next !== undefined) {
                       event.preventDefault();
                       event.currentTarget.value = next;
-                      applyAppearanceBinding(`${activePart}.${property}`, next);
+                      applyToSelection(property, next);
                     }
                   }
                 }}
@@ -1448,6 +1749,94 @@ export function ComponentsPanelWorkspace({
             </label>
           ))
         : null}
+      {(() => {
+        // Figma "absolute position": pulls the layer out of flow; T/R/B/L +
+        // z-index inputs appear, seeded from the measured offset in its parent
+        // (the anatomy parent also gains position:relative so insets anchor).
+        const absolute = scopeValue("position") === "absolute";
+        const overlayInherited = (part: string, property: string): boolean =>
+          activeScope !== "base" &&
+          !(`${part}.${property}` in scopeOwnTokens) &&
+          String(scopeTokens[`${part}.${property}`] ?? "").length > 0;
+        return (
+          <>
+            <label style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11 }}>
+              <input
+                type="checkbox"
+                checked={absolute}
+                onChange={(event) => {
+                  const on = event.currentTarget.checked;
+                  const entries: Array<[string, string]> = [];
+                  for (const part of editTargets) {
+                    if (on) {
+                      entries.push([`${part}.position`, "absolute"]);
+                      entries.push([`${part}.top`, measurePartOffset(part, "top")]);
+                      entries.push([`${part}.left`, measurePartOffset(part, "left")]);
+                      const parentName = selectedComponentForSpec.anatomy.find(
+                        (entry) => entry.name === part
+                      )?.parent;
+                      if (
+                        parentName &&
+                        !String(scopeTokens[`${parentName}.position`] ?? "").length
+                      ) {
+                        entries.push([`${parentName}.position`, "relative"]);
+                      }
+                    } else {
+                      entries.push([
+                        `${part}.position`,
+                        overlayInherited(part, "position") ? "static" : "",
+                      ]);
+                      for (const side of ["top", "right", "bottom", "left"] as const) {
+                        entries.push([
+                          `${part}.${side}`,
+                          overlayInherited(part, side) ? "auto" : "",
+                        ]);
+                      }
+                      entries.push([`${part}.z-index`, ""]);
+                    }
+                  }
+                  applyAppearanceBindings(entries);
+                }}
+              />
+              {t("components.absolutePosition")}
+            </label>
+            {absolute
+              ? (["top", "right", "bottom", "left", "z-index"] as const).map((property) => (
+                  <label key={property} style={propRowStyle}>
+                    <span style={propLabelStyle}>
+                      {property === "z-index" ? "Z" : property.toUpperCase().slice(0, 1)}
+                    </span>
+                    <input
+                      key={`${activePart}:${scopeInstanceKey}:${property}`}
+                      type="text"
+                      aria-label={property}
+                      defaultValue={scopeValue(property)}
+                      placeholder={property === "z-index" ? "1" : "0px"}
+                      style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+                      onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") event.currentTarget.blur();
+                        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                          const delta =
+                            (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
+                          const next = stepDimensionValue(
+                            event.currentTarget.value || "0px",
+                            delta
+                          );
+                          if (next !== undefined) {
+                            event.preventDefault();
+                            event.currentTarget.value = next;
+                            applyToSelection(property, next);
+                          }
+                        }
+                      }}
+                    />
+                  </label>
+                ))
+              : null}
+          </>
+        );
+      })()}
     </div>
   );
   // Figma-style Auto layout section for the selected layer. Direction / wrap /
@@ -1455,15 +1844,20 @@ export function ComponentsPanelWorkspace({
   // all writing scope-aware flex bindings through the appearance handlers.
   const renderAutoLayoutSection = () => {
     const direction = scopeValue("flex-direction") === "column" ? "column" : "row";
+    // Fourth Figma layout mode: grid (display:grid + explicit templates).
+    const layoutMode: "row" | "column" | "grid" =
+      scopeValue("display") === "grid" ? "grid" : direction;
     const wrap = scopeValue("flex-wrap") === "wrap";
     // Removing (deleting keys) only works in the bucket that OWNS the flex
     // bindings; in an overlay scope where auto layout shines through from base,
     // deletion is a silent no-op, so the × is not offered there.
-    const autoLayoutOwnedHere = ["display", "flex-direction"].some(
+    const autoLayoutOwnedHere = ["display", "flex-direction", "grid-template-columns"].some(
       (property) => `${activePart}.${property}` in scopeOwnTokens
     );
     const normalizeAlign = (value: string): string => value.replace(/^flex-/, "");
-    const justify = normalizeAlign(scopeValue("justify-content") || "flex-start");
+    // Grid aligns ITEMS on the inline axis via justify-items (not content).
+    const justifyProperty = layoutMode === "grid" ? "justify-items" : "justify-content";
+    const justify = normalizeAlign(scopeValue(justifyProperty) || "flex-start");
     const align = normalizeAlign(scopeValue("align-items") || "flex-start");
     // "Distributed" spacing modes take over the main axis (the grid then picks
     // only the cross alignment) — Figma's packed vs space-between, plus the CSS
@@ -1472,15 +1866,7 @@ export function ComponentsPanelWorkspace({
     const spaceBetween = DISTRIBUTED_JUSTIFY.includes(justify);
     const AXIS_VALUES = ["flex-start", "center", "flex-end"] as const;
     const clipped = scopeValue("overflow") === "hidden";
-    const spacingInput = (
-      property:
-        | (typeof AUTO_LAYOUT_SPACING_PROPERTIES)[number]
-        | "row-gap"
-        | "padding-top"
-        | "padding-right"
-        | "padding-bottom"
-        | "padding-left"
-    ) => (
+    const spacingInput = (property: string) => (
       <label key={property} style={propRowStyle}>
         <span style={propLabelStyle}>{appearancePropertyLabel(property, t)}</span>
         <input
@@ -1491,9 +1877,7 @@ export function ComponentsPanelWorkspace({
           defaultValue={scopeValue(property)}
           placeholder={t("components.rawValuePlaceholder")}
           style={{ ...inputStyle, flex: 1, minWidth: 0 }}
-          onBlur={(event) =>
-            applyAppearanceBinding(`${activePart}.${property}`, event.currentTarget.value)
-          }
+          onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
           onKeyDown={(event) => {
             if (event.key === "Enter") event.currentTarget.blur();
             if (event.key === "ArrowUp" || event.key === "ArrowDown") {
@@ -1502,7 +1886,7 @@ export function ComponentsPanelWorkspace({
               if (next !== undefined) {
                 event.preventDefault();
                 event.currentTarget.value = next;
-                applyAppearanceBinding(`${activePart}.${property}`, next);
+                applyToSelection(property, next);
               }
             }
           }}
@@ -1522,7 +1906,11 @@ export function ComponentsPanelWorkspace({
                 style={appearanceRemoveStyle}
                 onClick={() =>
                   applyAppearanceBindings(
-                    AUTO_LAYOUT_FLEX_PROPERTIES.map((property) => [`${activePart}.${property}`, ""])
+                    editTargets.flatMap((part) =>
+                      AUTO_LAYOUT_CLEAR_PROPERTIES.map(
+                        (property) => [`${part}.${property}`, ""] as [string, string]
+                      )
+                    )
                   )
                 }
               >
@@ -1536,13 +1924,15 @@ export function ComponentsPanelWorkspace({
               title={t("components.autoLayoutAdd")}
               style={smallButtonStyle}
               onClick={() =>
-                applyAppearanceBindings([
-                  [`${activePart}.display`, "flex"],
-                  [`${activePart}.flex-direction`, "row"],
-                  ...(scopeValue("gap")
-                    ? []
-                    : [[`${activePart}.gap`, "{spacing.scale.2}"] as [string, string]]),
-                ])
+                applyAppearanceBindings(
+                  editTargets.flatMap((part) => [
+                    [`${part}.display`, "flex"] as [string, string],
+                    [`${part}.flex-direction`, "row"] as [string, string],
+                    ...(scopeValue("gap")
+                      ? []
+                      : [[`${part}.gap`, "{spacing.scale.2}"] as [string, string]]),
+                  ])
+                )
               }
             >
               +
@@ -1552,43 +1942,68 @@ export function ComponentsPanelWorkspace({
         {autoLayoutActive ? (
           <>
             <div style={autoLayoutRowStyle}>
-              {(["row", "column"] as const).map((dir) => (
+              {(["row", "column", "grid"] as const).map((mode) => {
+                const label =
+                  mode === "row"
+                    ? t("components.directionRow")
+                    : mode === "column"
+                      ? t("components.directionColumn")
+                      : t("components.layoutGrid");
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    aria-pressed={layoutMode === mode}
+                    aria-label={label}
+                    title={label}
+                    style={{
+                      ...autoLayoutToggleStyle,
+                      ...(layoutMode === mode ? autoLayoutToggleActiveStyle : {}),
+                    }}
+                    onClick={() =>
+                      applyAppearanceBindings(
+                        editTargets.flatMap((part) =>
+                          mode === "grid"
+                            ? [
+                                [`${part}.display`, "grid"] as [string, string],
+                                ...(String(scopeTokens[`${part}.grid-template-columns`] ?? "")
+                                  ? []
+                                  : [
+                                      [`${part}.grid-template-columns`, "repeat(2, 1fr)"] as [
+                                        string,
+                                        string,
+                                      ],
+                                    ]),
+                              ]
+                            : [
+                                [`${part}.display`, "flex"] as [string, string],
+                                [`${part}.flex-direction`, mode] as [string, string],
+                              ]
+                        )
+                      )
+                    }
+                  >
+                    {mode === "row" ? "→" : mode === "column" ? "↓" : "⊞"}
+                  </button>
+                );
+              })}
+              {layoutMode !== "grid" ? (
                 <button
-                  key={dir}
                   type="button"
-                  aria-pressed={direction === dir}
-                  aria-label={
-                    dir === "row" ? t("components.directionRow") : t("components.directionColumn")
-                  }
-                  title={
-                    dir === "row" ? t("components.directionRow") : t("components.directionColumn")
-                  }
+                  aria-pressed={wrap}
                   style={{
                     ...autoLayoutToggleStyle,
-                    ...(direction === dir ? autoLayoutToggleActiveStyle : {}),
+                    ...(wrap ? autoLayoutToggleActiveStyle : {}),
                   }}
-                  onClick={() => applyAppearanceBinding(`${activePart}.flex-direction`, dir)}
+                  // Off writes an EXPLICIT "nowrap": deleting the key would be a
+                  // silent no-op in variant/state scopes where wrap comes from base.
+                  onClick={() => applyToSelection("flex-wrap", wrap ? "nowrap" : "wrap")}
                 >
-                  {dir === "row" ? "→" : "↓"}
+                  {t("components.wrap")}
                 </button>
-              ))}
-              <button
-                type="button"
-                aria-pressed={wrap}
-                style={{
-                  ...autoLayoutToggleStyle,
-                  ...(wrap ? autoLayoutToggleActiveStyle : {}),
-                }}
-                // Off writes an EXPLICIT "nowrap": deleting the key would be a
-                // silent no-op in variant/state scopes where wrap comes from base.
-                onClick={() =>
-                  applyAppearanceBinding(`${activePart}.flex-wrap`, wrap ? "nowrap" : "wrap")
-                }
-              >
-                {t("components.wrap")}
-              </button>
+              ) : null}
               {/* Figma baseline alignment (horizontal auto layout, icon+label rows). */}
-              {direction === "row" ? (
+              {layoutMode === "row" ? (
                 <button
                   type="button"
                   aria-pressed={align === "baseline"}
@@ -1598,8 +2013,8 @@ export function ComponentsPanelWorkspace({
                     ...(align === "baseline" ? autoLayoutToggleActiveStyle : {}),
                   }}
                   onClick={() =>
-                    applyAppearanceBinding(
-                      `${activePart}.align-items`,
+                    applyToSelection(
+                      "align-items",
                       align === "baseline" ? "flex-start" : "baseline"
                     )
                   }
@@ -1607,36 +2022,36 @@ export function ComponentsPanelWorkspace({
                   ↧
                 </button>
               ) : null}
-              <select
-                aria-label={t("components.distribution")}
-                style={{ ...selectStyle, flex: 1, minWidth: 0 }}
-                value={spaceBetween ? justify : "packed"}
-                onChange={(event) =>
-                  applyAppearanceBinding(
-                    `${activePart}.justify-content`,
-                    event.currentTarget.value === "packed"
-                      ? "flex-start"
-                      : event.currentTarget.value
-                  )
-                }
-              >
-                <option value="packed">{t("components.packed")}</option>
-                <option value="space-between">{t("components.spaceBetween")}</option>
-                <option value="space-around">{t("components.spaceAround")}</option>
-                <option value="space-evenly">{t("components.spaceEvenly")}</option>
-              </select>
+              {layoutMode !== "grid" ? (
+                <select
+                  aria-label={t("components.distribution")}
+                  style={{ ...selectStyle, flex: 1, minWidth: 0 }}
+                  value={spaceBetween ? justify : "packed"}
+                  onChange={(event) =>
+                    applyToSelection(
+                      "justify-content",
+                      event.currentTarget.value === "packed"
+                        ? "flex-start"
+                        : event.currentTarget.value
+                    )
+                  }
+                >
+                  <option value="packed">{t("components.packed")}</option>
+                  <option value="space-between">{t("components.spaceBetween")}</option>
+                  <option value="space-around">{t("components.spaceAround")}</option>
+                  <option value="space-evenly">{t("components.spaceEvenly")}</option>
+                </select>
+              ) : null}
             </div>
             <div style={{ ...autoLayoutRowStyle, alignItems: "flex-start" }}>
               <div style={alignmentGridStyle} role="group" aria-label={t("components.alignment")}>
                 {[0, 1, 2].flatMap((rowIndex) =>
                   [0, 1, 2].map((columnIndex) => {
-                    // Main axis follows the direction (Figma transposes the grid).
-                    const mainValue = AXIS_VALUES[
-                      direction === "row" ? columnIndex : rowIndex
-                    ] as string;
-                    const crossValue = AXIS_VALUES[
-                      direction === "row" ? rowIndex : columnIndex
-                    ] as string;
+                    // Main axis follows the direction (Figma transposes the grid);
+                    // grid mode reads left-to-right (justify-items) untransposed.
+                    const transpose = layoutMode === "column";
+                    const mainValue = AXIS_VALUES[transpose ? rowIndex : columnIndex] as string;
+                    const crossValue = AXIS_VALUES[transpose ? columnIndex : rowIndex] as string;
                     const isActive = spaceBetween
                       ? normalizeAlign(crossValue) === align
                       : normalizeAlign(mainValue) === justify &&
@@ -1652,14 +2067,16 @@ export function ComponentsPanelWorkspace({
                         })}
                         style={alignmentDotButtonStyle}
                         onClick={() =>
-                          applyAppearanceBindings([
-                            // In space-between mode the main axis is distributed;
-                            // the grid then only picks the cross alignment.
-                            ...(spaceBetween
-                              ? []
-                              : [[`${activePart}.justify-content`, mainValue] as [string, string]]),
-                            [`${activePart}.align-items`, crossValue],
-                          ])
+                          applyAppearanceBindings(
+                            editTargets.flatMap((part) => [
+                              // In space-between mode the main axis is distributed;
+                              // the grid then only picks the cross alignment.
+                              ...(spaceBetween
+                                ? []
+                                : [[`${part}.${justifyProperty}`, mainValue] as [string, string]]),
+                              [`${part}.align-items`, crossValue] as [string, string],
+                            ])
+                          )
                         }
                       >
                         <span
@@ -1676,9 +2093,15 @@ export function ComponentsPanelWorkspace({
                 )}
               </div>
               <div style={{ display: "grid", gap: 4, flex: 1, minWidth: 0 }}>
+                {layoutMode === "grid" ? (
+                  <>
+                    {spacingInput("grid-template-columns")}
+                    {spacingInput("grid-template-rows")}
+                  </>
+                ) : null}
                 {spacingInput("gap")}
-                {/* Wrap unlocks the independent between-row gap (Figma). */}
-                {wrap ? spacingInput("row-gap") : null}
+                {/* Wrap (and grid rows) unlock the independent between-row gap. */}
+                {wrap || layoutMode === "grid" ? spacingInput("row-gap") : null}
                 {paddingSidesOpen ? (
                   <>
                     {spacingInput("padding-top")}
@@ -1715,8 +2138,8 @@ export function ComponentsPanelWorkspace({
                       type="checkbox"
                       checked={clipped}
                       onChange={(event) =>
-                        applyAppearanceBinding(
-                          `${activePart}.overflow`,
+                        applyToSelection(
+                          "overflow",
                           event.currentTarget.checked ? "hidden" : "visible"
                         )
                       }
@@ -1776,16 +2199,12 @@ export function ComponentsPanelWorkspace({
             <LayersPanel
               key={selectedComponentForSpec.id}
               anatomy={visibleAnatomy}
-              selectedPart={activePart}
+              selectedParts={validSelectedParts.length ? validSelectedParts : [activePart]}
               highlightPart={hoveredPart}
               structureLocked={!policy.structure}
-              onSelect={(part) => {
-                // Selecting a layer is a design action: switch to the design inspector
-                // so the matrix rings the matching element (it only passes selectedPart
-                // through in design mode).
-                setSelectedPart(part);
-                setInspectorTarget("design");
-              }}
+              // Selecting a layer is a design action: switch to the design
+              // inspector; Shift/Cmd modifiers extend the selection (Figma).
+              onSelect={handleLayerSelect}
               onHover={setHoveredPart}
               onRename={(from, to) => {
                 // Only follow the rename when it committed — a rejected rename
@@ -1793,16 +2212,18 @@ export function ComponentsPanelWorkspace({
                 if (renameAnatomyPart(from, to)) setSelectedPart(to.trim() || from);
               }}
               onAdd={addAnatomyPart}
+              // Bulk ops: act on the whole multi-selection when the target row
+              // is part of it (Figma right-click on a selection).
               onDuplicate={(part) => {
-                const copiedName = duplicateAnatomyPart(part);
-                if (copiedName) setSelectedPart(copiedName);
+                const copies = duplicateAnatomyParts(partsFor(part));
+                if (copies.length) setSelectedParts(copies);
               }}
-              onRemove={removeAnatomyPart}
+              onRemove={(part) => removeAnatomyParts(partsFor(part))}
               onReorder={reorderAnatomyPart}
               onReparent={reparentAnatomyPart}
               onMove={moveAnatomyPart}
-              onToggleHidden={(part, hidden) => setAnatomyPartFlags(part, { hidden })}
-              onToggleLocked={(part, locked) => setAnatomyPartFlags(part, { locked })}
+              onToggleHidden={(part, hidden) => setAnatomyPartsFlags(partsFor(part), { hidden })}
+              onToggleLocked={(part, locked) => setAnatomyPartsFlags(partsFor(part), { locked })}
               onCopyAppearance={copyPartAppearance}
               onPasteAppearance={pastePartAppearance}
             />
@@ -1928,7 +2349,13 @@ export function ComponentsPanelWorkspace({
             component: selectedComponentForSpec,
             selections: effectiveComponentPreviewSelections,
             lookup: previewTokenLookup,
-            onSelect: (next, part) => {
+            onSelect: (next, part, modifiers) => {
+              // Shift/Cmd+click extends the multi-selection WITHOUT switching the
+              // previewed variant cell (Figma canvas multi-select).
+              if (modifiers?.toggle && part && !lockedParts.has(part)) {
+                handleLayerSelect(part, { toggle: true });
+                return;
+              }
               setComponentPreviewSelections(next);
               // Figma-style: clicking an element in a matrix cell selects that part
               // (e.g. the calendar / time list) so its design opens directly.
@@ -2099,15 +2526,19 @@ export function ComponentsPanelWorkspace({
                       .filter((row) => appearanceGroup(row.property) === group)
                       .map((row) => {
                         const isColor = isColorAppearanceProperty(row.property);
+                        const isMixed = row.reference === MIXED_VALUE;
                         // A binding is a {token} alias or a raw CSS value.
-                        const isAlias = row.reference.startsWith("{");
-                        const resolved = isAlias
-                          ? cssToken(previewTokenLookup, row.reference.slice(1, -1), "")
-                          : row.reference;
+                        const isAlias = !isMixed && row.reference.startsWith("{");
+                        const resolved = isMixed
+                          ? t("components.mixed")
+                          : isAlias
+                            ? cssToken(previewTokenLookup, row.reference.slice(1, -1), "")
+                            : row.reference;
                         const tokenName = isAlias ? row.reference.slice(1, -1) : "";
                         const raw = isRawValueProperty(row.property);
                         const enumOptions = enumOptionsForProperty(row.property);
                         const isShadowStack = normalizedProperty(row.property) === "shadow";
+                        const isGradient = normalizedProperty(row.property) === "gradient";
                         return (
                           <div key={row.key} style={appearanceRowStyle}>
                             <div style={appearanceHeaderStyle}>
@@ -2121,7 +2552,7 @@ export function ComponentsPanelWorkspace({
                                     property: row.property,
                                   })}
                                   style={appearanceRemoveStyle}
-                                  onClick={() => applyAppearanceBinding(row.key, "")}
+                                  onClick={() => applyToSelection(row.property, "")}
                                 >
                                   ×
                                 </button>
@@ -2132,8 +2563,16 @@ export function ComponentsPanelWorkspace({
                                 // Figma Effects: structured multi-shadow editor over the
                                 // box-shadow comma list (X/Y/blur/spread/color/inner).
                                 <ShadowStackEditor
-                                  value={row.reference || row.defaultAlias || ""}
-                                  onChange={(next) => applyAppearanceBinding(row.key, next)}
+                                  value={isMixed ? "" : row.reference || row.defaultAlias || ""}
+                                  onChange={(next) => applyToSelection(row.property, next)}
+                                  onClose={() => setEditingBindingKey(null)}
+                                />
+                              ) : isGradient ? (
+                                // Figma gradient fill: type/angle/stops editor over a
+                                // CSS gradient() function string.
+                                <GradientEditor
+                                  value={isMixed ? "" : row.reference || row.defaultAlias || ""}
+                                  onChange={(next) => applyToSelection(row.property, next)}
                                   onClose={() => setEditingBindingKey(null)}
                                 />
                               ) : enumOptions ? (
@@ -2141,12 +2580,12 @@ export function ComponentsPanelWorkspace({
                                   autoFocus
                                   style={selectStyle}
                                   value={
-                                    enumOptions.includes(row.reference)
+                                    !isMixed && enumOptions.includes(row.reference)
                                       ? row.reference
                                       : (row.defaultAlias ?? enumOptions[0])
                                   }
                                   onChange={(event) => {
-                                    applyAppearanceBinding(row.key, event.currentTarget.value);
+                                    applyToSelection(row.property, event.currentTarget.value);
                                     setEditingBindingKey(null);
                                   }}
                                   onBlur={() => setEditingBindingKey(null)}
@@ -2166,11 +2605,13 @@ export function ComponentsPanelWorkspace({
                                   type="text"
                                   // Unbound raw rows start from the catalog default (e.g. 14px)
                                   // so there's a sensible value to tweak.
-                                  defaultValue={row.reference || row.defaultAlias || ""}
+                                  defaultValue={
+                                    isMixed ? "" : row.reference || row.defaultAlias || ""
+                                  }
                                   placeholder={t("components.rawValuePlaceholder")}
                                   style={inputStyle}
                                   onBlur={(event) => {
-                                    applyAppearanceBinding(row.key, event.currentTarget.value);
+                                    applyToSelection(row.property, event.currentTarget.value);
                                     setEditingBindingKey(null);
                                   }}
                                   onKeyDown={(event) => {
@@ -2184,7 +2625,7 @@ export function ComponentsPanelWorkspace({
                                         (event.shiftKey ? 10 : 1);
                                       const next = stepDimensionValue(
                                         event.currentTarget.value ||
-                                          row.reference ||
+                                          (isMixed ? "" : row.reference) ||
                                           row.defaultAlias ||
                                           "",
                                         delta
@@ -2192,7 +2633,7 @@ export function ComponentsPanelWorkspace({
                                       if (next !== undefined) {
                                         event.preventDefault();
                                         event.currentTarget.value = next;
-                                        applyAppearanceBinding(row.key, next);
+                                        applyToSelection(row.property, next);
                                       }
                                     }
                                   }}
@@ -2203,7 +2644,7 @@ export function ComponentsPanelWorkspace({
                                   options={optionsForProperty(row.property)}
                                   placeholder={tokenName}
                                   onPick={(reference) => {
-                                    applyAppearanceBinding(row.key, reference);
+                                    applyToSelection(row.property, reference);
                                     setEditingBindingKey(null);
                                   }}
                                   onCancel={() => setEditingBindingKey(null)}
@@ -2218,11 +2659,18 @@ export function ComponentsPanelWorkspace({
                                   // the chip still opens the token picker.
                                   <ColorSwatchPicker
                                     label={appearancePropertyLabel(row.property, t)}
-                                    swatchColor={resolved || undefined}
-                                    value={parseColor(resolved) ?? { r: 127, g: 127, b: 127, a: 1 }}
+                                    swatchColor={isMixed ? undefined : resolved || undefined}
+                                    value={
+                                      (isMixed ? undefined : parseColor(resolved)) ?? {
+                                        r: 127,
+                                        g: 127,
+                                        b: 127,
+                                        a: 1,
+                                      }
+                                    }
                                     onOpen={() => setEditingBindingKey(null)}
                                     onChange={(next) =>
-                                      applyAppearanceBinding(row.key, formatColorValue(next))
+                                      applyToSelection(row.property, formatColorValue(next))
                                     }
                                   />
                                 ) : null}

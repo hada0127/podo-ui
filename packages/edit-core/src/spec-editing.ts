@@ -293,7 +293,7 @@ function migrateComponentBindings(
   component: ComponentDocument,
   fromName: string,
   toName: string
-): Pick<ComponentDocument, "tokens" | "variants" | "states"> {
+): Pick<ComponentDocument, "tokens" | "variants" | "states" | "combinations"> {
   return {
     tokens: migrateBindingKeys(component.tokens as Record<string, string>, fromName, toName),
     variants: (component.variants ?? []).map((variant) => ({
@@ -314,7 +314,11 @@ function migrateComponentBindings(
       ...state,
       ...(state.tokens ? { tokens: migrateBindingKeys(state.tokens, fromName, toName) } : {}),
     })),
-  } as Pick<ComponentDocument, "tokens" | "variants" | "states">;
+    combinations: (component.combinations ?? []).map((combination) => ({
+      ...combination,
+      tokens: migrateBindingKeys(combination.tokens, fromName, toName),
+    })),
+  } as Pick<ComponentDocument, "tokens" | "variants" | "states" | "combinations">;
 }
 
 /**
@@ -414,6 +418,9 @@ export function removeComponentAnatomyPart(
       ...state,
       ...(state.tokens ? { tokens: dropKeys(state.tokens) } : {}),
     })),
+    combinations: (component.combinations ?? [])
+      .map((combination) => ({ ...combination, tokens: dropKeys(combination.tokens) }))
+      .filter((combination) => Object.keys(combination.tokens).length > 0),
   });
 }
 
@@ -562,6 +569,10 @@ export function duplicateComponentAnatomyPart(
     states: (component.states ?? []).map((state) => ({
       ...state,
       ...(state.tokens ? { tokens: copyKeys(state.tokens) } : {}),
+    })),
+    combinations: (component.combinations ?? []).map((combination) => ({
+      ...combination,
+      tokens: copyKeys(combination.tokens),
     })),
   });
   return { component: next, copiedName: nameMap.get(partName) as string };
@@ -927,6 +938,42 @@ export function setComponentVariantDefault(
     );
   }
   return replaceVariantAxis(component, axisName, { ...axis, default: value });
+}
+
+/**
+ * Sets (or clears) a COMPOUND-condition appearance binding: the combination
+ * entry whose `when` matches exactly gains/loses `tokens[<part>.<prop>]`.
+ * Creates the entry on first write; drops it when its last binding clears.
+ */
+export function upsertComponentCombinationTokenBinding(
+  component: ComponentDocument,
+  when: Record<string, string>,
+  key: string,
+  reference: string
+): ComponentDocument {
+  const sameWhen = (candidate: Record<string, string>): boolean => {
+    const a = Object.entries(candidate).sort(([x], [y]) => x.localeCompare(y));
+    const b = Object.entries(when).sort(([x], [y]) => x.localeCompare(y));
+    return a.length === b.length && a.every(([k, v], i) => b[i]?.[0] === k && b[i]?.[1] === v);
+  };
+  const combinations = [...(component.combinations ?? [])];
+  const index = combinations.findIndex((entry) => sameWhen(entry.when));
+  const tokens: Record<string, string> = {
+    ...((combinations[index]?.tokens ?? {}) as Record<string, string>),
+  };
+  if (reference.trim()) {
+    tokens[key] = reference.trim();
+  } else {
+    delete tokens[key];
+  }
+  if (Object.keys(tokens).length === 0) {
+    if (index >= 0) combinations.splice(index, 1);
+  } else if (index >= 0) {
+    combinations[index] = { when, tokens };
+  } else {
+    combinations.push({ when, tokens });
+  }
+  return parseComponentDocument({ ...component, combinations });
 }
 
 /**
