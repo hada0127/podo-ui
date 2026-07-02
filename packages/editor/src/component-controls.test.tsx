@@ -8,6 +8,7 @@ import {
   resolveComponentAppearance,
 } from "./previews.js";
 import { LayersPanel } from "./component-layers.js";
+import { resizeModeFromValue } from "./components-panel.js";
 import { legacyComponents } from "./legacy-fixtures.js";
 import type { TokenLookup } from "./token-lookup.js";
 import type { Translate } from "./i18n/context.js";
@@ -239,6 +240,31 @@ describe("Figma-style layer flags, slot content, and variant add", () => {
         expect(alternative.trim().startsWith(".podo-design-target")).toBe(true);
       }
     }
+  });
+
+  it("resizing modes map width/height values to auto/fixed/hug/fill", () => {
+    expect(resizeModeFromValue("")).toBe("auto");
+    expect(resizeModeFromValue("  ")).toBe("auto");
+    expect(resizeModeFromValue("auto")).toBe("auto");
+    expect(resizeModeFromValue("fit-content")).toBe("hug");
+    expect(resizeModeFromValue("max-content")).toBe("hug");
+    expect(resizeModeFromValue("100%")).toBe("fill");
+    expect(resizeModeFromValue("240px")).toBe("fixed");
+    expect(resizeModeFromValue("{spacing.scale.4}")).toBe("fixed");
+  });
+
+  it("hug/fill width bindings reach the preview CSS", () => {
+    const button = pick("button");
+    const withResizing = {
+      ...button,
+      tokens: { ...button.tokens, "root.width": "fit-content", "root.height": "100%" },
+    };
+    const { container } = render(<>{renderComponentPreview(withResizing, {}, lookup)}</>);
+    const css = Array.from(container.querySelectorAll("style"))
+      .map((style) => style.textContent)
+      .join("\n");
+    expect(css).toContain("width: fit-content !important");
+    expect(css).toContain("height: 100% !important");
   });
 
   it("auto layout flex bindings reach the preview CSS", () => {

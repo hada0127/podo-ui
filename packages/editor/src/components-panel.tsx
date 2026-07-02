@@ -214,8 +214,7 @@ const COMMON_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: stri
   { property: "border-color", defaultAlias: "{color.border.base}" },
   { property: "border-width", defaultAlias: "1px" },
   { property: "radius", defaultAlias: "{radius.scale.2}" },
-  { property: "width", defaultAlias: "auto" },
-  { property: "height", defaultAlias: "auto" },
+  // width/height live in the Size section (Figma resizing modes), not here.
   { property: "padding", defaultAlias: "{spacing.scale.2}" },
   { property: "gap", defaultAlias: "{spacing.scale.2}" },
   { property: "typography", defaultAlias: "{typography.paragraph.p3}" },
@@ -245,10 +244,29 @@ const AUTO_LAYOUT_FLEX_PROPERTIES = [
   "justify-content",
 ] as const;
 const AUTO_LAYOUT_SPACING_PROPERTIES = ["gap", "padding-x", "padding-y"] as const;
+// Figma resizing (W/H): owned by the dedicated Size section, never plain rows.
+const SIZE_SECTION_PROPERTIES = ["width", "height"] as const;
 const normalizedProperty = (property: string): string =>
   property.toLowerCase().replace(/[-_]/g, "");
-const AUTO_LAYOUT_HIDDEN_ALWAYS = new Set(AUTO_LAYOUT_FLEX_PROPERTIES.map(normalizedProperty));
+const AUTO_LAYOUT_HIDDEN_ALWAYS = new Set(
+  [...AUTO_LAYOUT_FLEX_PROPERTIES, ...SIZE_SECTION_PROPERTIES].map(normalizedProperty)
+);
 const AUTO_LAYOUT_HIDDEN_ACTIVE = new Set(AUTO_LAYOUT_SPACING_PROPERTIES.map(normalizedProperty));
+
+// Figma resizing modes, expressed as plain width/height CSS values so they flow
+// through the same scope-aware binding pipeline as every other appearance edit:
+// fixed = explicit size, hug = fit-content, fill = 100%, auto = no override
+// (the component's intrinsic CSS).
+// ponytail: fill maps to 100% only — Figma's fill inside a row auto-layout
+// parent is really flex:1; add a parent-direction-aware mapping if needed.
+export type ResizeMode = "auto" | "fixed" | "hug" | "fill";
+export function resizeModeFromValue(value: string): ResizeMode {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "auto") return "auto";
+  if (/^(fit|max|min)-content$/.test(trimmed)) return "hug";
+  if (trimmed === "100%") return "fill";
+  return "fixed";
+}
 
 // Parts that render text (so they get the typography controls above). Per known
 // component; falls back to a name heuristic for anything else.
@@ -953,6 +971,87 @@ export function ComponentsPanelWorkspace({
   const scopeInstanceKey = activeScope.startsWith("variant::")
     ? `${activeScope}=${scopedVariantValue(activeScope.slice("variant::".length))}`
     : activeScope;
+  // Figma-style Size section: W/H resizing modes (auto/fixed/hug/fill) writing
+  // width/height bindings. Switching to Fixed seeds the input with the part's
+  // MEASURED rendered size (like Figma showing the current px), read from the
+  // selected matrix cell's representative element.
+  const measurePartSize = (property: "width" | "height"): string => {
+    const fallback = property === "width" ? "100px" : "40px";
+    const selector = componentPartSelector(selectedComponentForSpec.id, activePart);
+    const root = matrixRef.current;
+    if (!selector || !root) return fallback;
+    const cell = root.querySelector("[data-podo-selected-cell]") ?? root;
+    const matches = Array.from(cell.querySelectorAll(selector));
+    const target = matches.find((element) => !element.classList.contains("other")) ?? matches[0];
+    const size = target?.getBoundingClientRect()[property];
+    return size ? `${Math.round(size)}px` : fallback;
+  };
+  const renderSizeSection = () => (
+    <div style={appearanceGroupStyle}>
+      <span style={appearanceGroupTitleStyle}>{t("components.size")}</span>
+      {SIZE_SECTION_PROPERTIES.map((property) => {
+        const axis = property === "width" ? "W" : "H";
+        const raw = scopeValue(property);
+        const mode = resizeModeFromValue(raw);
+        // "Auto" clears the binding — only offered where clearing actually works:
+        // when this scope's own bucket holds the key (or nothing is bound at all).
+        // In an overlay scope a base-inherited size can't be deleted, but picking
+        // another mode overrides it, after which Auto reappears to revert that.
+        const ownsBinding = `${activePart}.${property}` in scopeOwnTokens;
+        return (
+          <div key={property} style={autoLayoutRowStyle}>
+            <span style={{ ...propLabelStyle, width: 14, flexShrink: 0 }}>{axis}</span>
+            <select
+              aria-label={t("components.resizeModeFor", { axis })}
+              style={{ ...selectStyle, flex: 1, minWidth: 0 }}
+              value={mode}
+              onChange={(event) => {
+                const next = event.currentTarget.value as ResizeMode;
+                const key = `${activePart}.${property}`;
+                if (next === "auto") applyAppearanceBinding(key, "");
+                else if (next === "hug") applyAppearanceBinding(key, "fit-content");
+                else if (next === "fill") applyAppearanceBinding(key, "100%");
+                else applyAppearanceBinding(key, measurePartSize(property));
+              }}
+            >
+              {mode === "auto" || ownsBinding ? (
+                <option value="auto">{t("components.resizeAuto")}</option>
+              ) : null}
+              <option value="fixed">{t("components.resizeFixed")}</option>
+              <option value="hug">{t("components.resizeHug")}</option>
+              <option value="fill">{t("components.resizeFill")}</option>
+            </select>
+            {mode === "fixed" ? (
+              <input
+                // Mounts when entering Fixed (seeded from the measured/current
+                // value); reseeds on part/scope/variant-value switches.
+                key={`${activePart}:${scopeInstanceKey}:${property}`}
+                type="text"
+                aria-label={t("components.resizeValueFor", { axis })}
+                defaultValue={raw}
+                style={{ ...inputStyle, width: 76, flexShrink: 0 }}
+                onBlur={(event) =>
+                  applyAppearanceBinding(`${activePart}.${property}`, event.currentTarget.value)
+                }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") event.currentTarget.blur();
+                  if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                    const delta = (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
+                    const next = stepDimensionValue(event.currentTarget.value || "0px", delta);
+                    if (next !== undefined) {
+                      event.preventDefault();
+                      event.currentTarget.value = next;
+                      applyAppearanceBinding(`${activePart}.${property}`, next);
+                    }
+                  }
+                }}
+              />
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
   // Figma-style Auto layout section for the selected layer. Direction / wrap /
   // spacing-mode toggles, a 9-dot alignment grid, and gap / padding X·Y inputs —
   // all writing scope-aware flex bindings through the appearance handlers.
@@ -1468,6 +1567,7 @@ export function ComponentsPanelWorkspace({
                 </select>
               </label>
             ) : null}
+            {renderSizeSection()}
             {renderAutoLayoutSection()}
             <div style={appearanceGroupsStyle}>
               {appearanceRows.length ? (
