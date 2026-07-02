@@ -20,11 +20,13 @@ import {
   type ComponentVariantDraft,
 } from "./drafts.js";
 import { tokenRecordKey, type ComponentTokenEditorModel } from "./token-model.js";
-import { cssToken, type TokenLookup } from "./token-lookup.js";
-import { renderComponentTokenEditor } from "./token-editor.js";
+import { cssToken, formatColorValue, parseColor, type TokenLookup } from "./token-lookup.js";
+import { ColorSwatchPicker, renderComponentTokenEditor } from "./token-editor.js";
 import {
+  componentPartForElement,
   componentPartSelector,
   EDITOR_TOOLBAR_ITEMS,
+  FIELD_CONTROL_SLOT_OPTIONS,
   renderComponentPreview,
   renderComponentPreviewMatrix,
   visibleComponentAnatomy,
@@ -92,6 +94,9 @@ import {
   tokenChipNameStyle,
   tokenChipStyle,
   tokenChipValueStyle,
+  variantAxisBlockStyle,
+  variantValueNameButtonActiveStyle,
+  variantValueNameButtonStyle,
   variantValueRowStyle,
 } from "./styles.js";
 
@@ -133,9 +138,10 @@ function appearancePropertyLabel(property: string, t: Translate): string {
 }
 
 // Heuristic: which appearance properties are colors (swatch + color picker) vs
-// dimensions/typography (value + token picker).
+// dimensions/typography (value + token picker). Plain "shadow" is a full
+// box-shadow value, not a color.
 function isColorAppearanceProperty(property: string): boolean {
-  return /(^|[.-])(background|color|fill|stroke|shadow)$|border-?color/i.test(property);
+  return /(^|[.-])(background|color|fill|stroke)$|border-?color|shadow-?color/i.test(property);
 }
 
 // Pencil/Figma-style inspector grouping: properties are organized into named
@@ -153,7 +159,11 @@ const APPEARANCE_GROUP_ORDER = [
 // offers matching tokens (color→color, radius→radius, padding→spacing, font→…).
 function allowedTokenTypes(property: string): string[] {
   const value = property.toLowerCase();
-  if (/background|^color$|fill|border-?color|stroke|shadow/.test(value)) return ["color"];
+  if (/shadow-?color/.test(value)) return ["color"];
+  // Box-shadow values (shadow tokens are composite objects the CSS bridge can't
+  // serialize, so shadows are edited as raw CSS — see isRawValueProperty).
+  if (/^shadow$|box-?shadow/.test(value)) return ["shadow"];
+  if (/background|^color$|fill|border-?color|stroke/.test(value)) return ["color"];
   if (/radius|corner/.test(value)) return ["radius"];
   if (/padding|gap|margin/.test(value)) return ["spacing"];
   if (/border-?width|outline-?width|width|height/.test(value)) return ["dimension"];
@@ -161,15 +171,23 @@ function allowedTokenTypes(property: string): string[] {
   if (/font-?weight/.test(value)) return ["fontWeight"];
   if (/typography/.test(value)) return ["typography"];
   if (/font-?size|line-?height|letter-?spacing/.test(value)) return ["dimension"];
+  if (/text-?align/.test(value)) return ["string"];
   if (/opacity/.test(value)) return ["number"];
   return [];
 }
 
-// Structural dimensions/numbers (height, width, border-width, opacity) need not be
-// tokenized — they get a raw value input instead of a token picker.
+// Structural dimensions/numbers (height, width, border-width, opacity) and raw
+// CSS composites (box-shadow, text-align) need not be tokenized — they get a raw
+// value input instead of a token picker.
 function isRawValueProperty(property: string): boolean {
   const types = allowedTokenTypes(property);
-  return types.length === 1 && (types[0] === "dimension" || types[0] === "number");
+  return (
+    types.length === 1 &&
+    (types[0] === "dimension" ||
+      types[0] === "number" ||
+      types[0] === "shadow" ||
+      types[0] === "string")
+  );
 }
 
 function appearanceGroup(property: string): (typeof APPEARANCE_GROUP_ORDER)[number] {
@@ -189,10 +207,15 @@ const COMMON_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: stri
   { property: "background", defaultAlias: "{color.bg.modal}" },
   { property: "color", defaultAlias: "{color.text.body}" },
   { property: "border-color", defaultAlias: "{color.border.base}" },
+  { property: "border-width", defaultAlias: "1px" },
   { property: "radius", defaultAlias: "{radius.scale.2}" },
+  { property: "width", defaultAlias: "auto" },
+  { property: "height", defaultAlias: "auto" },
   { property: "padding", defaultAlias: "{spacing.scale.2}" },
   { property: "gap", defaultAlias: "{spacing.scale.2}" },
   { property: "typography", defaultAlias: "{typography.paragraph.p3}" },
+  { property: "opacity", defaultAlias: "1" },
+  { property: "shadow", defaultAlias: "0 2px 8px rgba(0, 0, 0, 0.16)" },
 ];
 
 // Extra properties offered when the selected part actually renders text, so you
@@ -203,6 +226,7 @@ const TYPOGRAPHY_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: 
   { property: "font-family", defaultAlias: "inherit" },
   { property: "line-height", defaultAlias: "1.5" },
   { property: "letter-spacing", defaultAlias: "0" },
+  { property: "text-align", defaultAlias: "left" },
 ];
 
 // Parts that render text (so they get the typography controls above). Per known
@@ -238,6 +262,199 @@ function isTextBearingPart(componentId: string, part: string): boolean {
 // preview exposes a synthetic "Text" control that feeds the reserved `text`
 // selection key (renderers read it via previewText()).
 const PREVIEW_TEXT_COMPONENT_IDS = new Set(["button", "chip", "label", "checkbox-radio", "toggle"]);
+
+// Editing policy for functional components:
+// - the WYSIWYG editor is EXCLUDED from Figma-style editing (test-only preview);
+// - the datepicker is STYLE-ONLY: layers select + appearance edit, but no layer
+//   structure changes and no props/variants/slots schema editing.
+// Everything else gets the full editing surface.
+interface ComponentEditPolicy {
+  design: boolean; // layers column + design inspector
+  structure: boolean; // layer add/rename/reorder/delete/flags
+  schema: boolean; // props/variants/slots CRUD (Properties card + Edit schema)
+}
+const COMPONENT_EDIT_POLICIES: Record<string, ComponentEditPolicy> = {
+  editor: { design: false, structure: false, schema: false },
+  datepicker: { design: true, structure: false, schema: false },
+};
+function componentEditPolicy(componentId: string): ComponentEditPolicy {
+  return COMPONENT_EDIT_POLICIES[componentId] ?? { design: true, structure: true, schema: true };
+}
+
+// Figma-style arrow stepping on raw dimension inputs: bump the FIRST number in
+// the value (1, or 10 with Shift), preserving any unit suffix.
+function stepDimensionValue(text: string, delta: number): string | undefined {
+  const match = /-?\d*\.?\d+/.exec(text);
+  if (!match) return undefined;
+  const stepped = Math.round((Number.parseFloat(match[0]) + delta) * 100) / 100;
+  return `${text.slice(0, match.index)}${stepped}${text.slice(match.index + match[0].length)}`;
+}
+
+// Unique name helper for inline "+" creation (value-2, value-3, …).
+function uniqueName(base: string, taken: Iterable<string>): string {
+  const set = new Set(taken);
+  if (!set.has(base)) return base;
+  let suffix = 2;
+  while (set.has(`${base}-${suffix}`)) suffix += 1;
+  return `${base}-${suffix}`;
+}
+
+/**
+ * Figma-style "Properties" card: variant axes with inline rename (double-click),
+ * per-value rows (default radio · click to preview · double-click rename · ×),
+ * plus add-value / add-axis. Every action commits immediately through the
+ * inline variant handlers.
+ */
+function VariantPropertiesCard({
+  component,
+  selections,
+  onSelectValue,
+  addVariantAxis,
+  renameVariantAxis,
+  removeVariantAxis,
+  addVariantValue,
+  renameVariantValue,
+  removeVariantValue,
+  setVariantDefault,
+}: {
+  component: ComponentDocument;
+  selections: Record<string, string>;
+  onSelectValue: (axisName: string, value: string) => void;
+  addVariantAxis: (name: string, values: string[]) => void;
+  renameVariantAxis: (fromName: string, toName: string) => void;
+  removeVariantAxis: (name: string) => void;
+  addVariantValue: (axisName: string, value: string) => void;
+  renameVariantValue: (axisName: string, fromValue: string, toValue: string) => void;
+  removeVariantValue: (axisName: string, value: string) => void;
+  setVariantDefault: (axisName: string, value: string) => void;
+}) {
+  const t = useT();
+  // "axis::<name>" or "value::<axis>::<value>" while an inline rename is open.
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const renameInput = (defaultValue: string, commit: (next: string) => void) => (
+    <input
+      autoFocus
+      defaultValue={defaultValue}
+      aria-label={t("components.name")}
+      style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+      onClick={(event) => event.stopPropagation()}
+      onBlur={(event) => {
+        // Escape marks the input cancelled so an unmount-triggered blur can't
+        // commit the very rename the user just abandoned.
+        if (event.currentTarget.dataset.cancelled !== "true") {
+          commit(event.currentTarget.value);
+        }
+        setRenaming(null);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") event.currentTarget.blur();
+        if (event.key === "Escape") {
+          event.currentTarget.dataset.cancelled = "true";
+          setRenaming(null);
+        }
+      }}
+    />
+  );
+  return (
+    <div style={cardStyle}>
+      <div style={cardHeaderStyle}>
+        <strong style={railSectionTitleStyle}>{t("components.propertiesHeading")}</strong>
+        <button
+          type="button"
+          style={smallButtonStyle}
+          title={t("components.addVariantAxis")}
+          aria-label={t("components.addVariantAxis")}
+          onClick={() =>
+            addVariantAxis(
+              uniqueName(
+                "property",
+                component.variants.map((variant) => variant.name)
+              ),
+              ["value-1"]
+            )
+          }
+        >
+          +
+        </button>
+      </div>
+      {component.variants.length === 0 ? (
+        <span style={appearanceValueStyle}>{t("components.noVariants")}</span>
+      ) : null}
+      {component.variants.map((axis) => {
+        const selectedValue = selections[axis.name] ?? axis.default ?? axis.values[0] ?? "";
+        return (
+          <div key={axis.name} style={variantAxisBlockStyle}>
+            <div style={appearanceHeaderStyle}>
+              {renaming === `axis::${axis.name}` ? (
+                renameInput(axis.name, (next) => renameVariantAxis(axis.name, next))
+              ) : (
+                <span
+                  style={propLabelStyle}
+                  title={t("components.renameHint")}
+                  onDoubleClick={() => setRenaming(`axis::${axis.name}`)}
+                >
+                  {axis.name}
+                </span>
+              )}
+              <button
+                type="button"
+                aria-label={t("components.deleteVariantAxis", { name: axis.name })}
+                style={appearanceRemoveStyle}
+                onClick={() => removeVariantAxis(axis.name)}
+              >
+                ×
+              </button>
+            </div>
+            {axis.values.map((value) => (
+              <div key={value} style={variantValueRowStyle}>
+                <input
+                  type="radio"
+                  name={`podo-default-${component.id}-${axis.name}`}
+                  checked={axis.default === value}
+                  title={t("components.setAsDefault", { value })}
+                  aria-label={t("components.setAsDefault", { value })}
+                  onChange={() => setVariantDefault(axis.name, value)}
+                />
+                {renaming === `value::${axis.name}::${value}` ? (
+                  renameInput(value, (next) => renameVariantValue(axis.name, value, next))
+                ) : (
+                  <button
+                    type="button"
+                    style={{
+                      ...variantValueNameButtonStyle,
+                      ...(selectedValue === value ? variantValueNameButtonActiveStyle : {}),
+                    }}
+                    title={t("components.renameHint")}
+                    onClick={() => onSelectValue(axis.name, value)}
+                    onDoubleClick={() => setRenaming(`value::${axis.name}::${value}`)}
+                  >
+                    {value}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  aria-label={t("components.removeValue", { value })}
+                  style={appearanceRemoveStyle}
+                  disabled={axis.values.length <= 1}
+                  onClick={() => removeVariantValue(axis.name, value)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              style={smallButtonStyle}
+              onClick={() => addVariantValue(axis.name, uniqueName("value", axis.values))}
+            >
+              {t("components.addValue")}
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export function ComponentsPanelControls({
   componentSearch,
@@ -321,12 +538,22 @@ export function ComponentsPanelWorkspace({
   updateTokenMatrixCell,
   updateComponentTokenBinding,
   updateComponentVariantValueTokenBinding,
+  updateComponentStateTokenBinding,
   renameAnatomyPart,
   addAnatomyPart,
   removeAnatomyPart,
   reorderAnatomyPart,
   reparentAnatomyPart,
   moveAnatomyPart,
+  duplicateAnatomyPart,
+  setAnatomyPartFlags,
+  addVariantAxis,
+  renameVariantAxis,
+  removeVariantAxis,
+  addVariantValue,
+  renameVariantValue,
+  removeVariantValue,
+  setVariantDefault,
   tokenPickerOptions,
   previewTokenLookup,
   iconNames,
@@ -369,12 +596,22 @@ export function ComponentsPanelWorkspace({
     key: string,
     reference: string
   ) => void;
-  renameAnatomyPart: (fromName: string, toName: string) => void;
+  updateComponentStateTokenBinding: (stateName: string, key: string, reference: string) => void;
+  renameAnatomyPart: (fromName: string, toName: string) => boolean;
   addAnatomyPart: (name: string, parent?: string) => void;
   removeAnatomyPart: (partName: string) => void;
   reorderAnatomyPart: (partName: string, beforeName: string | null) => void;
   reparentAnatomyPart: (partName: string, newParent: string | null) => void;
   moveAnatomyPart: (partName: string, newParent: string | null, beforeName: string | null) => void;
+  duplicateAnatomyPart: (partName: string) => string | undefined;
+  setAnatomyPartFlags: (partName: string, flags: { hidden?: boolean; locked?: boolean }) => void;
+  addVariantAxis: (name: string, values: string[]) => void;
+  renameVariantAxis: (fromName: string, toName: string) => void;
+  removeVariantAxis: (name: string) => void;
+  addVariantValue: (axisName: string, value: string) => void;
+  renameVariantValue: (axisName: string, fromValue: string, toValue: string) => void;
+  removeVariantValue: (axisName: string, value: string) => void;
+  setVariantDefault: (axisName: string, value: string) => void;
   tokenPickerOptions: TokenPickerOption[];
   previewTokenLookup: TokenLookup;
   iconNames: string[];
@@ -406,10 +643,10 @@ export function ComponentsPanelWorkspace({
     const rows = variantValueRows.map((row, rowIndex) => (rowIndex === index ? value : row));
     writeVariantValues(rows, variantDraft.defaultValue === previous ? value.trim() : undefined);
   };
-  const removeVariantValue = (index: number): void => {
+  const removeVariantDraftValue = (index: number): void => {
     writeVariantValues(variantValueRows.filter((_, rowIndex) => rowIndex !== index));
   };
-  const addVariantValue = (): void => {
+  const addVariantDraftValue = (): void => {
     writeVariantValues([...variantValueRows, ""]);
   };
   // Writes a variant/prop/state value into the live preview selections. Empty
@@ -427,16 +664,36 @@ export function ComponentsPanelWorkspace({
   };
   // Figma-style layers (anatomy parts) + per-part appearance editing.
   const [selectedPart, setSelectedPart] = useState("");
+  // Hovered layer/part (layers row ↔ preview element, both directions).
+  const [hoveredPart, setHoveredPart] = useState<string | null>(null);
   // Selection-driven right rail: "preview" (clicking the live preview) shows the
   // test controls; "design" (selecting a variant-set cell or a layer) shows that
   // selection's appearance/design properties.
   const [inspectorTarget, setInspectorTarget] = useState<"design" | "preview">("design");
+  // What this component allows editing (editor = test-only, datepicker = style-only).
+  const policy = componentEditPolicy(selectedComponentForSpec.id);
+  const effectiveInspectorTarget = policy.design ? inspectorTarget : "preview";
+  // Locked layers can't be picked from the preview (Figma lock semantics); they
+  // stay selectable from the layer tree.
+  const lockedParts = new Set(
+    selectedComponentForSpec.anatomy.filter((part) => part.locked).map((part) => part.name)
+  );
   // Which appearance binding row is currently open for token picking.
   const [editingBindingKey, setEditingBindingKey] = useState<string | null>(null);
   // "Apply to" scope: base tokens, or a specific variant value (so editing a layer's
   // appearance can target just one variant like Figma). Options follow the live
   // selections, e.g. theme = primary.
   const [appearanceScope, setAppearanceScope] = useState("base");
+  // Switching components resets the per-component editing state — otherwise a
+  // scope like "variant::size" or an open picker row silently carries over to a
+  // different component that happens to share the axis/part name.
+  useEffect(() => {
+    setSelectedPart("");
+    setHoveredPart(null);
+    setInspectorTarget("design");
+    setEditingBindingKey(null);
+    setAppearanceScope("base");
+  }, [selectedComponentForSpec.id]);
   // Draggable layers-column width (drag the handle on its right edge).
   const [layersWidth, setLayersWidth] = useState(200);
   // Wraps the variant matrix so the layer↔preview sync effect can find and ring the
@@ -484,40 +741,82 @@ export function ComponentsPanelWorkspace({
   useEffect(() => {
     const root = matrixRef.current;
     if (!root) return;
-    root
-      .querySelectorAll(".podo-part-selected")
-      .forEach((element) => element.classList.remove("podo-part-selected"));
-    if (inspectorTarget !== "design") return;
-    const selector = componentPartSelector(selectedComponentForSpec.id, activePart);
-    if (!selector) return;
+    for (const className of ["podo-part-selected", "podo-part-hovered"]) {
+      root
+        .querySelectorAll(`.${className}`)
+        .forEach((element) => element.classList.remove(className));
+    }
+    if (effectiveInspectorTarget !== "design") return;
     const cell = root.querySelector("[data-podo-selected-cell]") ?? root;
-    const matches = Array.from(cell.querySelectorAll(selector));
-    // Prefer a non-muted instance as the representative — e.g. an in-month day, not a
-    // faded prev/next-month ".other" calendar cell.
-    const target = matches.find((element) => !element.classList.contains("other")) ?? matches[0];
-    target?.classList.add("podo-part-selected");
-  }, [activePart, inspectorTarget, selectedComponentForSpec, effectiveComponentPreviewSelections]);
-  const appearanceScopeOptions = selectedComponentForSpec.variants.map((variant) => {
-    const value =
-      effectiveComponentPreviewSelections[variant.name] ??
-      variant.default ??
-      variant.values[0] ??
-      "";
-    return { key: `${variant.name}::${value}`, label: `${variant.name} = ${value}` };
-  });
+    const mark = (part: string | null | undefined, className: string): void => {
+      if (!part) return;
+      const selector = componentPartSelector(selectedComponentForSpec.id, part);
+      if (!selector) return;
+      const matches = Array.from(cell.querySelectorAll(selector));
+      // Prefer a non-muted instance as the representative — e.g. an in-month day,
+      // not a faded prev/next-month ".other" calendar cell.
+      const target = matches.find((element) => !element.classList.contains("other")) ?? matches[0];
+      target?.classList.add(className);
+    };
+    mark(activePart, "podo-part-selected");
+    if (hoveredPart && hoveredPart !== activePart) mark(hoveredPart, "podo-part-hovered");
+  }, [
+    activePart,
+    hoveredPart,
+    effectiveInspectorTarget,
+    selectedComponentForSpec,
+    effectiveComponentPreviewSelections,
+  ]);
+  // Variant scopes are keyed by AXIS ("variant::size") and always target that
+  // axis's currently previewed value — so switching the previewed value in the
+  // Properties card re-targets editing to it (Figma: you style the selected
+  // variant) instead of silently dropping the scope back to base.
+  const scopedVariantValue = (axisName: string): string => {
+    const axis = selectedComponentForSpec.variants.find((variant) => variant.name === axisName);
+    return effectiveComponentPreviewSelections[axisName] ?? axis?.default ?? axis?.values[0] ?? "";
+  };
+  const appearanceScopeOptions = [
+    ...selectedComponentForSpec.variants.map((variant) => ({
+      key: `variant::${variant.name}`,
+      label: `${variant.name} = ${scopedVariantValue(variant.name)}`,
+    })),
+    // Declared states are scopes too (Figma-style: style the hover/disabled look).
+    ...selectedComponentForSpec.states.map((state) => ({
+      key: `state::${state.name}`,
+      label: `state = ${state.name}`,
+    })),
+  ];
   const activeScope = appearanceScopeOptions.some((option) => option.key === appearanceScope)
     ? appearanceScope
     : "base";
+  // Changing scope to a state pins the preview to that state so you see what you
+  // edit; only LEAVING a state scope unpins (a base↔variant switch never clears a
+  // state the user pinned from the test inspector).
+  const changeAppearanceScope = (next: string): void => {
+    setAppearanceScope(next);
+    if (next.startsWith("state::")) {
+      commitPreviewSelection("state", next.slice(7));
+    } else if (activeScope.startsWith("state::")) {
+      commitPreviewSelection("state", undefined);
+    }
+  };
   // Effective bindings for the active scope: base tokens overlaid with the selected
-  // variant value's overrides, so editing/removing in variant scope is reflected.
+  // variant value's (or state's) overrides, so editing/removing in scope is reflected.
   const scopeTokens: Record<string, string> = (() => {
     const base = { ...(selectedComponentForSpec.tokens ?? {}) } as Record<string, string>;
     if (activeScope === "base") return base;
-    const separator = activeScope.indexOf("::");
-    const variantName = activeScope.slice(0, separator);
-    const value = activeScope.slice(separator + 2);
-    const variant = selectedComponentForSpec.variants.find((item) => item.name === variantName);
-    return { ...base, ...((variant?.valueTokens?.[value] ?? {}) as Record<string, string>) };
+    if (activeScope.startsWith("state::")) {
+      const state = selectedComponentForSpec.states.find(
+        (item) => item.name === activeScope.slice(7)
+      );
+      return { ...base, ...((state?.tokens ?? {}) as Record<string, string>) };
+    }
+    const axisName = activeScope.slice("variant::".length);
+    const variant = selectedComponentForSpec.variants.find((item) => item.name === axisName);
+    return {
+      ...base,
+      ...((variant?.valueTokens?.[scopedVariantValue(axisName)] ?? {}) as Record<string, string>),
+    };
   })();
   const partBindings = Object.entries(scopeTokens)
     .filter(([key]) => key.startsWith(`${activePart}.`))
@@ -563,13 +862,12 @@ export function ComponentsPanelWorkspace({
       updateComponentTokenBinding(key, reference);
       return;
     }
-    const separator = activeScope.indexOf("::");
-    updateComponentVariantValueTokenBinding(
-      activeScope.slice(0, separator),
-      activeScope.slice(separator + 2),
-      key,
-      reference
-    );
+    if (activeScope.startsWith("state::")) {
+      updateComponentStateTokenBinding(activeScope.slice(7), key, reference);
+      return;
+    }
+    const axisName = activeScope.slice("variant::".length);
+    updateComponentVariantValueTokenBinding(axisName, scopedVariantValue(axisName), key, reference);
   };
   // Picker options for an appearance field: only the GLOBAL design tokens of the
   // matching type (radius→radius.scale, spacing→spacing.scale, typography→fonts).
@@ -586,50 +884,67 @@ export function ComponentsPanelWorkspace({
     <section
       style={{
         ...componentPanelWorkspaceLayout,
-        gridTemplateColumns: `${layersWidth}px minmax(0, 1fr) 320px`,
+        gridTemplateColumns: policy.design
+          ? `${layersWidth}px minmax(0, 1fr) 320px`
+          : "minmax(0, 1fr) 320px",
       }}
     >
-      <aside style={layersColumnStyle}>
-        <div
-          role="separator"
-          aria-orientation="vertical"
-          onPointerDown={startLayersResize}
-          style={layerResizeHandleStyle}
-        />
-        <div style={cardStyle}>
-          <div style={cardHeaderStyle}>
-            <strong style={railSectionTitleStyle}>{t("components.layers")}</strong>
-            <button
-              type="button"
-              style={smallButtonStyle}
-              onClick={() => addAnatomyPart("layer")}
-              title={t("components.addLayer")}
-            >
-              +
-            </button>
-          </div>
-          <LayersPanel
-            anatomy={visibleAnatomy}
-            selectedPart={activePart}
-            onSelect={(part) => {
-              // Selecting a layer is a design action: switch to the design inspector
-              // so the matrix rings the matching element (it only passes selectedPart
-              // through in design mode).
-              setSelectedPart(part);
-              setInspectorTarget("design");
-            }}
-            onRename={(from, to) => {
-              renameAnatomyPart(from, to);
-              setSelectedPart(to.trim() || from);
-            }}
-            onAdd={addAnatomyPart}
-            onRemove={removeAnatomyPart}
-            onReorder={reorderAnatomyPart}
-            onReparent={reparentAnatomyPart}
-            onMove={moveAnatomyPart}
+      {policy.design ? (
+        <aside style={layersColumnStyle}>
+          <div
+            role="separator"
+            aria-orientation="vertical"
+            onPointerDown={startLayersResize}
+            style={layerResizeHandleStyle}
           />
-        </div>
-      </aside>
+          <div style={cardStyle}>
+            <div style={cardHeaderStyle}>
+              <strong style={railSectionTitleStyle}>{t("components.layers")}</strong>
+              {policy.structure ? (
+                <button
+                  type="button"
+                  style={smallButtonStyle}
+                  onClick={() => addAnatomyPart("layer")}
+                  title={t("components.addLayer")}
+                >
+                  +
+                </button>
+              ) : null}
+            </div>
+            <LayersPanel
+              key={selectedComponentForSpec.id}
+              anatomy={visibleAnatomy}
+              selectedPart={activePart}
+              highlightPart={hoveredPart}
+              structureLocked={!policy.structure}
+              onSelect={(part) => {
+                // Selecting a layer is a design action: switch to the design inspector
+                // so the matrix rings the matching element (it only passes selectedPart
+                // through in design mode).
+                setSelectedPart(part);
+                setInspectorTarget("design");
+              }}
+              onHover={setHoveredPart}
+              onRename={(from, to) => {
+                // Only follow the rename when it committed — a rejected rename
+                // (name collision) must not move selection to a ghost layer.
+                if (renameAnatomyPart(from, to)) setSelectedPart(to.trim() || from);
+              }}
+              onAdd={addAnatomyPart}
+              onDuplicate={(part) => {
+                const copiedName = duplicateAnatomyPart(part);
+                if (copiedName) setSelectedPart(copiedName);
+              }}
+              onRemove={removeAnatomyPart}
+              onReorder={reorderAnatomyPart}
+              onReparent={reparentAnatomyPart}
+              onMove={moveAnatomyPart}
+              onToggleHidden={(part, hidden) => setAnatomyPartFlags(part, { hidden })}
+              onToggleLocked={(part, locked) => setAnatomyPartFlags(part, { locked })}
+            />
+          </div>
+        </aside>
+      ) : null}
       <div style={stickyPreviewColumnStyle}>
         <div style={sectionHeaderStyle}>
           <div>
@@ -728,7 +1043,7 @@ export function ComponentsPanelWorkspace({
         </details>
         <div
           style={
-            inspectorTarget === "preview"
+            effectiveInspectorTarget === "preview"
               ? { ...componentPreviewPanelStyle, outline: "2px solid #7aa7ee", outlineOffset: 2 }
               : { ...componentPreviewPanelStyle, cursor: "pointer" }
           }
@@ -753,18 +1068,50 @@ export function ComponentsPanelWorkspace({
               setComponentPreviewSelections(next);
               // Figma-style: clicking an element in a matrix cell selects that part
               // (e.g. the calendar / time list) so its design opens directly.
-              if (part) setSelectedPart(part);
+              // Locked layers are skipped, like clicking a locked Figma layer.
+              if (part && !lockedParts.has(part)) setSelectedPart(part);
               setInspectorTarget("design");
             },
+            // Figma-style "add variant" from the set header (schema-editable only).
+            ...(policy.schema
+              ? {
+                  onAddValue: (axisName: string) => {
+                    const axis = selectedComponentForSpec.variants.find(
+                      (variant) => variant.name === axisName
+                    );
+                    if (axis) addVariantValue(axisName, uniqueName("value", axis.values));
+                  },
+                }
+              : {}),
             // Outline the selected part only while it's actually the editing target
             // (design mode); keeps the grid clean in preview mode. RESOLVED activePart
             // matches what the layers panel highlights. (Datepicker rings a single
             // element via the sync effect; other components' matrices ring via this.)
-            ...(inspectorTarget === "design" ? { selectedPart: activePart } : {}),
+            ...(effectiveInspectorTarget === "design" ? { selectedPart: activePart } : {}),
             t,
           });
           return matrix ? (
-            <div ref={matrixRef} style={componentPreviewPanelStyle}>
+            <div
+              ref={matrixRef}
+              style={componentPreviewPanelStyle}
+              // Preview → layers hover sync (Figma highlights the layer row of the
+              // element under the cursor). Locked parts don't light up.
+              onMouseOver={(event) => {
+                const part = componentPartForElement(
+                  selectedComponentForSpec.id,
+                  event.target as Element
+                );
+                setHoveredPart(part && !lockedParts.has(part) ? part : null);
+              }}
+              onMouseLeave={() => setHoveredPart(null)}
+            >
+              {/* Hover ring for the marked element (non-datepicker matrices have no
+                  per-row style injection, so this one global rule covers them). */}
+              <style>
+                {
+                  ".podo-part-hovered { outline: 1px solid #7aa7ee !important; outline-offset: 1px; }"
+                }
+              </style>
               <div style={cardHeaderStyle}>
                 <strong style={railSectionTitleStyle}>{t("components.variantSet")}</strong>
               </div>
@@ -775,24 +1122,48 @@ export function ComponentsPanelWorkspace({
       </div>
       <div style={propertiesRailStyle}>
         <div style={componentEditModeBarStyle}>
-          {(["design", "preview"] as const).map((target) => (
-            <button
-              key={target}
-              type="button"
-              aria-pressed={inspectorTarget === target}
-              style={{
-                ...componentEditModeButtonStyle,
-                ...(inspectorTarget === target ? componentEditModeButtonActiveStyle : {}),
-              }}
-              onClick={() => setInspectorTarget(target)}
-            >
-              {target === "design"
-                ? t("components.inspectorDesign")
-                : t("components.inspectorTest")}
-            </button>
-          ))}
+          {(policy.design ? (["design", "preview"] as const) : (["preview"] as const)).map(
+            (target) => (
+              <button
+                key={target}
+                type="button"
+                aria-pressed={effectiveInspectorTarget === target}
+                style={{
+                  ...componentEditModeButtonStyle,
+                  ...(effectiveInspectorTarget === target
+                    ? componentEditModeButtonActiveStyle
+                    : {}),
+                }}
+                onClick={() => setInspectorTarget(target)}
+              >
+                {target === "design"
+                  ? t("components.inspectorDesign")
+                  : t("components.inspectorTest")}
+              </button>
+            )
+          )}
         </div>
-        {inspectorTarget === "design" ? (
+        {!policy.design ? (
+          <p style={sectionMetaStyle}>{t("components.testOnlyNote")}</p>
+        ) : !policy.schema ? (
+          <p style={sectionMetaStyle}>{t("components.styleOnlyNote")}</p>
+        ) : null}
+        {effectiveInspectorTarget === "design" && policy.schema ? (
+          <VariantPropertiesCard
+            key={selectedComponentForSpec.id}
+            component={selectedComponentForSpec}
+            selections={effectiveComponentPreviewSelections}
+            onSelectValue={(axis, value) => commitPreviewSelection(axis, value)}
+            addVariantAxis={addVariantAxis}
+            renameVariantAxis={renameVariantAxis}
+            removeVariantAxis={removeVariantAxis}
+            addVariantValue={addVariantValue}
+            renameVariantValue={renameVariantValue}
+            removeVariantValue={removeVariantValue}
+            setVariantDefault={setVariantDefault}
+          />
+        ) : null}
+        {effectiveInspectorTarget === "design" ? (
           <div style={cardStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>
@@ -805,7 +1176,7 @@ export function ComponentsPanelWorkspace({
                 <select
                   style={selectStyle}
                   value={activeScope}
-                  onChange={(event) => setAppearanceScope(event.currentTarget.value)}
+                  onChange={(event) => changeAppearanceScope(event.currentTarget.value)}
                 >
                   <option value="base">{t("components.allVariantsBase")}</option>
                   {appearanceScopeOptions.map((option) => (
@@ -870,6 +1241,25 @@ export function ComponentsPanelWorkspace({
                                   onKeyDown={(event) => {
                                     if (event.key === "Enter") event.currentTarget.blur();
                                     if (event.key === "Escape") setEditingBindingKey(null);
+                                    // Figma-style scrubbing: arrows step the first number
+                                    // (Shift = ×10) and apply live so the preview follows.
+                                    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                                      const delta =
+                                        (event.key === "ArrowUp" ? 1 : -1) *
+                                        (event.shiftKey ? 10 : 1);
+                                      const next = stepDimensionValue(
+                                        event.currentTarget.value ||
+                                          row.reference ||
+                                          row.defaultAlias ||
+                                          "",
+                                        delta
+                                      );
+                                      if (next !== undefined) {
+                                        event.preventDefault();
+                                        event.currentTarget.value = next;
+                                        applyAppearanceBinding(row.key, next);
+                                      }
+                                    }
                                   }}
                                 />
                               ) : (
@@ -885,23 +1275,41 @@ export function ComponentsPanelWorkspace({
                                 />
                               )
                             ) : (
-                              <button
-                                type="button"
-                                style={tokenChipStyle}
-                                title={tokenName || resolved || t("components.setProperty")}
-                                onClick={() => setEditingBindingKey(row.key)}
-                              >
-                                <span
-                                  style={{
-                                    ...swatchStyle,
-                                    ...(isColor && resolved
-                                      ? { background: resolved }
-                                      : { background: "transparent", border: "none" }),
-                                  }}
-                                />
-                                <span style={tokenChipValueStyle}>{resolved || "—"}</span>
-                                <span style={tokenChipNameStyle}>{tokenName}</span>
-                              </button>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                {isColor ? (
+                                  // Figma fill row: the swatch opens the inline HSV+alpha
+                                  // picker (writes a raw color, detaching any token —
+                                  // same as editing a variable-bound fill in Figma);
+                                  // the chip still opens the token picker.
+                                  <ColorSwatchPicker
+                                    label={appearancePropertyLabel(row.property, t)}
+                                    swatchColor={resolved || undefined}
+                                    value={parseColor(resolved) ?? { r: 127, g: 127, b: 127, a: 1 }}
+                                    onOpen={() => setEditingBindingKey(null)}
+                                    onChange={(next) =>
+                                      applyAppearanceBinding(row.key, formatColorValue(next))
+                                    }
+                                  />
+                                ) : null}
+                                <button
+                                  type="button"
+                                  style={{ ...tokenChipStyle, flex: 1, minWidth: 0 }}
+                                  title={tokenName || resolved || t("components.setProperty")}
+                                  onClick={() => setEditingBindingKey(row.key)}
+                                >
+                                  {isColor ? null : (
+                                    <span
+                                      style={{
+                                        ...swatchStyle,
+                                        background: "transparent",
+                                        border: "none",
+                                      }}
+                                    />
+                                  )}
+                                  <span style={tokenChipValueStyle}>{resolved || "—"}</span>
+                                  <span style={tokenChipNameStyle}>{tokenName}</span>
+                                </button>
+                              </div>
                             )}
                           </div>
                         );
@@ -914,7 +1322,7 @@ export function ComponentsPanelWorkspace({
             </div>
           </div>
         ) : null}
-        {inspectorTarget === "preview" && selectedComponentForSpec.states.length ? (
+        {effectiveInspectorTarget === "preview" && selectedComponentForSpec.states.length ? (
           <div style={cardStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.state")}</strong>
@@ -936,7 +1344,7 @@ export function ComponentsPanelWorkspace({
             </label>
           </div>
         ) : null}
-        {inspectorTarget === "preview" && selectedComponentForSpec.variants.length ? (
+        {effectiveInspectorTarget === "preview" && selectedComponentForSpec.variants.length ? (
           <div style={cardStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.variants")}</strong>
@@ -968,7 +1376,7 @@ export function ComponentsPanelWorkspace({
             </div>
           </div>
         ) : null}
-        {inspectorTarget === "preview" &&
+        {effectiveInspectorTarget === "preview" &&
         PREVIEW_TEXT_COMPONENT_IDS.has(selectedComponentForSpec.id) ? (
           <div style={cardStyle}>
             <div style={cardHeaderStyle}>
@@ -986,7 +1394,32 @@ export function ComponentsPanelWorkspace({
             </div>
           </div>
         ) : null}
-        {inspectorTarget === "preview" ? (
+        {effectiveInspectorTarget === "preview" && selectedComponentForSpec.id === "field" ? (
+          // Field is slot-driven: pick what fills the required `control` slot,
+          // like slot composition on the canvas.
+          <div style={cardStyle}>
+            <div style={cardHeaderStyle}>
+              <strong style={railSectionTitleStyle}>{t("components.slotContent")}</strong>
+            </div>
+            <label style={propRowStyle}>
+              <span style={propLabelStyle}>control</span>
+              <select
+                style={selectStyle}
+                value={effectiveComponentPreviewSelections["slot:control"] ?? "input"}
+                onChange={(event) =>
+                  commitPreviewSelection("slot:control", event.currentTarget.value)
+                }
+              >
+                {FIELD_CONTROL_SLOT_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        ) : null}
+        {effectiveInspectorTarget === "preview" ? (
           <div style={cardStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.props")}</strong>
@@ -1108,7 +1541,7 @@ export function ComponentsPanelWorkspace({
             </div>
           </div>
         ) : null}
-        {inspectorTarget === "preview" && selectedComponentForSpec.id === "editor" ? (
+        {effectiveInspectorTarget === "preview" && selectedComponentForSpec.id === "editor" ? (
           <div style={cardStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.editorToolbar")}</strong>
@@ -1135,438 +1568,451 @@ export function ComponentsPanelWorkspace({
             </div>
           </div>
         ) : null}
-        <details style={disclosureStyle}>
-          <summary style={summaryStyle}>{t("components.editSchema")}</summary>
-          <div style={editSchemaBodyStyle}>
-            <div style={componentEditModeBarStyle}>
-              {(["props", "variants", "slots", "tokens"] as const).map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  style={{
-                    ...componentEditModeButtonStyle,
-                    ...(componentEditMode === mode ? componentEditModeButtonActiveStyle : {}),
-                  }}
-                  onClick={() => setComponentEditMode(mode)}
-                >
-                  {mode === "props"
-                    ? t("components.tabProps", { count: selectedComponentForSpec.props.length })
-                    : null}
-                  {mode === "variants"
-                    ? t("components.tabVariants", {
-                        count: selectedComponentForSpec.variants.length,
-                      })
-                    : null}
-                  {mode === "slots"
-                    ? t("components.tabSlots", { count: selectedComponentForSpec.slots.length })
-                    : null}
-                  {mode === "tokens"
-                    ? t("components.tabTokens", {
-                        count: selectedComponentTokenModel.records.length,
-                      })
-                    : null}
-                </button>
-              ))}
-            </div>
-            {componentEditMode === "props" ? (
-              <div style={cardStyle}>
-                <div style={cardHeaderStyle}>
-                  <strong style={railSectionTitleStyle}>{t("components.props")}</strong>
+        {/* Style-only / test-only components hide schema editing entirely. */}
+        {policy.schema ? (
+          <details style={disclosureStyle}>
+            <summary style={summaryStyle}>{t("components.editSchema")}</summary>
+            <div style={editSchemaBodyStyle}>
+              <div style={componentEditModeBarStyle}>
+                {(["props", "variants", "slots", "tokens"] as const).map((mode) => (
                   <button
+                    key={mode}
                     type="button"
-                    style={smallButtonStyle}
-                    onClick={() => {
-                      setSelectedPropName(undefined);
-                      setPropDraft(createNewComponentPropDraft());
+                    style={{
+                      ...componentEditModeButtonStyle,
+                      ...(componentEditMode === mode ? componentEditModeButtonActiveStyle : {}),
                     }}
+                    onClick={() => setComponentEditMode(mode)}
                   >
-                    {t("components.newProp")}
+                    {mode === "props"
+                      ? t("components.tabProps", { count: selectedComponentForSpec.props.length })
+                      : null}
+                    {mode === "variants"
+                      ? t("components.tabVariants", {
+                          count: selectedComponentForSpec.variants.length,
+                        })
+                      : null}
+                    {mode === "slots"
+                      ? t("components.tabSlots", { count: selectedComponentForSpec.slots.length })
+                      : null}
+                    {mode === "tokens"
+                      ? t("components.tabTokens", {
+                          count: selectedComponentTokenModel.records.length,
+                        })
+                      : null}
                   </button>
-                </div>
-                <div style={tableStyle}>
-                  {selectedComponentForSpec.props.map((prop) => (
-                    <button
-                      key={prop.name}
-                      type="button"
-                      style={{
-                        ...tableRowStyle,
-                        ...(selectedPropName === prop.name ? tableRowActiveStyle : {}),
-                      }}
-                      onClick={() => setSelectedPropName(prop.name)}
-                    >
-                      <span style={tableCellTextStyle}>{prop.name}</span>
-                      <small style={tableCellMetaStyle}>{prop.type.kind}</small>
-                    </button>
-                  ))}
-                </div>
-                <div style={editorFormStyle}>
-                  <label style={fieldStyle}>
-                    {t("components.name")}
-                    <input
-                      style={inputStyle}
-                      value={propDraft.name}
-                      onChange={(event) => {
-                        const name = event.currentTarget.value;
-                        setPropDraft((draft) => ({ ...draft, name }));
-                      }}
-                    />
-                  </label>
-                  <label style={fieldStyle}>
-                    {t("components.type")}
-                    <select
-                      style={selectStyle}
-                      value={propDraft.kind}
-                      onChange={(event) => {
-                        const kind = event.currentTarget.value as ComponentPropDraft["kind"];
-                        setPropDraft((draft) => ({
-                          ...draft,
-                          kind,
-                        }));
-                      }}
-                    >
-                      {editorPropKinds.map((kind) => (
-                        <option key={kind} value={kind}>
-                          {kind}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label style={fieldStyle}>
-                    {t("components.values")}
-                    <input
-                      style={inputStyle}
-                      value={propDraft.valuesText}
-                      onChange={(event) => {
-                        const valuesText = event.currentTarget.value;
-                        setPropDraft((draft) => ({
-                          ...draft,
-                          valuesText,
-                        }));
-                      }}
-                    />
-                  </label>
-                  <label style={fieldStyle}>
-                    {t("components.default")}
-                    <input
-                      style={inputStyle}
-                      value={propDraft.defaultValue}
-                      onChange={(event) => {
-                        const defaultValue = event.currentTarget.value;
-                        setPropDraft((draft) => ({
-                          ...draft,
-                          defaultValue,
-                        }));
-                      }}
-                    />
-                  </label>
-                  <label style={checkboxFieldStyle}>
-                    <input
-                      type="checkbox"
-                      checked={propDraft.required}
-                      onChange={(event) => {
-                        const required = event.currentTarget.checked;
-                        setPropDraft((draft) => ({
-                          ...draft,
-                          required,
-                        }));
-                      }}
-                    />
-                    {t("components.required")}
-                  </label>
-                  <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                    {t("components.description")}
-                    <input
-                      style={inputStyle}
-                      value={propDraft.description}
-                      onChange={(event) => {
-                        const description = event.currentTarget.value;
-                        setPropDraft((draft) => ({
-                          ...draft,
-                          description,
-                        }));
-                      }}
-                    />
-                  </label>
-                  <div style={rowStyle}>
-                    <button type="button" style={smallButtonStyle} onClick={savePropDraft}>
-                      {t("components.saveProp")}
-                    </button>
+                ))}
+              </div>
+              {componentEditMode === "props" ? (
+                <div style={cardStyle}>
+                  <div style={cardHeaderStyle}>
+                    <strong style={railSectionTitleStyle}>{t("components.props")}</strong>
                     <button
                       type="button"
-                      style={dangerButtonStyle}
-                      disabled={!selectedPropName}
-                      onClick={deleteSelectedProp}
+                      style={smallButtonStyle}
+                      onClick={() => {
+                        setSelectedPropName(undefined);
+                        setPropDraft(createNewComponentPropDraft());
+                      }}
                     >
-                      {t("components.delete")}
+                      {t("components.newProp")}
                     </button>
                   </div>
-                </div>
-              </div>
-            ) : null}
-            {componentEditMode === "variants" ? (
-              <div style={cardStyle}>
-                <div style={cardHeaderStyle}>
-                  <strong style={railSectionTitleStyle}>{t("components.variants")}</strong>
-                  <button
-                    type="button"
-                    style={smallButtonStyle}
-                    onClick={() => {
-                      setSelectedVariantName(undefined);
-                      setVariantDraft(createNewComponentVariantDraft());
-                    }}
-                  >
-                    {t("components.newVariant")}
-                  </button>
-                </div>
-                <div style={tableStyle}>
-                  {selectedComponentForSpec.variants.map((variant) => (
-                    <button
-                      key={variant.name}
-                      type="button"
-                      style={{
-                        ...tableRowStyle,
-                        ...(selectedVariantName === variant.name ? tableRowActiveStyle : {}),
-                      }}
-                      onClick={() => setSelectedVariantName(variant.name)}
-                    >
-                      <span style={tableCellTextStyle}>{variant.name}</span>
-                      <small style={tableCellMetaStyle}>{variant.values.join(", ")}</small>
-                    </button>
-                  ))}
-                </div>
-                <div style={editorFormStyle}>
-                  <label style={fieldStyle}>
-                    {t("components.name")}
-                    <input
-                      style={inputStyle}
-                      value={variantDraft.name}
-                      onChange={(event) => {
-                        const name = event.currentTarget.value;
-                        setVariantDraft((draft) => ({
-                          ...draft,
-                          name,
-                        }));
-                      }}
-                    />
-                  </label>
-                  <div style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                    <div style={cardHeaderStyle}>
-                      <span>{t("components.valuesSelectDefault")}</span>
-                      <button type="button" style={smallButtonStyle} onClick={addVariantValue}>
-                        {t("components.addValue")}
+                  <div style={tableStyle}>
+                    {selectedComponentForSpec.props.map((prop) => (
+                      <button
+                        key={prop.name}
+                        type="button"
+                        style={{
+                          ...tableRowStyle,
+                          ...(selectedPropName === prop.name ? tableRowActiveStyle : {}),
+                        }}
+                        onClick={() => setSelectedPropName(prop.name)}
+                      >
+                        <span style={tableCellTextStyle}>{prop.name}</span>
+                        <small style={tableCellMetaStyle}>{prop.type.kind}</small>
+                      </button>
+                    ))}
+                  </div>
+                  <div style={editorFormStyle}>
+                    <label style={fieldStyle}>
+                      {t("components.name")}
+                      <input
+                        style={inputStyle}
+                        value={propDraft.name}
+                        onChange={(event) => {
+                          const name = event.currentTarget.value;
+                          setPropDraft((draft) => ({ ...draft, name }));
+                        }}
+                      />
+                    </label>
+                    <label style={fieldStyle}>
+                      {t("components.type")}
+                      <select
+                        style={selectStyle}
+                        value={propDraft.kind}
+                        onChange={(event) => {
+                          const kind = event.currentTarget.value as ComponentPropDraft["kind"];
+                          setPropDraft((draft) => ({
+                            ...draft,
+                            kind,
+                          }));
+                        }}
+                      >
+                        {editorPropKinds.map((kind) => (
+                          <option key={kind} value={kind}>
+                            {kind}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label style={fieldStyle}>
+                      {t("components.values")}
+                      <input
+                        style={inputStyle}
+                        value={propDraft.valuesText}
+                        onChange={(event) => {
+                          const valuesText = event.currentTarget.value;
+                          setPropDraft((draft) => ({
+                            ...draft,
+                            valuesText,
+                          }));
+                        }}
+                      />
+                    </label>
+                    <label style={fieldStyle}>
+                      {t("components.default")}
+                      <input
+                        style={inputStyle}
+                        value={propDraft.defaultValue}
+                        onChange={(event) => {
+                          const defaultValue = event.currentTarget.value;
+                          setPropDraft((draft) => ({
+                            ...draft,
+                            defaultValue,
+                          }));
+                        }}
+                      />
+                    </label>
+                    <label style={checkboxFieldStyle}>
+                      <input
+                        type="checkbox"
+                        checked={propDraft.required}
+                        onChange={(event) => {
+                          const required = event.currentTarget.checked;
+                          setPropDraft((draft) => ({
+                            ...draft,
+                            required,
+                          }));
+                        }}
+                      />
+                      {t("components.required")}
+                    </label>
+                    <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                      {t("components.description")}
+                      <input
+                        style={inputStyle}
+                        value={propDraft.description}
+                        onChange={(event) => {
+                          const description = event.currentTarget.value;
+                          setPropDraft((draft) => ({
+                            ...draft,
+                            description,
+                          }));
+                        }}
+                      />
+                    </label>
+                    <div style={rowStyle}>
+                      <button type="button" style={smallButtonStyle} onClick={savePropDraft}>
+                        {t("components.saveProp")}
+                      </button>
+                      <button
+                        type="button"
+                        style={dangerButtonStyle}
+                        disabled={!selectedPropName}
+                        onClick={deleteSelectedProp}
+                      >
+                        {t("components.delete")}
                       </button>
                     </div>
-                    {variantValueRows.map((value, index) => (
-                      <div key={index} style={variantValueRowStyle}>
-                        <input
-                          type="radio"
-                          name="variant-default-value"
-                          aria-label={t("components.setAsDefault", {
-                            value: value || t("components.valueFallback"),
-                          })}
-                          // Key off row index so duplicate values can't both look selected.
-                          checked={
-                            value.length > 0 &&
-                            index === variantValueRows.indexOf(variantDraft.defaultValue)
-                          }
-                          disabled={value.length === 0}
-                          onChange={() => writeVariantValues(variantValueRows, value)}
-                        />
-                        <input
-                          style={inputStyle}
-                          aria-label={t("components.variantValueLabel", { index: index + 1 })}
-                          value={value}
-                          onChange={(event) => updateVariantValue(index, event.currentTarget.value)}
-                        />
+                  </div>
+                </div>
+              ) : null}
+              {componentEditMode === "variants" ? (
+                <div style={cardStyle}>
+                  <div style={cardHeaderStyle}>
+                    <strong style={railSectionTitleStyle}>{t("components.variants")}</strong>
+                    <button
+                      type="button"
+                      style={smallButtonStyle}
+                      onClick={() => {
+                        setSelectedVariantName(undefined);
+                        setVariantDraft(createNewComponentVariantDraft());
+                      }}
+                    >
+                      {t("components.newVariant")}
+                    </button>
+                  </div>
+                  <div style={tableStyle}>
+                    {selectedComponentForSpec.variants.map((variant) => (
+                      <button
+                        key={variant.name}
+                        type="button"
+                        style={{
+                          ...tableRowStyle,
+                          ...(selectedVariantName === variant.name ? tableRowActiveStyle : {}),
+                        }}
+                        onClick={() => setSelectedVariantName(variant.name)}
+                      >
+                        <span style={tableCellTextStyle}>{variant.name}</span>
+                        <small style={tableCellMetaStyle}>{variant.values.join(", ")}</small>
+                      </button>
+                    ))}
+                  </div>
+                  <div style={editorFormStyle}>
+                    <label style={fieldStyle}>
+                      {t("components.name")}
+                      <input
+                        style={inputStyle}
+                        value={variantDraft.name}
+                        onChange={(event) => {
+                          const name = event.currentTarget.value;
+                          setVariantDraft((draft) => ({
+                            ...draft,
+                            name,
+                          }));
+                        }}
+                      />
+                    </label>
+                    <div style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                      <div style={cardHeaderStyle}>
+                        <span>{t("components.valuesSelectDefault")}</span>
                         <button
                           type="button"
                           style={smallButtonStyle}
-                          aria-label={t("components.removeValue", {
-                            value: value || t("components.valueFallback"),
-                          })}
-                          disabled={variantValueRows.length <= 1}
-                          onClick={() => removeVariantValue(index)}
+                          onClick={addVariantDraftValue}
                         >
-                          {t("components.remove")}
+                          {t("components.addValue")}
                         </button>
                       </div>
+                      {variantValueRows.map((value, index) => (
+                        <div key={index} style={variantValueRowStyle}>
+                          <input
+                            type="radio"
+                            name="variant-default-value"
+                            aria-label={t("components.setAsDefault", {
+                              value: value || t("components.valueFallback"),
+                            })}
+                            // Key off row index so duplicate values can't both look selected.
+                            checked={
+                              value.length > 0 &&
+                              index === variantValueRows.indexOf(variantDraft.defaultValue)
+                            }
+                            disabled={value.length === 0}
+                            onChange={() => writeVariantValues(variantValueRows, value)}
+                          />
+                          <input
+                            style={inputStyle}
+                            aria-label={t("components.variantValueLabel", { index: index + 1 })}
+                            value={value}
+                            onChange={(event) =>
+                              updateVariantValue(index, event.currentTarget.value)
+                            }
+                          />
+                          <button
+                            type="button"
+                            style={smallButtonStyle}
+                            aria-label={t("components.removeValue", {
+                              value: value || t("components.valueFallback"),
+                            })}
+                            disabled={variantValueRows.length <= 1}
+                            onClick={() => removeVariantDraftValue(index)}
+                          >
+                            {t("components.remove")}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                      {t("components.tokenBindingsJson")}
+                      <textarea
+                        style={textareaStyle}
+                        value={variantDraft.tokensText}
+                        onChange={(event) => {
+                          const tokensText = event.currentTarget.value;
+                          setVariantDraft((draft) => ({
+                            ...draft,
+                            tokensText,
+                          }));
+                        }}
+                      />
+                    </label>
+                    <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                      {t("components.description")}
+                      <input
+                        style={inputStyle}
+                        value={variantDraft.description}
+                        onChange={(event) => {
+                          const description = event.currentTarget.value;
+                          setVariantDraft((draft) => ({
+                            ...draft,
+                            description,
+                          }));
+                        }}
+                      />
+                    </label>
+                    <div style={rowStyle}>
+                      <button type="button" style={smallButtonStyle} onClick={saveVariantDraft}>
+                        {t("components.saveVariant")}
+                      </button>
+                      <button
+                        type="button"
+                        style={dangerButtonStyle}
+                        disabled={!selectedVariantName}
+                        onClick={deleteSelectedVariant}
+                      >
+                        {t("components.delete")}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+              {componentEditMode === "slots" ? (
+                <div style={cardStyle}>
+                  <div style={cardHeaderStyle}>
+                    <strong>{t("components.slots")}</strong>
+                    <button
+                      type="button"
+                      style={smallButtonStyle}
+                      onClick={() => {
+                        setSelectedSlotName(undefined);
+                        setSlotDraft(createNewComponentSlotDraft());
+                      }}
+                    >
+                      {t("components.newSlot")}
+                    </button>
+                  </div>
+                  <div style={tableStyle}>
+                    {selectedComponentForSpec.slots.map((slot) => (
+                      <button
+                        key={slot.name}
+                        type="button"
+                        style={{
+                          ...tableRowStyle,
+                          ...(selectedSlotName === slot.name ? tableRowActiveStyle : {}),
+                        }}
+                        onClick={() => setSelectedSlotName(slot.name)}
+                      >
+                        <span style={tableCellTextStyle}>{slot.name}</span>
+                        <small style={tableCellMetaStyle}>
+                          {[
+                            slot.required
+                              ? t("components.slotRequired")
+                              : t("components.slotOptional"),
+                            slot.repeated
+                              ? t("components.slotRepeated")
+                              : t("components.slotSingle"),
+                          ].join(" · ")}
+                        </small>
+                      </button>
                     ))}
                   </div>
-                  <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                    {t("components.tokenBindingsJson")}
-                    <textarea
-                      style={textareaStyle}
-                      value={variantDraft.tokensText}
-                      onChange={(event) => {
-                        const tokensText = event.currentTarget.value;
-                        setVariantDraft((draft) => ({
-                          ...draft,
-                          tokensText,
-                        }));
-                      }}
-                    />
-                  </label>
-                  <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                    {t("components.description")}
-                    <input
-                      style={inputStyle}
-                      value={variantDraft.description}
-                      onChange={(event) => {
-                        const description = event.currentTarget.value;
-                        setVariantDraft((draft) => ({
-                          ...draft,
-                          description,
-                        }));
-                      }}
-                    />
-                  </label>
-                  <div style={rowStyle}>
-                    <button type="button" style={smallButtonStyle} onClick={saveVariantDraft}>
-                      {t("components.saveVariant")}
-                    </button>
-                    <button
-                      type="button"
-                      style={dangerButtonStyle}
-                      disabled={!selectedVariantName}
-                      onClick={deleteSelectedVariant}
-                    >
-                      {t("components.delete")}
-                    </button>
+                  <div style={editorFormStyle}>
+                    <label style={fieldStyle}>
+                      {t("components.name")}
+                      <input
+                        style={inputStyle}
+                        value={slotDraft.name}
+                        onChange={(event) => {
+                          const name = event.currentTarget.value;
+                          setSlotDraft((draft) => ({ ...draft, name }));
+                        }}
+                      />
+                    </label>
+                    <label style={checkboxFieldStyle}>
+                      <input
+                        type="checkbox"
+                        checked={slotDraft.required}
+                        onChange={(event) => {
+                          const required = event.currentTarget.checked;
+                          setSlotDraft((draft) => ({ ...draft, required }));
+                        }}
+                      />
+                      {t("components.required")}
+                    </label>
+                    <label style={checkboxFieldStyle}>
+                      <input
+                        type="checkbox"
+                        checked={slotDraft.repeated}
+                        onChange={(event) => {
+                          const repeated = event.currentTarget.checked;
+                          setSlotDraft((draft) => ({ ...draft, repeated }));
+                        }}
+                      />
+                      {t("components.repeated")}
+                    </label>
+                    <label style={fieldStyle}>
+                      {t("components.fallback")}
+                      <input
+                        style={inputStyle}
+                        value={slotDraft.fallback}
+                        onChange={(event) => {
+                          const fallback = event.currentTarget.value;
+                          setSlotDraft((draft) => ({ ...draft, fallback }));
+                        }}
+                      />
+                    </label>
+                    <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                      {t("components.description")}
+                      <input
+                        style={inputStyle}
+                        value={slotDraft.description}
+                        onChange={(event) => {
+                          const description = event.currentTarget.value;
+                          setSlotDraft((draft) => ({ ...draft, description }));
+                        }}
+                      />
+                    </label>
+                    <div style={rowStyle}>
+                      <button type="button" style={smallButtonStyle} onClick={saveSlotDraft}>
+                        {t("components.saveSlot")}
+                      </button>
+                      <button
+                        type="button"
+                        style={dangerButtonStyle}
+                        disabled={!selectedSlotName}
+                        onClick={deleteSelectedSlot}
+                      >
+                        {t("components.delete")}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : null}
-            {componentEditMode === "slots" ? (
-              <div style={cardStyle}>
-                <div style={cardHeaderStyle}>
-                  <strong>{t("components.slots")}</strong>
-                  <button
-                    type="button"
-                    style={smallButtonStyle}
-                    onClick={() => {
-                      setSelectedSlotName(undefined);
-                      setSlotDraft(createNewComponentSlotDraft());
-                    }}
-                  >
-                    {t("components.newSlot")}
-                  </button>
-                </div>
-                <div style={tableStyle}>
-                  {selectedComponentForSpec.slots.map((slot) => (
-                    <button
-                      key={slot.name}
-                      type="button"
-                      style={{
-                        ...tableRowStyle,
-                        ...(selectedSlotName === slot.name ? tableRowActiveStyle : {}),
-                      }}
-                      onClick={() => setSelectedSlotName(slot.name)}
-                    >
-                      <span style={tableCellTextStyle}>{slot.name}</span>
-                      <small style={tableCellMetaStyle}>
-                        {[
-                          slot.required
-                            ? t("components.slotRequired")
-                            : t("components.slotOptional"),
-                          slot.repeated ? t("components.slotRepeated") : t("components.slotSingle"),
-                        ].join(" · ")}
-                      </small>
-                    </button>
-                  ))}
-                </div>
-                <div style={editorFormStyle}>
-                  <label style={fieldStyle}>
-                    {t("components.name")}
-                    <input
-                      style={inputStyle}
-                      value={slotDraft.name}
-                      onChange={(event) => {
-                        const name = event.currentTarget.value;
-                        setSlotDraft((draft) => ({ ...draft, name }));
-                      }}
-                    />
-                  </label>
-                  <label style={checkboxFieldStyle}>
-                    <input
-                      type="checkbox"
-                      checked={slotDraft.required}
-                      onChange={(event) => {
-                        const required = event.currentTarget.checked;
-                        setSlotDraft((draft) => ({ ...draft, required }));
-                      }}
-                    />
-                    {t("components.required")}
-                  </label>
-                  <label style={checkboxFieldStyle}>
-                    <input
-                      type="checkbox"
-                      checked={slotDraft.repeated}
-                      onChange={(event) => {
-                        const repeated = event.currentTarget.checked;
-                        setSlotDraft((draft) => ({ ...draft, repeated }));
-                      }}
-                    />
-                    {t("components.repeated")}
-                  </label>
-                  <label style={fieldStyle}>
-                    {t("components.fallback")}
-                    <input
-                      style={inputStyle}
-                      value={slotDraft.fallback}
-                      onChange={(event) => {
-                        const fallback = event.currentTarget.value;
-                        setSlotDraft((draft) => ({ ...draft, fallback }));
-                      }}
-                    />
-                  </label>
-                  <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-                    {t("components.description")}
-                    <input
-                      style={inputStyle}
-                      value={slotDraft.description}
-                      onChange={(event) => {
-                        const description = event.currentTarget.value;
-                        setSlotDraft((draft) => ({ ...draft, description }));
-                      }}
-                    />
-                  </label>
-                  <div style={rowStyle}>
-                    <button type="button" style={smallButtonStyle} onClick={saveSlotDraft}>
-                      {t("components.saveSlot")}
-                    </button>
-                    <button
-                      type="button"
-                      style={dangerButtonStyle}
-                      disabled={!selectedSlotName}
-                      onClick={deleteSelectedSlot}
-                    >
-                      {t("components.delete")}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-            {componentEditMode === "tokens"
-              ? renderComponentTokenEditor({
-                  t,
-                  model: selectedComponentTokenModel,
-                  selectedTokenKey,
-                  lookup: previewTokenLookup,
-                  onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
-                  onCommitValue: updateTokenMatrixCell,
-                })
-              : null}
-            {componentDraftError ? <div style={errorBannerStyle}>{componentDraftError}</div> : null}
-            <details style={disclosureStyle}>
-              <summary style={summaryStyle}>{t("components.componentJson")}</summary>
-              <textarea
-                style={{ ...textareaStyle, minHeight: 220 }}
-                readOnly
-                value={JSON.stringify(selectedComponentForSpec, null, 2)}
-              />
-            </details>
-          </div>
-        </details>
+              ) : null}
+              {componentEditMode === "tokens"
+                ? renderComponentTokenEditor({
+                    t,
+                    model: selectedComponentTokenModel,
+                    selectedTokenKey,
+                    lookup: previewTokenLookup,
+                    onSelect: (record) => setSelectedTokenKey(tokenRecordKey(record)),
+                    onCommitValue: updateTokenMatrixCell,
+                  })
+                : null}
+              <details style={disclosureStyle}>
+                <summary style={summaryStyle}>{t("components.componentJson")}</summary>
+                <textarea
+                  style={{ ...textareaStyle, minHeight: 220 }}
+                  readOnly
+                  value={JSON.stringify(selectedComponentForSpec, null, 2)}
+                />
+              </details>
+            </div>
+          </details>
+        ) : null}
+        {/* Outside the schema disclosure so layer/appearance errors show even for
+            style-only components that hide it. */}
+        {componentDraftError ? <div style={errorBannerStyle}>{componentDraftError}</div> : null}
       </div>
     </section>
   );

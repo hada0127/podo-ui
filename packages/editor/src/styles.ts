@@ -1661,6 +1661,70 @@ export const layerDropIndicatorStyle: CSSProperties = {
   pointerEvents: "none",
 };
 
+// Row-trailing eye/lock toggles (Figma-style): hidden until the row is hovered
+// or the flag is on; the row controls visibility via inline opacity.
+export const layerFlagButtonStyle: CSSProperties = {
+  width: 16,
+  height: 16,
+  flexShrink: 0,
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: "none",
+  background: "transparent",
+  color: "#a1a1aa",
+  cursor: "pointer",
+  padding: 0,
+  borderRadius: 3,
+};
+
+export const layerFlagButtonOnStyle: CSSProperties = {
+  color: "#3f3f46",
+};
+
+export const layerFilterInputStyle: CSSProperties = {
+  width: "100%",
+  boxSizing: "border-box",
+  border: "1px solid #e4e4e7",
+  borderRadius: 5,
+  padding: "3px 8px",
+  fontSize: 11,
+  marginBottom: 6,
+  color: "#3f3f46",
+};
+
+// --- Figma-style variant Properties card (design rail) ---
+
+export const variantAxisBlockStyle: CSSProperties = {
+  display: "grid",
+  gap: 3,
+  padding: "6px 0",
+  borderTop: "1px solid #f1f1f4",
+};
+
+export const variantValueNameButtonStyle: CSSProperties = {
+  flex: 1,
+  minWidth: 0,
+  textAlign: "left",
+  border: "1px solid transparent",
+  background: "transparent",
+  borderRadius: 4,
+  padding: "3px 6px",
+  fontSize: 12,
+  color: "#27272a",
+  cursor: "pointer",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+};
+
+export const variantValueNameButtonActiveStyle: CSSProperties = {
+  background: "#edf4ff",
+  border: "1px solid #bcd4ff",
+  color: "#1d4ed8",
+  fontWeight: 600,
+};
+
 export const layerMenuStyle: CSSProperties = {
   position: "fixed",
   zIndex: 81,

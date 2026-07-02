@@ -9,6 +9,15 @@ export const layersEn = {
   "layers.menuMoveUp": "Move up",
   "layers.menuMoveDown": "Move down",
   "layers.menuDelete": "Delete",
+  "layers.menuHide": "Hide",
+  "layers.menuShow": "Show",
+  "layers.menuLock": "Lock",
+  "layers.menuUnlock": "Unlock",
+  "layers.hideLayer": "Hide layer",
+  "layers.showLayer": "Show layer",
+  "layers.lockLayer": "Lock layer",
+  "layers.unlockLayer": "Unlock layer",
+  "layers.filter": "Filter layers",
 } as const;
 
 export const layersKo: Record<keyof typeof layersEn, string> = {
@@ -21,4 +30,13 @@ export const layersKo: Record<keyof typeof layersEn, string> = {
   "layers.menuMoveUp": "위로 이동",
   "layers.menuMoveDown": "아래로 이동",
   "layers.menuDelete": "삭제",
+  "layers.menuHide": "숨기기",
+  "layers.menuShow": "표시",
+  "layers.menuLock": "잠금",
+  "layers.menuUnlock": "잠금 해제",
+  "layers.hideLayer": "레이어 숨기기",
+  "layers.showLayer": "레이어 표시",
+  "layers.lockLayer": "레이어 잠금",
+  "layers.unlockLayer": "레이어 잠금 해제",
+  "layers.filter": "레이어 필터",
 };

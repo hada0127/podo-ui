@@ -166,6 +166,24 @@ describe("component anatomy schema validation", () => {
     ).not.toThrow();
   });
 
+  it("accepts and preserves hidden/locked layer flags", () => {
+    const parsed = parseComponentDocument(
+      componentWithAnatomy([
+        { name: "root", locked: true },
+        { name: "icon", parent: "root", hidden: true },
+      ])
+    ) as { anatomy: Array<{ name: string; hidden?: boolean; locked?: boolean }> };
+    expect(parsed.anatomy[0]?.locked).toBe(true);
+    expect(parsed.anatomy[1]?.hidden).toBe(true);
+    expect(parsed.anatomy[1]?.locked).toBeUndefined();
+  });
+
+  it("rejects non-boolean hidden/locked flags", () => {
+    expect(() =>
+      parseComponentDocument(componentWithAnatomy([{ name: "root", hidden: "yes" }]))
+    ).toThrow();
+  });
+
   it("attaches an i18n code to anatomy validation issues", () => {
     try {
       parseComponentDocument(

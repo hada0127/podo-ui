@@ -100,6 +100,23 @@ export function renderComponentPreview(
 // the single interactive preview above and skip the matrix for them.
 const SINGLE_INSTANCE_PREVIEW_IDS = new Set(["editor"]);
 
+// Small "+" beside an axis name in the matrix header (add a variant value).
+const matrixAddValueButtonStyle: CSSProperties = {
+  width: 16,
+  height: 16,
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: "1px solid #d8dde6",
+  borderRadius: 4,
+  background: "#ffffff",
+  color: "#3f3f46",
+  cursor: "pointer",
+  fontSize: 11,
+  lineHeight: 1,
+  padding: 0,
+};
+
 // Label above each expanded picker in the datepicker design list.
 const datepickerListLabelStyle: CSSProperties = {
   fontSize: 11,
@@ -110,13 +127,26 @@ const datepickerListLabelStyle: CSSProperties = {
   letterSpacing: 0.3,
 };
 
+// Prefixes EVERY comma-separated alternative of a part selector with the scope
+// class. A plain `.${scope} ${selector}` prefix would scope only the first
+// alternative and leak the rest document-wide (e.g. checkbox-radio's
+// "input[type=checkbox]:not(.toggle), input[type=radio]").
+// ponytail: naive top-level comma split — breaks if a part selector ever nests a
+// comma inside :not(a, b)/:is(); none do today, revisit with a real parser then.
+function scopeSelector(scope: string, selector: string): string {
+  return selector
+    .split(",")
+    .map((alternative) => `.${scope} ${alternative.trim()}`)
+    .join(", ");
+}
+
 // Figma-style selection outline: ring the currently-selected part's element so
 // you can see what you're editing in the preview/list.
 function partOutlineCss(componentId: string, scope: string, part: string | undefined): string {
   if (!part) return "";
   const selector = COMPONENT_PART_SELECTORS[componentId]?.[part];
   if (!selector) return "";
-  return `.${scope} ${selector} { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
+  return `${scopeSelector(scope, selector)} { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
 }
 
 // The CSS selector for an anatomy part, so callers (e.g. the editor's layer↔preview
@@ -129,8 +159,13 @@ export function componentPartSelector(componentId: string, part: string): string
 // that renders many elements (e.g. calendar-day → 35 cells) highlights a single
 // representative instead of lighting up the whole class. The mark is placed by the
 // editor effect that keeps the layer selection and this preview in sync.
+// `.podo-part-hovered` is the lighter Figma-style hover ring, marked by the same
+// effect while a layer row (or preview element) is hovered.
 function selectedPartCss(scope: string): string {
-  return `.${scope} .podo-part-selected { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
+  return (
+    `.${scope} .podo-part-selected { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }\n` +
+    `.${scope} .podo-part-hovered { outline: 1px solid #7aa7ee !important; outline-offset: 1px; }`
+  );
 }
 
 export function renderComponentPreviewMatrix(input: {
@@ -138,6 +173,9 @@ export function renderComponentPreviewMatrix(input: {
   selections: Record<string, string>;
   lookup: TokenLookup;
   onSelect(selections: Record<string, string>, part?: string): void;
+  // Figma-style "add variant" straight from the set: renders a small + next to
+  // each axis name in the header. Omitted for style-only components.
+  onAddValue?(axisName: string): void;
   selectedPart?: string;
   t: Translate;
 }) {
@@ -249,13 +287,33 @@ export function renderComponentPreviewMatrix(input: {
     );
   }
 
+  const addValueButton = (axisName: string): ReactNode =>
+    input.onAddValue ? (
+      <button
+        type="button"
+        style={matrixAddValueButtonStyle}
+        aria-label={input.t("previews.addValue", { axis: axisName })}
+        title={input.t("previews.addValue", { axis: axisName })}
+        onClick={() => input.onAddValue?.(axisName)}
+      >
+        +
+      </button>
+    ) : null;
+
   return (
     <div style={componentMatrixPanelStyle}>
       <div style={componentMatrixHeaderStyle}>
         <strong>{input.t("previews.variantMatrix")}</strong>
-        <span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
           {rowVariant.name}
-          {columnVariant ? ` x ${columnVariant.name}` : ""}
+          {addValueButton(rowVariant.name)}
+          {columnVariant ? (
+            <>
+              {" x "}
+              {columnVariant.name}
+              {addValueButton(columnVariant.name)}
+            </>
+          ) : null}
         </span>
       </div>
       <div style={componentMatrixScrollStyle}>
@@ -1008,6 +1066,43 @@ function DatePickerPreviewBody({
   );
 }
 
+// Field is a slot-composition component: its required `control` slot is
+// swappable (same idea as canvas slot composition) via the reserved
+// `slot:control` selection key, instead of hardcoding one child.
+export const FIELD_CONTROL_SLOT_OPTIONS = [
+  "input",
+  "select",
+  "textarea",
+  "checkbox-radio",
+] as const;
+
+function FieldTextareaControl() {
+  const [value, setValue] = useState("We ship the design system.");
+  return <V1Textarea value={value} onChange={(event) => setValue(event.target.value)} />;
+}
+
+function renderFieldControlSlot(kind: string): ReactNode {
+  switch (kind) {
+    case "select":
+      return (
+        <V1Select
+          defaultValue="product"
+          options={[
+            { value: "product", label: "Product team" },
+            { value: "design", label: "Design system" },
+            { value: "ops", label: "Operations" },
+          ]}
+        />
+      );
+    case "textarea":
+      return <FieldTextareaControl />;
+    case "checkbox-radio":
+      return <V1Checkbox label="Subscribe to workspace updates" defaultChecked />;
+    default:
+      return <V1Input defaultValue="team@podo.dev" />;
+  }
+}
+
 function renderFieldPreview(selections: Record<string, string>) {
   const invalid = selections.state === "invalid" || selections.invalid === "true";
   const label = selections.label?.trim() ? selections.label : "Email address";
@@ -1024,7 +1119,7 @@ function renderFieldPreview(selections: Record<string, string>) {
         {...(required ? { required: true } : {})}
         {...(error ? { error } : { helper: "We use this for workspace updates." })}
       >
-        <V1Input defaultValue="team@podo.dev" />
+        {renderFieldControlSlot(selections["slot:control"] ?? "input")}
       </V1Field>
     </div>
   );
@@ -1103,6 +1198,12 @@ const APPEARANCE_CSS_PROPERTY: Record<string, string> = {
   lineheight: "line-height",
   letterspacing: "letter-spacing",
   opacity: "opacity",
+  // Figma "Effects" / extra inspector rows.
+  shadow: "box-shadow",
+  boxshadow: "box-shadow",
+  textalign: "text-align",
+  borderstyle: "border-style",
+  minwidth: "min-width",
 };
 
 // Per-component anatomy-part -> CSS selector (descendant of the preview). Filled
@@ -1160,7 +1261,12 @@ const COMPONENT_PART_SELECTORS: Record<string, Record<string, string>> = {
   },
   "doc-tabs": { root: "ul.tabs", tab: "ul.tabs > li" },
   editor: { root: ".editor", toolbar: ".editor .toolbar", content: ".editorContent" },
-  field: { root: ".style", label: ".style > label", message: ".style .helper" },
+  field: {
+    root: ".style",
+    label: ".style > label",
+    control: ".style input, .style select, .style textarea",
+    message: ".style .helper",
+  },
   file: { root: "input[type=file]" },
   input: { root: ".style input" },
   label: { root: "label" },
@@ -1201,7 +1307,11 @@ function componentPartMatchForElement(
   return best;
 }
 
-function componentPartForElement(componentId: string, element: Element | null): string | undefined {
+// Exported so the editor shell can hover-map preview elements to layers too.
+export function componentPartForElement(
+  componentId: string,
+  element: Element | null
+): string | undefined {
   return componentPartMatchForElement(componentId, element)?.part;
 }
 
@@ -1248,6 +1358,14 @@ function componentAppearanceCss(
   const parts = COMPONENT_PART_SELECTORS[component.id];
   if (!parts) return "";
   const rules: string[] = [];
+  // Figma-style eye toggle: hidden layers disappear from every preview surface.
+  for (const part of component.anatomy) {
+    if (!part.hidden) continue;
+    const selector = parts[part.name];
+    if (selector) {
+      rules.push(`${scopeSelector(scopeClass, selector)} { display: none !important; }`);
+    }
+  }
   for (const [key, reference] of Object.entries(
     resolveComponentAppearance(component, selections, includeBase)
   )) {
@@ -1262,7 +1380,7 @@ function componentAppearanceCss(
     const resolved = isAlias ? cssToken(lookup, reference.slice(1, -1), "") : reference;
     // Guard against breaking out of the injected <style>/declaration block.
     if (!resolved || /[<>{};]/.test(resolved)) continue;
-    rules.push(`.${scopeClass} ${selector} { ${cssProp}: ${resolved} !important; }`);
+    rules.push(`${scopeSelector(scopeClass, selector)} { ${cssProp}: ${resolved} !important; }`);
   }
   return rules.join("\n");
 }

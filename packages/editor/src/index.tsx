@@ -37,15 +37,24 @@ import {
   parsePropDefaultInput,
   serializeEditorTokenExtensions,
   addComponentAnatomyPart,
+  addComponentVariantAxis,
+  addComponentVariantValue,
+  duplicateComponentAnatomyPart,
   moveComponentAnatomyPart,
   removeComponentAnatomyPart,
+  removeComponentVariantValue,
+  renameComponentVariantAxis,
+  renameComponentVariantValue,
   reorderComponentAnatomyPart,
   reparentComponentAnatomyPart,
   renameComponentAnatomyPart,
   serializeEditorTokenValue,
+  setComponentAnatomyPartFlags,
+  setComponentVariantDefault,
   updateComponentMeta,
   upsertComponentProp,
   upsertComponentSlot,
+  upsertComponentStateTokenBinding,
   upsertComponentTokenBinding,
   upsertComponentVariant,
   upsertComponentVariantValueTokenBinding,
@@ -623,8 +632,17 @@ export function PodoEditorApp({
   const selectedPropKey = selectedProp ? JSON.stringify(selectedProp) : "";
   const selectedVariantKey = selectedVariant ? JSON.stringify(selectedVariant) : "";
   const selectedSlotKey = selectedSlot ? JSON.stringify(selectedSlot) : "";
+  // Variant SHAPE only (names/values/defaults) — deliberately excludes
+  // tokens/valueTokens so appearance edits under a variant scope don't reset the
+  // preview selections mid-edit (which silently re-targeted edits to base).
   const selectedComponentVariantsKey = selectedComponentForSpec
-    ? JSON.stringify(selectedComponentForSpec.variants)
+    ? JSON.stringify(
+        selectedComponentForSpec.variants.map((variant) => [
+          variant.name,
+          variant.values,
+          variant.default ?? null,
+        ])
+      )
     : "";
   const selectedComponentTokenModel = useMemo(
     () =>
@@ -683,12 +701,40 @@ export function PodoEditorApp({
     setComponentDraftError(undefined);
   }, [selectedComponentForSpec?.id]);
 
+  // Full reset when switching components (never leak another component's picks).
   useEffect(() => {
     if (!selectedComponentForSpec) {
       return;
     }
     setComponentPreviewSelections(defaultPreviewSelectionsForComponent(selectedComponentForSpec));
-  }, [selectedComponentForSpec?.id, selectedComponentVariantsKey]);
+  }, [selectedComponentForSpec?.id]);
+
+  // When the variant SHAPE changes (value added/renamed/removed, axis
+  // renamed/deleted), PRUNE stale selections instead of wiping everything —
+  // the state pin / preview text / slot picks survive inline variant editing.
+  const previousVariantAxesRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!selectedComponentForSpec) {
+      return;
+    }
+    const previousAxes = previousVariantAxesRef.current;
+    previousVariantAxesRef.current = new Set(
+      selectedComponentForSpec.variants.map((variant) => variant.name)
+    );
+    setComponentPreviewSelections((previous) => {
+      const next: Record<string, string> = {};
+      for (const [key, value] of Object.entries(previous)) {
+        const axis = selectedComponentForSpec.variants.find((variant) => variant.name === key);
+        if (axis) {
+          if (axis.values.includes(value)) next[key] = value; // value renamed/removed → drop
+          continue;
+        }
+        if (previousAxes.has(key)) continue; // axis renamed/removed → stale key
+        next[key] = value; // non-axis keys (state pin, text, slot:*) survive
+      }
+      return next;
+    });
+  }, [selectedComponentVariantsKey]);
 
   useEffect(() => {
     setPropDraft(
@@ -1412,15 +1458,18 @@ export function PodoEditorApp({
     }
   };
   // Figma-style layer rename: renames an anatomy part + migrates its token keys.
-  const renameAnatomyPart = (fromName: string, toName: string): void => {
+  // Returns success so the panel only moves its selection to a name that exists.
+  const renameAnatomyPart = (fromName: string, toName: string): boolean => {
     if (!selectedComponentForSpec) {
-      return;
+      return false;
     }
     try {
       commitComponentSpec(renameComponentAnatomyPart(selectedComponentForSpec, fromName, toName));
       setComponentDraftError(undefined);
+      return true;
     } catch (error) {
       setComponentDraftError(localizeError(error, t, "chrome.error.layerName"));
+      return false;
     }
   };
   // Figma-style layer tree operations (add child, delete, reorder, nest).
@@ -1452,6 +1501,74 @@ export function PodoEditorApp({
     runAnatomyEdit((component) =>
       moveComponentAnatomyPart(component, partName, newParent, beforeName)
     );
+  // Figma-style deep duplicate (subtree + bindings); returns the copy's name so
+  // the panel can select it.
+  const duplicateAnatomyPart = (partName: string): string | undefined => {
+    if (!selectedComponentForSpec) return undefined;
+    try {
+      const { component, copiedName } = duplicateComponentAnatomyPart(
+        selectedComponentForSpec,
+        partName
+      );
+      if (component === selectedComponentForSpec) return undefined; // unknown part → no-op
+      commitComponentSpec(component);
+      setComponentDraftError(undefined);
+      return copiedName;
+    } catch (error) {
+      setComponentDraftError(localizeError(error, t, "chrome.error.layerEdit"));
+      return undefined;
+    }
+  };
+  // Figma-style eye/lock flags on a layer.
+  const setAnatomyPartFlags = (partName: string, flags: { hidden?: boolean; locked?: boolean }) =>
+    runAnatomyEdit((component) => setComponentAnatomyPartFlags(component, partName, flags));
+  // Inline (Figma Properties panel) variant axis/value operations. All commit
+  // immediately; errors surface in the shared component draft banner.
+  const runVariantEdit = (next: (component: ComponentDocument) => ComponentDocument): void => {
+    if (!selectedComponentForSpec) {
+      return;
+    }
+    try {
+      commitComponentSpec(next(selectedComponentForSpec));
+      setComponentDraftError(undefined);
+    } catch (error) {
+      setComponentDraftError(localizeError(error, t, "chrome.error.variantDraft"));
+    }
+  };
+  const addVariantAxis = (name: string, values: string[]): void =>
+    runVariantEdit((component) => addComponentVariantAxis(component, name, values));
+  const renameVariantAxis = (fromName: string, toName: string): void =>
+    runVariantEdit((component) => renameComponentVariantAxis(component, fromName, toName));
+  const removeVariantAxis = (name: string): void =>
+    runVariantEdit((component) => deleteComponentVariant(component, name));
+  const addVariantValue = (axisName: string, value: string): void =>
+    runVariantEdit((component) => addComponentVariantValue(component, axisName, value));
+  const renameVariantValue = (axisName: string, fromValue: string, toValue: string): void =>
+    runVariantEdit((component) =>
+      renameComponentVariantValue(component, axisName, fromValue, toValue)
+    );
+  const removeVariantValue = (axisName: string, value: string): void =>
+    runVariantEdit((component) => removeComponentVariantValue(component, axisName, value));
+  const setVariantDefault = (axisName: string, value: string): void =>
+    runVariantEdit((component) => setComponentVariantDefault(component, axisName, value));
+  // Writes an appearance binding into a state's tokens (Apply to: hover/disabled…).
+  const updateComponentStateTokenBinding = (
+    stateName: string,
+    key: string,
+    reference: string
+  ): void => {
+    if (!selectedComponentForSpec) {
+      return;
+    }
+    try {
+      commitComponentSpec(
+        upsertComponentStateTokenBinding(selectedComponentForSpec, stateName, key, reference)
+      );
+      setComponentDraftError(undefined);
+    } catch (error) {
+      setComponentDraftError(localizeError(error, t, "chrome.error.appearanceBinding"));
+    }
+  };
   const savePropDraft = (): void => {
     if (!selectedComponentForSpec) {
       return;
@@ -1990,12 +2107,22 @@ export function PodoEditorApp({
               updateTokenMatrixCell={updateTokenMatrixCell}
               updateComponentTokenBinding={updateComponentTokenBinding}
               updateComponentVariantValueTokenBinding={updateComponentVariantValueTokenBinding}
+              updateComponentStateTokenBinding={updateComponentStateTokenBinding}
               renameAnatomyPart={renameAnatomyPart}
               addAnatomyPart={addAnatomyPart}
               removeAnatomyPart={removeAnatomyPart}
               reorderAnatomyPart={reorderAnatomyPart}
               reparentAnatomyPart={reparentAnatomyPart}
               moveAnatomyPart={moveAnatomyPart}
+              duplicateAnatomyPart={duplicateAnatomyPart}
+              setAnatomyPartFlags={setAnatomyPartFlags}
+              addVariantAxis={addVariantAxis}
+              renameVariantAxis={renameVariantAxis}
+              removeVariantAxis={removeVariantAxis}
+              addVariantValue={addVariantValue}
+              renameVariantValue={renameVariantValue}
+              removeVariantValue={removeVariantValue}
+              setVariantDefault={setVariantDefault}
               tokenPickerOptions={tokenPickerOptions}
               previewTokenLookup={previewTokenLookup}
               iconNames={Object.keys(iconModel.icons)}

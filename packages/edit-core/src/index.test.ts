@@ -2,17 +2,26 @@ import { describe, expect, it } from "vitest";
 import { PODO_SCHEMA_VERSION, parseComponentDocument, parseTokenDocument } from "@podo/spec";
 import {
   addComponentAnatomyPart,
+  addComponentVariantAxis,
+  addComponentVariantValue,
   createEditStore,
   createInMemoryAdapter,
   createStudioHttpAdapter,
   deleteComponentSlot,
   deleteComponentVariant,
+  duplicateComponentAnatomyPart,
   moveComponentAnatomyPart,
   removeComponentAnatomyPart,
+  removeComponentVariantValue,
   renameComponentAnatomyPart,
+  renameComponentVariantAxis,
+  renameComponentVariantValue,
   reorderComponentAnatomyPart,
   reparentComponentAnatomyPart,
+  setComponentAnatomyPartFlags,
+  setComponentVariantDefault,
   upsertComponentSlot,
+  upsertComponentStateTokenBinding,
   upsertComponentTokenBinding,
   upsertComponentVariant,
   upsertComponentVariantValueTokenBinding,
@@ -428,6 +437,136 @@ describe("component anatomy + token-binding editing", () => {
       "{color.accent}"
     );
     expect(next.variants[0]?.valueTokens?.b?.["root.background"]).toBe("{color.accent}");
+  });
+
+  it("deep-duplicates a subtree with unique names and copied bindings", () => {
+    const { component: next, copiedName } = duplicateComponentAnatomyPart(
+      hierarchyComponent,
+      "icon"
+    );
+    expect(copiedName).toBe("icon-copy");
+    expect(next.anatomy.map((p) => p.name)).toEqual(["root", "icon", "dot", "icon-copy", "dot-2"]);
+    expect(next.anatomy.find((p) => p.name === "icon-copy")?.parent).toBe("root");
+    expect(next.anatomy.find((p) => p.name === "dot-2")?.parent).toBe("icon-copy");
+    expect(next.tokens["icon-copy.color"]).toBe("{color.icon}");
+    expect(next.tokens["icon.color"]).toBe("{color.icon}");
+  });
+
+  it("duplicate never clobbers an orphan binding whose prefix matches a copy name", () => {
+    const seeded = upsertComponentTokenBinding(hierarchyComponent, "dot-2.color", "{color.orphan}");
+    const { component: next } = duplicateComponentAnatomyPart(seeded, "icon");
+    // The copy of "dot" must skip the reserved "dot-2" prefix, not overwrite it.
+    expect(next.tokens["dot-2.color"]).toBe("{color.orphan}");
+    expect(next.anatomy.some((p) => p.name === "dot-3")).toBe(true);
+  });
+
+  it("sets and clears hidden/locked layer flags", () => {
+    const hidden = setComponentAnatomyPartFlags(hierarchyComponent, "icon", { hidden: true });
+    expect(hidden.anatomy.find((p) => p.name === "icon")?.hidden).toBe(true);
+    const cleared = setComponentAnatomyPartFlags(hidden, "icon", { hidden: false, locked: true });
+    const part = cleared.anatomy.find((p) => p.name === "icon");
+    expect(part?.hidden).toBeUndefined();
+    expect(part?.locked).toBe(true);
+  });
+});
+
+describe("inline variant axis/value operations", () => {
+  it("adds a variant axis with a default", () => {
+    const next = addComponentVariantAxis(demoComponent, "size", ["sm", "md"]);
+    expect(next.variants[0]).toMatchObject({ name: "size", values: ["sm", "md"], default: "sm" });
+    expect(() => addComponentVariantAxis(next, "size", ["a"])).toThrow(/already exists/i);
+    expect(() => addComponentVariantAxis(next, " ", ["a"])).toThrow(/required/i);
+    expect(() => addComponentVariantAxis(next, "tone", [" "])).toThrow(/at least one/i);
+    expect(() => addComponentVariantAxis(next, "tone", ["a", "a"])).toThrow(/duplicate/i);
+  });
+
+  it("renames an axis in place, preserving order and valueTokens", () => {
+    const seeded = upsertComponentVariantValueTokenBinding(
+      hierarchyComponent,
+      "tone",
+      "b",
+      "root.background",
+      "{color.accent}"
+    );
+    const withSecond = addComponentVariantAxis(seeded, "size", ["sm"]);
+    const next = renameComponentVariantAxis(withSecond, "tone", "theme");
+    expect(next.variants.map((v) => v.name)).toEqual(["theme", "size"]);
+    expect(next.variants[0]?.valueTokens?.b?.["root.background"]).toBe("{color.accent}");
+    expect(() => renameComponentVariantAxis(next, "theme", "size")).toThrow(/already exists/i);
+  });
+
+  it("adds a value and rejects duplicates/blank", () => {
+    const next = addComponentVariantValue(hierarchyComponent, "tone", "c");
+    expect(next.variants[0]?.values).toEqual(["a", "b", "c"]);
+    expect(() => addComponentVariantValue(next, "tone", "c")).toThrow(/duplicate/i);
+    expect(() => addComponentVariantValue(next, "tone", " ")).toThrow(/at least one/i);
+    expect(() => addComponentVariantValue(next, "ghost", "x")).toThrow(/not found/i);
+  });
+
+  it("renames a value, migrating valueTokens and the default", () => {
+    const seeded = upsertComponentVariantValueTokenBinding(
+      hierarchyComponent,
+      "tone",
+      "a",
+      "root.background",
+      "{color.accent}"
+    );
+    const next = renameComponentVariantValue(seeded, "tone", "a", "primary");
+    expect(next.variants[0]?.values).toEqual(["primary", "b"]);
+    expect(next.variants[0]?.default).toBe("primary");
+    expect(next.variants[0]?.valueTokens?.primary?.["root.background"]).toBe("{color.accent}");
+    expect(next.variants[0]?.valueTokens?.a).toBeUndefined();
+    expect(() => renameComponentVariantValue(next, "tone", "primary", "b")).toThrow(/duplicate/i);
+  });
+
+  it("removes a value (never the last), fixing the default and valueTokens", () => {
+    const seeded = upsertComponentVariantValueTokenBinding(
+      hierarchyComponent,
+      "tone",
+      "a",
+      "root.background",
+      "{color.accent}"
+    );
+    const next = removeComponentVariantValue(seeded, "tone", "a");
+    expect(next.variants[0]?.values).toEqual(["b"]);
+    expect(next.variants[0]?.default).toBe("b");
+    expect(next.variants[0]?.valueTokens).toBeUndefined();
+    expect(() => removeComponentVariantValue(next, "tone", "b")).toThrow(/at least one/i);
+  });
+
+  it("sets the axis default only to an existing value", () => {
+    const next = setComponentVariantDefault(hierarchyComponent, "tone", "b");
+    expect(next.variants[0]?.default).toBe("b");
+    expect(() => setComponentVariantDefault(next, "tone", "zzz")).toThrow(/default/i);
+  });
+});
+
+describe("state token bindings", () => {
+  it("writes into an existing state and cleans up empty token maps", () => {
+    const set = upsertComponentStateTokenBinding(
+      hierarchyComponent,
+      "hover",
+      "root.background",
+      "{color.hover}"
+    );
+    expect(set.states.find((s) => s.name === "hover")?.tokens?.["root.background"]).toBe(
+      "{color.hover}"
+    );
+    const cleared = upsertComponentStateTokenBinding(set, "hover", "root.background", "");
+    expect(cleared.states.find((s) => s.name === "hover")?.tokens).toBeUndefined();
+  });
+
+  it("creates the state entry when styling a state the spec did not declare", () => {
+    const next = upsertComponentStateTokenBinding(
+      hierarchyComponent,
+      "disabled",
+      "root.opacity",
+      "0.5"
+    );
+    expect(next.states.find((s) => s.name === "disabled")?.tokens?.["root.opacity"]).toBe("0.5");
+    // Clearing a binding on a missing state is a no-op, not a creation.
+    const noop = upsertComponentStateTokenBinding(hierarchyComponent, "active", "root.color", "");
+    expect(noop.states.some((s) => s.name === "active")).toBe(false);
   });
 });
 

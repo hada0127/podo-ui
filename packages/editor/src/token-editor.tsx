@@ -1584,7 +1584,7 @@ export function renderColorComparisonMatrix(input: {
  * bar — all pointer-driven so the whole color (incl. alpha) is set in one place,
  * with no nested OS color dialog. Local HSV state preserves hue at s/v extremes.
  */
-function InlineColorPicker({
+export function InlineColorPicker({
   value,
   onChange,
 }: {
@@ -1703,7 +1703,7 @@ function InlineColorPicker({
 /**
  * Swatch button that opens the inline color+alpha picker popover.
  */
-function ColorSwatchPicker({
+export function ColorSwatchPicker({
   label,
   swatchColor,
   value,

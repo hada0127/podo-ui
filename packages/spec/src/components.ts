@@ -72,6 +72,11 @@ export const anatomyPartSchema = z.object({
   // nesting). The array stays flat + ordered; the tree is derived from `parent`.
   parent: identifierSchema.optional(),
   description: z.string().optional(),
+  // Figma-style layer flags: hidden parts render display:none in previews (and
+  // may be skipped by renderers); locked parts can't be selected/edited from the
+  // design surface. Both persist as design state, like Figma's eye/lock toggles.
+  hidden: z.boolean().optional(),
+  locked: z.boolean().optional(),
   targets: z.partialRecord(targetNameSchema, z.string().min(1)).optional(),
 });
 
