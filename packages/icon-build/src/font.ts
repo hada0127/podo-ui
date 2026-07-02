@@ -1,3 +1,4 @@
+import svgpathFactory from "svgpath";
 import type { Glyph, Path } from "opentype.js";
 import { ICON_FONT_ASCENDER, ICON_FONT_DESCENDER, ICON_FONT_UNITS_PER_EM } from "./constants.js";
 import { svgToFillPathData } from "./stroke.js";
@@ -79,13 +80,15 @@ function readNumbers(input: string): number[] {
 }
 
 /**
- * Convert absolute SVG path data (commands `M L H V C Q Z`, as produced by the
- * generator and by `normalizeIconSvg`) into an opentype glyph path, mapping the
- * viewBox into the em with a pure Y-flip and integer-rounded coordinates. No
- * dependency on opentype's own `fromSVG` (whose default transform is opaque and
- * version-dependent), so output is deterministic.
+ * Convert SVG path data into an opentype glyph path, mapping the viewBox into
+ * the em with a pure Y-flip and integer-rounded coordinates. The data is first
+ * normalized with svgpath (relative → absolute, arcs → cubics, shorthands
+ * expanded) so editor-drawn and uploaded paths parse the same as generated ones.
+ * No dependency on opentype's own `fromSVG` (whose default transform is opaque
+ * and version-dependent), so output is deterministic.
  */
-export function pathDataToGlyphPath(pathData: string, viewBox: ViewBox, path: Path): Path {
+export function pathDataToGlyphPath(rawPathData: string, viewBox: ViewBox, path: Path): Path {
+  const pathData = svgpathFactory(rawPathData).unshort().unarc().abs().toString();
   const scaleX = ICON_FONT_UNITS_PER_EM / viewBox.width;
   const scaleY = ICON_FONT_UNITS_PER_EM / viewBox.height;
   const fx = (x: number): number => Math.round((x - viewBox.minX) * scaleX);

@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { ICON_CANONICAL_VIEWBOX } from "@podo/icon-build";
-import { pathsToIconSvg } from "./icon-paper-geometry.js";
+import { ICON_EDIT_VIEWBOX, strokeIconSvg, type IconDrawPart } from "./icon-paper-geometry.js";
 import { iconDrawApplyButtonStyle, toolbarButtonStyle } from "./styles.js";
 import { useT } from "./i18n/context.js";
 
-const VB = ICON_CANONICAL_VIEWBOX;
-const GRID = 50;
+// The canvas works in the icon's own 24px viewBox — the same space the Figma
+// stroke icons are authored in — so coordinates, grid, and stroke widths read
+// in real icon pixels. Strokes stay strokes; the font build outlines them later.
+const VB = ICON_EDIT_VIEWBOX;
+const GRID = 1; // 1px pixel grid; snapping uses 0.5px steps for stroke centering
 const FILL = "#1f2937";
 const ACCENT = "#2563eb";
-const DEFAULT_WEIGHT = 60;
-const MIN_SIZE = 8;
+const DEFAULT_WEIGHT = 1.2; // Figma icon set stroke width
+const MIN_SIZE = 0.5;
+const NUDGE = 1;
+const NUDGE_FINE = 0.1;
 
 // Keyline guide lines in 0..VB space, derived from Keyline.svg (119 box). Used as
 // snap targets while the keyline background is shown: the fine 24-division grid
@@ -199,6 +203,12 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [zoomPct, setZoomPct] = useState(100);
+  // Numeric inspector (X/Y/W/H of the selection) + live actual-size preview.
+  const [selBounds, setSelBounds] = useState<
+    { x: number; y: number; w: number; h: number } | undefined
+  >(undefined);
+  const [previewSvg, setPreviewSvg] = useState("");
+  const clipboardRef = useRef<string[]>([]);
 
   const toolRef = useRef(tool);
   const snapRef = useRef(snap);
@@ -232,14 +242,15 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
     if (!scope || !snapRef.current) {
       return point;
     }
-    // When the keyline is shown, snap to its guide lines; otherwise the plain grid.
+    // When the keyline is shown, snap to its guide lines; otherwise half-pixel
+    // steps (0.5px), so strokes can sit centered on the pixel grid.
     if (keylineRef.current) {
       return new scope.Point(
         snapToGuides(point.x, KEYLINE_GUIDE_X),
         snapToGuides(point.y, KEYLINE_GUIDE_Y)
       );
     }
-    return new scope.Point(Math.round(point.x / GRID) * GRID, Math.round(point.y / GRID) * GRID);
+    return new scope.Point(Math.round(point.x * 2) / 2, Math.round(point.y * 2) / 2);
   };
 
   const iconItems = (): PaperItem[] => {
@@ -272,6 +283,21 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
     path.strokeCap = "round";
     path.strokeJoin = "round";
     return path;
+  };
+  // Resize keeps stroke widths (Figma behavior — icon strokes stay 1.2). paper's
+  // strokeScaling=false would also freeze widths against view ZOOM, so instead
+  // widths are restored around each scale call.
+  const scaleKeepingStroke = (
+    item: PaperItem,
+    fx: number,
+    fy: number,
+    anchor: PaperPoint
+  ): void => {
+    const width = item.strokeWidth;
+    item.scale(fx, fy, anchor);
+    if (item.strokeColor) {
+      item.strokeWidth = width;
+    }
   };
 
   const handlePoints = (bounds: PaperItem): Record<HandleId, PaperPoint> => {
@@ -385,8 +411,22 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
     setCanRedo(history.index < history.stack.length - 1);
     const scope = scopeRef.current;
     if (scope) {
-      setZoomPct(Math.round(scope.view.zoom * (scope.view.viewSize.width / VB) * 100));
+      // 100% = the whole 24px canvas fitted to the view.
+      const fitZoom = scope.view.viewSize.width / VB;
+      setZoomPct(Math.round((scope.view.zoom / fitZoom) * 100));
     }
+    const bounds = selectionBounds(selected);
+    setSelBounds(
+      bounds
+        ? {
+            x: Math.round(bounds.left * 100) / 100,
+            y: Math.round(bounds.top * 100) / 100,
+            w: Math.round(bounds.width * 100) / 100,
+            h: Math.round(bounds.height * 100) / 100,
+          }
+        : undefined
+    );
+    setPreviewSvg(flattenToSvg());
     drawSelectionUi();
   };
 
@@ -424,29 +464,24 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
     syncUi();
   };
 
+  // Emit the drawing as a stored icon: strokes stay strokes (round caps), fills
+  // stay fills, in the 24px viewBox — matching the Figma icon set. The font
+  // build's deterministic outliner expands strokes only when baking the woff2.
   const flattenToSvg = (): string => {
-    const scope = scopeRef.current;
-    if (!scope) {
-      return pathsToIconSvg([]);
-    }
-    const parts: string[] = [];
+    const parts: IconDrawPart[] = [];
     for (const item of iconItems()) {
       if (typeof item.pathData !== "string" || !item.pathData) {
         continue;
       }
       const hasFill = Boolean(item.fillColor);
       const hasStroke = Boolean(item.strokeColor) && item.strokeWidth > 0;
-      if (hasFill || !hasStroke) {
-        parts.push(item.pathData);
-      }
-      if (hasStroke) {
-        const outline = strokeOutlineData(scope, item, item.strokeWidth);
-        if (outline) {
-          parts.push(outline);
-        }
-      }
+      parts.push({
+        d: item.pathData,
+        fill: hasFill || !hasStroke,
+        ...(hasStroke ? { strokeWidth: item.strokeWidth } : {}),
+      });
     }
-    return pathsToIconSvg(parts);
+    return strokeIconSvg(parts);
   };
 
   // --- paper setup ------------------------------------------------------------
@@ -537,10 +572,21 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
 
       if (initialSvg.trim()) {
         try {
-          const imported = scope.project.importSVG(initialSvg, {
+          // paper does not resolve `currentColor`; paint with the editor ink so
+          // stroke/fill styling survives the round trip (re-emitted as currentColor).
+          const imported = scope.project.importSVG(initialSvg.replaceAll("currentColor", FILL), {
             expandShapes: true,
             insert: false,
           });
+          // Normalize any source viewBox (e.g. legacy 1000-box fills) into the
+          // 24px editing space; stroke widths scale with it (strokeScaling on).
+          const box = /viewBox\s*=\s*"\s*([-\d.]+)[ ,]+([-\d.]+)[ ,]+([-\d.]+)[ ,]+([-\d.]+)/.exec(
+            initialSvg
+          );
+          const sourceSize = box ? Math.max(Number(box[3]), Number(box[4])) : VB;
+          if (sourceSize > 0 && Math.abs(sourceSize - VB) > 0.001) {
+            imported.scale(VB / sourceSize, new scope.Point(0, 0));
+          }
           absorbImported(scope, iconLayer, imported);
         } catch {
           // Ignore an unparseable source; start blank.
@@ -603,6 +649,7 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
       | { kind: "marquee"; rect: PaperItem; start: PaperPoint }
       | undefined;
     let cursor: PaperItem | undefined; // pen point indicator
+    let lastDown: { time: number; id: number } | undefined; // double-click tracking
 
     const tol = (): number => 8 / scope.view.zoom;
     const hit = (point: PaperPoint, options: object): PaperItem | undefined =>
@@ -708,6 +755,17 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
         }
         const found = hit(event.point, { fill: true, stroke: true });
         if (found?.item) {
+          // Double-click a shape to enter node editing on it (Figma).
+          const now = Date.now();
+          if (lastDown && now - lastDown.time < 400 && lastDown.id === found.item.id) {
+            lastDown = undefined;
+            deselectAll();
+            found.item.fullySelected = true;
+            setTool("node");
+            syncUi();
+            return;
+          }
+          lastDown = { time: now, id: found.item.id };
           if (!event.modifiers.shift && !found.item.selected) {
             deselectAll();
           }
@@ -779,9 +837,10 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
         syncUi();
         return;
       }
-      // shape tools (rect/ellipse/polygon/star fill; line strokes)
+      // Shape tools draw stroked outlines by default — the icon set is
+      // stroke-based; the Fill toggle converts a shape to a filled one.
       const start = snapPoint(event.point);
-      const stroked = mode === "line";
+      const stroked = true;
       const shape = makeShape(scope, mode, start, start);
       const item = stroked ? styleStroked(shape) : styleFilled(shape);
       iconLayerRef.current.addChild(item);
@@ -827,7 +886,7 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
           fy = f;
         }
         for (const item of selectedItems()) {
-          item.scale(fx, fy, drag.anchor);
+          scaleKeepingStroke(item, fx, fy, drag.anchor);
         }
         drawSelectionUi();
         return;
@@ -863,7 +922,10 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
       }
       if (drag.kind === "shape") {
         drag.item.remove();
-        const shape = makeShape(scope, toolRef.current, drag.start, snapPoint(event.point));
+        const shape = makeShape(scope, toolRef.current, drag.start, snapPoint(event.point), {
+          square: Boolean(event.modifiers.shift),
+          fromCenter: Boolean(event.modifiers.alt),
+        });
         drag.item = drag.stroked ? styleStroked(shape) : styleFilled(shape);
         iconLayerRef.current.addChild(drag.item);
         return;
@@ -1163,6 +1225,123 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
     pushHistory();
   };
 
+  // Clipboard (Figma ⌘C/X/V/D). Items are held as exported JSON so paste
+  // survives deletion and repeated pastes stay independent.
+  const copySelection = (): boolean => {
+    const items = selectedItems();
+    if (items.length === 0) {
+      return false;
+    }
+    clipboardRef.current = items.map((item) => item.exportJSON({ asString: true }));
+    return true;
+  };
+  const pasteClipboard = (): void => {
+    const scope = scopeRef.current;
+    const layer = iconLayerRef.current;
+    if (!scope || !layer || clipboardRef.current.length === 0) {
+      return;
+    }
+    for (const item of iconItems()) {
+      item.selected = false;
+      item.fullySelected = false;
+    }
+    for (const json of clipboardRef.current) {
+      const item = layer.importJSON(json);
+      if (item) {
+        item.position = item.position.add(new scope.Point(1, 1));
+        item.selected = true;
+      }
+    }
+    pushHistory();
+  };
+  const duplicateSelection = (): void => {
+    const scope = scopeRef.current;
+    const items = selectedItems();
+    if (!scope || items.length === 0) {
+      return;
+    }
+    for (const item of items) {
+      const clone = item.clone();
+      clone.position = clone.position.add(new scope.Point(1, 1));
+      item.selected = false;
+      clone.selected = true;
+    }
+    pushHistory();
+  };
+  const selectAllItems = (): void => {
+    for (const item of iconItems()) {
+      if (toolRef.current === "node") {
+        item.fullySelected = true;
+      } else {
+        item.selected = true;
+      }
+    }
+    syncUi();
+  };
+  // Arrow-key nudge: 1px, Shift = 0.1px fine steps. Moves selected anchors in
+  // the node tool, otherwise the selected objects.
+  const nudgeSelection = (dx: number, dy: number): void => {
+    const scope = scopeRef.current;
+    if (!scope) {
+      return;
+    }
+    if (toolRef.current === "node") {
+      let touched = false;
+      for (const item of iconItems()) {
+        for (const segment of item.segments ?? []) {
+          if (segment.selected) {
+            segment.point = segment.point.add(new scope.Point(dx, dy));
+            touched = true;
+          }
+        }
+      }
+      if (touched) {
+        pushHistory();
+        return;
+      }
+    }
+    const items = selectedItems();
+    if (items.length === 0) {
+      return;
+    }
+    for (const item of items) {
+      item.position = item.position.add(new scope.Point(dx, dy));
+    }
+    pushHistory();
+  };
+
+  // Numeric inspector commit: X/Y translate the selection; W/H scale it from
+  // its top-left corner (Figma panel behavior).
+  const applySelBounds = (field: "x" | "y" | "w" | "h", raw: string): void => {
+    const scope = scopeRef.current;
+    const items = selectedItems();
+    const bounds = selectionBounds(items);
+    const value = Number.parseFloat(raw);
+    if (!scope || !bounds || items.length === 0 || !Number.isFinite(value)) {
+      syncUi();
+      return;
+    }
+    if (field === "x" || field === "y") {
+      const dx = field === "x" ? value - bounds.left : 0;
+      const dy = field === "y" ? value - bounds.top : 0;
+      for (const item of items) {
+        item.position = item.position.add(new scope.Point(dx, dy));
+      }
+    } else {
+      const current = field === "w" ? bounds.width : bounds.height;
+      const factor = Math.max(MIN_SIZE, value) / current;
+      if (!Number.isFinite(factor) || factor <= 0) {
+        syncUi();
+        return;
+      }
+      const anchor = new scope.Point(bounds.left, bounds.top);
+      for (const item of items) {
+        scaleKeepingStroke(item, field === "w" ? factor : 1, field === "h" ? factor : 1, anchor);
+      }
+    }
+    pushHistory();
+  };
+
   const zoomFit = (): void => {
     const scope = scopeRef.current;
     if (!scope) return;
@@ -1191,14 +1370,50 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
         syncUi();
         return;
       }
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
-        event.preventDefault();
-        restoreHistory(event.shiftKey ? 1 : -1);
+      if (event.metaKey || event.ctrlKey) {
+        const key = event.key.toLowerCase();
+        if (key === "z") {
+          event.preventDefault();
+          restoreHistory(event.shiftKey ? 1 : -1);
+        } else if (key === "0") {
+          event.preventDefault();
+          zoomFit();
+        } else if (key === "a") {
+          event.preventDefault();
+          selectAllItems();
+        } else if (key === "c") {
+          event.preventDefault();
+          copySelection();
+        } else if (key === "x") {
+          event.preventDefault();
+          if (copySelection()) {
+            deleteSelection();
+          }
+        } else if (key === "v") {
+          event.preventDefault();
+          pasteClipboard();
+        } else if (key === "d") {
+          event.preventDefault();
+          duplicateSelection();
+        }
         return;
       }
       if (event.key === "Backspace" || event.key === "Delete") {
         event.preventDefault();
         deleteSelection();
+        return;
+      }
+      const nudges: Record<string, [number, number]> = {
+        ArrowLeft: [-1, 0],
+        ArrowRight: [1, 0],
+        ArrowUp: [0, -1],
+        ArrowDown: [0, 1],
+      };
+      const nudge = nudges[event.key];
+      if (nudge) {
+        event.preventDefault();
+        const step = event.shiftKey ? NUDGE_FINE : NUDGE;
+        nudgeSelection(nudge[0] * step, nudge[1] * step);
         return;
       }
       const map: Record<string, Tool> = {
@@ -1228,14 +1443,29 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
     };
   }, []);
 
+  // Figma wheel scheme: plain wheel/trackpad pans; ⌘/Ctrl+wheel (and trackpad
+  // pinch, which browsers deliver as ctrl+wheel) zooms toward the cursor.
   const onWheel = (event: React.WheelEvent): void => {
     const scope = scopeRef.current;
-    if (!scope) {
+    const canvas = canvasRef.current;
+    if (!scope || !canvas) {
       return;
     }
     event.preventDefault();
-    const factor = event.deltaY < 0 ? 1.1 : 1 / 1.1;
-    scope.view.zoom = Math.max(0.1, Math.min(8, scope.view.zoom * factor));
+    if (event.ctrlKey || event.metaKey) {
+      const rect = canvas.getBoundingClientRect();
+      const viewPoint = new scope.Point(event.clientX - rect.left, event.clientY - rect.top);
+      const before = scope.view.viewToProject(viewPoint);
+      const fitZoom = scope.view.viewSize.width / VB;
+      const factor = Math.exp(-event.deltaY * 0.01);
+      scope.view.zoom = Math.max(fitZoom * 0.2, Math.min(fitZoom * 64, scope.view.zoom * factor));
+      const after = scope.view.viewToProject(viewPoint);
+      scope.view.center = scope.view.center.add(before.subtract(after));
+    } else {
+      scope.view.center = scope.view.center.add(
+        new scope.Point(event.deltaX, event.deltaY).divide(scope.view.zoom)
+      );
+    }
     syncUi();
   };
 
@@ -1304,15 +1534,15 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
           {t("iconEditor.weight")}
           <input
             type="range"
-            min={6}
-            max={200}
-            step={2}
+            min={0.5}
+            max={4}
+            step={0.1}
             value={strokeWidth}
             onChange={(event) => applyStrokeWidth(Number(event.target.value))}
             style={{ width: 96, accentColor: ACCENT }}
           />
           <span style={{ fontVariantNumeric: "tabular-nums", width: 28, textAlign: "right" }}>
-            {strokeWidth}
+            {strokeWidth.toFixed(1)}
           </span>
         </label>
         <span style={{ flex: 1 }} />
@@ -1494,6 +1724,50 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
         </div>
       )}
 
+      {/* Numeric inspector — Figma-style X/Y/W/H for the selection (24px units). */}
+      {selBounds && tool === "move" ? (
+        <div style={barStyle}>
+          <span style={groupLabelStyle}>{t("iconEditor.inspectorGroup")}</span>
+          {(
+            [
+              ["x", selBounds.x],
+              ["y", selBounds.y],
+              ["w", selBounds.w],
+              ["h", selBounds.h],
+            ] as const
+          ).map(([field, value]) => (
+            <label key={field} style={{ ...chipStyle, cursor: "text", gap: 4 }}>
+              <span style={{ color: "#8a96a8", fontWeight: 700 }}>{field.toUpperCase()}</span>
+              <input
+                key={`${field}:${value}`}
+                type="number"
+                step={0.5}
+                defaultValue={value}
+                aria-label={field.toUpperCase()}
+                onBlur={(event) => {
+                  if (Number(event.currentTarget.value) !== value) {
+                    applySelBounds(field, event.currentTarget.value);
+                  }
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.currentTarget.blur();
+                  }
+                }}
+                style={{
+                  width: 56,
+                  border: "none",
+                  outline: "none",
+                  fontSize: 12,
+                  background: "transparent",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              />
+            </label>
+          ))}
+        </div>
+      ) : null}
+
       <div
         style={{
           position: "relative",
@@ -1522,6 +1796,32 @@ export function IconPaperEditor({ initialSvg, title, onApply, onClose }: IconPap
           aria-label={t("iconEditor.canvasAriaLabel")}
         />
       </div>
+
+      {/* Live preview at real rendered sizes, straight from the emitted SVG. */}
+      {ready && layerCount > 0 ? (
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 14, justifySelf: "center" }}>
+          <span style={groupLabelStyle}>{t("iconEditor.preview")}</span>
+          {[12, 16, 24, 32].map((size) => (
+            <span
+              key={size}
+              style={{
+                display: "inline-flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 3,
+              }}
+            >
+              <span
+                style={{ width: size, height: size, color: FILL, display: "inline-block" }}
+                dangerouslySetInnerHTML={{
+                  __html: previewSvg.replace("<svg ", '<svg width="100%" height="100%" '),
+                }}
+              />
+              <span style={{ fontSize: 9, color: "#8a96a8" }}>{size}</span>
+            </span>
+          ))}
+        </div>
+      ) : null}
 
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
         <span style={{ fontSize: 12, color: "#6b7280" }}>
@@ -1576,14 +1876,32 @@ function swatch(on: boolean): CSSProperties {
 
 // --- pure paper helpers -------------------------------------------------------
 
-function makeShape(scope: PaperScope, tool: Tool, start: PaperPoint, end: PaperPoint): PaperItem {
+function makeShape(
+  scope: PaperScope,
+  tool: Tool,
+  start: PaperPoint,
+  end: PaperPoint,
+  modifiers: { square?: boolean; fromCenter?: boolean } = {}
+): PaperItem {
   if (tool === "line") {
     const path = new scope.Path();
     path.add(start);
-    path.add(end);
+    // Shift constrains the line to 45° steps (Figma).
+    path.add(modifiers.square ? start.add(constrain45(scope, end.subtract(start), true)) : end);
     return path;
   }
-  const rect = new scope.Rectangle(start, end);
+  let dx = end.x - start.x;
+  let dy = end.y - start.y;
+  if (modifiers.square) {
+    // Shift constrains to a square/circle.
+    const size = Math.max(Math.abs(dx), Math.abs(dy));
+    dx = (dx < 0 ? -1 : 1) * size;
+    dy = (dy < 0 ? -1 : 1) * size;
+  }
+  // Alt draws out from the center (Figma).
+  const from = modifiers.fromCenter ? new scope.Point(start.x - dx, start.y - dy) : start;
+  const to = new scope.Point(start.x + dx, start.y + dy);
+  const rect = new scope.Rectangle(from, to);
   if (tool === "rect") {
     return new scope.Path.Rectangle(rect);
   }
@@ -1598,59 +1916,11 @@ function makeShape(scope: PaperScope, tool: Tool, start: PaperPoint, end: PaperP
   return new scope.Path.RegularPolygon(center, 6, radius);
 }
 
-/** Expand a stroked path into a filled outline (round caps/joins) for the font. */
-function strokeOutlineData(scope: PaperScope, path: PaperItem, width: number): string {
-  const radius = Math.max(0.5, width / 2);
-  const work = path.clone({ insert: false });
-  work.flatten(2);
-  const points: PaperPoint[] = work.segments.map((segment: PaperItem) => segment.point);
-  const closed = Boolean(work.closed);
-  if (work.remove) {
-    work.remove();
-  }
-  if (points.length === 0) {
-    return "";
-  }
-  const pieces: PaperItem[] = [];
-  const segmentCount = closed ? points.length : points.length - 1;
-  for (const point of points) {
-    pieces.push(new scope.Path.Circle(point, radius));
-  }
-  for (let i = 0; i < segmentCount; i += 1) {
-    const a = points[i];
-    const b = points[(i + 1) % points.length];
-    const dir = b.subtract(a);
-    if (dir.length < 0.001) {
-      continue;
-    }
-    const normal = new scope.Point(-dir.y, dir.x).normalize(radius);
-    const rect = new scope.Path([
-      a.add(normal),
-      b.add(normal),
-      b.subtract(normal),
-      a.subtract(normal),
-    ]);
-    rect.closed = true;
-    pieces.push(rect);
-  }
-  let result: PaperItem | undefined;
-  for (const piece of pieces) {
-    if (!result) {
-      result = piece;
-      continue;
-    }
-    const united = result.unite(piece);
-    result.remove();
-    piece.remove();
-    result = united;
-  }
-  const data = result ? result.pathData : "";
-  if (result?.remove) {
-    result.remove();
-  }
-  return data;
-}
-
+/**
+ * Move imported paths into the icon layer, PRESERVING their paint: stroke paths
+ * (the Figma icon set) stay editable strokes with their width and round caps;
+ * fill paths stay fills. Colors are normalized to the editor ink.
+ */
 function absorbImported(scope: PaperScope, layer: PaperItem, imported: PaperItem): void {
   const collect: PaperItem[] = [];
   const walk = (item: PaperItem): void => {
@@ -1667,8 +1937,21 @@ function absorbImported(scope: PaperScope, layer: PaperItem, imported: PaperItem
   };
   walk(imported);
   for (const item of collect) {
-    item.fillColor = new scope.Color(FILL);
-    item.strokeColor = null;
+    const hasStroke = Boolean(item.strokeColor) && item.strokeWidth > 0;
+    const hasFill = Boolean(item.fillColor);
+    if (hasStroke) {
+      item.strokeColor = new scope.Color(FILL);
+      item.strokeCap = "round";
+      item.strokeJoin = "round";
+    }
+    if (hasFill) {
+      item.fillColor = new scope.Color(FILL);
+    }
+    if (!hasFill && !hasStroke) {
+      // Nothing visible would be uneditable; default to a filled shape.
+      item.fillColor = new scope.Color(FILL);
+      item.strokeColor = null;
+    }
     item.selected = false;
     layer.addChild(item);
   }

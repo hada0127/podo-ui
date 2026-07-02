@@ -1647,8 +1647,8 @@ export function PodoEditorApp({
   const openIconDrawEdit = (name: string): void => setIconDrawTarget({ mode: "edit", name });
   const closeIconDraw = (): void => setIconDrawTarget(undefined);
   const applyIconDraw = (svg: string): void => {
-    // The drawing canvas already emits canonical, safe SVG (single geometry path),
-    // so it is stored directly without re-normalizing.
+    // The drawing canvas emits the stored icon format directly (24px viewBox,
+    // stroke-preserving, geometry-only markup), so no re-normalizing is needed.
     if (iconDrawTarget?.mode === "edit") {
       applyIconModel(replaceIconSvg(iconModelRef.current, iconDrawTarget.name, svg));
       setSelectedIconName(iconDrawTarget.name);

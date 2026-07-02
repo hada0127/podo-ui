@@ -61,10 +61,14 @@ export const iconEditorEn = {
   "iconEditor.alignVCenter": "Middle",
   "iconEditor.alignBottom": "Bottom",
 
+  // Numeric inspector + actual-size preview.
+  "iconEditor.inspectorGroup": "Position/Size",
+  "iconEditor.preview": "Preview",
+
   // Canvas + footer status / actions.
   "iconEditor.canvasAriaLabel": "Icon vector canvas",
   "iconEditor.statusBar":
-    "{title} · Objects {layerCount} · Selected {selectionCount} · Wheel = zoom, Space+drag = pan, Alt+drag = duplicate{readyHint}",
+    "{title} · Objects {layerCount} · Selected {selectionCount} · ⌘Wheel = zoom, Wheel/Space+drag = pan, ⌘C/V/D = copy·paste·duplicate, Arrows = nudge{readyHint}",
   "iconEditor.statusPreparing": " · Preparing…",
   "iconEditor.cancel": "Cancel",
   "iconEditor.applyToIcon": "Apply to Icon",
@@ -127,9 +131,12 @@ export const iconEditorKo: Record<keyof typeof iconEditorEn, string> = {
   "iconEditor.alignVCenter": "중간",
   "iconEditor.alignBottom": "하",
 
+  "iconEditor.inspectorGroup": "위치/크기",
+  "iconEditor.preview": "미리보기",
+
   "iconEditor.canvasAriaLabel": "아이콘 벡터 캔버스",
   "iconEditor.statusBar":
-    "{title} · 객체 {layerCount} · 선택 {selectionCount} · 휠=줌, 스페이스+드래그=팬, Alt+드래그=복제{readyHint}",
+    "{title} · 객체 {layerCount} · 선택 {selectionCount} · ⌘휠=줌, 휠/스페이스+드래그=팬, ⌘C/V/D=복사·붙여넣기·복제, 방향키=이동{readyHint}",
   "iconEditor.statusPreparing": " · 준비 중…",
   "iconEditor.cancel": "취소",
   "iconEditor.applyToIcon": "아이콘에 적용",
