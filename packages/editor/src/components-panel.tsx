@@ -35,6 +35,8 @@ import { LayersPanel } from "./component-layers.js";
 import { IconPicker } from "./icon-picker.js";
 import { useT, type Translate } from "./i18n/context.js";
 import {
+  alignmentDotButtonStyle,
+  alignmentGridStyle,
   appearanceGroupStyle,
   appearanceGroupTitleStyle,
   appearanceGroupsStyle,
@@ -42,6 +44,9 @@ import {
   appearanceRemoveStyle,
   appearanceRowStyle,
   appearanceValueStyle,
+  autoLayoutRowStyle,
+  autoLayoutToggleActiveStyle,
+  autoLayoutToggleStyle,
   cardHeaderStyle,
   cardStyle,
   checkboxFieldStyle,
@@ -228,6 +233,22 @@ const TYPOGRAPHY_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: 
   { property: "letter-spacing", defaultAlias: "0" },
   { property: "text-align", defaultAlias: "left" },
 ];
+
+// Figma Auto layout: the flex properties driven by the dedicated section (never
+// shown as plain appearance rows), and the spacing properties the section takes
+// over WHILE auto layout is on.
+const AUTO_LAYOUT_FLEX_PROPERTIES = [
+  "display",
+  "flex-direction",
+  "flex-wrap",
+  "align-items",
+  "justify-content",
+] as const;
+const AUTO_LAYOUT_SPACING_PROPERTIES = ["gap", "padding-x", "padding-y"] as const;
+const normalizedProperty = (property: string): string =>
+  property.toLowerCase().replace(/[-_]/g, "");
+const AUTO_LAYOUT_HIDDEN_ALWAYS = new Set(AUTO_LAYOUT_FLEX_PROPERTIES.map(normalizedProperty));
+const AUTO_LAYOUT_HIDDEN_ACTIVE = new Set(AUTO_LAYOUT_SPACING_PROPERTIES.map(normalizedProperty));
 
 // Parts that render text (so they get the typography controls above). Per known
 // component; falls back to a name heuristic for anything else.
@@ -539,6 +560,7 @@ export function ComponentsPanelWorkspace({
   updateComponentTokenBinding,
   updateComponentVariantValueTokenBinding,
   updateComponentStateTokenBinding,
+  updateComponentBindingsBatch,
   renameAnatomyPart,
   addAnatomyPart,
   removeAnatomyPart,
@@ -597,6 +619,13 @@ export function ComponentsPanelWorkspace({
     reference: string
   ) => void;
   updateComponentStateTokenBinding: (stateName: string, key: string, reference: string) => void;
+  updateComponentBindingsBatch: (
+    scope:
+      | { kind: "base" }
+      | { kind: "variant"; axis: string; value: string }
+      | { kind: "state"; state: string },
+    entries: Array<[key: string, reference: string]>
+  ) => void;
   renameAnatomyPart: (fromName: string, toName: string) => boolean;
   addAnatomyPart: (name: string, parent?: string) => void;
   removeAnatomyPart: (partName: string) => void;
@@ -818,13 +847,28 @@ export function ComponentsPanelWorkspace({
       ...((variant?.valueTokens?.[scopedVariantValue(axisName)] ?? {}) as Record<string, string>),
     };
   })();
+  // Auto layout (Figma): active when the selected part has flex bindings in scope.
+  const scopeValue = (property: string): string =>
+    String(scopeTokens[`${activePart}.${property}`] ?? "");
+  const autoLayoutActive =
+    scopeValue("display") === "flex" || scopeValue("flex-direction").length > 0;
+  // Flex props live only in the Auto layout section; while it's on, the section
+  // also owns gap / padding X·Y so they don't appear twice.
+  const sectionOwnedProperty = (property: string): boolean => {
+    const normalized = normalizedProperty(property);
+    return (
+      AUTO_LAYOUT_HIDDEN_ALWAYS.has(normalized) ||
+      (autoLayoutActive && AUTO_LAYOUT_HIDDEN_ACTIVE.has(normalized))
+    );
+  };
   const partBindings = Object.entries(scopeTokens)
     .filter(([key]) => key.startsWith(`${activePart}.`))
     .map(([key, reference]) => ({
       key,
       property: key.slice(activePart.length + 1),
       reference: String(reference),
-    }));
+    }))
+    .filter((binding) => !sectionOwnedProperty(binding.property));
   const presentProperties = new Set(partBindings.map((binding) => binding.property));
   // Text-bearing parts also offer typography controls (font, size, weight, line
   // height, letter spacing) — like editing a text layer in Figma.
@@ -833,6 +877,7 @@ export function ComponentsPanelWorkspace({
     : COMMON_APPEARANCE_PROPERTIES;
   const seenProperty = new Set<string>();
   const addableProperties = appearanceCatalog.filter((entry) => {
+    if (sectionOwnedProperty(entry.property)) return false;
     if (presentProperties.has(entry.property) || seenProperty.has(entry.property)) return false;
     seenProperty.add(entry.property);
     return true;
@@ -868,6 +913,242 @@ export function ComponentsPanelWorkspace({
     }
     const axisName = activeScope.slice("variant::".length);
     updateComponentVariantValueTokenBinding(axisName, scopedVariantValue(axisName), key, reference);
+  };
+  // Batch variant: N bindings, ONE commit (auto layout add/remove, alignment).
+  const applyAppearanceBindings = (entries: Array<[key: string, reference: string]>): void => {
+    if (activeScope === "base") {
+      updateComponentBindingsBatch({ kind: "base" }, entries);
+      return;
+    }
+    if (activeScope.startsWith("state::")) {
+      updateComponentBindingsBatch({ kind: "state", state: activeScope.slice(7) }, entries);
+      return;
+    }
+    const axisName = activeScope.slice("variant::".length);
+    updateComponentBindingsBatch(
+      { kind: "variant", axis: axisName, value: scopedVariantValue(axisName) },
+      entries
+    );
+  };
+  // The active scope's OWN token bucket (no base overlay): base tokens, the
+  // scoped variant value's overrides, or the state's overrides. Used to decide
+  // whether an "off"/"remove" edit can be expressed as a key deletion here.
+  const scopeOwnTokens: Record<string, string> = (() => {
+    if (activeScope === "base") {
+      return (selectedComponentForSpec.tokens ?? {}) as Record<string, string>;
+    }
+    if (activeScope.startsWith("state::")) {
+      const state = selectedComponentForSpec.states.find(
+        (item) => item.name === activeScope.slice(7)
+      );
+      return (state?.tokens ?? {}) as Record<string, string>;
+    }
+    const axisName = activeScope.slice("variant::".length);
+    const variant = selectedComponentForSpec.variants.find((item) => item.name === axisName);
+    return (variant?.valueTokens?.[scopedVariantValue(axisName)] ?? {}) as Record<string, string>;
+  })();
+  // Reseed key for always-mounted inputs: distinguishes the scoped variant VALUE
+  // too, so switching e.g. size md→lg remounts the fields with lg's bindings
+  // instead of committing md's stale text into lg on blur.
+  const scopeInstanceKey = activeScope.startsWith("variant::")
+    ? `${activeScope}=${scopedVariantValue(activeScope.slice("variant::".length))}`
+    : activeScope;
+  // Figma-style Auto layout section for the selected layer. Direction / wrap /
+  // spacing-mode toggles, a 9-dot alignment grid, and gap / padding X·Y inputs —
+  // all writing scope-aware flex bindings through the appearance handlers.
+  const renderAutoLayoutSection = () => {
+    const direction = scopeValue("flex-direction") === "column" ? "column" : "row";
+    const wrap = scopeValue("flex-wrap") === "wrap";
+    // Removing (deleting keys) only works in the bucket that OWNS the flex
+    // bindings; in an overlay scope where auto layout shines through from base,
+    // deletion is a silent no-op, so the × is not offered there.
+    const autoLayoutOwnedHere = ["display", "flex-direction"].some(
+      (property) => `${activePart}.${property}` in scopeOwnTokens
+    );
+    const normalizeAlign = (value: string): string => value.replace(/^flex-/, "");
+    const justify = normalizeAlign(scopeValue("justify-content") || "flex-start");
+    const align = normalizeAlign(scopeValue("align-items") || "flex-start");
+    const spaceBetween = justify === "space-between";
+    const AXIS_VALUES = ["flex-start", "center", "flex-end"] as const;
+    const spacingInput = (property: (typeof AUTO_LAYOUT_SPACING_PROPERTIES)[number]) => (
+      <label key={property} style={propRowStyle}>
+        <span style={propLabelStyle}>{appearancePropertyLabel(property, t)}</span>
+        <input
+          // Reseed on part/scope/variant-value switches; stable while stepping
+          // so focus holds.
+          key={`${activePart}:${scopeInstanceKey}:${property}`}
+          type="text"
+          defaultValue={scopeValue(property)}
+          placeholder={t("components.rawValuePlaceholder")}
+          style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+          onBlur={(event) =>
+            applyAppearanceBinding(`${activePart}.${property}`, event.currentTarget.value)
+          }
+          onKeyDown={(event) => {
+            if (event.key === "Enter") event.currentTarget.blur();
+            if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+              const delta = (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
+              const next = stepDimensionValue(event.currentTarget.value || "0px", delta);
+              if (next !== undefined) {
+                event.preventDefault();
+                event.currentTarget.value = next;
+                applyAppearanceBinding(`${activePart}.${property}`, next);
+              }
+            }
+          }}
+        />
+      </label>
+    );
+    return (
+      <div style={appearanceGroupStyle}>
+        <div style={appearanceHeaderStyle}>
+          <span style={appearanceGroupTitleStyle}>{t("components.autoLayout")}</span>
+          {autoLayoutActive ? (
+            autoLayoutOwnedHere ? (
+              <button
+                type="button"
+                aria-label={t("components.autoLayoutRemove")}
+                title={t("components.autoLayoutRemove")}
+                style={appearanceRemoveStyle}
+                onClick={() =>
+                  applyAppearanceBindings(
+                    AUTO_LAYOUT_FLEX_PROPERTIES.map((property) => [`${activePart}.${property}`, ""])
+                  )
+                }
+              >
+                ×
+              </button>
+            ) : null
+          ) : (
+            <button
+              type="button"
+              aria-label={t("components.autoLayoutAdd")}
+              title={t("components.autoLayoutAdd")}
+              style={smallButtonStyle}
+              onClick={() =>
+                applyAppearanceBindings([
+                  [`${activePart}.display`, "flex"],
+                  [`${activePart}.flex-direction`, "row"],
+                  ...(scopeValue("gap")
+                    ? []
+                    : [[`${activePart}.gap`, "{spacing.scale.2}"] as [string, string]]),
+                ])
+              }
+            >
+              +
+            </button>
+          )}
+        </div>
+        {autoLayoutActive ? (
+          <>
+            <div style={autoLayoutRowStyle}>
+              {(["row", "column"] as const).map((dir) => (
+                <button
+                  key={dir}
+                  type="button"
+                  aria-pressed={direction === dir}
+                  aria-label={
+                    dir === "row" ? t("components.directionRow") : t("components.directionColumn")
+                  }
+                  title={
+                    dir === "row" ? t("components.directionRow") : t("components.directionColumn")
+                  }
+                  style={{
+                    ...autoLayoutToggleStyle,
+                    ...(direction === dir ? autoLayoutToggleActiveStyle : {}),
+                  }}
+                  onClick={() => applyAppearanceBinding(`${activePart}.flex-direction`, dir)}
+                >
+                  {dir === "row" ? "→" : "↓"}
+                </button>
+              ))}
+              <button
+                type="button"
+                aria-pressed={wrap}
+                style={{
+                  ...autoLayoutToggleStyle,
+                  ...(wrap ? autoLayoutToggleActiveStyle : {}),
+                }}
+                // Off writes an EXPLICIT "nowrap": deleting the key would be a
+                // silent no-op in variant/state scopes where wrap comes from base.
+                onClick={() =>
+                  applyAppearanceBinding(`${activePart}.flex-wrap`, wrap ? "nowrap" : "wrap")
+                }
+              >
+                {t("components.wrap")}
+              </button>
+              <select
+                aria-label={t("components.distribution")}
+                style={{ ...selectStyle, flex: 1, minWidth: 0 }}
+                value={spaceBetween ? "space-between" : "packed"}
+                onChange={(event) =>
+                  applyAppearanceBinding(
+                    `${activePart}.justify-content`,
+                    event.currentTarget.value === "space-between" ? "space-between" : "flex-start"
+                  )
+                }
+              >
+                <option value="packed">{t("components.packed")}</option>
+                <option value="space-between">{t("components.spaceBetween")}</option>
+              </select>
+            </div>
+            <div style={{ ...autoLayoutRowStyle, alignItems: "flex-start" }}>
+              <div style={alignmentGridStyle} role="group" aria-label={t("components.alignment")}>
+                {[0, 1, 2].flatMap((rowIndex) =>
+                  [0, 1, 2].map((columnIndex) => {
+                    // Main axis follows the direction (Figma transposes the grid).
+                    const mainValue = AXIS_VALUES[
+                      direction === "row" ? columnIndex : rowIndex
+                    ] as string;
+                    const crossValue = AXIS_VALUES[
+                      direction === "row" ? rowIndex : columnIndex
+                    ] as string;
+                    const isActive = spaceBetween
+                      ? normalizeAlign(crossValue) === align
+                      : normalizeAlign(mainValue) === justify &&
+                        normalizeAlign(crossValue) === align;
+                    return (
+                      <button
+                        key={`${rowIndex}-${columnIndex}`}
+                        type="button"
+                        aria-pressed={isActive}
+                        aria-label={t("components.alignDot", {
+                          justify: normalizeAlign(mainValue),
+                          align: normalizeAlign(crossValue),
+                        })}
+                        style={alignmentDotButtonStyle}
+                        onClick={() =>
+                          applyAppearanceBindings([
+                            // In space-between mode the main axis is distributed;
+                            // the grid then only picks the cross alignment.
+                            ...(spaceBetween
+                              ? []
+                              : [[`${activePart}.justify-content`, mainValue] as [string, string]]),
+                            [`${activePart}.align-items`, crossValue],
+                          ])
+                        }
+                      >
+                        <span
+                          style={{
+                            width: 5,
+                            height: 5,
+                            borderRadius: 99,
+                            background: isActive ? "#1d4ed8" : "#c4cad3",
+                          }}
+                        />
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+              <div style={{ display: "grid", gap: 4, flex: 1, minWidth: 0 }}>
+                {AUTO_LAYOUT_SPACING_PROPERTIES.map((property) => spacingInput(property))}
+              </div>
+            </div>
+          </>
+        ) : null}
+      </div>
+    );
   };
   // Picker options for an appearance field: only the GLOBAL design tokens of the
   // matching type (radius→radius.scale, spacing→spacing.scale, typography→fonts).
@@ -1187,6 +1468,7 @@ export function ComponentsPanelWorkspace({
                 </select>
               </label>
             ) : null}
+            {renderAutoLayoutSection()}
             <div style={appearanceGroupsStyle}>
               {appearanceRows.length ? (
                 APPEARANCE_GROUP_ORDER.filter((group) =>

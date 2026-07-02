@@ -1569,6 +1569,41 @@ export function PodoEditorApp({
       setComponentDraftError(localizeError(error, t, "chrome.error.appearanceBinding"));
     }
   };
+  // Applies SEVERAL bindings in one derivation + one commit. Sequential calls to
+  // the single-binding handlers within one event would all derive from the same
+  // stale spec and clobber each other — auto layout add/remove needs this.
+  const updateComponentBindingsBatch = (
+    scope:
+      | { kind: "base" }
+      | { kind: "variant"; axis: string; value: string }
+      | { kind: "state"; state: string },
+    entries: Array<[key: string, reference: string]>
+  ): void => {
+    if (!selectedComponentForSpec || !entries.length) {
+      return;
+    }
+    try {
+      let next = selectedComponentForSpec;
+      for (const [key, reference] of entries) {
+        next =
+          scope.kind === "base"
+            ? upsertComponentTokenBinding(next, key, reference)
+            : scope.kind === "variant"
+              ? upsertComponentVariantValueTokenBinding(
+                  next,
+                  scope.axis,
+                  scope.value,
+                  key,
+                  reference
+                )
+              : upsertComponentStateTokenBinding(next, scope.state, key, reference);
+      }
+      commitComponentSpec(next);
+      setComponentDraftError(undefined);
+    } catch (error) {
+      setComponentDraftError(localizeError(error, t, "chrome.error.appearanceBinding"));
+    }
+  };
   const savePropDraft = (): void => {
     if (!selectedComponentForSpec) {
       return;
@@ -2108,6 +2143,7 @@ export function PodoEditorApp({
               updateComponentTokenBinding={updateComponentTokenBinding}
               updateComponentVariantValueTokenBinding={updateComponentVariantValueTokenBinding}
               updateComponentStateTokenBinding={updateComponentStateTokenBinding}
+              updateComponentBindingsBatch={updateComponentBindingsBatch}
               renameAnatomyPart={renameAnatomyPart}
               addAnatomyPart={addAnatomyPart}
               removeAnatomyPart={removeAnatomyPart}

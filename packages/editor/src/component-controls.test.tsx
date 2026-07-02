@@ -241,6 +241,30 @@ describe("Figma-style layer flags, slot content, and variant add", () => {
     }
   });
 
+  it("auto layout flex bindings reach the preview CSS", () => {
+    const button = pick("button");
+    const withAutoLayout = {
+      ...button,
+      tokens: {
+        ...button.tokens,
+        "root.display": "flex",
+        "root.flex-direction": "column",
+        "root.justify-content": "space-between",
+        "root.align-items": "center",
+        "root.flex-wrap": "wrap",
+      },
+    };
+    const { container } = render(<>{renderComponentPreview(withAutoLayout, {}, lookup)}</>);
+    const css = Array.from(container.querySelectorAll("style"))
+      .map((style) => style.textContent)
+      .join("\n");
+    expect(css).toContain("flex-direction: column !important");
+    expect(css).toContain("justify-content: space-between !important");
+    expect(css).toContain("align-items: center !important");
+    expect(css).toContain("flex-wrap: wrap !important");
+    expect(css).toContain("display: flex !important");
+  });
+
   it("field control slot content is swappable via slot:control", () => {
     const field = pick("field");
     const asSelect = render(

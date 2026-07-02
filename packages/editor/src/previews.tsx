@@ -1204,6 +1204,12 @@ const APPEARANCE_CSS_PROPERTY: Record<string, string> = {
   textalign: "text-align",
   borderstyle: "border-style",
   minwidth: "min-width",
+  // Figma Auto layout section (direction / wrap / alignment / distribution).
+  display: "display",
+  flexdirection: "flex-direction",
+  flexwrap: "flex-wrap",
+  alignitems: "align-items",
+  justifycontent: "justify-content",
 };
 
 // Per-component anatomy-part -> CSS selector (descendant of the preview). Filled

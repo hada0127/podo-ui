@@ -1693,6 +1693,60 @@ export const layerFilterInputStyle: CSSProperties = {
   color: "#3f3f46",
 };
 
+// --- Figma-style Auto layout section (design rail) ---
+
+export const autoLayoutRowStyle: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 6,
+};
+
+export const autoLayoutToggleStyle: CSSProperties = {
+  minWidth: 26,
+  height: 22,
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: "1px solid #d8dde6",
+  borderRadius: 5,
+  background: "#ffffff",
+  color: "#3f3f46",
+  cursor: "pointer",
+  fontSize: 12,
+  padding: "0 6px",
+};
+
+export const autoLayoutToggleActiveStyle: CSSProperties = {
+  background: "#edf4ff",
+  border: "1px solid #bcd4ff",
+  color: "#1d4ed8",
+};
+
+export const alignmentGridStyle: CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(3, 1fr)",
+  gap: 2,
+  width: 72,
+  padding: 4,
+  border: "1px solid #d8dde6",
+  borderRadius: 6,
+  background: "#fafafa",
+  boxSizing: "border-box",
+};
+
+export const alignmentDotButtonStyle: CSSProperties = {
+  width: "100%",
+  height: 16,
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: "none",
+  background: "transparent",
+  cursor: "pointer",
+  padding: 0,
+  borderRadius: 3,
+};
+
 // --- Figma-style variant Properties card (design rail) ---
 
 export const variantAxisBlockStyle: CSSProperties = {
