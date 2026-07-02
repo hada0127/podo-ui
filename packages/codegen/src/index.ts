@@ -146,6 +146,15 @@ export function emitComponentTokenCss(specs: ComponentDocument[]): string {
 
   for (const spec of sorted) {
     const base = `.podo-${spec.id}`;
+    // Hidden layers (Figma eye toggle persisted on anatomy parts) reach build
+    // output as real display rules: the root hides the whole component; other
+    // parts hide their `[data-part]` element.
+    for (const part of [...spec.anatomy].sort((a, b) => a.name.localeCompare(b.name))) {
+      if (!part.hidden) continue;
+      const selector =
+        part.name === "root" ? base : `${base} [data-part="${escapeCssAttributeValue(part.name)}"]`;
+      blocks.push(cssRule(selector, [["display", "none"]]) as string);
+    }
     // Base = component-level tokens folded with variant-level tokens (which apply
     // across the whole variant axis), so edits to either reflect in output.
     const baseMap: Record<string, string> = { ...spec.tokens };
@@ -164,6 +173,19 @@ export function emitComponentTokenCss(specs: ComponentDocument[]): string {
         if (rule) {
           blocks.push(rule);
         }
+      }
+    }
+    // Compound variant conditions: every named axis constrains the selector.
+    for (const combination of spec.combinations ?? []) {
+      const selector = Object.entries(combination.when)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .reduce(
+          (acc, [axis, value]) => `${acc}[data-${axis}="${escapeCssAttributeValue(value)}"]`,
+          base
+        );
+      const rule = cssRule(selector, sortedDecls(combination.tokens, spec.id));
+      if (rule) {
+        blocks.push(rule);
       }
     }
     for (const state of [...spec.states].sort((a, b) => a.name.localeCompare(b.name))) {

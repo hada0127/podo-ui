@@ -104,6 +104,43 @@ describe("@podo/codegen", () => {
     expect(emitComponentTokenCss([component])).toBe(css);
   });
 
+  it("emits hidden-layer display rules and compound-combination overrides", () => {
+    const component = parseComponentDocument({
+      schemaVersion: PODO_SCHEMA_VERSION,
+      kind: "component",
+      id: "button",
+      name: "Button",
+      category: "atom",
+      status: "stable",
+      anatomy: [{ name: "root" }, { name: "left-icon", parent: "root", hidden: true }],
+      tokens: {},
+      variants: [
+        { name: "theme", values: ["default", "primary"], default: "default" },
+        { name: "size", values: ["sm", "lg"], default: "sm" },
+      ],
+      combinations: [
+        {
+          when: { theme: "primary", size: "lg" },
+          tokens: { "root.background": "{component.button.combo.background}" },
+        },
+      ],
+      targets: {
+        web: { supported: true },
+        react: { supported: true },
+        hono: { supported: true },
+        native: { supported: true },
+      },
+      accessibility: {},
+    });
+    const css = emitComponentTokenCss([component]);
+    // Figma eye toggle survives to build output as a real display rule.
+    expect(css).toContain('.podo-button [data-part="left-icon"] {\n  display: none;\n}');
+    // Compound conditions constrain every named axis (sorted).
+    expect(css).toContain('.podo-button[data-size="lg"][data-theme="primary"] {');
+    expect(css).toContain("var(--podo-component-button-combo-background)");
+    expect(emitComponentTokenCss([component])).toBe(css);
+  });
+
   it("folds variant-level tokens into the base rule and escapes variant values", () => {
     const component = parseComponentDocument({
       schemaVersion: PODO_SCHEMA_VERSION,
