@@ -28,7 +28,14 @@ import V1Pagination from "./vendor/v1-pagination.js";
 import V1Tab from "./vendor/v1-tab.js";
 import V1Table from "./vendor/v1-table.js";
 import V1Toast from "./vendor/v1-toast.js";
-import { cssToken, type TokenLookup } from "./token-lookup.js";
+import {
+  cssToken,
+  isTypographyValue,
+  resolveTokenPath,
+  resolveTokenValue,
+  responsiveSizePc,
+  type TokenLookup,
+} from "./token-lookup.js";
 import {
   codeStyle,
   componentMatrixCellStyle,
@@ -1204,12 +1211,39 @@ const APPEARANCE_CSS_PROPERTY: Record<string, string> = {
   textalign: "text-align",
   borderstyle: "border-style",
   minwidth: "min-width",
+  maxwidth: "max-width",
+  maxheight: "max-height",
   // Figma Auto layout section (direction / wrap / alignment / distribution).
   display: "display",
   flexdirection: "flex-direction",
   flexwrap: "flex-wrap",
   alignitems: "align-items",
   justifycontent: "justify-content",
+  // Direction-aware Fill sizing + wrap row gap + clip content.
+  flex: "flex",
+  alignself: "align-self",
+  rowgap: "row-gap",
+  columngap: "column-gap",
+  overflow: "overflow",
+  // Per-corner radius (Figma corner expander).
+  bordertopleftradius: "border-top-left-radius",
+  bordertoprightradius: "border-top-right-radius",
+  borderbottomrightradius: "border-bottom-right-radius",
+  borderbottomleftradius: "border-bottom-left-radius",
+  // Per-side stroke widths (Figma individual strokes).
+  bordertopwidth: "border-top-width",
+  borderrightwidth: "border-right-width",
+  borderbottomwidth: "border-bottom-width",
+  borderleftwidth: "border-left-width",
+  // Text panel extras.
+  textdecoration: "text-decoration",
+  texttransform: "text-transform",
+  // Effects: layer blur / background blur / blend mode; DTCG border objects.
+  blur: "filter",
+  backgroundblur: "backdrop-filter",
+  blendmode: "mix-blend-mode",
+  mixblendmode: "mix-blend-mode",
+  border: "border",
 };
 
 // Per-component anatomy-part -> CSS selector (descendant of the preview). Filled
@@ -1325,6 +1359,88 @@ function appearanceCssProperty(property: string): string | undefined {
   return APPEARANCE_CSS_PROPERTY[property.toLowerCase().replace(/[-_]/g, "")];
 }
 
+// Serializes one DTCG shadow layer object ({color, offsetX, offsetY, blur,
+// spread, inset?}, fields may themselves be aliases) into a box-shadow layer.
+function cssShadowLayer(lookup: TokenLookup, value: Record<string, unknown>): string | undefined {
+  const field = (name: string, fallback = ""): string => {
+    const resolved = resolveTokenValue(lookup, value[name]);
+    return typeof resolved === "string" || typeof resolved === "number"
+      ? String(resolved)
+      : fallback;
+  };
+  const color = field("color");
+  const offsetX = field("offsetX", "0");
+  const offsetY = field("offsetY", "0");
+  if (!color) return undefined;
+  const blur = field("blur", "0");
+  const spread = field("spread", "0");
+  return `${value.inset ? "inset " : ""}${offsetX} ${offsetY} ${blur} ${spread} ${color}`;
+}
+
+// Expands a resolved binding value into CSS declarations. Strings map 1:1 via
+// APPEARANCE_CSS_PROPERTY; composite token objects (typography / shadow /
+// border) — which cssToken can't stringify — expand here so bindings like
+// `label.typography = {typography.paragraph.p3}` actually render.
+function appearanceDeclarations(
+  lookup: TokenLookup,
+  property: string,
+  resolvedValue: unknown
+): Array<[cssProp: string, value: string]> {
+  const cssProp = appearanceCssProperty(property);
+  if (typeof resolvedValue === "string" || typeof resolvedValue === "number") {
+    return cssProp ? [[cssProp, String(resolvedValue)]] : [];
+  }
+  if (isTypographyValue(resolvedValue)) {
+    // Sub-fields can themselves be aliases per DTCG ({font.family.sans}) —
+    // resolve each before emitting, or invalid `{…}` text lands in the CSS.
+    const field = (value: unknown): string => {
+      const resolved = resolveTokenValue(lookup, value);
+      if (typeof resolved === "string" || typeof resolved === "number") return String(resolved);
+      if (resolved && typeof resolved === "object" && "pc" in resolved) {
+        return responsiveSizePc(resolved as { pc: string });
+      }
+      return "";
+    };
+    return (
+      [
+        ["font-family", field(resolvedValue.fontFamily)],
+        ["font-size", field(resolvedValue.fontSize)],
+        ["line-height", field(resolvedValue.lineHeight)],
+        ["font-weight", field(resolvedValue.fontWeight)],
+        ["letter-spacing", field(resolvedValue.letterSpacing)],
+      ] as Array<[string, string]>
+    ).filter(([, value]) => value.length > 0);
+  }
+  if (Array.isArray(resolvedValue)) {
+    // Multi-layer shadow token.
+    const layers = resolvedValue
+      .map((layer) =>
+        layer && typeof layer === "object"
+          ? cssShadowLayer(lookup, layer as Record<string, unknown>)
+          : undefined
+      )
+      .filter((layer): layer is string => Boolean(layer));
+    return layers.length ? [["box-shadow", layers.join(", ")]] : [];
+  }
+  if (resolvedValue && typeof resolvedValue === "object") {
+    const record = resolvedValue as Record<string, unknown>;
+    if ("offsetX" in record || "offsetY" in record) {
+      const layer = cssShadowLayer(lookup, record);
+      return layer ? [["box-shadow", layer]] : [];
+    }
+    if ("width" in record && "style" in record && "color" in record) {
+      // DTCG border composite.
+      const part = (name: string): string => {
+        const resolved = resolveTokenValue(lookup, record[name]);
+        return typeof resolved === "string" || typeof resolved === "number" ? String(resolved) : "";
+      };
+      const serialized = `${part("width")} ${part("style")} ${part("color")}`.trim();
+      return serialized ? [["border", serialized]] : [];
+    }
+  }
+  return [];
+}
+
 // Builds the scoped override CSS for a component's appearance bindings. Scoped
 // under `.podo-design-target` so only the editable preview (not matrix cells) is
 // affected.
@@ -1379,14 +1495,19 @@ function componentAppearanceCss(
     const dot = key.indexOf(".");
     if (dot < 0) continue;
     const selector = parts[key.slice(0, dot)];
-    const cssProp = appearanceCssProperty(key.slice(dot + 1));
-    if (!selector || !cssProp) continue;
-    // A binding is either a {token} alias (resolve it) or a raw CSS value (use it).
+    if (!selector) continue;
+    // A binding is either a {token} alias (resolve it — composite tokens like
+    // typography/shadow expand to several declarations) or a raw CSS value.
     const isAlias = /^\{.+\}$/.test(reference);
-    const resolved = isAlias ? cssToken(lookup, reference.slice(1, -1), "") : reference;
-    // Guard against breaking out of the injected <style>/declaration block.
-    if (!resolved || /[<>{};]/.test(resolved)) continue;
-    rules.push(`${scopeSelector(scopeClass, selector)} { ${cssProp}: ${resolved} !important; }`);
+    const resolvedValue = isAlias ? resolveTokenPath(lookup, reference.slice(1, -1)) : reference;
+    const declarations = appearanceDeclarations(lookup, key.slice(dot + 1), resolvedValue).filter(
+      // Guard against breaking out of the injected <style>/declaration block
+      // (tag/brace escapes AND CSS comments that would swallow later rules).
+      ([, value]) => value.length > 0 && !/[<>{};]|\/\*|\*\//.test(value)
+    );
+    if (!declarations.length) continue;
+    const body = declarations.map(([prop, value]) => `${prop}: ${value} !important;`).join(" ");
+    rules.push(`${scopeSelector(scopeClass, selector)} { ${body} }`);
   }
   return rules.join("\n");
 }

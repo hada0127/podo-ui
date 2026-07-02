@@ -8,7 +8,13 @@ import {
   resolveComponentAppearance,
 } from "./previews.js";
 import { LayersPanel } from "./component-layers.js";
-import { resizeModeFromValue } from "./components-panel.js";
+import {
+  parseShadowLayer,
+  resizeModeFromValue,
+  serializeShadowLayers,
+  splitShadowLayers,
+} from "./components-panel.js";
+import type { DesignToken } from "@podo/spec";
 import { legacyComponents } from "./legacy-fixtures.js";
 import type { TokenLookup } from "./token-lookup.js";
 import type { Translate } from "./i18n/context.js";
@@ -240,6 +246,110 @@ describe("Figma-style layer flags, slot content, and variant add", () => {
         expect(alternative.trim().startsWith(".podo-design-target")).toBe(true);
       }
     }
+  });
+
+  it("typography token bindings expand into real CSS declarations", () => {
+    // Composite typography tokens are objects; cssToken() can't stringify them,
+    // so the bridge must expand them (this was a silent no-render before).
+    const typographyLookup: TokenLookup = new Map<string, DesignToken>([
+      [
+        "typography.paragraph.p3",
+        {
+          $type: "typography",
+          $value: {
+            fontFamily: "Inter",
+            fontSize: { pc: "14px" },
+            lineHeight: "1.5",
+            fontWeight: 600,
+            letterSpacing: "0",
+          },
+        } as DesignToken,
+      ],
+    ]);
+    const button = pick("button");
+    const withTypography = {
+      ...button,
+      tokens: { ...button.tokens, "root.typography": "{typography.paragraph.p3}" },
+    };
+    const { container } = render(
+      <>{renderComponentPreview(withTypography, {}, typographyLookup)}</>
+    );
+    const css = Array.from(container.querySelectorAll("style"))
+      .map((style) => style.textContent)
+      .join("\n");
+    expect(css).toContain("font-family: Inter !important;");
+    expect(css).toContain("font-size: 14px !important;");
+    expect(css).toContain("font-weight: 600 !important;");
+  });
+
+  it("shadow token objects serialize to box-shadow", () => {
+    const shadowLookup: TokenLookup = new Map<string, DesignToken>([
+      [
+        "shadow.overlay",
+        {
+          $type: "shadow",
+          $value: {
+            color: "rgba(0, 0, 0, 0.24)",
+            offsetX: "0px",
+            offsetY: "4px",
+            blur: "12px",
+            spread: "0px",
+          },
+        } as DesignToken,
+      ],
+    ]);
+    const button = pick("button");
+    const withShadow = {
+      ...button,
+      tokens: { ...button.tokens, "root.shadow": "{shadow.overlay}" },
+    };
+    const { container } = render(<>{renderComponentPreview(withShadow, {}, shadowLookup)}</>);
+    const css = Array.from(container.querySelectorAll("style"))
+      .map((style) => style.textContent)
+      .join("\n");
+    expect(css).toContain("box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.24) !important;");
+  });
+
+  it("per-corner radius and per-side border bindings reach the preview CSS", () => {
+    const button = pick("button");
+    const withSides = {
+      ...button,
+      tokens: {
+        ...button.tokens,
+        "root.border-top-left-radius": "8px",
+        "root.border-bottom-width": "2px",
+        "root.max-width": "320px",
+        "root.text-transform": "uppercase",
+      },
+    };
+    const { container } = render(<>{renderComponentPreview(withSides, {}, lookup)}</>);
+    const css = Array.from(container.querySelectorAll("style"))
+      .map((style) => style.textContent)
+      .join("\n");
+    expect(css).toContain("border-top-left-radius: 8px !important;");
+    expect(css).toContain("border-bottom-width: 2px !important;");
+    expect(css).toContain("max-width: 320px !important;");
+    expect(css).toContain("text-transform: uppercase !important;");
+  });
+
+  it("shadow stack parse/serialize round-trips multi-layer box-shadow values", () => {
+    const value = "0 2px 8px rgba(0, 0, 0, 0.16), inset 0 1px 0px 0px #ffffff";
+    const layers = splitShadowLayers(value);
+    expect(layers).toHaveLength(2);
+    const first = parseShadowLayer(layers[0] as string);
+    expect(first).toMatchObject({
+      inset: false,
+      x: "0",
+      y: "2px",
+      blur: "8px",
+      color: "rgba(0, 0, 0, 0.16)",
+    });
+    const second = parseShadowLayer(layers[1] as string);
+    expect(second.inset).toBe(true);
+    expect(second.color).toBe("#ffffff");
+    expect(serializeShadowLayers([first, second])).toBe(
+      "0 2px 8px 0px rgba(0, 0, 0, 0.16), inset 0 1px 0px 0px #ffffff"
+    );
   });
 
   it("resizing modes map width/height values to auto/fixed/hug/fill", () => {

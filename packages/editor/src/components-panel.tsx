@@ -165,12 +165,13 @@ const APPEARANCE_GROUP_ORDER = [
 function allowedTokenTypes(property: string): string[] {
   const value = property.toLowerCase();
   if (/shadow-?color/.test(value)) return ["color"];
-  // Box-shadow values (shadow tokens are composite objects the CSS bridge can't
-  // serialize, so shadows are edited as raw CSS — see isRawValueProperty).
+  // Box-shadow values are edited structurally (ShadowStackEditor) or as raw CSS.
   if (/^shadow$|box-?shadow/.test(value)) return ["shadow"];
   if (/background|^color$|fill|border-?color|stroke/.test(value)) return ["color"];
   if (/radius|corner/.test(value)) return ["radius"];
   if (/padding|gap|margin/.test(value)) return ["spacing"];
+  if (/border-?style|text-?decoration|text-?transform|blend|blur|overflow/.test(value))
+    return ["string"];
   if (/border-?width|outline-?width|width|height/.test(value)) return ["dimension"];
   if (/font-?family/.test(value)) return ["fontFamily"];
   if (/font-?weight/.test(value)) return ["fontWeight"];
@@ -179,6 +180,34 @@ function allowedTokenTypes(property: string): string[] {
   if (/text-?align/.test(value)) return ["string"];
   if (/opacity/.test(value)) return ["number"];
   return [];
+}
+
+// Enum-valued appearance properties get a <select> instead of a free-text input
+// (Figma renders these as dropdowns/segmented controls).
+const ENUM_APPEARANCE_OPTIONS: Record<string, string[]> = {
+  borderstyle: ["solid", "dashed", "dotted", "none"],
+  textalign: ["left", "center", "right", "justify"],
+  textdecoration: ["none", "underline", "line-through"],
+  texttransform: ["none", "uppercase", "lowercase", "capitalize"],
+  blendmode: [
+    "normal",
+    "multiply",
+    "screen",
+    "overlay",
+    "darken",
+    "lighten",
+    "color-dodge",
+    "color-burn",
+    "difference",
+    "exclusion",
+    "hue",
+    "saturation",
+    "color",
+    "luminosity",
+  ],
+};
+function enumOptionsForProperty(property: string): string[] | undefined {
+  return ENUM_APPEARANCE_OPTIONS[normalizedProperty(property)];
 }
 
 // Structural dimensions/numbers (height, width, border-width, opacity) and raw
@@ -199,10 +228,12 @@ function appearanceGroup(property: string): (typeof APPEARANCE_GROUP_ORDER)[numb
   const value = property.toLowerCase();
   if (/radius|corner/.test(value)) return "Corners";
   if (/border|stroke|outline/.test(value)) return "Stroke";
+  if (/background-?blur/.test(value)) return "Effects";
   if (/background|^color$|fill/.test(value)) return "Fill";
-  if (/font|typography|line-?height|letter/.test(value)) return "Typography";
+  if (/font|typography|line-?height|letter|text-?decoration|text-?transform/.test(value))
+    return "Typography";
   if (/padding|gap|margin|width|height/.test(value)) return "Layout";
-  if (/opacity|shadow|blur/.test(value)) return "Effects";
+  if (/opacity|shadow|blur|blend|filter/.test(value)) return "Effects";
   return "Other";
 }
 
@@ -213,6 +244,7 @@ const COMMON_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: stri
   { property: "color", defaultAlias: "{color.text.body}" },
   { property: "border-color", defaultAlias: "{color.border.base}" },
   { property: "border-width", defaultAlias: "1px" },
+  { property: "border-style", defaultAlias: "solid" },
   { property: "radius", defaultAlias: "{radius.scale.2}" },
   // width/height live in the Size section (Figma resizing modes), not here.
   { property: "padding", defaultAlias: "{spacing.scale.2}" },
@@ -220,6 +252,25 @@ const COMMON_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: stri
   { property: "typography", defaultAlias: "{typography.paragraph.p3}" },
   { property: "opacity", defaultAlias: "1" },
   { property: "shadow", defaultAlias: "0 2px 8px rgba(0, 0, 0, 0.16)" },
+  // Figma Effects: layer blur / background blur / blend mode.
+  { property: "blur", defaultAlias: "blur(4px)" },
+  { property: "background-blur", defaultAlias: "blur(8px)" },
+  { property: "blend-mode", defaultAlias: "normal" },
+];
+
+// Figma corner expander / individual strokes: revealed by the group-header
+// toggles (or automatically when a per-corner/per-side binding already exists).
+const CORNER_RADIUS_PROPERTIES: Array<{ property: string; defaultAlias: string }> = [
+  { property: "border-top-left-radius", defaultAlias: "0px" },
+  { property: "border-top-right-radius", defaultAlias: "0px" },
+  { property: "border-bottom-right-radius", defaultAlias: "0px" },
+  { property: "border-bottom-left-radius", defaultAlias: "0px" },
+];
+const BORDER_SIDE_WIDTH_PROPERTIES: Array<{ property: string; defaultAlias: string }> = [
+  { property: "border-top-width", defaultAlias: "0px" },
+  { property: "border-right-width", defaultAlias: "0px" },
+  { property: "border-bottom-width", defaultAlias: "0px" },
+  { property: "border-left-width", defaultAlias: "0px" },
 ];
 
 // Extra properties offered when the selected part actually renders text, so you
@@ -231,6 +282,8 @@ const TYPOGRAPHY_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: 
   { property: "line-height", defaultAlias: "1.5" },
   { property: "letter-spacing", defaultAlias: "0" },
   { property: "text-align", defaultAlias: "left" },
+  { property: "text-decoration", defaultAlias: "none" },
+  { property: "text-transform", defaultAlias: "none" },
 ];
 
 // Figma Auto layout: the flex properties driven by the dedicated section (never
@@ -244,14 +297,39 @@ const AUTO_LAYOUT_FLEX_PROPERTIES = [
   "justify-content",
 ] as const;
 const AUTO_LAYOUT_SPACING_PROPERTIES = ["gap", "padding-x", "padding-y"] as const;
+// Figma padding expander: the four independent sides (bridge keys exist).
+const PADDING_SIDE_PROPERTIES = [
+  "padding-top",
+  "padding-right",
+  "padding-bottom",
+  "padding-left",
+] as const;
 // Figma resizing (W/H): owned by the dedicated Size section, never plain rows.
+// flex / align-self encode "Fill container"; min/max live behind the Size
+// section's min/max reveal; row-gap belongs to the wrap controls.
 const SIZE_SECTION_PROPERTIES = ["width", "height"] as const;
+const SIZE_SECTION_EXTRA_PROPERTIES = [
+  "flex",
+  "align-self",
+  "min-width",
+  "max-width",
+  "min-height",
+  "max-height",
+  "row-gap",
+  "overflow",
+] as const;
 const normalizedProperty = (property: string): string =>
   property.toLowerCase().replace(/[-_]/g, "");
 const AUTO_LAYOUT_HIDDEN_ALWAYS = new Set(
-  [...AUTO_LAYOUT_FLEX_PROPERTIES, ...SIZE_SECTION_PROPERTIES].map(normalizedProperty)
+  [
+    ...AUTO_LAYOUT_FLEX_PROPERTIES,
+    ...SIZE_SECTION_PROPERTIES,
+    ...SIZE_SECTION_EXTRA_PROPERTIES,
+  ].map(normalizedProperty)
 );
-const AUTO_LAYOUT_HIDDEN_ACTIVE = new Set(AUTO_LAYOUT_SPACING_PROPERTIES.map(normalizedProperty));
+const AUTO_LAYOUT_HIDDEN_ACTIVE = new Set(
+  [...AUTO_LAYOUT_SPACING_PROPERTIES, ...PADDING_SIDE_PROPERTIES].map(normalizedProperty)
+);
 
 // Figma resizing modes, expressed as plain width/height CSS values so they flow
 // through the same scope-aware binding pipeline as every other appearance edit:
@@ -329,6 +407,10 @@ function stepDimensionValue(text: string, delta: number): string | undefined {
   return `${text.slice(0, match.index)}${stepped}${text.slice(match.index + match[0].length)}`;
 }
 
+// In-app appearance clipboard (Figma Cmd+Alt+C / Cmd+Alt+V): the copied part's
+// effective property→value map, pasted onto another layer in one batch commit.
+let appearanceClipboard: Array<[property: string, reference: string]> | null = null;
+
 // Unique name helper for inline "+" creation (value-2, value-3, …).
 function uniqueName(base: string, taken: Iterable<string>): string {
   const set = new Set(taken);
@@ -336,6 +418,191 @@ function uniqueName(base: string, taken: Iterable<string>): string {
   let suffix = 2;
   while (set.has(`${base}-${suffix}`)) suffix += 1;
   return `${base}-${suffix}`;
+}
+
+// ---- Figma Effects: structured shadow stack over the box-shadow comma list ----
+
+export interface ShadowLayer {
+  inset: boolean;
+  x: string;
+  y: string;
+  blur: string;
+  spread: string;
+  color: string;
+}
+
+/** Splits a box-shadow value into layers at TOP-LEVEL commas (rgba() safe). */
+export function splitShadowLayers(value: string): string[] {
+  const layers: string[] = [];
+  let depth = 0;
+  let current = "";
+  for (const char of value) {
+    if (char === "(") depth += 1;
+    if (char === ")") depth -= 1;
+    if (char === "," && depth === 0) {
+      layers.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  if (current.trim()) layers.push(current.trim());
+  return layers.filter(Boolean);
+}
+
+export function parseShadowLayer(layer: string): ShadowLayer {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = "";
+  for (const char of layer) {
+    if (char === "(") depth += 1;
+    if (char === ")") depth -= 1;
+    if (/\s/.test(char) && depth === 0) {
+      if (current) parts.push(current);
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  if (current) parts.push(current);
+  const inset = parts.includes("inset");
+  const rest = parts.filter((part) => part !== "inset");
+  const isLength = (part: string): boolean => /^-?(\d|\.\d)/.test(part);
+  const lengths = rest.filter(isLength);
+  const colorParts = rest.filter((part) => !isLength(part));
+  return {
+    inset,
+    x: lengths[0] ?? "0px",
+    y: lengths[1] ?? "0px",
+    blur: lengths[2] ?? "0px",
+    spread: lengths[3] ?? "0px",
+    color: colorParts.join(" ") || "rgba(0, 0, 0, 0.16)",
+  };
+}
+
+export function serializeShadowLayers(layers: ShadowLayer[]): string {
+  return layers
+    .map((layer) =>
+      `${layer.inset ? "inset " : ""}${layer.x} ${layer.y} ${layer.blur} ${layer.spread} ${layer.color}`.trim()
+    )
+    .join(", ");
+}
+
+/** Figma-style multi-shadow editor: one row per layer with X/Y/Blur/Spread,
+ *  color swatch (HSV+alpha) and an inner-shadow toggle; commits live. */
+function ShadowStackEditor({
+  value,
+  onChange,
+  onClose,
+}: {
+  value: string;
+  onChange: (next: string) => void;
+  onClose: () => void;
+}) {
+  const t = useT();
+  const layers = splitShadowLayers(value).map(parseShadowLayer);
+  const commit = (next: ShadowLayer[]): void => {
+    onChange(serializeShadowLayers(next));
+  };
+  const update = (index: number, patch: Partial<ShadowLayer>): void =>
+    commit(layers.map((layer, i) => (i === index ? { ...layer, ...patch } : layer)));
+  const offsetFields = ["x", "y", "blur", "spread"] as const;
+  return (
+    <div style={{ display: "grid", gap: 6 }}>
+      {layers.map((layer, index) => (
+        <div
+          key={index}
+          style={{
+            display: "grid",
+            gap: 4,
+            padding: 6,
+            border: "1px solid #eceef2",
+            borderRadius: 6,
+          }}
+        >
+          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <ColorSwatchPicker
+              label={t("components.shadowColor")}
+              swatchColor={layer.color}
+              value={parseColor(layer.color) ?? { r: 0, g: 0, b: 0, a: 0.16 }}
+              onOpen={() => {}}
+              onChange={(next) => update(index, { color: formatColorValue(next) })}
+            />
+            <label style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11 }}>
+              <input
+                type="checkbox"
+                checked={layer.inset}
+                onChange={(event) => update(index, { inset: event.currentTarget.checked })}
+              />
+              {t("components.shadowInner")}
+            </label>
+            <button
+              type="button"
+              aria-label={t("components.shadowRemove")}
+              style={{ ...appearanceRemoveStyle, marginLeft: "auto" }}
+              onClick={() => commit(layers.filter((_, i) => i !== index))}
+            >
+              ×
+            </button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4 }}>
+            {offsetFields.map((field) => (
+              <label
+                key={field}
+                style={{ display: "grid", gap: 2, fontSize: 10, color: "#6b7280" }}
+              >
+                {field.toUpperCase()}
+                <input
+                  type="text"
+                  defaultValue={layer[field]}
+                  style={{ ...inputStyle, padding: "3px 6px" }}
+                  onBlur={(event) =>
+                    update(index, { [field]: event.currentTarget.value } as Partial<ShadowLayer>)
+                  }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") event.currentTarget.blur();
+                    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                      const delta = (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
+                      const next = stepDimensionValue(event.currentTarget.value || "0px", delta);
+                      if (next !== undefined) {
+                        event.preventDefault();
+                        event.currentTarget.value = next;
+                        update(index, { [field]: next } as Partial<ShadowLayer>);
+                      }
+                    }
+                  }}
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+      ))}
+      <div style={{ display: "flex", gap: 6 }}>
+        <button
+          type="button"
+          style={smallButtonStyle}
+          onClick={() =>
+            commit([
+              ...layers,
+              {
+                inset: false,
+                x: "0px",
+                y: "2px",
+                blur: "8px",
+                spread: "0px",
+                color: "rgba(0, 0, 0, 0.16)",
+              },
+            ])
+          }
+        >
+          {t("components.shadowAdd")}
+        </button>
+        <button type="button" style={smallButtonStyle} onClick={onClose}>
+          {t("components.done")}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 /**
@@ -888,11 +1155,27 @@ export function ComponentsPanelWorkspace({
     }))
     .filter((binding) => !sectionOwnedProperty(binding.property));
   const presentProperties = new Set(partBindings.map((binding) => binding.property));
+  // Figma corner/stroke/padding expanders: manual toggle, or auto-open when a
+  // per-corner (per-side) binding already exists so bound rows stay visible.
+  const [cornersExpanded, setCornersExpanded] = useState(false);
+  const [strokeSidesExpanded, setStrokeSidesExpanded] = useState(false);
+  const [paddingSidesExpanded, setPaddingSidesExpanded] = useState(false);
+  const paddingSidesOpen =
+    paddingSidesExpanded ||
+    PADDING_SIDE_PROPERTIES.some((property) => scopeValue(property).length > 0);
+  const hasAnyBinding = (catalog: Array<{ property: string }>): boolean =>
+    catalog.some((entry) => presentProperties.has(entry.property));
+  const cornersOpen = cornersExpanded || hasAnyBinding(CORNER_RADIUS_PROPERTIES);
+  const strokeSidesOpen = strokeSidesExpanded || hasAnyBinding(BORDER_SIDE_WIDTH_PROPERTIES);
   // Text-bearing parts also offer typography controls (font, size, weight, line
   // height, letter spacing) — like editing a text layer in Figma.
-  const appearanceCatalog = isTextBearingPart(selectedComponentForSpec.id, activePart)
-    ? [...COMMON_APPEARANCE_PROPERTIES, ...TYPOGRAPHY_APPEARANCE_PROPERTIES]
-    : COMMON_APPEARANCE_PROPERTIES;
+  const appearanceCatalog = [
+    ...(isTextBearingPart(selectedComponentForSpec.id, activePart)
+      ? [...COMMON_APPEARANCE_PROPERTIES, ...TYPOGRAPHY_APPEARANCE_PROPERTIES]
+      : COMMON_APPEARANCE_PROPERTIES),
+    ...(cornersOpen ? CORNER_RADIUS_PROPERTIES : []),
+    ...(strokeSidesOpen ? BORDER_SIDE_WIDTH_PROPERTIES : []),
+  ];
   const seenProperty = new Set<string>();
   const addableProperties = appearanceCatalog.filter((entry) => {
     if (sectionOwnedProperty(entry.property)) return false;
@@ -931,6 +1214,22 @@ export function ComponentsPanelWorkspace({
     }
     const axisName = activeScope.slice("variant::".length);
     updateComponentVariantValueTokenBinding(axisName, scopedVariantValue(axisName), key, reference);
+  };
+  // Figma copy/paste appearance: copy grabs the part's EFFECTIVE bindings in the
+  // active scope; paste fans them onto the target part in one commit.
+  const copyPartAppearance = (part: string): void => {
+    const entries = Object.entries(scopeTokens)
+      .filter(([key]) => key.startsWith(`${part}.`))
+      .map(
+        ([key, reference]) => [key.slice(part.length + 1), String(reference)] as [string, string]
+      );
+    if (entries.length) appearanceClipboard = entries;
+  };
+  const pastePartAppearance = (part: string): void => {
+    if (!appearanceClipboard) return;
+    applyAppearanceBindings(
+      appearanceClipboard.map(([property, reference]) => [`${part}.${property}`, reference])
+    );
   };
   // Batch variant: N bindings, ONE commit (auto layout add/remove, alignment).
   const applyAppearanceBindings = (entries: Array<[key: string, reference: string]>): void => {
@@ -986,18 +1285,95 @@ export function ComponentsPanelWorkspace({
     const size = target?.getBoundingClientRect()[property];
     return size ? `${Math.round(size)}px` : fallback;
   };
+  // Direction of the anatomy PARENT's auto layout (if any) — decides how Fill
+  // is encoded: flex:1 on the parent's main axis, align-self:stretch on the
+  // cross axis, width/height:100% when the parent isn't a flex container.
+  const flexParentDirection = (): "row" | "column" | null => {
+    const parentName = selectedComponentForSpec.anatomy.find(
+      (part) => part.name === activePart
+    )?.parent;
+    if (!parentName) return null;
+    const display = String(scopeTokens[`${parentName}.display`] ?? "");
+    const direction = String(scopeTokens[`${parentName}.flex-direction`] ?? "");
+    if (display !== "flex" && !direction) return null;
+    return direction === "column" ? "column" : "row";
+  };
+  const MIN_MAX_PROPERTIES = ["min-width", "max-width", "min-height", "max-height"] as const;
+  const [minMaxExpanded, setMinMaxExpanded] = useState(false);
+  const minMaxOpen =
+    minMaxExpanded || MIN_MAX_PROPERTIES.some((property) => scopeValue(property).length > 0);
   const renderSizeSection = () => (
     <div style={appearanceGroupStyle}>
-      <span style={appearanceGroupTitleStyle}>{t("components.size")}</span>
+      <div style={appearanceHeaderStyle}>
+        <span style={appearanceGroupTitleStyle}>{t("components.size")}</span>
+        {/* Figma "Add min/max…": reveals min/max W·H clamps. */}
+        <button
+          type="button"
+          aria-pressed={minMaxOpen}
+          aria-label={t("components.minMaxToggle")}
+          title={t("components.minMaxToggle")}
+          style={{
+            ...autoLayoutToggleStyle,
+            ...(minMaxOpen ? autoLayoutToggleActiveStyle : {}),
+          }}
+          onClick={() => setMinMaxExpanded(!minMaxOpen)}
+        >
+          min/max
+        </button>
+      </div>
       {SIZE_SECTION_PROPERTIES.map((property) => {
         const axis = property === "width" ? "W" : "H";
         const raw = scopeValue(property);
-        const mode = resizeModeFromValue(raw);
+        const parentDirection = flexParentDirection();
+        const axisIsMain =
+          parentDirection !== null && (property === "width") === (parentDirection === "row");
+        // Fill can be encoded two ways: width/height 100% (no flex parent) or
+        // flex:1 / align-self:stretch inside an auto-layout parent (Figma).
+        const fillByFlex =
+          parentDirection !== null &&
+          (!raw || raw === "auto") &&
+          (axisIsMain
+            ? scopeValue("flex").trim().startsWith("1")
+            : scopeValue("align-self") === "stretch");
+        const mode: ResizeMode = fillByFlex ? "fill" : resizeModeFromValue(raw);
         // "Auto" clears the binding — only offered where clearing actually works:
         // when this scope's own bucket holds the key (or nothing is bound at all).
         // In an overlay scope a base-inherited size can't be deleted, but picking
         // another mode overrides it, after which Auto reappears to revert that.
-        const ownsBinding = `${activePart}.${property}` in scopeOwnTokens;
+        const fillKey = axisIsMain ? "flex" : "align-self";
+        const ownsBinding =
+          `${activePart}.${property}` in scopeOwnTokens ||
+          `${activePart}.${fillKey}` in scopeOwnTokens;
+        const setResizeMode = (next: ResizeMode): void => {
+          const key = `${activePart}.${property}`;
+          // In overlay scopes, deleting ("") a binding the BASE owns is a silent
+          // no-op and the base value shines through — write an explicit neutral
+          // instead so the override actually takes effect.
+          const clearSize = activeScope !== "base" && !(key in scopeOwnTokens) && raw ? "auto" : "";
+          const fillKeyFull = `${activePart}.${fillKey}`;
+          const fillValueNow = axisIsMain ? scopeValue("flex") : scopeValue("align-self");
+          const clearFill =
+            activeScope !== "base" && !(fillKeyFull in scopeOwnTokens) && fillValueNow
+              ? axisIsMain
+                ? "0 0 auto"
+                : "auto"
+              : "";
+          const entries: Array<[string, string]> = [];
+          // Clear any previous flex-based fill encoding for this axis first.
+          if (parentDirection !== null) entries.push([fillKeyFull, clearFill]);
+          if (next === "auto") entries.push([key, clearSize]);
+          else if (next === "hug") entries.push([key, "fit-content"]);
+          else if (next === "fixed") entries.push([key, measurePartSize(property)]);
+          else if (parentDirection !== null) {
+            entries.push([key, clearSize]);
+            entries.push(
+              axisIsMain ? [`${activePart}.flex`, "1 1 0"] : [`${activePart}.align-self`, "stretch"]
+            );
+          } else {
+            entries.push([key, "100%"]);
+          }
+          applyAppearanceBindings(entries);
+        };
         return (
           <div key={property} style={autoLayoutRowStyle}>
             <span style={{ ...propLabelStyle, width: 14, flexShrink: 0 }}>{axis}</span>
@@ -1005,14 +1381,7 @@ export function ComponentsPanelWorkspace({
               aria-label={t("components.resizeModeFor", { axis })}
               style={{ ...selectStyle, flex: 1, minWidth: 0 }}
               value={mode}
-              onChange={(event) => {
-                const next = event.currentTarget.value as ResizeMode;
-                const key = `${activePart}.${property}`;
-                if (next === "auto") applyAppearanceBinding(key, "");
-                else if (next === "hug") applyAppearanceBinding(key, "fit-content");
-                else if (next === "fill") applyAppearanceBinding(key, "100%");
-                else applyAppearanceBinding(key, measurePartSize(property));
-              }}
+              onChange={(event) => setResizeMode(event.currentTarget.value as ResizeMode)}
             >
               {mode === "auto" || ownsBinding ? (
                 <option value="auto">{t("components.resizeAuto")}</option>
@@ -1050,6 +1419,35 @@ export function ComponentsPanelWorkspace({
           </div>
         );
       })}
+      {minMaxOpen
+        ? MIN_MAX_PROPERTIES.map((property) => (
+            <label key={property} style={propRowStyle}>
+              <span style={propLabelStyle}>{appearancePropertyLabel(property, t)}</span>
+              <input
+                key={`${activePart}:${scopeInstanceKey}:${property}`}
+                type="text"
+                defaultValue={scopeValue(property)}
+                placeholder={t("components.rawValuePlaceholder")}
+                style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+                onBlur={(event) =>
+                  applyAppearanceBinding(`${activePart}.${property}`, event.currentTarget.value)
+                }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") event.currentTarget.blur();
+                  if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                    const delta = (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
+                    const next = stepDimensionValue(event.currentTarget.value || "0px", delta);
+                    if (next !== undefined) {
+                      event.preventDefault();
+                      event.currentTarget.value = next;
+                      applyAppearanceBinding(`${activePart}.${property}`, next);
+                    }
+                  }
+                }}
+              />
+            </label>
+          ))
+        : null}
     </div>
   );
   // Figma-style Auto layout section for the selected layer. Direction / wrap /
@@ -1067,9 +1465,22 @@ export function ComponentsPanelWorkspace({
     const normalizeAlign = (value: string): string => value.replace(/^flex-/, "");
     const justify = normalizeAlign(scopeValue("justify-content") || "flex-start");
     const align = normalizeAlign(scopeValue("align-items") || "flex-start");
-    const spaceBetween = justify === "space-between";
+    // "Distributed" spacing modes take over the main axis (the grid then picks
+    // only the cross alignment) — Figma's packed vs space-between, plus the CSS
+    // distributions Figma lacks.
+    const DISTRIBUTED_JUSTIFY = ["space-between", "space-around", "space-evenly"];
+    const spaceBetween = DISTRIBUTED_JUSTIFY.includes(justify);
     const AXIS_VALUES = ["flex-start", "center", "flex-end"] as const;
-    const spacingInput = (property: (typeof AUTO_LAYOUT_SPACING_PROPERTIES)[number]) => (
+    const clipped = scopeValue("overflow") === "hidden";
+    const spacingInput = (
+      property:
+        | (typeof AUTO_LAYOUT_SPACING_PROPERTIES)[number]
+        | "row-gap"
+        | "padding-top"
+        | "padding-right"
+        | "padding-bottom"
+        | "padding-left"
+    ) => (
       <label key={property} style={propRowStyle}>
         <span style={propLabelStyle}>{appearancePropertyLabel(property, t)}</span>
         <input
@@ -1176,19 +1587,43 @@ export function ComponentsPanelWorkspace({
               >
                 {t("components.wrap")}
               </button>
+              {/* Figma baseline alignment (horizontal auto layout, icon+label rows). */}
+              {direction === "row" ? (
+                <button
+                  type="button"
+                  aria-pressed={align === "baseline"}
+                  title={t("components.baseline")}
+                  style={{
+                    ...autoLayoutToggleStyle,
+                    ...(align === "baseline" ? autoLayoutToggleActiveStyle : {}),
+                  }}
+                  onClick={() =>
+                    applyAppearanceBinding(
+                      `${activePart}.align-items`,
+                      align === "baseline" ? "flex-start" : "baseline"
+                    )
+                  }
+                >
+                  ↧
+                </button>
+              ) : null}
               <select
                 aria-label={t("components.distribution")}
                 style={{ ...selectStyle, flex: 1, minWidth: 0 }}
-                value={spaceBetween ? "space-between" : "packed"}
+                value={spaceBetween ? justify : "packed"}
                 onChange={(event) =>
                   applyAppearanceBinding(
                     `${activePart}.justify-content`,
-                    event.currentTarget.value === "space-between" ? "space-between" : "flex-start"
+                    event.currentTarget.value === "packed"
+                      ? "flex-start"
+                      : event.currentTarget.value
                   )
                 }
               >
                 <option value="packed">{t("components.packed")}</option>
                 <option value="space-between">{t("components.spaceBetween")}</option>
+                <option value="space-around">{t("components.spaceAround")}</option>
+                <option value="space-evenly">{t("components.spaceEvenly")}</option>
               </select>
             </div>
             <div style={{ ...autoLayoutRowStyle, alignItems: "flex-start" }}>
@@ -1241,7 +1676,54 @@ export function ComponentsPanelWorkspace({
                 )}
               </div>
               <div style={{ display: "grid", gap: 4, flex: 1, minWidth: 0 }}>
-                {AUTO_LAYOUT_SPACING_PROPERTIES.map((property) => spacingInput(property))}
+                {spacingInput("gap")}
+                {/* Wrap unlocks the independent between-row gap (Figma). */}
+                {wrap ? spacingInput("row-gap") : null}
+                {paddingSidesOpen ? (
+                  <>
+                    {spacingInput("padding-top")}
+                    {spacingInput("padding-right")}
+                    {spacingInput("padding-bottom")}
+                    {spacingInput("padding-left")}
+                  </>
+                ) : (
+                  <>
+                    {spacingInput("padding-x")}
+                    {spacingInput("padding-y")}
+                  </>
+                )}
+                <div style={autoLayoutRowStyle}>
+                  {/* Figma padding expander: X/Y ↔ four independent sides. */}
+                  <button
+                    type="button"
+                    aria-pressed={paddingSidesOpen}
+                    title={t("components.paddingPerSide")}
+                    style={{
+                      ...autoLayoutToggleStyle,
+                      ...(paddingSidesOpen ? autoLayoutToggleActiveStyle : {}),
+                    }}
+                    onClick={() => setPaddingSidesExpanded(!paddingSidesOpen)}
+                  >
+                    ⊞
+                  </button>
+                  {/* Figma "Clip content". Off writes an explicit visible so it
+                      also works in overlay scopes. */}
+                  <label
+                    style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11 }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={clipped}
+                      onChange={(event) =>
+                        applyAppearanceBinding(
+                          `${activePart}.overflow`,
+                          event.currentTarget.checked ? "hidden" : "visible"
+                        )
+                      }
+                    />
+                    {t("components.clipContent")}
+                  </label>
+                </div>
               </div>
             </div>
           </>
@@ -1321,6 +1803,8 @@ export function ComponentsPanelWorkspace({
               onMove={moveAnatomyPart}
               onToggleHidden={(part, hidden) => setAnatomyPartFlags(part, { hidden })}
               onToggleLocked={(part, locked) => setAnatomyPartFlags(part, { locked })}
+              onCopyAppearance={copyPartAppearance}
+              onPasteAppearance={pastePartAppearance}
             />
           </div>
         </aside>
@@ -1575,7 +2059,42 @@ export function ComponentsPanelWorkspace({
                   appearanceRows.some((row) => appearanceGroup(row.property) === group)
                 ).map((group) => (
                   <div key={group} style={appearanceGroupStyle}>
-                    <span style={appearanceGroupTitleStyle}>{t(`components.group.${group}`)}</span>
+                    <div style={appearanceHeaderStyle}>
+                      <span style={appearanceGroupTitleStyle}>
+                        {t(`components.group.${group}`)}
+                      </span>
+                      {/* Figma expanders: per-corner radius / per-side stroke widths. */}
+                      {group === "Corners" ? (
+                        <button
+                          type="button"
+                          aria-pressed={cornersOpen}
+                          aria-label={t("components.expandCorners")}
+                          title={t("components.expandCorners")}
+                          style={{
+                            ...autoLayoutToggleStyle,
+                            ...(cornersOpen ? autoLayoutToggleActiveStyle : {}),
+                          }}
+                          onClick={() => setCornersExpanded(!cornersOpen)}
+                        >
+                          ⛶
+                        </button>
+                      ) : null}
+                      {group === "Stroke" ? (
+                        <button
+                          type="button"
+                          aria-pressed={strokeSidesOpen}
+                          aria-label={t("components.expandStrokeSides")}
+                          title={t("components.expandStrokeSides")}
+                          style={{
+                            ...autoLayoutToggleStyle,
+                            ...(strokeSidesOpen ? autoLayoutToggleActiveStyle : {}),
+                          }}
+                          onClick={() => setStrokeSidesExpanded(!strokeSidesOpen)}
+                        >
+                          ⊞
+                        </button>
+                      ) : null}
+                    </div>
                     {appearanceRows
                       .filter((row) => appearanceGroup(row.property) === group)
                       .map((row) => {
@@ -1587,6 +2106,8 @@ export function ComponentsPanelWorkspace({
                           : row.reference;
                         const tokenName = isAlias ? row.reference.slice(1, -1) : "";
                         const raw = isRawValueProperty(row.property);
+                        const enumOptions = enumOptionsForProperty(row.property);
+                        const isShadowStack = normalizedProperty(row.property) === "shadow";
                         return (
                           <div key={row.key} style={appearanceRowStyle}>
                             <div style={appearanceHeaderStyle}>
@@ -1607,7 +2128,39 @@ export function ComponentsPanelWorkspace({
                               ) : null}
                             </div>
                             {editingBindingKey === row.key ? (
-                              raw ? (
+                              isShadowStack ? (
+                                // Figma Effects: structured multi-shadow editor over the
+                                // box-shadow comma list (X/Y/blur/spread/color/inner).
+                                <ShadowStackEditor
+                                  value={row.reference || row.defaultAlias || ""}
+                                  onChange={(next) => applyAppearanceBinding(row.key, next)}
+                                  onClose={() => setEditingBindingKey(null)}
+                                />
+                              ) : enumOptions ? (
+                                <select
+                                  autoFocus
+                                  style={selectStyle}
+                                  value={
+                                    enumOptions.includes(row.reference)
+                                      ? row.reference
+                                      : (row.defaultAlias ?? enumOptions[0])
+                                  }
+                                  onChange={(event) => {
+                                    applyAppearanceBinding(row.key, event.currentTarget.value);
+                                    setEditingBindingKey(null);
+                                  }}
+                                  onBlur={() => setEditingBindingKey(null)}
+                                  onKeyDown={(event) => {
+                                    if (event.key === "Escape") setEditingBindingKey(null);
+                                  }}
+                                >
+                                  {enumOptions.map((option) => (
+                                    <option key={option} value={option}>
+                                      {option}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : raw ? (
                                 <input
                                   autoFocus
                                   type="text"

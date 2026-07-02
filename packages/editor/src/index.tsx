@@ -350,6 +350,16 @@ export const editorPanels: EditorPanel[] = [
 ];
 
 /** A token deletion awaiting a replacement choice because it is still in use. */
+// One undo/redo step for the design-editing history. Nodes are included so a
+// spec-edit undo (e.g. a token rename that rewrote node gap/padding references)
+// restores the canvas references paired with it; pure canvas moves never push
+// history, so they stay under tldraw's own undo.
+interface EditHistorySnapshot {
+  components: ComponentDocument[];
+  tokenDocuments: TokenDocument[];
+  nodes: EditorCanvasState["nodes"];
+}
+
 interface TokenDeleteState {
   /** color-variation / color-group, or a single scalar (spacing/radius) token. */
   kind: "color-variation" | "color-group" | "scalar";
@@ -810,8 +820,114 @@ export function PodoEditorApp({
     };
     run();
   };
+  // ---- Figma-style undo/redo (Cmd+Z / Shift+Cmd+Z) over spec + token edits ----
+  // Snapshot history: every commit first pushes the PREVIOUS {components, token
+  // documents}; bursts within 400ms (color-picker drags, arrow scrubbing)
+  // coalesce into one undo step. Canvas node moves keep tldraw's own history.
+  const tokenDocumentsRef = useRef(tokenDocumentsState);
+  tokenDocumentsRef.current = tokenDocumentsState;
+  const editHistoryRef = useRef<{
+    past: EditHistorySnapshot[];
+    future: EditHistorySnapshot[];
+    lastPushAt: number;
+  }>({ past: [], future: [], lastPushAt: 0 });
+  const pushEditHistory = (): void => {
+    const history = editHistoryRef.current;
+    const now = Date.now();
+    if (now - history.lastPushAt < 400 && history.past.length) {
+      history.lastPushAt = now;
+      history.future = [];
+      return;
+    }
+    history.past.push({
+      components: stateRef.current.components,
+      tokenDocuments: tokenDocumentsRef.current,
+      nodes: stateRef.current.nodes,
+    });
+    if (history.past.length > 100) history.past.shift();
+    history.future = [];
+    history.lastPushAt = now;
+  };
+  // Restores a snapshot and persists only what actually changed.
+  const applyEditHistorySnapshot = (snapshot: EditHistorySnapshot): void => {
+    const previousComponents = stateRef.current.components;
+    const previousTokens = tokenDocumentsRef.current;
+    commitState({ ...stateRef.current, components: snapshot.components, nodes: snapshot.nodes });
+    setTokenDocumentsState(snapshot.tokenDocuments);
+    tokenDocumentsRef.current = snapshot.tokenDocuments;
+    onSpecsChange?.({
+      components: snapshot.components,
+      tokenDocuments: snapshot.tokenDocuments,
+    });
+    if (adapter?.saveComponent) {
+      const saveComponent = adapter.saveComponent.bind(adapter);
+      for (const component of snapshot.components) {
+        const before = previousComponents.find((item) => item.id === component.id);
+        if (!before || JSON.stringify(before) !== JSON.stringify(component)) {
+          enqueueHostWrite(`component:${component.id}`, () => saveComponent(component));
+        }
+      }
+    }
+    if (
+      adapter?.saveTokenDocuments &&
+      JSON.stringify(previousTokens) !== JSON.stringify(snapshot.tokenDocuments)
+    ) {
+      const saveTokenDocuments = adapter.saveTokenDocuments.bind(adapter);
+      enqueueHostWrite("tokens", () => saveTokenDocuments(snapshot.tokenDocuments));
+    }
+  };
+  const undoEdit = (): void => {
+    const history = editHistoryRef.current;
+    const snapshot = history.past.pop();
+    if (!snapshot) return;
+    history.future.push({
+      components: stateRef.current.components,
+      tokenDocuments: tokenDocumentsRef.current,
+      nodes: stateRef.current.nodes,
+    });
+    history.lastPushAt = 0; // the next edit after an undo starts a fresh step
+    applyEditHistorySnapshot(snapshot);
+  };
+  const redoEdit = (): void => {
+    const history = editHistoryRef.current;
+    const snapshot = history.future.pop();
+    if (!snapshot) return;
+    history.past.push({
+      components: stateRef.current.components,
+      tokenDocuments: tokenDocumentsRef.current,
+      nodes: stateRef.current.nodes,
+    });
+    history.lastPushAt = 0;
+    applyEditHistorySnapshot(snapshot);
+  };
+  // Latest-closure ref so the once-registered window listener never goes stale.
+  const undoRedoRef = useRef({ undo: undoEdit, redo: redoEdit, canvasActive: false });
+  undoRedoRef.current = {
+    undo: undoEdit,
+    redo: redoEdit,
+    canvasActive: effectiveActivePanel === "canvas",
+  };
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (!(event.metaKey || event.ctrlKey)) return;
+      const key = event.key.toLowerCase();
+      // Cmd/Ctrl+Z undo, Shift+Cmd/Ctrl+Z or Ctrl+Y redo.
+      if (key !== "z" && key !== "y") return;
+      // Native text-editing undo stays native; tldraw keeps its own history.
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("input, textarea, select, [contenteditable='true']")) return;
+      if (undoRedoRef.current.canvasActive) return;
+      event.preventDefault();
+      if (key === "y" || event.shiftKey) undoRedoRef.current.redo();
+      else undoRedoRef.current.undo();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
   const commitTokenDocuments = (nextDocuments: TokenDocument[]): void => {
+    pushEditHistory();
     setTokenDocumentsState(nextDocuments);
+    tokenDocumentsRef.current = nextDocuments;
     onSpecsChange?.({ components: stateRef.current.components, tokenDocuments: nextDocuments });
     if (adapter?.saveTokenDocuments) {
       const saveTokenDocuments = adapter.saveTokenDocuments.bind(adapter);
@@ -822,25 +938,32 @@ export function PodoEditorApp({
     component: ComponentDocument,
     options?: { slotRename?: { from: string; to: string } }
   ): void => {
+    pushEditHistory();
     const parsed = parseComponentDocument(component);
-    const nextComponents = state.components.map((item) => (item.id === parsed.id ? parsed : item));
+    // Derive from stateRef (not the render-scoped `state`): rapid event bursts
+    // (color drags, arrow scrubbing) can fire before React re-renders, and a
+    // stale closure here would clobber the just-committed edit.
+    const currentState = stateRef.current;
+    const nextComponents = currentState.components.map((item) =>
+      item.id === parsed.id ? parsed : item
+    );
     // On a slot rename, migrate canvas children from the old slot to the new one
     // BEFORE normalization filters node.slots to the declared set (otherwise the
     // children composed into the old slot would be silently dropped).
     const rename = options?.slotRename;
     const baseNodes =
       rename && rename.from !== rename.to
-        ? renameNodeSlot(state.nodes, parsed.id, rename.from, rename.to)
-        : state.nodes;
+        ? renameNodeSlot(currentState.nodes, parsed.id, rename.from, rename.to)
+        : currentState.nodes;
     const nextState = {
-      ...state,
+      ...currentState,
       components: nextComponents,
       nodes: baseNodes.map((node) =>
         node.componentId === parsed.id ? normalizeNodeForComponent(node, parsed) : node
       ),
     };
     commitState(nextState);
-    onSpecsChange?.({ components: nextComponents, tokenDocuments: tokenDocumentsState });
+    onSpecsChange?.({ components: nextComponents, tokenDocuments: tokenDocumentsRef.current });
     if (adapter?.saveComponent) {
       const saveComponent = adapter.saveComponent.bind(adapter);
       enqueueHostWrite(`component:${parsed.id}`, () => saveComponent(parsed));
@@ -1181,6 +1304,8 @@ export function PodoEditorApp({
     nextComponents: ComponentDocument[],
     nextNodes?: EditorComponentNode[]
   ): void => {
+    pushEditHistory();
+    tokenDocumentsRef.current = nextDocuments;
     const previousComponents = stateRef.current.components;
     commitState({
       ...stateRef.current,

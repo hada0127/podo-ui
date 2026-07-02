@@ -144,6 +144,8 @@ export function LayersPanel({
   onMove,
   onToggleHidden,
   onToggleLocked,
+  onCopyAppearance,
+  onPasteAppearance,
 }: {
   anatomy: ComponentDocument["anatomy"];
   selectedPart: string;
@@ -161,6 +163,9 @@ export function LayersPanel({
   onMove: (part: string, newParent: string | null, beforeName: string | null) => void;
   onToggleHidden: (part: string, hidden: boolean) => void;
   onToggleLocked: (part: string, locked: boolean) => void;
+  // Figma copy/paste appearance (Cmd+Alt+C / Cmd+Alt+V + context menu).
+  onCopyAppearance?: (part: string) => void;
+  onPasteAppearance?: (part: string) => void;
 }) {
   const t = useT();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
@@ -231,6 +236,12 @@ export function LayersPanel({
       },
     },
     { label: t("layers.menuDuplicate"), run: (part) => onDuplicate(part) },
+    ...(onCopyAppearance
+      ? [{ label: t("layers.menuCopyAppearance"), run: (part: string) => onCopyAppearance(part) }]
+      : []),
+    ...(onPasteAppearance
+      ? [{ label: t("layers.menuPasteAppearance"), run: (part: string) => onPasteAppearance(part) }]
+      : []),
     {
       label: node.hidden ? t("layers.menuShow") : t("layers.menuHide"),
       run: (part) => onToggleHidden(part, !node.hidden),
@@ -260,7 +271,9 @@ export function LayersPanel({
   };
 
   // Figma-style keys on a focused row: Enter renames, Delete removes, arrows
-  // navigate (left/right collapse/expand a branch).
+  // navigate (left/right collapse/expand a branch), Cmd+D duplicates,
+  // Cmd+Shift+H / Cmd+Shift+L toggle hide/lock, [ / ] reorder among siblings,
+  // Cmd+Alt+C / Cmd+Alt+V copy/paste appearance.
   const handleRowKeyDown = (event: KeyboardEvent<HTMLDivElement>, node: LayerNode): void => {
     if (event.target !== event.currentTarget) return; // ignore keys inside the rename input
     const index = visible.findIndex((item) => item.name === node.name);
@@ -272,6 +285,37 @@ export function LayersPanel({
       );
       row?.focus();
     };
+    const command = event.metaKey || event.ctrlKey;
+    if (command && event.altKey && event.code === "KeyC") {
+      event.preventDefault();
+      onCopyAppearance?.(node.name);
+      return;
+    }
+    if (command && event.altKey && event.code === "KeyV") {
+      event.preventDefault();
+      onPasteAppearance?.(node.name);
+      return;
+    }
+    if (command && !event.shiftKey && event.code === "KeyD") {
+      event.preventDefault();
+      if (!structureLocked) onDuplicate(node.name);
+      return;
+    }
+    if (command && event.shiftKey && event.code === "KeyH") {
+      event.preventDefault();
+      if (!structureLocked) onToggleHidden(node.name, !node.hidden);
+      return;
+    }
+    if (command && event.shiftKey && event.code === "KeyL") {
+      event.preventDefault();
+      if (!structureLocked) onToggleLocked(node.name, !node.locked);
+      return;
+    }
+    if (event.code === "BracketLeft" || event.code === "BracketRight") {
+      event.preventDefault();
+      if (!structureLocked) moveSibling(node.name, event.code === "BracketLeft" ? -1 : 1);
+      return;
+    }
     switch (event.key) {
       case "Enter":
         event.preventDefault();
