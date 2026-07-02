@@ -1261,6 +1261,17 @@ const APPEARANCE_CSS_PROPERTY: Record<string, string> = {
   justifyitems: "justify-items",
   gridcolumn: "grid-column",
   gridrow: "grid-row",
+  // Multi-fill stacks (background-image layer list) + per-fill blend modes.
+  fills: "background-image",
+  backgroundblendmode: "background-blend-mode",
+  // Stroke position encodings: outline = outside/center (negative offset).
+  outlinewidth: "outline-width",
+  outlinecolor: "outline-color",
+  outlinestyle: "outline-style",
+  outlineoffset: "outline-offset",
+  // Masking at the CSS level (Figma masks on DOM layers).
+  clippath: "clip-path",
+  maskimage: "mask-image",
   // Absolute positioning (Figma auto-layout child "absolute position").
   position: "position",
   top: "top",

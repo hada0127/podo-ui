@@ -9,6 +9,8 @@ import {
 } from "./previews.js";
 import { LayersPanel } from "./component-layers.js";
 import {
+  allowedTokenTypes,
+  isRawValueProperty,
   parseGradient,
   parseShadowLayer,
   resizeModeFromValue,
@@ -366,6 +368,48 @@ describe("Figma-style layer flags, slot content, and variant add", () => {
     ]);
     expect(serializeGradient(gradient!)).toBe(value);
     expect(parseGradient("not-a-gradient")).toBeNull();
+  });
+
+  it("conic gradients keep their start angle through parse/serialize", () => {
+    const value = "conic-gradient(from 45deg, #7c3aed 0%, #4c9ffe 100%)";
+    const gradient = parseGradient(value);
+    expect(gradient?.type).toBe("conic");
+    expect(gradient?.angle).toBe("from 45deg");
+    expect(serializeGradient(gradient!)).toBe(value);
+  });
+
+  it("multi-fill stacks and masks reach the preview CSS", () => {
+    const button = pick("button");
+    const withFills = {
+      ...button,
+      tokens: {
+        ...button.tokens,
+        "root.fills":
+          "linear-gradient(#ff0000, #ff0000), linear-gradient(90deg, #7c3aed 0%, #4c9ffe 100%)",
+        "root.background-blend-mode": "multiply, normal",
+        "root.outline-width": "2px",
+        "root.outline-offset": "-1px",
+        "root.clip-path": "inset(0 round 12px)",
+      },
+    };
+    const { container } = render(<>{renderComponentPreview(withFills, {}, lookup)}</>);
+    const css = Array.from(container.querySelectorAll("style"))
+      .map((style) => style.textContent)
+      .join("\n");
+    expect(css).toContain(
+      "background-image: linear-gradient(#ff0000, #ff0000), linear-gradient(90deg, #7c3aed 0%, #4c9ffe 100%) !important;"
+    );
+    expect(css).toContain("background-blend-mode: multiply, normal !important;");
+    expect(css).toContain("outline-width: 2px !important;");
+    expect(css).toContain("outline-offset: -1px !important;");
+    expect(css).toContain("clip-path: inset(0 round 12px) !important;");
+  });
+
+  it("clip-path/mask/fills route to editable inputs, not empty token pickers", () => {
+    expect(allowedTokenTypes("clip-path")).toEqual(["string"]);
+    expect(allowedTokenTypes("mask-image")).toEqual(["string"]);
+    expect(isRawValueProperty("clip-path")).toBe(true);
+    expect(isRawValueProperty("mask-image")).toBe(true);
   });
 
   it("compound combinations apply only when every axis matches", () => {

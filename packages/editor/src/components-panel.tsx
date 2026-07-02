@@ -162,7 +162,7 @@ const APPEARANCE_GROUP_ORDER = [
 ] as const;
 // The token `$type`s a given appearance property may bind to, so the picker only
 // offers matching tokens (color→color, radius→radius, padding→spacing, font→…).
-function allowedTokenTypes(property: string): string[] {
+export function allowedTokenTypes(property: string): string[] {
   const value = property.toLowerCase();
   if (/shadow-?color/.test(value)) return ["color"];
   // Box-shadow values are edited structurally (ShadowStackEditor) or as raw CSS.
@@ -171,7 +171,7 @@ function allowedTokenTypes(property: string): string[] {
   if (/radius|corner/.test(value)) return ["radius"];
   if (/padding|gap|margin/.test(value)) return ["spacing"];
   if (
-    /border-?style|text-?decoration|text-?transform|blend|blur|overflow|gradient|grid|position/.test(
+    /border-?style|text-?decoration|text-?transform|blend|blur|overflow|gradient|grid|position|^fills$|clip|mask/.test(
       value
     )
   )
@@ -217,7 +217,7 @@ function enumOptionsForProperty(property: string): string[] | undefined {
 // Structural dimensions/numbers (height, width, border-width, opacity) and raw
 // CSS composites (box-shadow, text-align) need not be tokenized — they get a raw
 // value input instead of a token picker.
-function isRawValueProperty(property: string): boolean {
+export function isRawValueProperty(property: string): boolean {
   const types = allowedTokenTypes(property);
   return (
     types.length === 1 &&
@@ -233,7 +233,8 @@ function appearanceGroup(property: string): (typeof APPEARANCE_GROUP_ORDER)[numb
   if (/radius|corner/.test(value)) return "Corners";
   if (/border|stroke|outline/.test(value)) return "Stroke";
   if (/background-?blur/.test(value)) return "Effects";
-  if (/background|^color$|fill|gradient/.test(value)) return "Fill";
+  if (/clip|mask/.test(value)) return "Effects";
+  if (/background|^color$|^fills?$|gradient/.test(value)) return "Fill";
   if (/font|typography|line-?height|letter|text-?decoration|text-?transform/.test(value))
     return "Typography";
   if (/padding|gap|margin|width|height/.test(value)) return "Layout";
@@ -256,8 +257,10 @@ const COMMON_APPEARANCE_PROPERTIES: Array<{ property: string; defaultAlias: stri
   { property: "typography", defaultAlias: "{typography.paragraph.p3}" },
   { property: "opacity", defaultAlias: "1" },
   { property: "shadow", defaultAlias: "0 2px 8px rgba(0, 0, 0, 0.16)" },
-  // Figma gradient fill (background-image), edited structurally.
-  { property: "gradient", defaultAlias: "linear-gradient(90deg, #7c3aed 0%, #4c9ffe 100%)" },
+  // Figma fill STACK (background-image layers + per-fill blend), structural.
+  { property: "fills", defaultAlias: "linear-gradient(90deg, #7c3aed 0%, #4c9ffe 100%)" },
+  // Figma masks at the CSS level (clip-path shapes).
+  { property: "clip-path", defaultAlias: "inset(0 round 12px)" },
   // Figma Effects: layer blur / background blur / blend mode.
   { property: "blur", defaultAlias: "blur(4px)" },
   { property: "background-blur", defaultAlias: "blur(8px)" },
@@ -336,12 +339,15 @@ const AUTO_LAYOUT_CLEAR_PROPERTIES = [
 ] as const;
 // Absolute positioning (Size section) owns the position/inset properties.
 const POSITION_PROPERTIES = ["position", "top", "right", "bottom", "left", "z-index"] as const;
+// Managed by the fill stack editor alongside `fills` (index-aligned list).
+const FILLS_OWNED_PROPERTIES = ["background-blend-mode"] as const;
 const AUTO_LAYOUT_HIDDEN_ALWAYS = new Set(
   [
     ...AUTO_LAYOUT_CLEAR_PROPERTIES,
     ...SIZE_SECTION_PROPERTIES,
     ...SIZE_SECTION_EXTRA_PROPERTIES,
     ...POSITION_PROPERTIES,
+    ...FILLS_OWNED_PROPERTIES,
   ].map(normalizedProperty)
 );
 const AUTO_LAYOUT_HIDDEN_ACTIVE = new Set(
@@ -685,6 +691,10 @@ export function serializeGradient(gradient: GradientValue): string {
     .map((stop) => `${stop.color}${stop.position ? ` ${stop.position}` : ""}`)
     .join(", ");
   if (gradient.type === "linear") return `linear-gradient(${gradient.angle}, ${stops})`;
+  // Conic keeps its "from 45deg" start angle (Figma angular gradient rotation).
+  if (gradient.type === "conic" && gradient.angle.startsWith("from")) {
+    return `conic-gradient(${gradient.angle}, ${stops})`;
+  }
   return `${gradient.type}-gradient(${stops})`;
 }
 
@@ -730,13 +740,23 @@ function GradientEditor({
           <option value="radial">radial</option>
           <option value="conic">conic</option>
         </select>
-        {gradient.type === "linear" ? (
+        {gradient.type !== "radial" ? (
           <input
             type="text"
             aria-label={t("components.gradientAngle")}
-            defaultValue={gradient.angle}
-            style={{ ...inputStyle, width: 70, flexShrink: 0 }}
-            onBlur={(event) => commit({ ...gradient, angle: event.currentTarget.value || "90deg" })}
+            key={gradient.type}
+            defaultValue={
+              gradient.type === "conic" && !gradient.angle.startsWith("from") ? "" : gradient.angle
+            }
+            placeholder={gradient.type === "conic" ? "from 45deg" : "90deg"}
+            style={{ ...inputStyle, width: 90, flexShrink: 0 }}
+            onBlur={(event) =>
+              commit({
+                ...gradient,
+                // Conic angles are clearable (empty = no "from …" prefix).
+                angle: event.currentTarget.value || (gradient.type === "linear" ? "90deg" : ""),
+              })
+            }
             onKeyDown={(event) => {
               if (event.key === "Enter") event.currentTarget.blur();
             }}
@@ -788,6 +808,196 @@ function GradientEditor({
           }
         >
           {t("components.gradientAddStop")}
+        </button>
+        <button type="button" style={smallButtonStyle} onClick={onClose}>
+          {t("components.done")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ---- Figma multi-fill stack: background-image layers + per-fill blend modes ----
+
+const BLEND_MODES = [
+  "normal",
+  "multiply",
+  "screen",
+  "overlay",
+  "darken",
+  "lighten",
+  "color-dodge",
+  "color-burn",
+  "difference",
+  "exclusion",
+  "hue",
+  "saturation",
+  "color",
+  "luminosity",
+];
+
+/** First stop color of a fill layer, for the row swatch. */
+function fillLayerSwatch(layer: string): string | undefined {
+  return parseGradient(layer)?.stops[0]?.color;
+}
+
+/**
+ * Figma-style fill STACK editor. Each fill is one background-image layer
+ * (solids are two-identical-stop linear-gradients) with a per-layer blend mode
+ * (background-blend-mode list). Layers reorder like Figma's fill list; the top
+ * fill in the list paints on top.
+ */
+function FillStackEditor({
+  imagesValue,
+  blendValue,
+  onChange,
+  onClose,
+}: {
+  imagesValue: string;
+  blendValue: string;
+  onChange: (images: string, blends: string) => void;
+  onClose: () => void;
+}) {
+  const t = useT();
+  const layers = splitTopLevel(imagesValue, ",");
+  const blends = splitTopLevel(blendValue, ",");
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const commit = (nextLayers: string[], nextBlends: string[]): void => {
+    const kept = nextLayers
+      .map((layer, index) => ({ layer, blend: nextBlends[index] ?? "normal" }))
+      .filter(({ layer }) => layer.trim().length > 0);
+    const images = kept.map(({ layer }) => layer).join(", ");
+    const anyBlend = kept.some(({ blend }) => blend !== "normal");
+    onChange(images, anyBlend ? kept.map(({ blend }) => blend).join(", ") : "");
+  };
+  const move = (index: number, direction: -1 | 1): void => {
+    const target = index + direction;
+    if (target < 0 || target >= layers.length) return;
+    // Uncontrolled inputs inside the expanded editor would show the swapped-in
+    // layer's stale values on index reuse — collapse before reordering.
+    setExpandedIndex(null);
+    const nextLayers = [...layers];
+    const nextBlends = layers.map((_, i) => blends[i] ?? "normal");
+    [nextLayers[index], nextLayers[target]] = [
+      nextLayers[target] as string,
+      nextLayers[index] as string,
+    ];
+    [nextBlends[index], nextBlends[target]] = [
+      nextBlends[target] as string,
+      nextBlends[index] as string,
+    ];
+    commit(nextLayers, nextBlends);
+  };
+  const addLayer = (layer: string): void => {
+    commit([layer, ...layers], ["normal", ...layers.map((_, i) => blends[i] ?? "normal")]);
+    setExpandedIndex(0);
+  };
+  return (
+    <div style={{ display: "grid", gap: 6 }}>
+      {layers.map((layer, index) => {
+        const swatch = fillLayerSwatch(layer);
+        return (
+          <div
+            key={`${layers.length}-${index}`}
+            style={{
+              display: "grid",
+              gap: 4,
+              padding: 6,
+              border: "1px solid #eceef2",
+              borderRadius: 6,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <button
+                type="button"
+                aria-label={t("components.fillEdit", { index: index + 1 })}
+                style={{
+                  ...swatchStyle,
+                  cursor: "pointer",
+                  ...(swatch ? { background: swatch } : {}),
+                }}
+                onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+              />
+              <select
+                aria-label={t("components.fillBlendMode")}
+                style={{ ...selectStyle, flex: 1, minWidth: 0 }}
+                value={blends[index] ?? "normal"}
+                onChange={(event) =>
+                  commit(
+                    layers,
+                    layers.map((_, i) =>
+                      i === index ? event.currentTarget.value : (blends[i] ?? "normal")
+                    )
+                  )
+                }
+              >
+                {BLEND_MODES.map((mode) => (
+                  <option key={mode} value={mode}>
+                    {mode}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                aria-label={t("components.fillMoveUp")}
+                style={autoLayoutToggleStyle}
+                disabled={index === 0}
+                onClick={() => move(index, -1)}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                aria-label={t("components.fillMoveDown")}
+                style={autoLayoutToggleStyle}
+                disabled={index === layers.length - 1}
+                onClick={() => move(index, 1)}
+              >
+                ↓
+              </button>
+              <button
+                type="button"
+                aria-label={t("components.fillRemove")}
+                style={appearanceRemoveStyle}
+                onClick={() =>
+                  commit(
+                    layers.filter((_, i) => i !== index),
+                    layers.map((_, i) => blends[i] ?? "normal").filter((_, i) => i !== index)
+                  )
+                }
+              >
+                ×
+              </button>
+            </div>
+            {expandedIndex === index ? (
+              <GradientEditor
+                value={layer}
+                onChange={(next) =>
+                  commit(
+                    layers.map((item, i) => (i === index ? next : item)),
+                    layers.map((_, i) => blends[i] ?? "normal")
+                  )
+                }
+                onClose={() => setExpandedIndex(null)}
+              />
+            ) : null}
+          </div>
+        );
+      })}
+      <div style={{ display: "flex", gap: 6 }}>
+        <button
+          type="button"
+          style={smallButtonStyle}
+          onClick={() => addLayer("linear-gradient(#7c3aed, #7c3aed)")}
+        >
+          {t("components.fillAddSolid")}
+        </button>
+        <button
+          type="button"
+          style={smallButtonStyle}
+          onClick={() => addLayer("linear-gradient(90deg, #7c3aed 0%, #4c9ffe 100%)")}
+        >
+          {t("components.fillAddGradient")}
         </button>
         <button type="button" style={smallButtonStyle} onClick={onClose}>
           {t("components.done")}
@@ -1315,6 +1525,28 @@ export function ComponentsPanelWorkspace({
     selectedComponentForSpec.variants
       .map((variant) => `${variant.name}=${scopedVariantValue(variant.name)}`)
       .join(" · ");
+  const whenLabel = (when: Record<string, string>): string =>
+    Object.entries(when)
+      .map(([axis, value]) => `${axis}=${value}`)
+      .join(" · ");
+  const sameWhen = (a: Record<string, string>, b: Record<string, string>): boolean =>
+    Object.keys(a).length === Object.keys(b).length &&
+    Object.entries(a).every(([axis, value]) => b[axis] === value);
+  // Combination scope keys serialize the `when` itself (sorted), so entry GC or
+  // reordering in the combinations array can never re-target the active scope.
+  const combinationScopeKey = (when: Record<string, string>): string =>
+    `combination::${JSON.stringify(Object.fromEntries(Object.entries(when).sort(([a], [b]) => a.localeCompare(b))))}`;
+  const combinationWhenForScope = (scope: string): Record<string, string> | null => {
+    if (scope === "combination::current") return currentCombinationWhen();
+    if (scope.startsWith("combination::")) {
+      try {
+        return JSON.parse(scope.slice("combination::".length)) as Record<string, string>;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  };
   const appearanceScopeOptions = [
     ...selectedComponentForSpec.variants.map((variant) => ({
       key: `variant::${variant.name}`,
@@ -1330,6 +1562,15 @@ export function ComponentsPanelWorkspace({
           },
         ]
       : []),
+    // Existing (possibly partial-axis, hand-authored) combination entries.
+    ...(selectedComponentForSpec.combinations ?? [])
+      .map((entry) => ({
+        key: combinationScopeKey(entry.when),
+        label: `${t("components.comboLabel")}: ${whenLabel(entry.when)}`,
+        when: entry.when,
+      }))
+      .filter((option) => !sameWhen(option.when, currentCombinationWhen()))
+      .map(({ key, label }) => ({ key, label })),
     // Declared states are scopes too (Figma-style: style the hover/disabled look).
     ...selectedComponentForSpec.states.map((state) => ({
       key: `state::${state.name}`,
@@ -1349,19 +1590,27 @@ export function ComponentsPanelWorkspace({
     } else if (activeScope.startsWith("state::")) {
       commitPreviewSelection("state", undefined);
     }
+    // Editing a combination pins the preview to its axis values so you see the
+    // exact cell you are styling (partial-axis combos pin only their axes).
+    if (next.startsWith("combination::")) {
+      const when = combinationWhenForScope(next);
+      for (const [axis, value] of Object.entries(when ?? {})) {
+        commitPreviewSelection(axis, value);
+      }
+    }
   };
   // Effective bindings for the active scope: base tokens overlaid with the selected
   // variant value's (or state's) overrides, so editing/removing in scope is reflected.
   const scopeTokens: Record<string, string> = (() => {
     const base = { ...(selectedComponentForSpec.tokens ?? {}) } as Record<string, string>;
     if (activeScope === "base") return base;
-    if (activeScope === "combination::current") {
-      const when = currentCombinationWhen();
-      const entry = (selectedComponentForSpec.combinations ?? []).find(
-        (combination) =>
-          Object.keys(combination.when).length === Object.keys(when).length &&
-          Object.entries(combination.when).every(([axis, value]) => when[axis] === value)
-      );
+    if (activeScope.startsWith("combination::")) {
+      const when = combinationWhenForScope(activeScope);
+      const entry = when
+        ? (selectedComponentForSpec.combinations ?? []).find((combination) =>
+            sameWhen(combination.when, when)
+          )
+        : undefined;
       return { ...base, ...((entry?.tokens ?? {}) as Record<string, string>) };
     }
     if (activeScope.startsWith("state::")) {
@@ -1424,6 +1673,51 @@ export function ComponentsPanelWorkspace({
   const [cornersExpanded, setCornersExpanded] = useState(false);
   const [strokeSidesExpanded, setStrokeSidesExpanded] = useState(false);
   const [paddingSidesExpanded, setPaddingSidesExpanded] = useState(false);
+  // Figma stroke position, detected from the current encoding: an outline-width
+  // binding means outside (negative outline-offset = center); otherwise inside.
+  const strokePosition: "inside" | "center" | "outside" = (() => {
+    const outlineWidth = scopeValue("outline-width");
+    if (!outlineWidth || outlineWidth === "0px") return "inside";
+    return Number.parseFloat(scopeValue("outline-offset") || "0") < 0 ? "center" : "outside";
+  })();
+  const setStrokePosition = (next: "inside" | "center" | "outside"): void => {
+    if (next === strokePosition) return;
+    const width =
+      scopeValue(strokePosition === "inside" ? "border-width" : "outline-width") || "1px";
+    const color =
+      scopeValue(strokePosition === "inside" ? "border-color" : "outline-color") ||
+      scopeValue("border-color") ||
+      "{color.border.base}";
+    const style =
+      scopeValue(strokePosition === "inside" ? "border-style" : "outline-style") || "solid";
+    // Token-bound widths resolve through the lookup before halving.
+    const resolvedWidth = width.startsWith("{")
+      ? cssToken(previewTokenLookup, width.slice(1, -1), "1px")
+      : width;
+    const half = `-${Math.round((Number.parseFloat(resolvedWidth) || 1) * 50) / 100}px`;
+    const entries: Array<[string, string]> = [];
+    for (const part of editTargets) {
+      if (next === "inside") {
+        entries.push([`${part}.border-width`, width]);
+        entries.push([`${part}.border-color`, color]);
+        entries.push([`${part}.border-style`, style]);
+        entries.push([`${part}.outline-style`, "none"]);
+        entries.push([`${part}.outline-width`, "0px"]);
+        entries.push([`${part}.outline-offset`, "0px"]);
+      } else {
+        entries.push([`${part}.outline-width`, width]);
+        entries.push([`${part}.outline-color`, color]);
+        entries.push([`${part}.outline-style`, style]);
+        entries.push([`${part}.outline-offset`, next === "center" ? half : "0px"]);
+        // Only silence the inner border when the inspector bound one — the
+        // component's intrinsic v1 border is left alone.
+        if (String(scopeTokens[`${part}.border-width`] ?? "").length > 0) {
+          entries.push([`${part}.border-width`, "0px"]);
+        }
+      }
+    }
+    applyAppearanceBindings(entries);
+  };
   const paddingSidesOpen =
     paddingSidesExpanded ||
     PADDING_SIDE_PROPERTIES.some((property) => scopeValue(property).length > 0);
@@ -1495,11 +1789,9 @@ export function ComponentsPanelWorkspace({
       updateComponentBindingsBatch({ kind: "base" }, entries);
       return;
     }
-    if (activeScope === "combination::current") {
-      updateComponentBindingsBatch(
-        { kind: "combination", when: currentCombinationWhen() },
-        entries
-      );
+    if (activeScope.startsWith("combination::")) {
+      const when = combinationWhenForScope(activeScope);
+      if (when) updateComponentBindingsBatch({ kind: "combination", when }, entries);
       return;
     }
     if (activeScope.startsWith("state::")) {
@@ -1523,13 +1815,13 @@ export function ComponentsPanelWorkspace({
     if (activeScope === "base") {
       return (selectedComponentForSpec.tokens ?? {}) as Record<string, string>;
     }
-    if (activeScope === "combination::current") {
-      const when = currentCombinationWhen();
-      const entry = (selectedComponentForSpec.combinations ?? []).find(
-        (combination) =>
-          Object.keys(combination.when).length === Object.keys(when).length &&
-          Object.entries(combination.when).every(([axis, value]) => when[axis] === value)
-      );
+    if (activeScope.startsWith("combination::")) {
+      const when = combinationWhenForScope(activeScope);
+      const entry = when
+        ? (selectedComponentForSpec.combinations ?? []).find((combination) =>
+            sameWhen(combination.when, when)
+          )
+        : undefined;
       return (entry?.tokens ?? {}) as Record<string, string>;
     }
     if (activeScope.startsWith("state::")) {
@@ -1547,8 +1839,8 @@ export function ComponentsPanelWorkspace({
   // instead of committing md's stale text into lg on blur.
   const scopeInstanceKey = activeScope.startsWith("variant::")
     ? `${activeScope}=${scopedVariantValue(activeScope.slice("variant::".length))}`
-    : activeScope === "combination::current"
-      ? `combination::${combinationLabel()}`
+    : activeScope.startsWith("combination::")
+      ? `combination::${whenLabel(combinationWhenForScope(activeScope) ?? {})}`
       : activeScope;
   // Figma-style Size section: W/H resizing modes (auto/fixed/hug/fill) writing
   // width/height bindings. Switching to Fixed seeds the input with the part's
@@ -2507,19 +2799,41 @@ export function ComponentsPanelWorkspace({
                         </button>
                       ) : null}
                       {group === "Stroke" ? (
-                        <button
-                          type="button"
-                          aria-pressed={strokeSidesOpen}
-                          aria-label={t("components.expandStrokeSides")}
-                          title={t("components.expandStrokeSides")}
-                          style={{
-                            ...autoLayoutToggleStyle,
-                            ...(strokeSidesOpen ? autoLayoutToggleActiveStyle : {}),
-                          }}
-                          onClick={() => setStrokeSidesExpanded(!strokeSidesOpen)}
-                        >
-                          ⊞
-                        </button>
+                        <>
+                          {/* Figma stroke position. inside = CSS border; outside =
+                              outline (offset 0); center = outline pulled halfway in
+                              via a negative offset. Translates the INSPECTOR's
+                              stroke bindings only — intrinsic v1 borders are not
+                              rewritten (ponytail: geometry-exact center needs a
+                              vector model). */}
+                          <select
+                            aria-label={t("components.strokePosition")}
+                            style={{ ...selectStyle, width: 96, flexShrink: 0 }}
+                            value={strokePosition}
+                            onChange={(event) =>
+                              setStrokePosition(
+                                event.currentTarget.value as "inside" | "center" | "outside"
+                              )
+                            }
+                          >
+                            <option value="inside">{t("components.strokeInside")}</option>
+                            <option value="center">{t("components.strokeCenter")}</option>
+                            <option value="outside">{t("components.strokeOutside")}</option>
+                          </select>
+                          <button
+                            type="button"
+                            aria-pressed={strokeSidesOpen}
+                            aria-label={t("components.expandStrokeSides")}
+                            title={t("components.expandStrokeSides")}
+                            style={{
+                              ...autoLayoutToggleStyle,
+                              ...(strokeSidesOpen ? autoLayoutToggleActiveStyle : {}),
+                            }}
+                            onClick={() => setStrokeSidesExpanded(!strokeSidesOpen)}
+                          >
+                            ⊞
+                          </button>
+                        </>
                       ) : null}
                     </div>
                     {appearanceRows
@@ -2539,6 +2853,7 @@ export function ComponentsPanelWorkspace({
                         const enumOptions = enumOptionsForProperty(row.property);
                         const isShadowStack = normalizedProperty(row.property) === "shadow";
                         const isGradient = normalizedProperty(row.property) === "gradient";
+                        const isFills = normalizedProperty(row.property) === "fills";
                         return (
                           <div key={row.key} style={appearanceRowStyle}>
                             <div style={appearanceHeaderStyle}>
@@ -2567,9 +2882,30 @@ export function ComponentsPanelWorkspace({
                                   onChange={(next) => applyToSelection(row.property, next)}
                                   onClose={() => setEditingBindingKey(null)}
                                 />
+                              ) : isFills ? (
+                                // Figma fill stack: background-image layers with
+                                // per-fill blend modes, both fanned to the selection.
+                                <FillStackEditor
+                                  imagesValue={isMixed ? "" : row.reference || ""}
+                                  blendValue={String(
+                                    scopeTokens[`${activePart}.background-blend-mode`] ?? ""
+                                  )}
+                                  onChange={(images, blendModes) =>
+                                    applyAppearanceBindings(
+                                      editTargets.flatMap((part) => [
+                                        [`${part}.fills`, images] as [string, string],
+                                        [`${part}.background-blend-mode`, blendModes] as [
+                                          string,
+                                          string,
+                                        ],
+                                      ])
+                                    )
+                                  }
+                                  onClose={() => setEditingBindingKey(null)}
+                                />
                               ) : isGradient ? (
-                                // Figma gradient fill: type/angle/stops editor over a
-                                // CSS gradient() function string.
+                                // Legacy gradient binding: type/angle/stops editor over
+                                // a single CSS gradient() function string.
                                 <GradientEditor
                                   value={isMixed ? "" : row.reference || row.defaultAlias || ""}
                                   onChange={(next) => applyToSelection(row.property, next)}
