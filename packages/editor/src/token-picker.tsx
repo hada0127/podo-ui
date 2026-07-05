@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { AnchoredPortal } from "./popover.js";
 import {
   inputStyle,
+  railInputStyle,
   rowStyle,
   tokenPickerDropdownStyle,
   tokenPickerEmptyStyle,
@@ -37,6 +39,7 @@ export function TokenPicker({
   onCancel,
   placeholder,
   autoFocus = false,
+  compact = false,
 }: {
   options: TokenPickerOption[];
   onPick: (reference: string) => void;
@@ -44,10 +47,13 @@ export function TokenPicker({
   onCancel?: () => void;
   placeholder?: string;
   autoFocus?: boolean;
+  /** 24px input for the Figma-density inspector rail. */
+  compact?: boolean;
 }) {
   const t = useT();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -61,13 +67,15 @@ export function TokenPicker({
   }, [query, options]);
 
   return (
-    <div style={tokenPickerWrapStyle}>
+    <div style={tokenPickerWrapStyle} ref={wrapRef}>
       <div style={rowStyle}>
         <input
           aria-label={t("tokenPicker.ariaLabel")}
           placeholder={placeholder ?? t("tokenPicker.placeholder")}
           autoFocus={autoFocus}
-          style={{ ...inputStyle, flex: 1 }}
+          style={
+            compact ? { ...railInputStyle, textAlign: "left", flex: 1 } : { ...inputStyle, flex: 1 }
+          }
           value={query}
           onChange={(event) => {
             setQuery(event.currentTarget.value);
@@ -89,34 +97,37 @@ export function TokenPicker({
         />
       </div>
       {open ? (
-        <div style={tokenPickerDropdownStyle}>
-          {filtered.length ? (
-            filtered.map((option) => (
-              <button
-                key={option.ref}
-                type="button"
-                style={tokenPickerOptionStyle}
-                // Prevent the input's blur from closing the list before the click lands.
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => {
-                  onPick(option.ref);
-                  setQuery("");
-                  setOpen(false);
-                }}
-              >
-                {option.swatch ? (
-                  <span style={{ ...tokenPickerSwatchStyle, background: option.swatch }} />
-                ) : (
-                  <span style={tokenPickerSwatchEmptyStyle} />
-                )}
-                <span style={tokenPickerLabelStyle}>{option.label}</span>
-                <span style={tokenPickerValueStyle}>{option.value}</span>
-              </button>
-            ))
-          ) : (
-            <div style={tokenPickerEmptyStyle}>{t("tokenPicker.empty")}</div>
-          )}
-        </div>
+        // Portaled + fixed: the inspector rail's overflow can never clip the list.
+        <AnchoredPortal anchor={wrapRef.current} width="anchor" estimatedHeight={240}>
+          <div style={{ ...tokenPickerDropdownStyle, position: "static", width: "100%" }}>
+            {filtered.length ? (
+              filtered.map((option) => (
+                <button
+                  key={option.ref}
+                  type="button"
+                  style={tokenPickerOptionStyle}
+                  // Prevent the input's blur from closing the list before the click lands.
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => {
+                    onPick(option.ref);
+                    setQuery("");
+                    setOpen(false);
+                  }}
+                >
+                  {option.swatch ? (
+                    <span style={{ ...tokenPickerSwatchStyle, background: option.swatch }} />
+                  ) : (
+                    <span style={tokenPickerSwatchEmptyStyle} />
+                  )}
+                  <span style={tokenPickerLabelStyle}>{option.label}</span>
+                  <span style={tokenPickerValueStyle}>{option.value}</span>
+                </button>
+              ))
+            ) : (
+              <div style={tokenPickerEmptyStyle}>{t("tokenPicker.empty")}</div>
+            )}
+          </div>
+        </AnchoredPortal>
       ) : null}
     </div>
   );

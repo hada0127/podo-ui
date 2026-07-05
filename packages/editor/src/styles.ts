@@ -254,8 +254,11 @@ export const componentStatRowStyle: CSSProperties = {
 };
 
 export const componentEditModeBarStyle: CSSProperties = {
-  display: "inline-flex",
-  width: "fit-content",
+  display: "grid",
+  gridAutoFlow: "column",
+  gridAutoColumns: "minmax(0, 1fr)",
+  width: "100%",
+  boxSizing: "border-box",
   border: "1px solid #d8dde6",
   borderRadius: 8,
   background: "#ffffff",
@@ -1438,6 +1441,8 @@ export const checkboxFieldStyle: CSSProperties = {
 export const inputStyle: CSSProperties = {
   width: "100%",
   height: 38,
+  // border-box: a 100%-width padded input must not overflow its grid cell.
+  boxSizing: "border-box",
   border: "1px solid #ccd6e3",
   borderRadius: 6,
   padding: "0 10px",
@@ -1447,12 +1452,34 @@ export const inputStyle: CSSProperties = {
   boxShadow: "inset 0 1px 1px rgba(15, 23, 42, 0.03)",
 };
 
+// Figma-density rail controls: 24px, 11px text; numeric fields right-aligned.
+export const railInputStyle: CSSProperties = {
+  ...inputStyle,
+  height: 24,
+  padding: "0 6px",
+  fontSize: 11,
+  borderRadius: 4,
+  boxShadow: "none",
+  textAlign: "right",
+  fontVariantNumeric: "tabular-nums",
+};
+
+export const railSelectStyle: CSSProperties = {
+  ...inputStyle,
+  height: 24,
+  padding: "0 4px",
+  fontSize: 11,
+  borderRadius: 4,
+  boxShadow: "none",
+};
+
 export const selectStyle: CSSProperties = {
   ...inputStyle,
 };
 
 export const textareaStyle: CSSProperties = {
   width: "100%",
+  boxSizing: "border-box",
   minHeight: 90,
   border: "1px solid #ccd6e3",
   borderRadius: 6,
@@ -1698,7 +1725,11 @@ export const layerFilterInputStyle: CSSProperties = {
 export const autoLayoutRowStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
-  gap: 6,
+  gap: 4,
+  minWidth: 0,
+  // Crowded control rows (direction+wrap+distribution) wrap instead of
+  // overflowing the 320px rail with localized labels.
+  flexWrap: "wrap",
 };
 
 export const autoLayoutToggleStyle: CSSProperties = {
@@ -1832,27 +1863,35 @@ export const appearanceHeaderStyle: CSSProperties = {
   alignItems: "center",
   justifyContent: "space-between",
   gap: 6,
+  minWidth: 0,
 };
 
 // Pencil/Figma-style grouped inspector: named property groups with mini headers.
 export const appearanceGroupsStyle: CSSProperties = {
   display: "grid",
-  gap: 14,
+  gap: 12,
 };
 
 export const appearanceGroupStyle: CSSProperties = {
   display: "grid",
-  gap: 7,
+  gap: 4,
 };
 
 export const appearanceGroupTitleStyle: CSSProperties = {
-  fontSize: 10,
-  fontWeight: 700,
+  fontSize: 11,
+  fontWeight: 600,
   textTransform: "uppercase",
-  letterSpacing: "0.7px",
-  color: "#a1a1aa",
+  letterSpacing: "0.4px",
+  color: "#8e8e93",
   paddingBottom: 4,
   borderBottom: "1px solid #f1f1f3",
+  cursor: "pointer",
+  userSelect: "none",
+  minWidth: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  flex: 1,
 };
 
 // Token chip: [swatch] value ........ token-name — click to open the picker.
@@ -1873,7 +1912,12 @@ export const tokenChipStyle: CSSProperties = {
 export const tokenChipValueStyle: CSSProperties = {
   fontSize: 11,
   color: "#1a1a1a",
-  flexShrink: 0,
+  // Long raw values (multi-shadow / gradient lists) must ellipsize, never
+  // stretch the 320px rail.
+  minWidth: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
   fontVariantNumeric: "tabular-nums",
 };
 
@@ -1928,6 +1972,7 @@ export const propLabelStyle: CSSProperties = {
   fontSize: 11,
   fontWeight: 500,
   color: "#616167",
+  minWidth: 0,
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
@@ -2107,6 +2152,7 @@ export const cardHeaderStyle: CSSProperties = {
   alignItems: "center",
   justifyContent: "space-between",
   gap: 12,
+  minWidth: 0,
 };
 
 export const tableStyle: CSSProperties = {

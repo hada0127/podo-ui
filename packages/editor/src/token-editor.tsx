@@ -1,6 +1,7 @@
 import { useState, type PointerEvent } from "react";
 import type { DesignToken } from "@podo/spec";
 import { useLocale, useT, type Translate } from "./i18n/context.js";
+import { AnchoredPortal } from "./popover.js";
 import { EditorTokenRecord, serializeEditorTokenValue } from "./spec-editing.js";
 import type { TokenUsage } from "./token-usage.js";
 import { TokenPicker, type TokenPickerOption } from "./token-picker.js";
@@ -1709,33 +1710,57 @@ export function ColorSwatchPicker({
   value,
   onOpen,
   onChange,
+  compact = false,
 }: {
   label: string;
   swatchColor: string | undefined;
   value: RgbaColor;
   onOpen(): void;
   onChange(next: RgbaColor): void;
+  /** 24px-row trigger for the Figma-density inspector rail. */
+  compact?: boolean;
 }) {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const preview = formatColorValue(value);
   return (
-    <span style={colorPickerWrapStyle}>
+    <span
+      style={compact ? { ...colorPickerWrapStyle, width: 24, height: 20 } : colorPickerWrapStyle}
+    >
       <button
         type="button"
-        style={{ ...colorSwatchTriggerStyle, ...(swatchColor ? { background: swatchColor } : {}) }}
+        style={{
+          ...colorSwatchTriggerStyle,
+          ...(compact ? { width: 24, height: 20, borderRadius: 4 } : {}),
+          ...(swatchColor ? { background: swatchColor } : {}),
+        }}
         title={t("tokenEditor.editColorFor", { label })}
         aria-label={t("tokenEditor.editColorFor", { label })}
         data-color-swatch={swatchColor ?? ""}
-        onClick={() => {
+        onClick={(event) => {
+          // Capture before the updater: React nulls event.currentTarget after
+          // the handler; the deferred-updater path must not depend on React's
+          // eager-state bailout keeping it alive.
+          const element = event.currentTarget;
           onOpen();
-          setOpen((previous) => !previous);
+          setAnchor((previous) => (previous ? null : element));
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") setAnchor(null);
         }}
       />
-      {open ? (
-        <>
-          <div style={colorPickerBackdropStyle} onClick={() => setOpen(false)} />
-          <div style={colorPickerPopoverStyle}>
+      {anchor ? (
+        // Portaled + fixed so the inspector rail's overflow can never clip it.
+        <AnchoredPortal anchor={anchor} width={216} estimatedHeight={320} zIndex={90}>
+          <div
+            style={{ ...colorPickerBackdropStyle, zIndex: -1 }}
+            onClick={() => setAnchor(null)}
+            onContextMenu={(event) => {
+              event.preventDefault();
+              setAnchor(null);
+            }}
+          />
+          <div style={{ ...colorPickerPopoverStyle, position: "static" }}>
             <InlineColorPicker value={value} onChange={onChange} />
             <div style={colorPickerPreviewStyle}>
               <span
@@ -1747,7 +1772,7 @@ export function ColorSwatchPicker({
               {preview}
             </div>
           </div>
-        </>
+        </AnchoredPortal>
       ) : null}
     </span>
   );

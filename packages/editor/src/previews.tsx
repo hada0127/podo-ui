@@ -317,7 +317,16 @@ export function renderComponentPreviewMatrix(input: {
     <div style={componentMatrixPanelStyle}>
       <div style={componentMatrixHeaderStyle}>
         <strong>{input.t("previews.variantMatrix")}</strong>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            minWidth: 0,
+            flexWrap: "wrap",
+            justifyContent: "flex-end",
+          }}
+        >
           {rowVariant.name}
           {addValueButton(rowVariant.name)}
           {columnVariant ? (
@@ -333,7 +342,11 @@ export function renderComponentPreviewMatrix(input: {
         <table style={componentMatrixTableStyle}>
           <thead>
             <tr>
-              <th style={componentMatrixHeaderCellStyle}>{rowVariant.name}</th>
+              {/* Corner cell pins on BOTH axes so 2-axis scrolling can't slide
+                  row headers over/under it. */}
+              <th style={{ ...componentMatrixHeaderCellStyle, left: 0, zIndex: 2 }}>
+                {rowVariant.name}
+              </th>
               {columns.map((column) => (
                 <th key={column} style={componentMatrixHeaderCellStyle}>
                   {columnVariant ? column : input.t("previews.preview")}

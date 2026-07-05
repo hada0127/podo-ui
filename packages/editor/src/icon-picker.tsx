@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { useT } from "./i18n/context.js";
+import { AnchoredPortal } from "./popover.js";
 import {
   iconPickerCellActiveStyle,
   iconPickerCellGlyphStyle,
@@ -29,6 +30,9 @@ export function IconPicker({
 }) {
   const t = useT();
   const wrapperRef = useRef<HTMLDivElement>(null);
+  // The popover lives in a portal (outside wrapperRef), so focus containment
+  // must check both containers or Tabbing into the grid would close it.
+  const popoverRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const filtered = useMemo(() => {
@@ -49,7 +53,8 @@ export function IconPicker({
       // from the search input into the grid buttons (and Enter to pick) without
       // the popover closing under them.
       onBlur={(event) => {
-        if (!wrapperRef.current?.contains(event.relatedTarget as Node | null)) {
+        const next = event.relatedTarget as Node | null;
+        if (!wrapperRef.current?.contains(next) && !popoverRef.current?.contains(next)) {
           setOpen(false);
         }
       }}
@@ -80,44 +85,57 @@ export function IconPicker({
         />
       </div>
       {open ? (
-        <div style={iconPickerPopoverStyle}>
-          <button
-            type="button"
-            style={{ ...iconPickerCellStyle, flexDirection: "row", width: "100%" }}
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => pick("")}
+        // Portaled + fixed: never clipped by the rail's overflow scrolling.
+        <AnchoredPortal anchor={wrapperRef.current} width="anchor" estimatedHeight={260}>
+          <div
+            ref={popoverRef}
+            style={{ ...iconPickerPopoverStyle, position: "static", width: "100%" }}
+            // Keep focus-leave symmetric: blurring OUT of the portal closes too.
+            onBlur={(event) => {
+              const next = event.relatedTarget as Node | null;
+              if (!wrapperRef.current?.contains(next) && !popoverRef.current?.contains(next)) {
+                setOpen(false);
+              }
+            }}
           >
-            <span style={iconPickerCellGlyphStyle}>—</span>
-            <span style={iconPickerCellNameStyle}>{t("components.iconNone")}</span>
-          </button>
-          {filtered.length ? (
-            <div style={iconPickerGridStyle}>
-              {filtered.map((name) => {
-                const className = `icon-${name}`;
-                const active = value === className;
-                return (
-                  <button
-                    key={name}
-                    type="button"
-                    title={name}
-                    style={
-                      active
-                        ? { ...iconPickerCellStyle, ...iconPickerCellActiveStyle }
-                        : iconPickerCellStyle
-                    }
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => pick(className)}
-                  >
-                    <i className={className} style={iconPickerCellGlyphStyle} aria-hidden />
-                    <span style={iconPickerCellNameStyle}>{name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div style={tokenPickerEmptyStyle}>{t("tokenPicker.empty")}</div>
-          )}
-        </div>
+            <button
+              type="button"
+              style={{ ...iconPickerCellStyle, flexDirection: "row", width: "100%" }}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => pick("")}
+            >
+              <span style={iconPickerCellGlyphStyle}>—</span>
+              <span style={iconPickerCellNameStyle}>{t("components.iconNone")}</span>
+            </button>
+            {filtered.length ? (
+              <div style={iconPickerGridStyle}>
+                {filtered.map((name) => {
+                  const className = `icon-${name}`;
+                  const active = value === className;
+                  return (
+                    <button
+                      key={name}
+                      type="button"
+                      title={name}
+                      style={
+                        active
+                          ? { ...iconPickerCellStyle, ...iconPickerCellActiveStyle }
+                          : iconPickerCellStyle
+                      }
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => pick(className)}
+                    >
+                      <i className={className} style={iconPickerCellGlyphStyle} aria-hidden />
+                      <span style={iconPickerCellNameStyle}>{name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={tokenPickerEmptyStyle}>{t("tokenPicker.empty")}</div>
+            )}
+          </div>
+        </AnchoredPortal>
       ) : null}
     </div>
   );

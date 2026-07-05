@@ -80,6 +80,8 @@ import {
   propRowStyle,
   propertiesRailStyle,
   railFieldsStyle,
+  railInputStyle,
+  railSelectStyle,
   railSectionTitleStyle,
   rowStyle,
   sectionHeaderStyle,
@@ -548,6 +550,7 @@ function ShadowStackEditor({
         >
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
             <ColorSwatchPicker
+              compact
               label={t("components.shadowColor")}
               swatchColor={layer.color}
               value={parseColor(layer.color) ?? { r: 0, g: 0, b: 0, a: 0.16 }}
@@ -571,7 +574,9 @@ function ShadowStackEditor({
               ×
             </button>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4 }}>
+          <div
+            style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 4 }}
+          >
             {offsetFields.map((field) => (
               <label
                 key={field}
@@ -581,7 +586,7 @@ function ShadowStackEditor({
                 <input
                   type="text"
                   defaultValue={layer[field]}
-                  style={{ ...inputStyle, padding: "3px 6px" }}
+                  style={railInputStyle}
                   onBlur={(event) =>
                     update(index, { [field]: event.currentTarget.value } as Partial<ShadowLayer>)
                   }
@@ -603,7 +608,7 @@ function ShadowStackEditor({
           </div>
         </div>
       ))}
-      <div style={{ display: "flex", gap: 6 }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         <button
           type="button"
           style={smallButtonStyle}
@@ -730,7 +735,7 @@ function GradientEditor({
       <div style={autoLayoutRowStyle}>
         <select
           aria-label={t("components.gradientType")}
-          style={{ ...selectStyle, flex: 1, minWidth: 0 }}
+          style={{ ...railSelectStyle, flex: 1, minWidth: 0 }}
           value={gradient.type}
           onChange={(event) =>
             commit({ ...gradient, type: event.currentTarget.value as GradientValue["type"] })
@@ -749,7 +754,7 @@ function GradientEditor({
               gradient.type === "conic" && !gradient.angle.startsWith("from") ? "" : gradient.angle
             }
             placeholder={gradient.type === "conic" ? "from 45deg" : "90deg"}
-            style={{ ...inputStyle, width: 90, flexShrink: 0 }}
+            style={{ ...railInputStyle, width: 90, flexShrink: 0 }}
             onBlur={(event) =>
               commit({
                 ...gradient,
@@ -766,6 +771,7 @@ function GradientEditor({
       {gradient.stops.map((stop, index) => (
         <div key={`${gradient.stops.length}-${index}`} style={autoLayoutRowStyle}>
           <ColorSwatchPicker
+            compact
             label={t("components.gradientStop")}
             swatchColor={stop.color}
             value={parseColor(stop.color) ?? { r: 127, g: 127, b: 127, a: 1 }}
@@ -777,7 +783,7 @@ function GradientEditor({
             aria-label={t("components.gradientStopPosition")}
             defaultValue={stop.position}
             placeholder="%"
-            style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+            style={{ ...railInputStyle, flex: 1, minWidth: 0 }}
             onBlur={(event) => updateStop(index, { position: event.currentTarget.value })}
             onKeyDown={(event) => {
               if (event.key === "Enter") event.currentTarget.blur();
@@ -796,7 +802,7 @@ function GradientEditor({
           </button>
         </div>
       ))}
-      <div style={{ display: "flex", gap: 6 }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         <button
           type="button"
           style={smallButtonStyle}
@@ -920,7 +926,7 @@ function FillStackEditor({
               />
               <select
                 aria-label={t("components.fillBlendMode")}
-                style={{ ...selectStyle, flex: 1, minWidth: 0 }}
+                style={{ ...railSelectStyle, flex: 1, minWidth: 0 }}
                 value={blends[index] ?? "normal"}
                 onChange={(event) =>
                   commit(
@@ -984,7 +990,7 @@ function FillStackEditor({
           </div>
         );
       })}
-      <div style={{ display: "flex", gap: 6 }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         <button
           type="button"
           style={smallButtonStyle}
@@ -1039,12 +1045,22 @@ function VariantPropertiesCard({
   const t = useT();
   // "axis::<name>" or "value::<axis>::<value>" while an inline rename is open.
   const [renaming, setRenaming] = useState<string | null>(null);
+  // Figma keeps variant properties compact: one row per axis (name + current
+  // value select); the value-management list opens behind a disclosure.
+  const [expandedAxes, setExpandedAxes] = useState<Set<string>>(new Set());
+  const toggleAxis = (name: string): void =>
+    setExpandedAxes((previous) => {
+      const next = new Set(previous);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
   const renameInput = (defaultValue: string, commit: (next: string) => void) => (
     <input
       autoFocus
       defaultValue={defaultValue}
       aria-label={t("components.name")}
-      style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+      style={{ ...railInputStyle, textAlign: "left", flex: 1, minWidth: 0 }}
       onClick={(event) => event.stopPropagation()}
       onBlur={(event) => {
         // Escape marks the input cancelled so an unmount-triggered blur can't
@@ -1090,20 +1106,43 @@ function VariantPropertiesCard({
       ) : null}
       {component.variants.map((axis) => {
         const selectedValue = selections[axis.name] ?? axis.default ?? axis.values[0] ?? "";
+        const expanded = expandedAxes.has(axis.name);
         return (
           <div key={axis.name} style={variantAxisBlockStyle}>
+            {/* Figma-compact axis row: disclosure · name · current-value select · ×. */}
             <div style={appearanceHeaderStyle}>
+              <button
+                type="button"
+                aria-expanded={expanded}
+                aria-label={t("components.manageValues", { name: axis.name })}
+                style={{ ...appearanceRemoveStyle, width: 14, flexShrink: 0 }}
+                onClick={() => toggleAxis(axis.name)}
+              >
+                {expanded ? "⌄" : "›"}
+              </button>
               {renaming === `axis::${axis.name}` ? (
                 renameInput(axis.name, (next) => renameVariantAxis(axis.name, next))
               ) : (
                 <span
-                  style={propLabelStyle}
+                  style={{ ...propLabelStyle, flexShrink: 0, maxWidth: 96 }}
                   title={t("components.renameHint")}
                   onDoubleClick={() => setRenaming(`axis::${axis.name}`)}
                 >
                   {axis.name}
                 </span>
               )}
+              <select
+                aria-label={axis.name}
+                style={{ ...railSelectStyle, flex: 1, minWidth: 0 }}
+                value={selectedValue}
+                onChange={(event) => onSelectValue(axis.name, event.currentTarget.value)}
+              >
+                {axis.values.map((value) => (
+                  <option key={value} value={value}>
+                    {value === axis.default ? `${value} ★` : value}
+                  </option>
+                ))}
+              </select>
               <button
                 type="button"
                 aria-label={t("components.deleteVariantAxis", { name: axis.name })}
@@ -1113,50 +1152,54 @@ function VariantPropertiesCard({
                 ×
               </button>
             </div>
-            {axis.values.map((value) => (
-              <div key={value} style={variantValueRowStyle}>
-                <input
-                  type="radio"
-                  name={`podo-default-${component.id}-${axis.name}`}
-                  checked={axis.default === value}
-                  title={t("components.setAsDefault", { value })}
-                  aria-label={t("components.setAsDefault", { value })}
-                  onChange={() => setVariantDefault(axis.name, value)}
-                />
-                {renaming === `value::${axis.name}::${value}` ? (
-                  renameInput(value, (next) => renameVariantValue(axis.name, value, next))
-                ) : (
-                  <button
-                    type="button"
-                    style={{
-                      ...variantValueNameButtonStyle,
-                      ...(selectedValue === value ? variantValueNameButtonActiveStyle : {}),
-                    }}
-                    title={t("components.renameHint")}
-                    onClick={() => onSelectValue(axis.name, value)}
-                    onDoubleClick={() => setRenaming(`value::${axis.name}::${value}`)}
-                  >
-                    {value}
-                  </button>
-                )}
+            {expanded ? (
+              <>
+                {axis.values.map((value) => (
+                  <div key={value} style={variantValueRowStyle}>
+                    <input
+                      type="radio"
+                      name={`podo-default-${component.id}-${axis.name}`}
+                      checked={axis.default === value}
+                      title={t("components.setAsDefault", { value })}
+                      aria-label={t("components.setAsDefault", { value })}
+                      onChange={() => setVariantDefault(axis.name, value)}
+                    />
+                    {renaming === `value::${axis.name}::${value}` ? (
+                      renameInput(value, (next) => renameVariantValue(axis.name, value, next))
+                    ) : (
+                      <button
+                        type="button"
+                        style={{
+                          ...variantValueNameButtonStyle,
+                          ...(selectedValue === value ? variantValueNameButtonActiveStyle : {}),
+                        }}
+                        title={t("components.renameHint")}
+                        onClick={() => onSelectValue(axis.name, value)}
+                        onDoubleClick={() => setRenaming(`value::${axis.name}::${value}`)}
+                      >
+                        {value}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      aria-label={t("components.removeValue", { value })}
+                      style={appearanceRemoveStyle}
+                      disabled={axis.values.length <= 1}
+                      onClick={() => removeVariantValue(axis.name, value)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
                 <button
                   type="button"
-                  aria-label={t("components.removeValue", { value })}
-                  style={appearanceRemoveStyle}
-                  disabled={axis.values.length <= 1}
-                  onClick={() => removeVariantValue(axis.name, value)}
+                  style={smallButtonStyle}
+                  onClick={() => addVariantValue(axis.name, uniqueName("value", axis.values))}
                 >
-                  ×
+                  {t("components.addValue")}
                 </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              style={smallButtonStyle}
-              onClick={() => addVariantValue(axis.name, uniqueName("value", axis.values))}
-            >
-              {t("components.addValue")}
-            </button>
+              </>
+            ) : null}
           </div>
         );
       })}
@@ -1671,6 +1714,21 @@ export function ComponentsPanelWorkspace({
   // Figma corner/stroke/padding expanders: manual toggle, or auto-open when a
   // per-corner (per-side) binding already exists so bound rows stay visible.
   const [cornersExpanded, setCornersExpanded] = useState(false);
+  // Figma-style collapsible inspector sections (Size / Auto layout / groups).
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const sectionOpen = (name: string): boolean => !collapsedSections.has(name);
+  const toggleSection = (name: string): void => {
+    // Collapsing unmounts any in-flight row editor WITHOUT its blur-commit —
+    // clear the editing state so re-expanding can't resurrect a stale editor.
+    setEditingBindingKey(null);
+    setCollapsedSections((previous) => {
+      const next = new Set(previous);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
+  const sectionChevron = (name: string): string => (sectionOpen(name) ? "⌄ " : "› ");
   const [strokeSidesExpanded, setStrokeSidesExpanded] = useState(false);
   const [paddingSidesExpanded, setPaddingSidesExpanded] = useState(false);
   // Figma stroke position, detected from the current encoding: an outline-width
@@ -1891,7 +1949,10 @@ export function ComponentsPanelWorkspace({
   const renderSizeSection = () => (
     <div style={appearanceGroupStyle}>
       <div style={appearanceHeaderStyle}>
-        <span style={appearanceGroupTitleStyle}>{t("components.size")}</span>
+        <span style={appearanceGroupTitleStyle} onClick={() => toggleSection("size")}>
+          {sectionChevron("size")}
+          {t("components.size")}
+        </span>
         {/* Figma "Add min/max…": reveals min/max W·H clamps. */}
         <button
           type="button"
@@ -1907,114 +1968,115 @@ export function ComponentsPanelWorkspace({
           min/max
         </button>
       </div>
-      {SIZE_SECTION_PROPERTIES.map((property) => {
-        const axis = property === "width" ? "W" : "H";
-        const raw = scopeValue(property);
-        const parentDirection = flexParentDirection();
-        const axisIsMain =
-          parentDirection !== null && (property === "width") === (parentDirection === "row");
-        // Fill can be encoded two ways: width/height 100% (no flex parent) or
-        // flex:1 / align-self:stretch inside an auto-layout parent (Figma).
-        const fillByFlex =
-          parentDirection !== null &&
-          (!raw || raw === "auto") &&
-          (axisIsMain
-            ? scopeValue("flex").trim().startsWith("1")
-            : scopeValue("align-self") === "stretch");
-        const mode: ResizeMode = fillByFlex ? "fill" : resizeModeFromValue(raw);
-        // "Auto" clears the binding — only offered where clearing actually works:
-        // when this scope's own bucket holds the key (or nothing is bound at all).
-        // In an overlay scope a base-inherited size can't be deleted, but picking
-        // another mode overrides it, after which Auto reappears to revert that.
-        const fillKey = axisIsMain ? "flex" : "align-self";
-        const ownsBinding =
-          `${activePart}.${property}` in scopeOwnTokens ||
-          `${activePart}.${fillKey}` in scopeOwnTokens;
-        // Applies the mode to EVERY selected part, each with its own parent
-        // direction (a row-parent child gets flex:1 while a column-parent child
-        // gets align-self:stretch in the same gesture).
-        const setResizeMode = (next: ResizeMode): void => {
-          const entries: Array<[string, string]> = [];
-          for (const part of editTargets) {
-            const partParentDirection = flexParentDirection(part);
-            const partAxisIsMain =
-              partParentDirection !== null &&
-              (property === "width") === (partParentDirection === "row");
-            const partFillKey = partAxisIsMain ? "flex" : "align-self";
-            const key = `${part}.${property}`;
-            const rawPart = String(scopeTokens[key] ?? "");
-            // In overlay scopes, deleting ("") a binding the BASE owns is a
-            // silent no-op — write an explicit neutral instead.
-            const clearSize =
-              activeScope !== "base" && !(key in scopeOwnTokens) && rawPart ? "auto" : "";
-            const fillKeyFull = `${part}.${partFillKey}`;
-            const fillValueNow = String(scopeTokens[fillKeyFull] ?? "");
-            const clearFill =
-              activeScope !== "base" && !(fillKeyFull in scopeOwnTokens) && fillValueNow
-                ? partAxisIsMain
-                  ? "0 0 auto"
-                  : "auto"
-                : "";
-            // Clear any previous flex-based fill encoding for this axis first.
-            if (partParentDirection !== null) entries.push([fillKeyFull, clearFill]);
-            if (next === "auto") entries.push([key, clearSize]);
-            else if (next === "hug") entries.push([key, "fit-content"]);
-            else if (next === "fixed") entries.push([key, measurePartSize(property, part)]);
-            else if (partParentDirection !== null) {
-              entries.push([key, clearSize]);
-              entries.push(
-                partAxisIsMain ? [`${part}.flex`, "1 1 0"] : [`${part}.align-self`, "stretch"]
-              );
-            } else {
-              entries.push([key, "100%"]);
+      {sectionOpen("size") &&
+        SIZE_SECTION_PROPERTIES.map((property) => {
+          const axis = property === "width" ? "W" : "H";
+          const raw = scopeValue(property);
+          const parentDirection = flexParentDirection();
+          const axisIsMain =
+            parentDirection !== null && (property === "width") === (parentDirection === "row");
+          // Fill can be encoded two ways: width/height 100% (no flex parent) or
+          // flex:1 / align-self:stretch inside an auto-layout parent (Figma).
+          const fillByFlex =
+            parentDirection !== null &&
+            (!raw || raw === "auto") &&
+            (axisIsMain
+              ? scopeValue("flex").trim().startsWith("1")
+              : scopeValue("align-self") === "stretch");
+          const mode: ResizeMode = fillByFlex ? "fill" : resizeModeFromValue(raw);
+          // "Auto" clears the binding — only offered where clearing actually works:
+          // when this scope's own bucket holds the key (or nothing is bound at all).
+          // In an overlay scope a base-inherited size can't be deleted, but picking
+          // another mode overrides it, after which Auto reappears to revert that.
+          const fillKey = axisIsMain ? "flex" : "align-self";
+          const ownsBinding =
+            `${activePart}.${property}` in scopeOwnTokens ||
+            `${activePart}.${fillKey}` in scopeOwnTokens;
+          // Applies the mode to EVERY selected part, each with its own parent
+          // direction (a row-parent child gets flex:1 while a column-parent child
+          // gets align-self:stretch in the same gesture).
+          const setResizeMode = (next: ResizeMode): void => {
+            const entries: Array<[string, string]> = [];
+            for (const part of editTargets) {
+              const partParentDirection = flexParentDirection(part);
+              const partAxisIsMain =
+                partParentDirection !== null &&
+                (property === "width") === (partParentDirection === "row");
+              const partFillKey = partAxisIsMain ? "flex" : "align-self";
+              const key = `${part}.${property}`;
+              const rawPart = String(scopeTokens[key] ?? "");
+              // In overlay scopes, deleting ("") a binding the BASE owns is a
+              // silent no-op — write an explicit neutral instead.
+              const clearSize =
+                activeScope !== "base" && !(key in scopeOwnTokens) && rawPart ? "auto" : "";
+              const fillKeyFull = `${part}.${partFillKey}`;
+              const fillValueNow = String(scopeTokens[fillKeyFull] ?? "");
+              const clearFill =
+                activeScope !== "base" && !(fillKeyFull in scopeOwnTokens) && fillValueNow
+                  ? partAxisIsMain
+                    ? "0 0 auto"
+                    : "auto"
+                  : "";
+              // Clear any previous flex-based fill encoding for this axis first.
+              if (partParentDirection !== null) entries.push([fillKeyFull, clearFill]);
+              if (next === "auto") entries.push([key, clearSize]);
+              else if (next === "hug") entries.push([key, "fit-content"]);
+              else if (next === "fixed") entries.push([key, measurePartSize(property, part)]);
+              else if (partParentDirection !== null) {
+                entries.push([key, clearSize]);
+                entries.push(
+                  partAxisIsMain ? [`${part}.flex`, "1 1 0"] : [`${part}.align-self`, "stretch"]
+                );
+              } else {
+                entries.push([key, "100%"]);
+              }
             }
-          }
-          applyAppearanceBindings(entries);
-        };
-        return (
-          <div key={property} style={autoLayoutRowStyle}>
-            <span style={{ ...propLabelStyle, width: 14, flexShrink: 0 }}>{axis}</span>
-            <select
-              aria-label={t("components.resizeModeFor", { axis })}
-              style={{ ...selectStyle, flex: 1, minWidth: 0 }}
-              value={mode}
-              onChange={(event) => setResizeMode(event.currentTarget.value as ResizeMode)}
-            >
-              {mode === "auto" || ownsBinding ? (
-                <option value="auto">{t("components.resizeAuto")}</option>
-              ) : null}
-              <option value="fixed">{t("components.resizeFixed")}</option>
-              <option value="hug">{t("components.resizeHug")}</option>
-              <option value="fill">{t("components.resizeFill")}</option>
-            </select>
-            {mode === "fixed" ? (
-              <input
-                // Mounts when entering Fixed (seeded from the measured/current
-                // value); reseeds on part/scope/variant-value switches.
-                key={`${activePart}:${scopeInstanceKey}:${property}`}
-                type="text"
-                aria-label={t("components.resizeValueFor", { axis })}
-                defaultValue={raw}
-                style={{ ...inputStyle, width: 76, flexShrink: 0 }}
-                onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") event.currentTarget.blur();
-                  if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-                    const delta = (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
-                    const next = stepDimensionValue(event.currentTarget.value || "0px", delta);
-                    if (next !== undefined) {
-                      event.preventDefault();
-                      event.currentTarget.value = next;
-                      applyToSelection(property, next);
+            applyAppearanceBindings(entries);
+          };
+          return (
+            <div key={property} style={autoLayoutRowStyle}>
+              <span style={{ ...propLabelStyle, width: 14, flexShrink: 0 }}>{axis}</span>
+              <select
+                aria-label={t("components.resizeModeFor", { axis })}
+                style={{ ...railSelectStyle, flex: 1, minWidth: 0 }}
+                value={mode}
+                onChange={(event) => setResizeMode(event.currentTarget.value as ResizeMode)}
+              >
+                {mode === "auto" || ownsBinding ? (
+                  <option value="auto">{t("components.resizeAuto")}</option>
+                ) : null}
+                <option value="fixed">{t("components.resizeFixed")}</option>
+                <option value="hug">{t("components.resizeHug")}</option>
+                <option value="fill">{t("components.resizeFill")}</option>
+              </select>
+              {mode === "fixed" ? (
+                <input
+                  // Mounts when entering Fixed (seeded from the measured/current
+                  // value); reseeds on part/scope/variant-value switches.
+                  key={`${activePart}:${scopeInstanceKey}:${property}`}
+                  type="text"
+                  aria-label={t("components.resizeValueFor", { axis })}
+                  defaultValue={raw}
+                  style={{ ...railInputStyle, width: 76, flexShrink: 0 }}
+                  onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") event.currentTarget.blur();
+                    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                      const delta = (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
+                      const next = stepDimensionValue(event.currentTarget.value || "0px", delta);
+                      if (next !== undefined) {
+                        event.preventDefault();
+                        event.currentTarget.value = next;
+                        applyToSelection(property, next);
+                      }
                     }
-                  }
-                }}
-              />
-            ) : null}
-          </div>
-        );
-      })}
-      {minMaxOpen
+                  }}
+                />
+              ) : null}
+            </div>
+          );
+        })}
+      {sectionOpen("size") && minMaxOpen
         ? MIN_MAX_PROPERTIES.map((property) => (
             <label key={property} style={propRowStyle}>
               <span style={propLabelStyle}>{appearancePropertyLabel(property, t)}</span>
@@ -2023,7 +2085,7 @@ export function ComponentsPanelWorkspace({
                 type="text"
                 defaultValue={scopeValue(property)}
                 placeholder={t("components.rawValuePlaceholder")}
-                style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+                style={{ ...railInputStyle, flex: 1, minWidth: 0 }}
                 onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") event.currentTarget.blur();
@@ -2041,94 +2103,95 @@ export function ComponentsPanelWorkspace({
             </label>
           ))
         : null}
-      {(() => {
-        // Figma "absolute position": pulls the layer out of flow; T/R/B/L +
-        // z-index inputs appear, seeded from the measured offset in its parent
-        // (the anatomy parent also gains position:relative so insets anchor).
-        const absolute = scopeValue("position") === "absolute";
-        const overlayInherited = (part: string, property: string): boolean =>
-          activeScope !== "base" &&
-          !(`${part}.${property}` in scopeOwnTokens) &&
-          String(scopeTokens[`${part}.${property}`] ?? "").length > 0;
-        return (
-          <>
-            <label style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11 }}>
-              <input
-                type="checkbox"
-                checked={absolute}
-                onChange={(event) => {
-                  const on = event.currentTarget.checked;
-                  const entries: Array<[string, string]> = [];
-                  for (const part of editTargets) {
-                    if (on) {
-                      entries.push([`${part}.position`, "absolute"]);
-                      entries.push([`${part}.top`, measurePartOffset(part, "top")]);
-                      entries.push([`${part}.left`, measurePartOffset(part, "left")]);
-                      const parentName = selectedComponentForSpec.anatomy.find(
-                        (entry) => entry.name === part
-                      )?.parent;
-                      if (
-                        parentName &&
-                        !String(scopeTokens[`${parentName}.position`] ?? "").length
-                      ) {
-                        entries.push([`${parentName}.position`, "relative"]);
-                      }
-                    } else {
-                      entries.push([
-                        `${part}.position`,
-                        overlayInherited(part, "position") ? "static" : "",
-                      ]);
-                      for (const side of ["top", "right", "bottom", "left"] as const) {
-                        entries.push([
-                          `${part}.${side}`,
-                          overlayInherited(part, side) ? "auto" : "",
-                        ]);
-                      }
-                      entries.push([`${part}.z-index`, ""]);
-                    }
-                  }
-                  applyAppearanceBindings(entries);
-                }}
-              />
-              {t("components.absolutePosition")}
-            </label>
-            {absolute
-              ? (["top", "right", "bottom", "left", "z-index"] as const).map((property) => (
-                  <label key={property} style={propRowStyle}>
-                    <span style={propLabelStyle}>
-                      {property === "z-index" ? "Z" : property.toUpperCase().slice(0, 1)}
-                    </span>
-                    <input
-                      key={`${activePart}:${scopeInstanceKey}:${property}`}
-                      type="text"
-                      aria-label={property}
-                      defaultValue={scopeValue(property)}
-                      placeholder={property === "z-index" ? "1" : "0px"}
-                      style={{ ...inputStyle, flex: 1, minWidth: 0 }}
-                      onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") event.currentTarget.blur();
-                        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-                          const delta =
-                            (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
-                          const next = stepDimensionValue(
-                            event.currentTarget.value || "0px",
-                            delta
-                          );
-                          if (next !== undefined) {
-                            event.preventDefault();
-                            event.currentTarget.value = next;
-                            applyToSelection(property, next);
-                          }
+      {sectionOpen("size") &&
+        (() => {
+          // Figma "absolute position": pulls the layer out of flow; T/R/B/L +
+          // z-index inputs appear, seeded from the measured offset in its parent
+          // (the anatomy parent also gains position:relative so insets anchor).
+          const absolute = scopeValue("position") === "absolute";
+          const overlayInherited = (part: string, property: string): boolean =>
+            activeScope !== "base" &&
+            !(`${part}.${property}` in scopeOwnTokens) &&
+            String(scopeTokens[`${part}.${property}`] ?? "").length > 0;
+          return (
+            <>
+              <label style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11 }}>
+                <input
+                  type="checkbox"
+                  checked={absolute}
+                  onChange={(event) => {
+                    const on = event.currentTarget.checked;
+                    const entries: Array<[string, string]> = [];
+                    for (const part of editTargets) {
+                      if (on) {
+                        entries.push([`${part}.position`, "absolute"]);
+                        entries.push([`${part}.top`, measurePartOffset(part, "top")]);
+                        entries.push([`${part}.left`, measurePartOffset(part, "left")]);
+                        const parentName = selectedComponentForSpec.anatomy.find(
+                          (entry) => entry.name === part
+                        )?.parent;
+                        if (
+                          parentName &&
+                          !String(scopeTokens[`${parentName}.position`] ?? "").length
+                        ) {
+                          entries.push([`${parentName}.position`, "relative"]);
                         }
-                      }}
-                    />
-                  </label>
-                ))
-              : null}
-          </>
-        );
-      })()}
+                      } else {
+                        entries.push([
+                          `${part}.position`,
+                          overlayInherited(part, "position") ? "static" : "",
+                        ]);
+                        for (const side of ["top", "right", "bottom", "left"] as const) {
+                          entries.push([
+                            `${part}.${side}`,
+                            overlayInherited(part, side) ? "auto" : "",
+                          ]);
+                        }
+                        entries.push([`${part}.z-index`, ""]);
+                      }
+                    }
+                    applyAppearanceBindings(entries);
+                  }}
+                />
+                {t("components.absolutePosition")}
+              </label>
+              {absolute
+                ? (["top", "right", "bottom", "left", "z-index"] as const).map((property) => (
+                    <label key={property} style={propRowStyle}>
+                      <span style={propLabelStyle}>
+                        {property === "z-index" ? "Z" : property.toUpperCase().slice(0, 1)}
+                      </span>
+                      <input
+                        key={`${activePart}:${scopeInstanceKey}:${property}`}
+                        type="text"
+                        aria-label={property}
+                        defaultValue={scopeValue(property)}
+                        placeholder={property === "z-index" ? "1" : "0px"}
+                        style={{ ...railInputStyle, flex: 1, minWidth: 0 }}
+                        onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") event.currentTarget.blur();
+                          if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                            const delta =
+                              (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
+                            const next = stepDimensionValue(
+                              event.currentTarget.value || "0px",
+                              delta
+                            );
+                            if (next !== undefined) {
+                              event.preventDefault();
+                              event.currentTarget.value = next;
+                              applyToSelection(property, next);
+                            }
+                          }
+                        }}
+                      />
+                    </label>
+                  ))
+                : null}
+            </>
+          );
+        })()}
     </div>
   );
   // Figma-style Auto layout section for the selected layer. Direction / wrap /
@@ -2168,7 +2231,7 @@ export function ComponentsPanelWorkspace({
           type="text"
           defaultValue={scopeValue(property)}
           placeholder={t("components.rawValuePlaceholder")}
-          style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+          style={{ ...railInputStyle, flex: 1, minWidth: 0 }}
           onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
           onKeyDown={(event) => {
             if (event.key === "Enter") event.currentTarget.blur();
@@ -2188,7 +2251,10 @@ export function ComponentsPanelWorkspace({
     return (
       <div style={appearanceGroupStyle}>
         <div style={appearanceHeaderStyle}>
-          <span style={appearanceGroupTitleStyle}>{t("components.autoLayout")}</span>
+          <span style={appearanceGroupTitleStyle} onClick={() => toggleSection("autolayout")}>
+            {sectionChevron("autolayout")}
+            {t("components.autoLayout")}
+          </span>
           {autoLayoutActive ? (
             autoLayoutOwnedHere ? (
               <button
@@ -2231,7 +2297,7 @@ export function ComponentsPanelWorkspace({
             </button>
           )}
         </div>
-        {autoLayoutActive ? (
+        {autoLayoutActive && sectionOpen("autolayout") ? (
           <>
             <div style={autoLayoutRowStyle}>
               {(["row", "column", "grid"] as const).map((mode) => {
@@ -2317,7 +2383,7 @@ export function ComponentsPanelWorkspace({
               {layoutMode !== "grid" ? (
                 <select
                   aria-label={t("components.distribution")}
-                  style={{ ...selectStyle, flex: 1, minWidth: 0 }}
+                  style={{ ...railSelectStyle, flex: 1, minWidth: 0 }}
                   value={spaceBetween ? justify : "packed"}
                   onChange={(event) =>
                     applyToSelection(
@@ -2779,7 +2845,8 @@ export function ComponentsPanelWorkspace({
                 ).map((group) => (
                   <div key={group} style={appearanceGroupStyle}>
                     <div style={appearanceHeaderStyle}>
-                      <span style={appearanceGroupTitleStyle}>
+                      <span style={appearanceGroupTitleStyle} onClick={() => toggleSection(group)}>
+                        {sectionChevron(group)}
                         {t(`components.group.${group}`)}
                       </span>
                       {/* Figma expanders: per-corner radius / per-side stroke widths. */}
@@ -2799,7 +2866,14 @@ export function ComponentsPanelWorkspace({
                         </button>
                       ) : null}
                       {group === "Stroke" ? (
-                        <>
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 4,
+                            flexShrink: 0,
+                          }}
+                        >
                           {/* Figma stroke position. inside = CSS border; outside =
                               outline (offset 0); center = outline pulled halfway in
                               via a negative offset. Translates the INSPECTOR's
@@ -2808,7 +2882,7 @@ export function ComponentsPanelWorkspace({
                               vector model). */}
                           <select
                             aria-label={t("components.strokePosition")}
-                            style={{ ...selectStyle, width: 96, flexShrink: 0 }}
+                            style={{ ...railSelectStyle, width: 96, flexShrink: 0 }}
                             value={strokePosition}
                             onChange={(event) =>
                               setStrokePosition(
@@ -2833,206 +2907,209 @@ export function ComponentsPanelWorkspace({
                           >
                             ⊞
                           </button>
-                        </>
+                        </span>
                       ) : null}
                     </div>
-                    {appearanceRows
-                      .filter((row) => appearanceGroup(row.property) === group)
-                      .map((row) => {
-                        const isColor = isColorAppearanceProperty(row.property);
-                        const isMixed = row.reference === MIXED_VALUE;
-                        // A binding is a {token} alias or a raw CSS value.
-                        const isAlias = !isMixed && row.reference.startsWith("{");
-                        const resolved = isMixed
-                          ? t("components.mixed")
-                          : isAlias
-                            ? cssToken(previewTokenLookup, row.reference.slice(1, -1), "")
-                            : row.reference;
-                        const tokenName = isAlias ? row.reference.slice(1, -1) : "";
-                        const raw = isRawValueProperty(row.property);
-                        const enumOptions = enumOptionsForProperty(row.property);
-                        const isShadowStack = normalizedProperty(row.property) === "shadow";
-                        const isGradient = normalizedProperty(row.property) === "gradient";
-                        const isFills = normalizedProperty(row.property) === "fills";
-                        return (
-                          <div key={row.key} style={appearanceRowStyle}>
-                            <div style={appearanceHeaderStyle}>
-                              <span style={propLabelStyle}>
-                                {appearancePropertyLabel(row.property, t)}
-                              </span>
-                              {row.bound ? (
-                                <button
-                                  type="button"
-                                  aria-label={t("components.removeProperty", {
-                                    property: row.property,
-                                  })}
-                                  style={appearanceRemoveStyle}
-                                  onClick={() => applyToSelection(row.property, "")}
-                                >
-                                  ×
-                                </button>
-                              ) : null}
-                            </div>
-                            {editingBindingKey === row.key ? (
-                              isShadowStack ? (
-                                // Figma Effects: structured multi-shadow editor over the
-                                // box-shadow comma list (X/Y/blur/spread/color/inner).
-                                <ShadowStackEditor
-                                  value={isMixed ? "" : row.reference || row.defaultAlias || ""}
-                                  onChange={(next) => applyToSelection(row.property, next)}
-                                  onClose={() => setEditingBindingKey(null)}
-                                />
-                              ) : isFills ? (
-                                // Figma fill stack: background-image layers with
-                                // per-fill blend modes, both fanned to the selection.
-                                <FillStackEditor
-                                  imagesValue={isMixed ? "" : row.reference || ""}
-                                  blendValue={String(
-                                    scopeTokens[`${activePart}.background-blend-mode`] ?? ""
-                                  )}
-                                  onChange={(images, blendModes) =>
-                                    applyAppearanceBindings(
-                                      editTargets.flatMap((part) => [
-                                        [`${part}.fills`, images] as [string, string],
-                                        [`${part}.background-blend-mode`, blendModes] as [
-                                          string,
-                                          string,
-                                        ],
-                                      ])
-                                    )
-                                  }
-                                  onClose={() => setEditingBindingKey(null)}
-                                />
-                              ) : isGradient ? (
-                                // Legacy gradient binding: type/angle/stops editor over
-                                // a single CSS gradient() function string.
-                                <GradientEditor
-                                  value={isMixed ? "" : row.reference || row.defaultAlias || ""}
-                                  onChange={(next) => applyToSelection(row.property, next)}
-                                  onClose={() => setEditingBindingKey(null)}
-                                />
-                              ) : enumOptions ? (
-                                <select
-                                  autoFocus
-                                  style={selectStyle}
-                                  value={
-                                    !isMixed && enumOptions.includes(row.reference)
-                                      ? row.reference
-                                      : (row.defaultAlias ?? enumOptions[0])
-                                  }
-                                  onChange={(event) => {
-                                    applyToSelection(row.property, event.currentTarget.value);
-                                    setEditingBindingKey(null);
-                                  }}
-                                  onBlur={() => setEditingBindingKey(null)}
-                                  onKeyDown={(event) => {
-                                    if (event.key === "Escape") setEditingBindingKey(null);
-                                  }}
-                                >
-                                  {enumOptions.map((option) => (
-                                    <option key={option} value={option}>
-                                      {option}
-                                    </option>
-                                  ))}
-                                </select>
-                              ) : raw ? (
-                                <input
-                                  autoFocus
-                                  type="text"
-                                  // Unbound raw rows start from the catalog default (e.g. 14px)
-                                  // so there's a sensible value to tweak.
-                                  defaultValue={
-                                    isMixed ? "" : row.reference || row.defaultAlias || ""
-                                  }
-                                  placeholder={t("components.rawValuePlaceholder")}
-                                  style={inputStyle}
-                                  onBlur={(event) => {
-                                    applyToSelection(row.property, event.currentTarget.value);
-                                    setEditingBindingKey(null);
-                                  }}
-                                  onKeyDown={(event) => {
-                                    if (event.key === "Enter") event.currentTarget.blur();
-                                    if (event.key === "Escape") setEditingBindingKey(null);
-                                    // Figma-style scrubbing: arrows step the first number
-                                    // (Shift = ×10) and apply live so the preview follows.
-                                    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-                                      const delta =
-                                        (event.key === "ArrowUp" ? 1 : -1) *
-                                        (event.shiftKey ? 10 : 1);
-                                      const next = stepDimensionValue(
-                                        event.currentTarget.value ||
-                                          (isMixed ? "" : row.reference) ||
-                                          row.defaultAlias ||
-                                          "",
-                                        delta
-                                      );
-                                      if (next !== undefined) {
-                                        event.preventDefault();
-                                        event.currentTarget.value = next;
-                                        applyToSelection(row.property, next);
-                                      }
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                <TokenPicker
-                                  autoFocus
-                                  options={optionsForProperty(row.property)}
-                                  placeholder={tokenName}
-                                  onPick={(reference) => {
-                                    applyToSelection(row.property, reference);
-                                    setEditingBindingKey(null);
-                                  }}
-                                  onCancel={() => setEditingBindingKey(null)}
-                                />
-                              )
-                            ) : (
-                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                {isColor ? (
-                                  // Figma fill row: the swatch opens the inline HSV+alpha
-                                  // picker (writes a raw color, detaching any token —
-                                  // same as editing a variable-bound fill in Figma);
-                                  // the chip still opens the token picker.
-                                  <ColorSwatchPicker
-                                    label={appearancePropertyLabel(row.property, t)}
-                                    swatchColor={isMixed ? undefined : resolved || undefined}
-                                    value={
-                                      (isMixed ? undefined : parseColor(resolved)) ?? {
-                                        r: 127,
-                                        g: 127,
-                                        b: 127,
-                                        a: 1,
-                                      }
-                                    }
-                                    onOpen={() => setEditingBindingKey(null)}
-                                    onChange={(next) =>
-                                      applyToSelection(row.property, formatColorValue(next))
-                                    }
-                                  />
+                    {sectionOpen(group) &&
+                      appearanceRows
+                        .filter((row) => appearanceGroup(row.property) === group)
+                        .map((row) => {
+                          const isColor = isColorAppearanceProperty(row.property);
+                          const isMixed = row.reference === MIXED_VALUE;
+                          // A binding is a {token} alias or a raw CSS value.
+                          const isAlias = !isMixed && row.reference.startsWith("{");
+                          const resolved = isMixed
+                            ? t("components.mixed")
+                            : isAlias
+                              ? cssToken(previewTokenLookup, row.reference.slice(1, -1), "")
+                              : row.reference;
+                          const tokenName = isAlias ? row.reference.slice(1, -1) : "";
+                          const raw = isRawValueProperty(row.property);
+                          const enumOptions = enumOptionsForProperty(row.property);
+                          const isShadowStack = normalizedProperty(row.property) === "shadow";
+                          const isGradient = normalizedProperty(row.property) === "gradient";
+                          const isFills = normalizedProperty(row.property) === "fills";
+                          return (
+                            <div key={row.key} style={appearanceRowStyle}>
+                              <div style={appearanceHeaderStyle}>
+                                <span style={propLabelStyle}>
+                                  {appearancePropertyLabel(row.property, t)}
+                                </span>
+                                {row.bound ? (
+                                  <button
+                                    type="button"
+                                    aria-label={t("components.removeProperty", {
+                                      property: row.property,
+                                    })}
+                                    style={appearanceRemoveStyle}
+                                    onClick={() => applyToSelection(row.property, "")}
+                                  >
+                                    ×
+                                  </button>
                                 ) : null}
-                                <button
-                                  type="button"
-                                  style={{ ...tokenChipStyle, flex: 1, minWidth: 0 }}
-                                  title={tokenName || resolved || t("components.setProperty")}
-                                  onClick={() => setEditingBindingKey(row.key)}
-                                >
-                                  {isColor ? null : (
-                                    <span
-                                      style={{
-                                        ...swatchStyle,
-                                        background: "transparent",
-                                        border: "none",
-                                      }}
-                                    />
-                                  )}
-                                  <span style={tokenChipValueStyle}>{resolved || "—"}</span>
-                                  <span style={tokenChipNameStyle}>{tokenName}</span>
-                                </button>
                               </div>
-                            )}
-                          </div>
-                        );
-                      })}
+                              {editingBindingKey === row.key ? (
+                                isShadowStack ? (
+                                  // Figma Effects: structured multi-shadow editor over the
+                                  // box-shadow comma list (X/Y/blur/spread/color/inner).
+                                  <ShadowStackEditor
+                                    value={isMixed ? "" : row.reference || row.defaultAlias || ""}
+                                    onChange={(next) => applyToSelection(row.property, next)}
+                                    onClose={() => setEditingBindingKey(null)}
+                                  />
+                                ) : isFills ? (
+                                  // Figma fill stack: background-image layers with
+                                  // per-fill blend modes, both fanned to the selection.
+                                  <FillStackEditor
+                                    imagesValue={isMixed ? "" : row.reference || ""}
+                                    blendValue={String(
+                                      scopeTokens[`${activePart}.background-blend-mode`] ?? ""
+                                    )}
+                                    onChange={(images, blendModes) =>
+                                      applyAppearanceBindings(
+                                        editTargets.flatMap((part) => [
+                                          [`${part}.fills`, images] as [string, string],
+                                          [`${part}.background-blend-mode`, blendModes] as [
+                                            string,
+                                            string,
+                                          ],
+                                        ])
+                                      )
+                                    }
+                                    onClose={() => setEditingBindingKey(null)}
+                                  />
+                                ) : isGradient ? (
+                                  // Legacy gradient binding: type/angle/stops editor over
+                                  // a single CSS gradient() function string.
+                                  <GradientEditor
+                                    value={isMixed ? "" : row.reference || row.defaultAlias || ""}
+                                    onChange={(next) => applyToSelection(row.property, next)}
+                                    onClose={() => setEditingBindingKey(null)}
+                                  />
+                                ) : enumOptions ? (
+                                  <select
+                                    autoFocus
+                                    style={railSelectStyle}
+                                    value={
+                                      !isMixed && enumOptions.includes(row.reference)
+                                        ? row.reference
+                                        : (row.defaultAlias ?? enumOptions[0])
+                                    }
+                                    onChange={(event) => {
+                                      applyToSelection(row.property, event.currentTarget.value);
+                                      setEditingBindingKey(null);
+                                    }}
+                                    onBlur={() => setEditingBindingKey(null)}
+                                    onKeyDown={(event) => {
+                                      if (event.key === "Escape") setEditingBindingKey(null);
+                                    }}
+                                  >
+                                    {enumOptions.map((option) => (
+                                      <option key={option} value={option}>
+                                        {option}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : raw ? (
+                                  <input
+                                    autoFocus
+                                    type="text"
+                                    // Unbound raw rows start from the catalog default (e.g. 14px)
+                                    // so there's a sensible value to tweak.
+                                    defaultValue={
+                                      isMixed ? "" : row.reference || row.defaultAlias || ""
+                                    }
+                                    placeholder={t("components.rawValuePlaceholder")}
+                                    style={{ ...railInputStyle, textAlign: "left" }}
+                                    onBlur={(event) => {
+                                      applyToSelection(row.property, event.currentTarget.value);
+                                      setEditingBindingKey(null);
+                                    }}
+                                    onKeyDown={(event) => {
+                                      if (event.key === "Enter") event.currentTarget.blur();
+                                      if (event.key === "Escape") setEditingBindingKey(null);
+                                      // Figma-style scrubbing: arrows step the first number
+                                      // (Shift = ×10) and apply live so the preview follows.
+                                      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                                        const delta =
+                                          (event.key === "ArrowUp" ? 1 : -1) *
+                                          (event.shiftKey ? 10 : 1);
+                                        const next = stepDimensionValue(
+                                          event.currentTarget.value ||
+                                            (isMixed ? "" : row.reference) ||
+                                            row.defaultAlias ||
+                                            "",
+                                          delta
+                                        );
+                                        if (next !== undefined) {
+                                          event.preventDefault();
+                                          event.currentTarget.value = next;
+                                          applyToSelection(row.property, next);
+                                        }
+                                      }
+                                    }}
+                                  />
+                                ) : (
+                                  <TokenPicker
+                                    autoFocus
+                                    compact
+                                    options={optionsForProperty(row.property)}
+                                    placeholder={tokenName}
+                                    onPick={(reference) => {
+                                      applyToSelection(row.property, reference);
+                                      setEditingBindingKey(null);
+                                    }}
+                                    onCancel={() => setEditingBindingKey(null)}
+                                  />
+                                )
+                              ) : (
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  {isColor ? (
+                                    // Figma fill row: the swatch opens the inline HSV+alpha
+                                    // picker (writes a raw color, detaching any token —
+                                    // same as editing a variable-bound fill in Figma);
+                                    // the chip still opens the token picker.
+                                    <ColorSwatchPicker
+                                      compact
+                                      label={appearancePropertyLabel(row.property, t)}
+                                      swatchColor={isMixed ? undefined : resolved || undefined}
+                                      value={
+                                        (isMixed ? undefined : parseColor(resolved)) ?? {
+                                          r: 127,
+                                          g: 127,
+                                          b: 127,
+                                          a: 1,
+                                        }
+                                      }
+                                      onOpen={() => setEditingBindingKey(null)}
+                                      onChange={(next) =>
+                                        applyToSelection(row.property, formatColorValue(next))
+                                      }
+                                    />
+                                  ) : null}
+                                  <button
+                                    type="button"
+                                    style={{ ...tokenChipStyle, flex: 1, minWidth: 0 }}
+                                    title={tokenName || resolved || t("components.setProperty")}
+                                    onClick={() => setEditingBindingKey(row.key)}
+                                  >
+                                    {isColor ? null : (
+                                      <span
+                                        style={{
+                                          ...swatchStyle,
+                                          background: "transparent",
+                                          border: "none",
+                                        }}
+                                      />
+                                    )}
+                                    <span style={tokenChipValueStyle}>{resolved || "—"}</span>
+                                    <span style={tokenChipNameStyle}>{tokenName}</span>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                   </div>
                 ))
               ) : (
