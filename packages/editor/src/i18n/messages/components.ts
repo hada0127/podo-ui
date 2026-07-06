@@ -5,6 +5,7 @@ export const componentsEn = {
   "components.emptyList": "No components match this search.",
 
   "components.layers": "Layers",
+  "components.pagesResize": "Resize components list",
   "components.addLayer": "Add layer",
 
   "components.details": "Details",
@@ -240,6 +241,7 @@ export const componentsKo: Record<keyof typeof componentsEn, string> = {
   "components.emptyList": "검색과 일치하는 컴포넌트가 없습니다.",
 
   "components.layers": "레이어",
+  "components.pagesResize": "컴포넌트 목록 크기 조절",
   "components.addLayer": "레이어 추가",
 
   "components.details": "세부 정보",

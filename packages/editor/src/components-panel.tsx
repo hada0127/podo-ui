@@ -1440,6 +1440,24 @@ export function ComponentsPanelWorkspace({
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
   };
+  // Figma-style Pages/Layers split: drag the divider under the components list
+  // to trade height between the two left-panel sections.
+  const [pagesHeight, setPagesHeight] = useState(192);
+  const startPagesResize = (event: ReactPointerEvent): void => {
+    event.preventDefault();
+    const startY = event.clientY;
+    const startHeight = pagesHeight;
+    const onMove = (move: PointerEvent): void =>
+      setPagesHeight(
+        Math.max(72, Math.min(window.innerHeight - 220, startHeight + move.clientY - startY))
+      );
+    const onUp = (): void => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
   // Layers reflect the selected variant (e.g. type=time hides the calendar parts).
   const visibleAnatomy = visibleComponentAnatomy(
     selectedComponentForSpec,
@@ -2579,7 +2597,15 @@ export function ComponentsPanelWorkspace({
               onChange={(event) => setComponentSearch(event.currentTarget.value)}
             />
           </div>
-          <div style={{ maxHeight: 192, overflowY: "auto", display: "grid", paddingBottom: 8 }}>
+          <div
+            style={{
+              height: pagesHeight,
+              overflowY: "auto",
+              display: "grid",
+              alignContent: "start",
+              paddingBottom: 8,
+            }}
+          >
             {filteredComponents.map((component) => (
               <button
                 key={component.id}
@@ -2600,6 +2626,22 @@ export function ComponentsPanelWorkspace({
               </button>
             ))}
           </div>
+          {/* Figma-style Pages/Layers divider: drag to resize the list above. */}
+          <div
+            role="separator"
+            aria-orientation="horizontal"
+            aria-label={t("components.pagesResize")}
+            onPointerDown={startPagesResize}
+            style={{
+              // position:relative makes zIndex effective, so the negative-margin
+              // overlap paints ABOVE the layers header — full 7px hit zone.
+              position: "relative",
+              height: 7,
+              margin: "-3px 0 -4px",
+              cursor: "row-resize",
+              zIndex: 5,
+            }}
+          />
         </div>
         {policy.design ? (
           <>
