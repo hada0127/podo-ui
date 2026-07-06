@@ -9,7 +9,7 @@ import {
   iconPickerGridStyle,
   iconPickerPopoverStyle,
   iconPickerSwatchStyle,
-  inputStyle,
+  railTextInputStyle,
   rowStyle,
   tokenPickerEmptyStyle,
   tokenPickerWrapStyle,
@@ -66,7 +66,7 @@ export function IconPicker({
         <input
           aria-label={t("components.iconSearch")}
           placeholder={t("components.iconSearch")}
-          style={{ ...inputStyle, flex: 1 }}
+          style={{ ...railTextInputStyle, flex: 1 }}
           value={query}
           onChange={(event) => {
             setQuery(event.currentTarget.value);

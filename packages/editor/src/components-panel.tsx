@@ -49,7 +49,7 @@ import {
   autoLayoutToggleStyle,
   cardHeaderStyle,
   cardStyle,
-  checkboxFieldStyle,
+  railCheckboxFieldStyle,
   compactFormGridStyle,
   layerResizeHandleStyle,
   layersColumnStyle,
@@ -76,28 +76,32 @@ import {
   errorBannerStyle,
   fieldStyle,
   inputStyle,
+  railFieldStyle,
+  railTextInputStyle,
   propLabelStyle,
   propRowStyle,
   propertiesRailStyle,
   railFieldsStyle,
   railInputStyle,
   railSelectStyle,
+  selectStyle,
   railSectionTitleStyle,
   rowStyle,
   sectionHeaderStyle,
   sectionMetaStyle,
   sectionTitleStyle,
-  selectStyle,
   stickyPreviewColumnStyle,
   sidebarTitleStyle,
-  smallButtonStyle,
+  railButtonStyle,
+  railCheckboxInputStyle,
   summaryStyle,
   tableCellMetaStyle,
   tableCellTextStyle,
   tableRowActiveStyle,
   tableRowStyle,
   tableStyle,
-  textareaStyle,
+  railTextareaStyle,
+  smallButtonStyle,
   tokenChipNameStyle,
   tokenChipStyle,
   tokenChipValueStyle,
@@ -545,7 +549,7 @@ function ShadowStackEditor({
             gap: 4,
             padding: 6,
             border: "1px solid #eceef2",
-            borderRadius: 6,
+            borderRadius: 4,
           }}
         >
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -611,7 +615,7 @@ function ShadowStackEditor({
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         <button
           type="button"
-          style={smallButtonStyle}
+          style={railButtonStyle}
           onClick={() =>
             commit([
               ...layers,
@@ -628,7 +632,7 @@ function ShadowStackEditor({
         >
           {t("components.shadowAdd")}
         </button>
-        <button type="button" style={smallButtonStyle} onClick={onClose}>
+        <button type="button" style={railButtonStyle} onClick={onClose}>
           {t("components.done")}
         </button>
       </div>
@@ -805,7 +809,7 @@ function GradientEditor({
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         <button
           type="button"
-          style={smallButtonStyle}
+          style={railButtonStyle}
           onClick={() =>
             commit({
               ...gradient,
@@ -815,7 +819,7 @@ function GradientEditor({
         >
           {t("components.gradientAddStop")}
         </button>
-        <button type="button" style={smallButtonStyle} onClick={onClose}>
+        <button type="button" style={railButtonStyle} onClick={onClose}>
           {t("components.done")}
         </button>
       </div>
@@ -910,7 +914,7 @@ function FillStackEditor({
               gap: 4,
               padding: 6,
               border: "1px solid #eceef2",
-              borderRadius: 6,
+              borderRadius: 4,
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -993,19 +997,19 @@ function FillStackEditor({
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         <button
           type="button"
-          style={smallButtonStyle}
+          style={railButtonStyle}
           onClick={() => addLayer("linear-gradient(#7c3aed, #7c3aed)")}
         >
           {t("components.fillAddSolid")}
         </button>
         <button
           type="button"
-          style={smallButtonStyle}
+          style={railButtonStyle}
           onClick={() => addLayer("linear-gradient(90deg, #7c3aed 0%, #4c9ffe 100%)")}
         >
           {t("components.fillAddGradient")}
         </button>
-        <button type="button" style={smallButtonStyle} onClick={onClose}>
+        <button type="button" style={railButtonStyle} onClick={onClose}>
           {t("components.done")}
         </button>
       </div>
@@ -1060,7 +1064,7 @@ function VariantPropertiesCard({
       autoFocus
       defaultValue={defaultValue}
       aria-label={t("components.name")}
-      style={{ ...railInputStyle, textAlign: "left", flex: 1, minWidth: 0 }}
+      style={{ ...railTextInputStyle, flex: 1, minWidth: 0 }}
       onClick={(event) => event.stopPropagation()}
       onBlur={(event) => {
         // Escape marks the input cancelled so an unmount-triggered blur can't
@@ -1085,7 +1089,7 @@ function VariantPropertiesCard({
         <strong style={railSectionTitleStyle}>{t("components.propertiesHeading")}</strong>
         <button
           type="button"
-          style={smallButtonStyle}
+          style={railButtonStyle}
           title={t("components.addVariantAxis")}
           aria-label={t("components.addVariantAxis")}
           onClick={() =>
@@ -1193,7 +1197,7 @@ function VariantPropertiesCard({
                 ))}
                 <button
                   type="button"
-                  style={smallButtonStyle}
+                  style={railButtonStyle}
                   onClick={() => addVariantValue(axis.name, uniqueName("value", axis.values))}
                 >
                   {t("components.addValue")}
@@ -2280,7 +2284,7 @@ export function ComponentsPanelWorkspace({
               type="button"
               aria-label={t("components.autoLayoutAdd")}
               title={t("components.autoLayoutAdd")}
-              style={smallButtonStyle}
+              style={railButtonStyle}
               onClick={() =>
                 applyAppearanceBindings(
                   editTargets.flatMap((part) => [
@@ -2546,7 +2550,7 @@ export function ComponentsPanelWorkspace({
               {policy.structure ? (
                 <button
                   type="button"
-                  style={smallButtonStyle}
+                  style={railButtonStyle}
                   onClick={() => addAnatomyPart("layer")}
                   title={t("components.addLayer")}
                 >
@@ -2769,7 +2773,10 @@ export function ComponentsPanelWorkspace({
           ) : null;
         })()}
       </div>
-      <div style={propertiesRailStyle}>
+      {/* Keyed by component: switching selection unmounts open pickers/drafts in
+          the rail so they can't keep editing (or writing to) the previous
+          component's bindings — Figma closes inspector popovers the same way. */}
+      <div style={propertiesRailStyle} key={selectedComponentForSpec?.id ?? "none"}>
         <div style={componentEditModeBarStyle}>
           {(policy.design ? (["design", "preview"] as const) : (["preview"] as const)).map(
             (target) => (
@@ -2823,7 +2830,7 @@ export function ComponentsPanelWorkspace({
               <label style={propRowStyle}>
                 <span style={propLabelStyle}>{t("components.applyTo")}</span>
                 <select
-                  style={selectStyle}
+                  style={railSelectStyle}
                   value={activeScope}
                   onChange={(event) => changeAppearanceScope(event.currentTarget.value)}
                 >
@@ -3020,7 +3027,7 @@ export function ComponentsPanelWorkspace({
                                       isMixed ? "" : row.reference || row.defaultAlias || ""
                                     }
                                     placeholder={t("components.rawValuePlaceholder")}
-                                    style={{ ...railInputStyle, textAlign: "left" }}
+                                    style={railTextInputStyle}
                                     onBlur={(event) => {
                                       applyToSelection(row.property, event.currentTarget.value);
                                       setEditingBindingKey(null);
@@ -3126,7 +3133,7 @@ export function ComponentsPanelWorkspace({
             <label style={propRowStyle}>
               <span style={propLabelStyle}>{t("components.stateLabel")}</span>
               <select
-                style={selectStyle}
+                style={railSelectStyle}
                 value={effectiveComponentPreviewSelections.state ?? "default"}
                 onChange={(event) => commitPreviewSelection("state", event.currentTarget.value)}
               >
@@ -3150,7 +3157,7 @@ export function ComponentsPanelWorkspace({
                 <label key={`variant:${variant.name}`} style={propRowStyle}>
                   <span style={propLabelStyle}>{variant.name}</span>
                   <select
-                    style={selectStyle}
+                    style={railSelectStyle}
                     value={
                       effectiveComponentPreviewSelections[variant.name] ??
                       variant.default ??
@@ -3182,7 +3189,7 @@ export function ComponentsPanelWorkspace({
               <label style={propRowStyle}>
                 <span style={propLabelStyle}>{t("components.previewTextLabel")}</span>
                 <input
-                  style={inputStyle}
+                  style={railTextInputStyle}
                   value={effectiveComponentPreviewSelections.text ?? ""}
                   onChange={(event) => commitPreviewSelection("text", event.currentTarget.value)}
                 />
@@ -3200,7 +3207,7 @@ export function ComponentsPanelWorkspace({
             <label style={propRowStyle}>
               <span style={propLabelStyle}>control</span>
               <select
-                style={selectStyle}
+                style={railSelectStyle}
                 value={effectiveComponentPreviewSelections["slot:control"] ?? "input"}
                 onChange={(event) =>
                   commitPreviewSelection("slot:control", event.currentTarget.value)
@@ -3235,7 +3242,7 @@ export function ComponentsPanelWorkspace({
                       <label key={prop.name} style={propRowStyle}>
                         <span style={propLabelStyle}>{prop.name}</span>
                         <select
-                          style={selectStyle}
+                          style={railSelectStyle}
                           value={raw ?? fallback}
                           onChange={(event) =>
                             commitPreviewSelection(prop.name, event.currentTarget.value)
@@ -3253,9 +3260,10 @@ export function ComponentsPanelWorkspace({
                   }
                   if (propType.kind === "boolean") {
                     return (
-                      <label key={prop.name} style={checkboxFieldStyle}>
+                      <label key={prop.name} style={railCheckboxFieldStyle}>
                         <input
                           type="checkbox"
+                          style={railCheckboxInputStyle}
                           checked={raw === "true" || (raw === undefined && Boolean(prop.default))}
                           onChange={(event) =>
                             commitPreviewSelection(prop.name, event.currentTarget.checked)
@@ -3271,7 +3279,7 @@ export function ComponentsPanelWorkspace({
                         <span style={propLabelStyle}>{prop.name}</span>
                         <input
                           type="number"
-                          style={inputStyle}
+                          style={railInputStyle}
                           value={raw ?? fallback}
                           onChange={(event) =>
                             commitPreviewSelection(
@@ -3309,7 +3317,7 @@ export function ComponentsPanelWorkspace({
                         <label key={prop.name} style={{ ...propRowStyle, alignItems: "start" }}>
                           <span style={propLabelStyle}>{prop.name}</span>
                           <textarea
-                            style={textareaStyle}
+                            style={railTextareaStyle}
                             value={raw ?? fallback}
                             onChange={(event) =>
                               commitPreviewSelection(prop.name, event.currentTarget.value)
@@ -3323,7 +3331,7 @@ export function ComponentsPanelWorkspace({
                         <span style={propLabelStyle}>{prop.name}</span>
                         <input
                           type="text"
-                          style={inputStyle}
+                          style={railTextInputStyle}
                           value={raw ?? fallback}
                           onChange={(event) =>
                             commitPreviewSelection(prop.name, event.currentTarget.value)
@@ -3405,7 +3413,7 @@ export function ComponentsPanelWorkspace({
                     <strong style={railSectionTitleStyle}>{t("components.props")}</strong>
                     <button
                       type="button"
-                      style={smallButtonStyle}
+                      style={railButtonStyle}
                       onClick={() => {
                         setSelectedPropName(undefined);
                         setPropDraft(createNewComponentPropDraft());
@@ -3431,10 +3439,10 @@ export function ComponentsPanelWorkspace({
                     ))}
                   </div>
                   <div style={editorFormStyle}>
-                    <label style={fieldStyle}>
+                    <label style={railFieldStyle}>
                       {t("components.name")}
                       <input
-                        style={inputStyle}
+                        style={railTextInputStyle}
                         value={propDraft.name}
                         onChange={(event) => {
                           const name = event.currentTarget.value;
@@ -3442,10 +3450,10 @@ export function ComponentsPanelWorkspace({
                         }}
                       />
                     </label>
-                    <label style={fieldStyle}>
+                    <label style={railFieldStyle}>
                       {t("components.type")}
                       <select
-                        style={selectStyle}
+                        style={railSelectStyle}
                         value={propDraft.kind}
                         onChange={(event) => {
                           const kind = event.currentTarget.value as ComponentPropDraft["kind"];
@@ -3462,10 +3470,10 @@ export function ComponentsPanelWorkspace({
                         ))}
                       </select>
                     </label>
-                    <label style={fieldStyle}>
+                    <label style={railFieldStyle}>
                       {t("components.values")}
                       <input
-                        style={inputStyle}
+                        style={railTextInputStyle}
                         value={propDraft.valuesText}
                         onChange={(event) => {
                           const valuesText = event.currentTarget.value;
@@ -3476,10 +3484,10 @@ export function ComponentsPanelWorkspace({
                         }}
                       />
                     </label>
-                    <label style={fieldStyle}>
+                    <label style={railFieldStyle}>
                       {t("components.default")}
                       <input
-                        style={inputStyle}
+                        style={railTextInputStyle}
                         value={propDraft.defaultValue}
                         onChange={(event) => {
                           const defaultValue = event.currentTarget.value;
@@ -3490,9 +3498,10 @@ export function ComponentsPanelWorkspace({
                         }}
                       />
                     </label>
-                    <label style={checkboxFieldStyle}>
+                    <label style={railCheckboxFieldStyle}>
                       <input
                         type="checkbox"
+                        style={railCheckboxInputStyle}
                         checked={propDraft.required}
                         onChange={(event) => {
                           const required = event.currentTarget.checked;
@@ -3504,10 +3513,10 @@ export function ComponentsPanelWorkspace({
                       />
                       {t("components.required")}
                     </label>
-                    <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                    <label style={{ ...railFieldStyle, gridColumn: "1 / -1" }}>
                       {t("components.description")}
                       <input
-                        style={inputStyle}
+                        style={railTextInputStyle}
                         value={propDraft.description}
                         onChange={(event) => {
                           const description = event.currentTarget.value;
@@ -3519,7 +3528,7 @@ export function ComponentsPanelWorkspace({
                       />
                     </label>
                     <div style={rowStyle}>
-                      <button type="button" style={smallButtonStyle} onClick={savePropDraft}>
+                      <button type="button" style={railButtonStyle} onClick={savePropDraft}>
                         {t("components.saveProp")}
                       </button>
                       <button
@@ -3540,7 +3549,7 @@ export function ComponentsPanelWorkspace({
                     <strong style={railSectionTitleStyle}>{t("components.variants")}</strong>
                     <button
                       type="button"
-                      style={smallButtonStyle}
+                      style={railButtonStyle}
                       onClick={() => {
                         setSelectedVariantName(undefined);
                         setVariantDraft(createNewComponentVariantDraft());
@@ -3566,10 +3575,10 @@ export function ComponentsPanelWorkspace({
                     ))}
                   </div>
                   <div style={editorFormStyle}>
-                    <label style={fieldStyle}>
+                    <label style={railFieldStyle}>
                       {t("components.name")}
                       <input
-                        style={inputStyle}
+                        style={railTextInputStyle}
                         value={variantDraft.name}
                         onChange={(event) => {
                           const name = event.currentTarget.value;
@@ -3580,12 +3589,12 @@ export function ComponentsPanelWorkspace({
                         }}
                       />
                     </label>
-                    <div style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                    <div style={{ ...railFieldStyle, gridColumn: "1 / -1" }}>
                       <div style={cardHeaderStyle}>
                         <span>{t("components.valuesSelectDefault")}</span>
                         <button
                           type="button"
-                          style={smallButtonStyle}
+                          style={railButtonStyle}
                           onClick={addVariantDraftValue}
                         >
                           {t("components.addValue")}
@@ -3595,7 +3604,7 @@ export function ComponentsPanelWorkspace({
                         <div key={index} style={variantValueRowStyle}>
                           <input
                             type="radio"
-                            name="variant-default-value"
+                            name={`podo-draft-default-${selectedComponentForSpec.id}`}
                             aria-label={t("components.setAsDefault", {
                               value: value || t("components.valueFallback"),
                             })}
@@ -3608,7 +3617,7 @@ export function ComponentsPanelWorkspace({
                             onChange={() => writeVariantValues(variantValueRows, value)}
                           />
                           <input
-                            style={inputStyle}
+                            style={railTextInputStyle}
                             aria-label={t("components.variantValueLabel", { index: index + 1 })}
                             value={value}
                             onChange={(event) =>
@@ -3617,22 +3626,22 @@ export function ComponentsPanelWorkspace({
                           />
                           <button
                             type="button"
-                            style={smallButtonStyle}
+                            style={appearanceRemoveStyle}
                             aria-label={t("components.removeValue", {
                               value: value || t("components.valueFallback"),
                             })}
                             disabled={variantValueRows.length <= 1}
                             onClick={() => removeVariantDraftValue(index)}
                           >
-                            {t("components.remove")}
+                            ×
                           </button>
                         </div>
                       ))}
                     </div>
-                    <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                    <label style={{ ...railFieldStyle, gridColumn: "1 / -1" }}>
                       {t("components.tokenBindingsJson")}
                       <textarea
-                        style={textareaStyle}
+                        style={railTextareaStyle}
                         value={variantDraft.tokensText}
                         onChange={(event) => {
                           const tokensText = event.currentTarget.value;
@@ -3643,10 +3652,10 @@ export function ComponentsPanelWorkspace({
                         }}
                       />
                     </label>
-                    <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                    <label style={{ ...railFieldStyle, gridColumn: "1 / -1" }}>
                       {t("components.description")}
                       <input
-                        style={inputStyle}
+                        style={railTextInputStyle}
                         value={variantDraft.description}
                         onChange={(event) => {
                           const description = event.currentTarget.value;
@@ -3658,7 +3667,7 @@ export function ComponentsPanelWorkspace({
                       />
                     </label>
                     <div style={rowStyle}>
-                      <button type="button" style={smallButtonStyle} onClick={saveVariantDraft}>
+                      <button type="button" style={railButtonStyle} onClick={saveVariantDraft}>
                         {t("components.saveVariant")}
                       </button>
                       <button
@@ -3679,7 +3688,7 @@ export function ComponentsPanelWorkspace({
                     <strong>{t("components.slots")}</strong>
                     <button
                       type="button"
-                      style={smallButtonStyle}
+                      style={railButtonStyle}
                       onClick={() => {
                         setSelectedSlotName(undefined);
                         setSlotDraft(createNewComponentSlotDraft());
@@ -3714,10 +3723,10 @@ export function ComponentsPanelWorkspace({
                     ))}
                   </div>
                   <div style={editorFormStyle}>
-                    <label style={fieldStyle}>
+                    <label style={railFieldStyle}>
                       {t("components.name")}
                       <input
-                        style={inputStyle}
+                        style={railTextInputStyle}
                         value={slotDraft.name}
                         onChange={(event) => {
                           const name = event.currentTarget.value;
@@ -3725,9 +3734,10 @@ export function ComponentsPanelWorkspace({
                         }}
                       />
                     </label>
-                    <label style={checkboxFieldStyle}>
+                    <label style={railCheckboxFieldStyle}>
                       <input
                         type="checkbox"
+                        style={railCheckboxInputStyle}
                         checked={slotDraft.required}
                         onChange={(event) => {
                           const required = event.currentTarget.checked;
@@ -3736,9 +3746,10 @@ export function ComponentsPanelWorkspace({
                       />
                       {t("components.required")}
                     </label>
-                    <label style={checkboxFieldStyle}>
+                    <label style={railCheckboxFieldStyle}>
                       <input
                         type="checkbox"
+                        style={railCheckboxInputStyle}
                         checked={slotDraft.repeated}
                         onChange={(event) => {
                           const repeated = event.currentTarget.checked;
@@ -3747,10 +3758,10 @@ export function ComponentsPanelWorkspace({
                       />
                       {t("components.repeated")}
                     </label>
-                    <label style={fieldStyle}>
+                    <label style={railFieldStyle}>
                       {t("components.fallback")}
                       <input
-                        style={inputStyle}
+                        style={railTextInputStyle}
                         value={slotDraft.fallback}
                         onChange={(event) => {
                           const fallback = event.currentTarget.value;
@@ -3758,10 +3769,10 @@ export function ComponentsPanelWorkspace({
                         }}
                       />
                     </label>
-                    <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
+                    <label style={{ ...railFieldStyle, gridColumn: "1 / -1" }}>
                       {t("components.description")}
                       <input
-                        style={inputStyle}
+                        style={railTextInputStyle}
                         value={slotDraft.description}
                         onChange={(event) => {
                           const description = event.currentTarget.value;
@@ -3770,7 +3781,7 @@ export function ComponentsPanelWorkspace({
                       />
                     </label>
                     <div style={rowStyle}>
-                      <button type="button" style={smallButtonStyle} onClick={saveSlotDraft}>
+                      <button type="button" style={railButtonStyle} onClick={saveSlotDraft}>
                         {t("components.saveSlot")}
                       </button>
                       <button
@@ -3798,7 +3809,7 @@ export function ComponentsPanelWorkspace({
               <details style={disclosureStyle}>
                 <summary style={summaryStyle}>{t("components.componentJson")}</summary>
                 <textarea
-                  style={{ ...textareaStyle, minHeight: 220 }}
+                  style={{ ...railTextareaStyle, minHeight: 220 }}
                   readOnly
                   value={JSON.stringify(selectedComponentForSpec, null, 2)}
                 />

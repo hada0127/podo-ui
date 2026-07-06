@@ -234,8 +234,8 @@ export const disclosureStyle: CSSProperties = {
 
 export const summaryStyle: CSSProperties = {
   cursor: "pointer",
-  fontWeight: 700,
-  fontSize: 13,
+  fontWeight: 600,
+  fontSize: 11,
 };
 export const compactFormGridStyle: CSSProperties = {
   display: "grid",
@@ -267,12 +267,17 @@ export const componentEditModeBarStyle: CSSProperties = {
 };
 
 export const componentEditModeButtonStyle: CSSProperties = {
-  minHeight: 30,
+  minHeight: 22,
   border: "1px solid transparent",
-  borderRadius: 6,
+  borderRadius: 4,
   background: "transparent",
   color: "#4e5968",
-  padding: "0 10px",
+  padding: "0 6px",
+  fontSize: 11,
+  minWidth: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 };
 
 export const componentEditModeButtonActiveStyle: CSSProperties = {
@@ -1386,8 +1391,18 @@ export const smallButtonStyle: CSSProperties = {
   boxShadow: "0 1px 1px rgba(15, 23, 42, 0.03)",
 };
 
-export const dangerButtonStyle: CSSProperties = {
+// Figma-density action button for the component workspace: 24px, 11px text.
+export const railButtonStyle: CSSProperties = {
   ...smallButtonStyle,
+  minHeight: 24,
+  padding: "0 8px",
+  fontSize: 11,
+  borderRadius: 4,
+  boxShadow: "none",
+};
+
+export const dangerButtonStyle: CSSProperties = {
+  ...railButtonStyle,
   color: "#b42318",
   border: "1px solid #f0b8b2",
 };
@@ -1438,6 +1453,27 @@ export const checkboxFieldStyle: CSSProperties = {
   color: "#5d6775",
 };
 
+// Rail-density form label + checkbox rows (component workspace forms).
+export const railFieldStyle: CSSProperties = {
+  ...fieldStyle,
+  gap: 3,
+  fontSize: 11,
+};
+
+export const railCheckboxFieldStyle: CSSProperties = {
+  ...checkboxFieldStyle,
+  minHeight: 24,
+  fontSize: 11,
+  gap: 6,
+};
+
+export const railCheckboxInputStyle: CSSProperties = {
+  width: 13,
+  height: 13,
+  margin: 0,
+  flex: "none",
+};
+
 export const inputStyle: CSSProperties = {
   width: "100%",
   height: 38,
@@ -1473,6 +1509,14 @@ export const railSelectStyle: CSSProperties = {
   boxShadow: "none",
 };
 
+// Left-aligned rail input for text (names, values, descriptions) — numerics
+// keep railInputStyle's right alignment.
+export const railTextInputStyle: CSSProperties = {
+  ...railInputStyle,
+  textAlign: "left",
+  fontVariantNumeric: "normal",
+};
+
 export const selectStyle: CSSProperties = {
   ...inputStyle,
 };
@@ -1490,6 +1534,16 @@ export const textareaStyle: CSSProperties = {
   lineHeight: "18px",
   background: "#fbfcfe",
   color: "#171a20",
+};
+
+// Rail-density textarea (multiline prop values, notes) for the component workspace.
+export const railTextareaStyle: CSSProperties = {
+  ...textareaStyle,
+  minHeight: 60,
+  padding: 6,
+  fontSize: 11,
+  lineHeight: "16px",
+  borderRadius: 4,
 };
 
 export const errorTextStyle: CSSProperties = {
@@ -1739,11 +1793,11 @@ export const autoLayoutToggleStyle: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   border: "1px solid #d8dde6",
-  borderRadius: 5,
+  borderRadius: 4,
   background: "#ffffff",
   color: "#3f3f46",
   cursor: "pointer",
-  fontSize: 12,
+  fontSize: 11,
   padding: "0 6px",
 };
 
@@ -1795,7 +1849,7 @@ export const variantValueNameButtonStyle: CSSProperties = {
   background: "transparent",
   borderRadius: 4,
   padding: "3px 6px",
-  fontSize: 12,
+  fontSize: 11,
   color: "#27272a",
   cursor: "pointer",
   overflow: "hidden",
@@ -1902,7 +1956,7 @@ export const tokenChipStyle: CSSProperties = {
   width: "100%",
   minWidth: 0,
   padding: "4px 8px",
-  borderRadius: 6,
+  borderRadius: 4,
   border: "1px solid #e4e4e7",
   background: "#ffffff",
   cursor: "pointer",
@@ -2163,15 +2217,17 @@ export const tableStyle: CSSProperties = {
 };
 
 export const tableRowStyle: CSSProperties = {
-  minHeight: 36,
+  // Figma-density list rows (schema props/variants/slots in the rail).
+  minHeight: 24,
   border: 0,
   borderBottom: "1px solid #edf1f6",
   background: "#ffffff",
   display: "grid",
   gridTemplateColumns: "minmax(96px, 0.45fr) minmax(0, 1fr)",
   gap: 8,
-  alignItems: "start",
-  padding: "8px",
+  alignItems: "center",
+  padding: "4px 8px",
+  fontSize: 11,
   textAlign: "left",
 };
 
@@ -2182,21 +2238,26 @@ export const tableRowActiveStyle: CSSProperties = {
 
 export const tableCellTextStyle: CSSProperties = {
   minWidth: 0,
-  overflowWrap: "anywhere",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 };
 
 export const tableCellMetaStyle: CSSProperties = {
   minWidth: 0,
   justifySelf: "end",
   textAlign: "right",
-  overflowWrap: "anywhere",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  fontSize: 11,
   lineHeight: "16px",
 };
 
 export const editorFormStyle: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: 10,
+  gap: 8,
 };
 
 // Single-column field list (one control per line) for the rail Variants/Props.
@@ -2546,7 +2607,8 @@ export const tokenPickerDropdownStyle: CSSProperties = {
   top: "calc(100% + 4px)",
   left: 0,
   right: "auto",
-  minWidth: 240,
+  // No minWidth on purpose: portaled via AnchoredPortal width="anchor", a
+  // minimum wider than the anchor would jut past the viewport clamp.
   maxWidth: "min(320px, 90vw)",
   zIndex: 20,
   maxHeight: 260,
@@ -2620,13 +2682,13 @@ export const iconPickerSwatchStyle: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
-  width: 32,
-  height: 32,
+  width: 24,
+  height: 24,
   flex: "none",
   border: "1px solid #ccd6e3",
-  borderRadius: 6,
+  borderRadius: 4,
   background: "#ffffff",
-  fontSize: 18,
+  fontSize: 14,
   color: "#1f2937",
 };
 export const iconPickerPopoverStyle: CSSProperties = {

@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useReducer, useRef } from "react";
 import { createPortal } from "react-dom";
 
 /**
@@ -6,9 +6,10 @@ import { createPortal } from "react-dom";
  * (color picker, token picker, icon picker) render through this so the rail's
  * `overflowY: auto` can never clip them; near the viewport bottom the popover
  * flips above its anchor, and it clamps inside the viewport horizontally.
- * ponytail: coordinates are captured per render, not tracked on scroll — the
- * pickers close on blur/backdrop anyway; add a scroll listener if it ever
- * needs to follow.
+ * Repositions on scroll/resize (capture phase catches the rail's own scroll)
+ * so an open picker follows its anchor instead of floating away. Scrolls that
+ * originate INSIDE the portal (the picker's own list) are ignored — the anchor
+ * hasn't moved, and re-rendering a long list per scroll frame would jank.
  */
 export function AnchoredPortal({
   anchor,
@@ -24,6 +25,27 @@ export function AnchoredPortal({
   zIndex?: number;
   children: ReactNode;
 }) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef(0);
+  const [, bump] = useReducer((n: number) => n + 1, 0);
+  useEffect(() => {
+    const reposition = (event?: Event) => {
+      if (event && contentRef.current?.contains(event.target as Node)) return;
+      // rAF-coalesce: one re-render per frame however many containers scrolled.
+      if (frameRef.current) return;
+      frameRef.current = requestAnimationFrame(() => {
+        frameRef.current = 0;
+        bump();
+      });
+    };
+    window.addEventListener("scroll", reposition, true);
+    window.addEventListener("resize", reposition);
+    return () => {
+      window.removeEventListener("scroll", reposition, true);
+      window.removeEventListener("resize", reposition);
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    };
+  }, []);
   if (!anchor) return null;
   const rect = anchor.getBoundingClientRect();
   const margin = 8;
@@ -40,5 +62,10 @@ export function AnchoredPortal({
     width: resolvedWidth,
     zIndex,
   };
-  return createPortal(<div style={style}>{children}</div>, document.body);
+  return createPortal(
+    <div ref={contentRef} style={style}>
+      {children}
+    </div>,
+    document.body
+  );
 }

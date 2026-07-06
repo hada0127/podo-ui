@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { AnchoredPortal } from "./popover.js";
 import {
   inputStyle,
-  railInputStyle,
+  railTextInputStyle,
   rowStyle,
   tokenPickerDropdownStyle,
   tokenPickerEmptyStyle,
@@ -73,9 +73,7 @@ export function TokenPicker({
           aria-label={t("tokenPicker.ariaLabel")}
           placeholder={placeholder ?? t("tokenPicker.placeholder")}
           autoFocus={autoFocus}
-          style={
-            compact ? { ...railInputStyle, textAlign: "left", flex: 1 } : { ...inputStyle, flex: 1 }
-          }
+          style={compact ? { ...railTextInputStyle, flex: 1 } : { ...inputStyle, flex: 1 }}
           value={query}
           onChange={(event) => {
             setQuery(event.currentTarget.value);
