@@ -1427,6 +1427,9 @@ export function ComponentsPanelWorkspace({
   // Wraps the variant matrix so the layer↔preview sync effect can find and ring the
   // selected part's element inside it.
   const matrixRef = useRef<HTMLDivElement>(null);
+  // The stage preview wrapper: measurement/marking surface for components
+  // WITHOUT a variant matrix (no variants — e.g. doc-tabs, editor).
+  const stageWrapRef = useRef<HTMLDivElement>(null);
   const startLayersResize = (event: ReactPointerEvent): void => {
     event.preventDefault();
     const startX = event.clientX;
@@ -1494,7 +1497,7 @@ export function ComponentsPanelWorkspace({
   // this doesn't over-run. (React doesn't clobber an unchanged className on reuse;
   // when a marked node IS recreated, this re-run re-applies the mark after commit.)
   useEffect(() => {
-    const root = matrixRef.current;
+    const root = matrixRef.current ?? stageWrapRef.current;
     if (!root) return;
     for (const className of ["podo-part-selected", "podo-part-hovered"]) {
       root
@@ -1881,7 +1884,7 @@ export function ComponentsPanelWorkspace({
   // selected matrix cell's representative element.
   const partElement = (part: string): Element | undefined => {
     const selector = componentPartSelector(selectedComponentForSpec.id, part);
-    const root = matrixRef.current;
+    const root = matrixRef.current ?? stageWrapRef.current;
     if (!selector || !root) return undefined;
     const cell = root.querySelector("[data-podo-selected-cell]") ?? root;
     const matches = Array.from(cell.querySelectorAll(selector));
@@ -2698,6 +2701,7 @@ export function ComponentsPanelWorkspace({
             <span>{selectedComponentForSpec.name}</span>
           </div>
           <div
+            ref={stageWrapRef}
             style={
               effectiveInspectorTarget === "preview"
                 ? {

@@ -1348,7 +1348,7 @@ export const legacyComponents: ComponentDocument[] = [
       }),
       enumProp("defaultTab", ["scss", "react", "cdn"], { default: "scss" }),
     ],
-    variants: [{ name: "default-tab", values: ["scss", "react", "cdn"], default: "scss" }],
+    variants: [],
     states: [{ name: "selected", tokens: { "tab.color": "{color.primary.base}" } }],
     tokens: {
       ...legacyBaseComponentTokens(),

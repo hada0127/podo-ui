@@ -95,7 +95,14 @@ export function renderComponentPreview(
       data-podo-preview-component-id={component.id}
       data-podo-preview-kind={componentPreviewKind(component)}
     >
-      <style>{componentAppearanceCss(component, lookup, selections, "podo-design-target")}</style>
+      <style>
+        {componentAppearanceCss(component, lookup, selections, "podo-design-target") +
+          // Ring the layer-sync mark here too: for components without a variant
+          // matrix (no variants, e.g. doc-tabs) the stage is the only surface
+          // that can show the selected-layer ring.
+          "\n" +
+          selectedPartCss("podo-design-target")}
+      </style>
       {renderComponentPreviewBody(component, selections, lookup, onValueChange)}
     </div>
   );
