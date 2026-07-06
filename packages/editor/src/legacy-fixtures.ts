@@ -906,7 +906,13 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Avatar",
     category: "atom",
     description: "v1 profile image, icon, or text display component.",
-    anatomy: ["root", "image", "icon", "text", "activity-ring"],
+    anatomy: [
+      "root",
+      { name: "image", parent: "root" },
+      { name: "icon", parent: "root" },
+      { name: "text", parent: "root" },
+      { name: "activity-ring", parent: "root" },
+    ],
     props: [
       enumProp("type", ["image", "icon", "text"], {
         default: "icon",
@@ -958,12 +964,17 @@ export const legacyComponents: ComponentDocument[] = [
         name: "root",
         targets: { web: "button", react: "button", hono: "button", native: "Pressable" },
       },
-      { name: "left-icon", targets: { web: "i", react: "icon", native: "icon" } },
+      { name: "left-icon", parent: "root", targets: { web: "i", react: "icon", native: "icon" } },
       {
         name: "label",
+        parent: "root",
         targets: { web: "text", react: "children", hono: "children", native: "Text" },
       },
-      { name: "right-icon", targets: { web: "i", react: "rightIcon", native: "rightIcon" } },
+      {
+        name: "right-icon",
+        parent: "root",
+        targets: { web: "i", react: "rightIcon", native: "rightIcon" },
+      },
     ],
     slots: [
       {
@@ -1115,7 +1126,14 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Checkbox & Radio",
     category: "atom",
     description: "v1 styled checkbox and radio inputs with grouped React component APIs.",
-    anatomy: ["root", "input", "control", "indicator", "label", "group"],
+    anatomy: [
+      "root",
+      { name: "input", parent: "root" },
+      { name: "control", parent: "root" },
+      { name: "indicator", parent: "control" },
+      { name: "label", parent: "root" },
+      { name: "group", parent: "root" },
+    ],
     props: [
       enumProp("control", ["checkbox", "radio", "radio-group"], {
         default: "checkbox",
@@ -1175,7 +1193,12 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Chip",
     category: "atom",
     description: "v1 tag/chip component for labels and categories.",
-    anatomy: ["root", "icon", "label", "delete-button"],
+    anatomy: [
+      "root",
+      { name: "icon", parent: "root" },
+      { name: "label", parent: "root" },
+      { name: "delete-button", parent: "root" },
+    ],
     slots: [{ name: "children", required: true }, { name: "icon" }, { name: "deleteButton" }],
     props: [
       objectProp("children", { required: true }),
@@ -1312,7 +1335,12 @@ export const legacyComponents: ComponentDocument[] = [
     category: "utility",
     description:
       "v1 internal documentation tab component; v1 docs category is mapped to v2 utility.",
-    anatomy: ["root", "tab-list", "tab", "panel"],
+    anatomy: [
+      "root",
+      { name: "tab-list", parent: "root" },
+      { name: "tab", parent: "tab-list" },
+      { name: "panel", parent: "root" },
+    ],
     props: [
       objectProp("tabs", {
         required: true,
@@ -1341,7 +1369,12 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Editor",
     category: "atom",
     description: "v1 WYSIWYG rich text editor with image and YouTube embedding.",
-    anatomy: ["root", "toolbar", "content", "resize-handle"],
+    anatomy: [
+      "root",
+      { name: "toolbar", parent: "root" },
+      { name: "content", parent: "root" },
+      { name: "resize-handle", parent: "content" },
+    ],
     props: [
       stringProp("value", { default: "" }),
       eventProp("onChange", { required: true }),
@@ -1382,7 +1415,12 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Field",
     category: "molecule",
     description: "v1 form field composition using spacing and text tokens.",
-    anatomy: ["root", "label", "control", "message"],
+    anatomy: [
+      "root",
+      { name: "label", parent: "root" },
+      { name: "control", parent: "root" },
+      { name: "message", parent: "root" },
+    ],
     slots: [{ name: "label" }, { name: "control", required: true }, { name: "message" }],
     props: [
       stringProp("label"),
@@ -1415,7 +1453,12 @@ export const legacyComponents: ComponentDocument[] = [
     category: "atom",
     description:
       "v1 file input wrapper for accepted types, multiple selection, and disabled state.",
-    anatomy: ["root", "input", "button", "file-list"],
+    anatomy: [
+      "root",
+      { name: "input", parent: "root" },
+      { name: "button", parent: "root" },
+      { name: "file-list", parent: "root" },
+    ],
     props: [
       stringProp("accept"),
       booleanProp("multiple", { default: false }),
@@ -1486,7 +1529,7 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Label",
     category: "atom",
     description: "v1 label text component for form controls.",
-    anatomy: ["root", "required-mark"],
+    anatomy: ["root", { name: "required-mark", parent: "root" }],
     slots: [{ name: "children", required: true }],
     props: [
       objectProp("children", { required: true }),
@@ -1515,7 +1558,12 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Pagination",
     category: "molecule",
     description: "v1 page navigation with previous/next controls and visible page window.",
-    anatomy: ["root", "prev-button", "page-button", "next-button"],
+    anatomy: [
+      "root",
+      { name: "prev-button", parent: "root" },
+      { name: "page-button", parent: "root" },
+      { name: "next-button", parent: "root" },
+    ],
     props: [
       numberProp("currentPage", { required: true }),
       numberProp("totalPages", { required: true }),
@@ -1553,7 +1601,14 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Select",
     category: "atom",
     description: "v1 select input with option list, icon support, and disabled state.",
-    anatomy: ["root", "trigger", "value", "icon", "option-list", "option"],
+    anatomy: [
+      "root",
+      { name: "trigger", parent: "root" },
+      { name: "value", parent: "trigger" },
+      { name: "icon", parent: "trigger" },
+      { name: "option-list", parent: "root" },
+      { name: "option", parent: "option-list" },
+    ],
     props: [
       stringProp("value"),
       objectProp("options", { required: true, description: "Array<{ value, label, disabled? }>" }),
@@ -1594,7 +1649,12 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Tab",
     category: "molecule",
     description: "v1 tab navigation with active/default key support.",
-    anatomy: ["root", "tab-list", "tab", "panel"],
+    anatomy: [
+      "root",
+      { name: "tab-list", parent: "root" },
+      { name: "tab", parent: "tab-list" },
+      { name: "panel", parent: "root" },
+    ],
     props: [
       objectProp("items", { required: true, description: "Tab items." }),
       stringProp("activeKey"),
@@ -1627,7 +1687,13 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Table",
     category: "molecule",
     description: "v1 data table with columns, data source, row keys, and row click support.",
-    anatomy: ["root", "header", "row", "cell", "empty"],
+    anatomy: [
+      "root",
+      { name: "header", parent: "root" },
+      { name: "row", parent: "root" },
+      { name: "cell", parent: "row" },
+      { name: "empty", parent: "root" },
+    ],
     props: [
       objectProp("columns", { required: true }),
       objectProp("dataSource", { required: true }),
@@ -1702,7 +1768,14 @@ export const legacyComponents: ComponentDocument[] = [
     category: "molecule",
     description:
       "v1 toast provider and notification component with theme, position, and close behavior.",
-    anatomy: ["provider", "viewport", "toast", "header", "message", "close-button"],
+    anatomy: [
+      "provider",
+      { name: "viewport", parent: "provider" },
+      { name: "toast", parent: "viewport" },
+      { name: "header", parent: "toast" },
+      { name: "message", parent: "toast" },
+      { name: "close-button", parent: "header" },
+    ],
     props: [
       objectProp("children", { required: true, description: "ToastProvider children." }),
       stringProp("id", { required: true }),
@@ -1783,7 +1856,12 @@ export const legacyComponents: ComponentDocument[] = [
     name: "Toggle",
     category: "atom",
     description: "v1 switch-like toggle control with checked and disabled states.",
-    anatomy: ["root", "track", "thumb", "label"],
+    anatomy: [
+      "root",
+      { name: "track", parent: "root" },
+      { name: "thumb", parent: "track" },
+      { name: "label", parent: "root" },
+    ],
     props: [
       booleanProp("checked", { default: false }),
       stringProp("label"),
@@ -1823,7 +1901,11 @@ export const legacyComponents: ComponentDocument[] = [
     category: "atom",
     description:
       "v1 tooltip component with content, position, visibility, portal, and max width controls.",
-    anatomy: ["trigger", "content", "arrow"],
+    anatomy: [
+      "trigger",
+      { name: "content", parent: "trigger" },
+      { name: "arrow", parent: "content" },
+    ],
     slots: [
       { name: "children", required: true },
       { name: "content", required: true },

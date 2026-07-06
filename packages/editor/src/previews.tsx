@@ -1403,7 +1403,9 @@ export function componentPartForElement(
   return componentPartMatchForElement(componentId, element)?.part;
 }
 
-function appearanceCssProperty(property: string): string | undefined {
+// Exported so the inspector can read a part's COMPUTED css value as the
+// displayed fallback for unbound properties (Figma shows real values, not "—").
+export function appearanceCssProperty(property: string): string | undefined {
   return APPEARANCE_CSS_PROPERTY[property.toLowerCase().replace(/[-_]/g, "")];
 }
 

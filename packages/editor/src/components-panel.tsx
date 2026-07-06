@@ -23,6 +23,7 @@ import { tokenRecordKey, type ComponentTokenEditorModel } from "./token-model.js
 import { cssToken, formatColorValue, parseColor, type TokenLookup } from "./token-lookup.js";
 import { ColorSwatchPicker, renderComponentTokenEditor } from "./token-editor.js";
 import {
+  appearanceCssProperty,
   componentPartForElement,
   componentPartSelector,
   EDITOR_TOOLBAR_ITEMS,
@@ -1921,6 +1922,27 @@ export function ComponentsPanelWorkspace({
     const size = partElement(part)?.getBoundingClientRect()[property];
     return size ? `${Math.round(size)}px` : fallback;
   };
+  // Figma shows the RESOLVED rendered value for unbound properties — border
+  // style "none", opacity "100%", the actual radius/colors — read from the
+  // selected matrix cell's live element instead of an empty "—".
+  const computedPartValue = (property: string): string => {
+    const cssProperty = appearanceCssProperty(property);
+    const element = partElement(activePart);
+    if (!cssProperty || !element) return "";
+    const value = window.getComputedStyle(element).getPropertyValue(cssProperty).trim();
+    if (!value) return "";
+    if (normalizedProperty(property) === "opacity") {
+      const numeric = Number(value);
+      return Number.isFinite(numeric) ? `${Math.round(numeric * 100)}%` : value;
+    }
+    if (isColorAppearanceProperty(property)) {
+      const color = parseColor(value);
+      // Fully transparent computed colors mean "no fill here" — keep the dash.
+      if (!color || color.a === 0) return "";
+      return formatColorValue(color);
+    }
+    return value;
+  };
   // Offset of a part inside its anatomy parent's element (absolute positioning
   // seed). Approximation: the anatomy parent's DOM element may not be the CSS
   // offset parent; 0px fallback keeps it predictable.
@@ -2931,6 +2953,10 @@ export function ComponentsPanelWorkspace({
                               ? cssToken(previewTokenLookup, row.reference.slice(1, -1), "")
                               : row.reference;
                           const tokenName = isAlias ? row.reference.slice(1, -1) : "";
+                          // Unbound rows display the part's computed value (muted),
+                          // like Figma's inspector; editing seeds from it too.
+                          const computedFallback =
+                            !isMixed && !resolved ? computedPartValue(row.property) : "";
                           const raw = isRawValueProperty(row.property);
                           const enumOptions = enumOptionsForProperty(row.property);
                           const isShadowStack = normalizedProperty(row.property) === "shadow";
@@ -3000,7 +3026,9 @@ export function ComponentsPanelWorkspace({
                                     value={
                                       !isMixed && enumOptions.includes(row.reference)
                                         ? row.reference
-                                        : (row.defaultAlias ?? enumOptions[0])
+                                        : enumOptions.includes(computedFallback)
+                                          ? computedFallback
+                                          : (row.defaultAlias ?? enumOptions[0])
                                     }
                                     onChange={(event) => {
                                       applyToSelection(row.property, event.currentTarget.value);
@@ -3022,14 +3050,24 @@ export function ComponentsPanelWorkspace({
                                     autoFocus
                                     type="text"
                                     // Unbound raw rows start from the catalog default (e.g. 14px)
-                                    // so there's a sensible value to tweak.
+                                    // or the part's computed value so there's something to tweak.
                                     defaultValue={
-                                      isMixed ? "" : row.reference || row.defaultAlias || ""
+                                      isMixed
+                                        ? ""
+                                        : row.reference || row.defaultAlias || computedFallback
                                     }
                                     placeholder={t("components.rawValuePlaceholder")}
                                     style={railTextInputStyle}
                                     onBlur={(event) => {
-                                      applyToSelection(row.property, event.currentTarget.value);
+                                      const next = event.currentTarget.value;
+                                      // An unbound row seeded with the computed/default value
+                                      // must not become a binding on blur-without-edit.
+                                      const seed = isMixed
+                                        ? ""
+                                        : row.reference || row.defaultAlias || computedFallback;
+                                      if (row.bound || next !== seed) {
+                                        applyToSelection(row.property, next);
+                                      }
                                       setEditingBindingKey(null);
                                     }}
                                     onKeyDown={(event) => {
@@ -3045,7 +3083,7 @@ export function ComponentsPanelWorkspace({
                                           event.currentTarget.value ||
                                             (isMixed ? "" : row.reference) ||
                                             row.defaultAlias ||
-                                            "",
+                                            computedFallback,
                                           delta
                                         );
                                         if (next !== undefined) {
@@ -3079,9 +3117,15 @@ export function ComponentsPanelWorkspace({
                                     <ColorSwatchPicker
                                       compact
                                       label={appearancePropertyLabel(row.property, t)}
-                                      swatchColor={isMixed ? undefined : resolved || undefined}
+                                      swatchColor={
+                                        isMixed
+                                          ? undefined
+                                          : resolved || computedFallback || undefined
+                                      }
                                       value={
-                                        (isMixed ? undefined : parseColor(resolved)) ?? {
+                                        (isMixed
+                                          ? undefined
+                                          : parseColor(resolved || computedFallback)) ?? {
                                           r: 127,
                                           g: 127,
                                           b: 127,
@@ -3109,7 +3153,15 @@ export function ComponentsPanelWorkspace({
                                         }}
                                       />
                                     )}
-                                    <span style={tokenChipValueStyle}>{resolved || "—"}</span>
+                                    <span
+                                      style={
+                                        !resolved && computedFallback
+                                          ? { ...tokenChipValueStyle, color: "#98a1ad" }
+                                          : tokenChipValueStyle
+                                      }
+                                    >
+                                      {resolved || computedFallback || "—"}
+                                    </span>
                                     <span style={tokenChipNameStyle}>{tokenName}</span>
                                   </button>
                                 </div>
