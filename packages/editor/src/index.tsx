@@ -251,7 +251,7 @@ export {
 import { BuildPanelControls, BuildPanelWorkspace } from "./build-panel.js";
 import { CanvasPanelControls, CanvasPanelWorkspace } from "./canvas-panel.js";
 import { TokensPanelControls, TokensPanelWorkspace } from "./tokens-panel.js";
-import { ComponentsPanelControls, ComponentsPanelWorkspace } from "./components-panel.js";
+import { ComponentsPanelWorkspace } from "./components-panel.js";
 import { ProjectPanelControls, ProjectPanelWorkspace } from "./project-panel.js";
 import { IconsPanelControls, IconsPanelWorkspace, type IconBuildStatus } from "./icons-panel.js";
 import {
@@ -1952,7 +1952,13 @@ export function PodoEditorApp({
 
   return (
     <LocaleProvider locale={locale} setLocale={setLocale}>
-      <div style={editorShellStyle}>
+      <div
+        style={{
+          ...editorShellStyle,
+          gridTemplateColumns:
+            effectiveActivePanel === "components" ? "minmax(0, 1fr)" : "200px minmax(0, 1fr)",
+        }}
+      >
         <datalist id={TOKEN_REFERENCE_LIST_ID}>
           {tokenReferenceList.map((reference) => (
             <option key={reference} value={reference} />
@@ -2068,75 +2074,75 @@ export function PodoEditorApp({
             </span>
           ) : null}
         </header>
-        <aside style={sidebarStyle}>
-          {effectiveActivePanel === "tokens" ? (
-            <TokensPanelControls
-              tokenGroups={tokenGroups}
-              tokenDraft={tokenDraft}
-              typographyWorkspaceActive={typographyWorkspaceActive}
-              baseColorView={baseColorView}
-              onSelectGroup={selectTokenGroup}
-            />
-          ) : null}
-          {effectiveActivePanel === "icons" ? (
-            <IconsPanelControls
-              model={iconModel}
-              selectedIconName={selectedIconName}
-              setSelectedIconName={setSelectedIconName}
-              activeGroup={activeIconGroup}
-              setActiveGroup={setActiveIconGroup}
-              buildStatus={iconBuildStatus}
-              buildError={iconBuildError}
-              createIconGroup={createIconGroup}
-              deleteIconGroup={deleteIconGroup}
-              saveIconFont={saveIconFont}
-            />
-          ) : null}
-          {effectiveActivePanel === "components" ? (
-            <ComponentsPanelControls
-              componentSearch={componentSearch}
-              setComponentSearch={setComponentSearch}
-              filteredComponents={filteredComponents}
-              selectedComponentForSpec={selectedComponentForSpec}
-              setSelectedComponentId={setSelectedComponentId}
-            />
-          ) : null}
-          {effectiveActivePanel === "canvas" ? (
-            <CanvasPanelControls
-              state={state}
-              frame={frame}
-              placeComponent={placeComponent}
-              createCustomLayout={createCustomLayout}
-              saveNodeAsComponent={saveNodeAsComponent}
-              commitState={commitState}
-              selectedNode={selectedNode}
-              selectedComponent={selectedComponent}
-              propsDraftNodeId={propsDraftNodeId}
-              propsDraft={propsDraft}
-              propsDraftError={propsDraftError}
-              commitSelectedPropsDraft={commitSelectedPropsDraft}
-              updateSelectedPropsDraft={updateSelectedPropsDraft}
-              tokenPickerOptions={tokenPickerOptions}
-              exportPreview={exportPreview}
-              setExportPreview={setExportPreview}
-              pageIdDraft={pageIdDraft}
-              setPageIdDraft={setPageIdDraft}
-              pagePreview={pagePreview}
-              setPagePreview={setPagePreview}
-              pageExportError={pageExportError}
-              setPageExportError={setPageExportError}
-              adapter={adapter}
-              enqueueHostWrite={enqueueHostWrite}
-            />
-          ) : null}
-          {effectiveActivePanel === "build" ? (
-            <BuildPanelControls tokenRecords={tokenRecords} state={state} />
-          ) : null}
-          {effectiveActivePanel === "project" ? (
-            <ProjectPanelControls typographyWorkspace={typographyWorkspace} />
-          ) : null}
-        </aside>
-        <main style={workspaceStyle}>
+        {effectiveActivePanel === "components" ? null : (
+          <aside style={sidebarStyle}>
+            {effectiveActivePanel === "tokens" ? (
+              <TokensPanelControls
+                tokenGroups={tokenGroups}
+                tokenDraft={tokenDraft}
+                typographyWorkspaceActive={typographyWorkspaceActive}
+                baseColorView={baseColorView}
+                onSelectGroup={selectTokenGroup}
+              />
+            ) : null}
+            {effectiveActivePanel === "icons" ? (
+              <IconsPanelControls
+                model={iconModel}
+                selectedIconName={selectedIconName}
+                setSelectedIconName={setSelectedIconName}
+                activeGroup={activeIconGroup}
+                setActiveGroup={setActiveIconGroup}
+                buildStatus={iconBuildStatus}
+                buildError={iconBuildError}
+                createIconGroup={createIconGroup}
+                deleteIconGroup={deleteIconGroup}
+                saveIconFont={saveIconFont}
+              />
+            ) : null}
+
+            {effectiveActivePanel === "canvas" ? (
+              <CanvasPanelControls
+                state={state}
+                frame={frame}
+                placeComponent={placeComponent}
+                createCustomLayout={createCustomLayout}
+                saveNodeAsComponent={saveNodeAsComponent}
+                commitState={commitState}
+                selectedNode={selectedNode}
+                selectedComponent={selectedComponent}
+                propsDraftNodeId={propsDraftNodeId}
+                propsDraft={propsDraft}
+                propsDraftError={propsDraftError}
+                commitSelectedPropsDraft={commitSelectedPropsDraft}
+                updateSelectedPropsDraft={updateSelectedPropsDraft}
+                tokenPickerOptions={tokenPickerOptions}
+                exportPreview={exportPreview}
+                setExportPreview={setExportPreview}
+                pageIdDraft={pageIdDraft}
+                setPageIdDraft={setPageIdDraft}
+                pagePreview={pagePreview}
+                setPagePreview={setPagePreview}
+                pageExportError={pageExportError}
+                setPageExportError={setPageExportError}
+                adapter={adapter}
+                enqueueHostWrite={enqueueHostWrite}
+              />
+            ) : null}
+            {effectiveActivePanel === "build" ? (
+              <BuildPanelControls tokenRecords={tokenRecords} state={state} />
+            ) : null}
+            {effectiveActivePanel === "project" ? (
+              <ProjectPanelControls typographyWorkspace={typographyWorkspace} />
+            ) : null}
+          </aside>
+        )}
+        <main
+          style={
+            effectiveActivePanel === "components"
+              ? { ...workspaceStyle, padding: 0, background: "#f5f5f5" }
+              : workspaceStyle
+          }
+        >
           {effectiveActivePanel === "tokens" ? (
             <TokensPanelWorkspace
               tokenRecords={baseTokenRecords}
@@ -2194,6 +2200,10 @@ export function PodoEditorApp({
           ) : null}
           {effectiveActivePanel === "components" && selectedComponentForSpec ? (
             <ComponentsPanelWorkspace
+              componentSearch={componentSearch}
+              setComponentSearch={setComponentSearch}
+              filteredComponents={filteredComponents}
+              setSelectedComponentId={setSelectedComponentId}
               selectedComponentForSpec={selectedComponentForSpec}
               componentEditMode={componentEditMode}
               setComponentEditMode={setComponentEditMode}

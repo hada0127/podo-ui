@@ -49,23 +49,18 @@ import {
   autoLayoutToggleActiveStyle,
   autoLayoutToggleStyle,
   cardHeaderStyle,
-  cardStyle,
   railCheckboxFieldStyle,
-  compactFormGridStyle,
   layerResizeHandleStyle,
   layersColumnStyle,
   swatchStyle,
   componentEditModeBarStyle,
   componentEditModeButtonActiveStyle,
   componentEditModeButtonStyle,
-  componentListButtonActiveStyle,
-  componentListButtonStyle,
-  componentListIdStyle,
-  componentListNameStyle,
-  componentListStyle,
   componentPanelWorkspaceLayout,
+  canvasFrameLabelStyle,
   componentPreviewPanelStyle,
-  componentStatRowStyle,
+  componentSetFrameStyle,
+  componentSetLabelStyle,
   dangerButtonStyle,
   disclosureStyle,
   editSchemaBodyStyle,
@@ -73,26 +68,26 @@ import {
   editorToggleChipStyle,
   editorToolbarToggleRowStyle,
   editorFormStyle,
-  emptyListStyle,
   errorBannerStyle,
-  fieldStyle,
-  inputStyle,
   railFieldStyle,
   railTextInputStyle,
+  panelSectionHeaderStyle,
+  pagesRowActiveStyle,
+  pagesRowStyle,
   propLabelStyle,
   propRowStyle,
   propertiesRailStyle,
   railFieldsStyle,
   railInputStyle,
   railSelectStyle,
-  selectStyle,
+  fieldGlyphStyle,
+  geometryPairStyle,
+  modeChevronSelectStyle,
+  railSectionStyle,
   railSectionTitleStyle,
   rowStyle,
-  sectionHeaderStyle,
   sectionMetaStyle,
-  sectionTitleStyle,
   stickyPreviewColumnStyle,
-  sidebarTitleStyle,
   railButtonStyle,
   railCheckboxInputStyle,
   summaryStyle,
@@ -102,7 +97,6 @@ import {
   tableRowStyle,
   tableStyle,
   railTextareaStyle,
-  smallButtonStyle,
   tokenChipNameStyle,
   tokenChipStyle,
   tokenChipValueStyle,
@@ -918,7 +912,7 @@ function FillStackEditor({
               borderRadius: 4,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
               <button
                 type="button"
                 aria-label={t("components.fillEdit", { index: index + 1 })}
@@ -1085,7 +1079,7 @@ function VariantPropertiesCard({
     />
   );
   return (
-    <div style={cardStyle}>
+    <div style={railSectionStyle}>
       <div style={cardHeaderStyle}>
         <strong style={railSectionTitleStyle}>{t("components.propertiesHeading")}</strong>
         <button
@@ -1212,57 +1206,11 @@ function VariantPropertiesCard({
   );
 }
 
-export function ComponentsPanelControls({
+export function ComponentsPanelWorkspace({
   componentSearch,
   setComponentSearch,
   filteredComponents,
-  selectedComponentForSpec,
   setSelectedComponentId,
-}: {
-  componentSearch: string;
-  setComponentSearch: Dispatch<SetStateAction<string>>;
-  filteredComponents: ComponentDocument[];
-  selectedComponentForSpec: ComponentDocument | undefined;
-  setSelectedComponentId: Dispatch<SetStateAction<string | undefined>>;
-}) {
-  const t = useT();
-  return (
-    <>
-      <div style={sidebarTitleStyle}>{t("components.heading")}</div>
-      <input
-        aria-label={t("components.search")}
-        placeholder={t("components.search")}
-        style={inputStyle}
-        value={componentSearch}
-        onChange={(event) => setComponentSearch(event.currentTarget.value)}
-      />
-      <div style={componentListStyle}>
-        {filteredComponents.map((component) => (
-          <button
-            key={component.id}
-            type="button"
-            title={`${component.name} / ${component.id}`}
-            style={{
-              ...componentListButtonStyle,
-              ...(selectedComponentForSpec?.id === component.id
-                ? componentListButtonActiveStyle
-                : {}),
-            }}
-            onClick={() => setSelectedComponentId(component.id)}
-          >
-            <span style={componentListNameStyle}>{component.name}</span>
-            <small style={componentListIdStyle}>{component.id}</small>
-          </button>
-        ))}
-        {filteredComponents.length ? null : (
-          <span style={emptyListStyle}>{t("components.emptyList")}</span>
-        )}
-      </div>
-    </>
-  );
-}
-
-export function ComponentsPanelWorkspace({
   selectedComponentForSpec,
   componentEditMode,
   setComponentEditMode,
@@ -1314,6 +1262,10 @@ export function ComponentsPanelWorkspace({
   effectiveComponentPreviewSelections,
   setComponentPreviewSelections,
 }: {
+  componentSearch: string;
+  setComponentSearch: Dispatch<SetStateAction<string>>;
+  filteredComponents: ComponentDocument[];
+  setSelectedComponentId: Dispatch<SetStateAction<string | undefined>>;
   selectedComponentForSpec: ComponentDocument;
   componentEditMode: ComponentEditMode;
   setComponentEditMode: Dispatch<SetStateAction<ComponentEditMode>>;
@@ -1471,7 +1423,7 @@ export function ComponentsPanelWorkspace({
     setAppearanceScope("base");
   }, [selectedComponentForSpec.id]);
   // Draggable layers-column width (drag the handle on its right edge).
-  const [layersWidth, setLayersWidth] = useState(200);
+  const [layersWidth, setLayersWidth] = useState(240);
   // Wraps the variant matrix so the layer↔preview sync effect can find and ring the
   // selected part's element inside it.
   const matrixRef = useRef<HTMLDivElement>(null);
@@ -1931,6 +1883,9 @@ export function ComponentsPanelWorkspace({
     if (!cssProperty || !element) return "";
     const value = window.getComputedStyle(element).getPropertyValue(cssProperty).trim();
     if (!value) return "";
+    // url(data:...) fills are unreadable and their unbreakable length can blow
+    // grid tracks — Figma shows image fills as a thumbnail, we show nothing.
+    if (value.includes("url(")) return "";
     if (normalizedProperty(property) === "opacity") {
       const numeric = Number(value);
       return Number.isFinite(numeric) ? `${Math.round(numeric * 100)}%` : value;
@@ -1994,114 +1949,156 @@ export function ComponentsPanelWorkspace({
           min/max
         </button>
       </div>
-      {sectionOpen("size") &&
-        SIZE_SECTION_PROPERTIES.map((property) => {
-          const axis = property === "width" ? "W" : "H";
-          const raw = scopeValue(property);
-          const parentDirection = flexParentDirection();
-          const axisIsMain =
-            parentDirection !== null && (property === "width") === (parentDirection === "row");
-          // Fill can be encoded two ways: width/height 100% (no flex parent) or
-          // flex:1 / align-self:stretch inside an auto-layout parent (Figma).
-          const fillByFlex =
-            parentDirection !== null &&
-            (!raw || raw === "auto") &&
-            (axisIsMain
-              ? scopeValue("flex").trim().startsWith("1")
-              : scopeValue("align-self") === "stretch");
-          const mode: ResizeMode = fillByFlex ? "fill" : resizeModeFromValue(raw);
-          // "Auto" clears the binding — only offered where clearing actually works:
-          // when this scope's own bucket holds the key (or nothing is bound at all).
-          // In an overlay scope a base-inherited size can't be deleted, but picking
-          // another mode overrides it, after which Auto reappears to revert that.
-          const fillKey = axisIsMain ? "flex" : "align-self";
-          const ownsBinding =
-            `${activePart}.${property}` in scopeOwnTokens ||
-            `${activePart}.${fillKey}` in scopeOwnTokens;
-          // Applies the mode to EVERY selected part, each with its own parent
-          // direction (a row-parent child gets flex:1 while a column-parent child
-          // gets align-self:stretch in the same gesture).
-          const setResizeMode = (next: ResizeMode): void => {
-            const entries: Array<[string, string]> = [];
-            for (const part of editTargets) {
-              const partParentDirection = flexParentDirection(part);
-              const partAxisIsMain =
-                partParentDirection !== null &&
-                (property === "width") === (partParentDirection === "row");
-              const partFillKey = partAxisIsMain ? "flex" : "align-self";
-              const key = `${part}.${property}`;
-              const rawPart = String(scopeTokens[key] ?? "");
-              // In overlay scopes, deleting ("") a binding the BASE owns is a
-              // silent no-op — write an explicit neutral instead.
-              const clearSize =
-                activeScope !== "base" && !(key in scopeOwnTokens) && rawPart ? "auto" : "";
-              const fillKeyFull = `${part}.${partFillKey}`;
-              const fillValueNow = String(scopeTokens[fillKeyFull] ?? "");
-              const clearFill =
-                activeScope !== "base" && !(fillKeyFull in scopeOwnTokens) && fillValueNow
-                  ? partAxisIsMain
-                    ? "0 0 auto"
-                    : "auto"
-                  : "";
-              // Clear any previous flex-based fill encoding for this axis first.
-              if (partParentDirection !== null) entries.push([fillKeyFull, clearFill]);
-              if (next === "auto") entries.push([key, clearSize]);
-              else if (next === "hug") entries.push([key, "fit-content"]);
-              else if (next === "fixed") entries.push([key, measurePartSize(property, part)]);
-              else if (partParentDirection !== null) {
-                entries.push([key, clearSize]);
-                entries.push(
-                  partAxisIsMain ? [`${part}.flex`, "1 1 0"] : [`${part}.align-self`, "stretch"]
-                );
-              } else {
-                entries.push([key, "100%"]);
+      {sectionOpen("size") && (
+        <div style={geometryPairStyle}>
+          {SIZE_SECTION_PROPERTIES.map((property) => {
+            const axis = property === "width" ? "W" : "H";
+            const raw = scopeValue(property);
+            const parentDirection = flexParentDirection();
+            const axisIsMain =
+              parentDirection !== null && (property === "width") === (parentDirection === "row");
+            // Fill can be encoded two ways: width/height 100% (no flex parent) or
+            // flex:1 / align-self:stretch inside an auto-layout parent (Figma).
+            const fillByFlex =
+              parentDirection !== null &&
+              (!raw || raw === "auto") &&
+              (axisIsMain
+                ? scopeValue("flex").trim().startsWith("1")
+                : scopeValue("align-self") === "stretch");
+            const mode: ResizeMode = fillByFlex ? "fill" : resizeModeFromValue(raw);
+            // "Auto" clears the binding — only offered where clearing actually works:
+            // when this scope's own bucket holds the key (or nothing is bound at all).
+            // In an overlay scope a base-inherited size can't be deleted, but picking
+            // another mode overrides it, after which Auto reappears to revert that.
+            const fillKey = axisIsMain ? "flex" : "align-self";
+            const ownsBinding =
+              `${activePart}.${property}` in scopeOwnTokens ||
+              `${activePart}.${fillKey}` in scopeOwnTokens;
+            // Applies the mode to EVERY selected part, each with its own parent
+            // direction (a row-parent child gets flex:1 while a column-parent child
+            // gets align-self:stretch in the same gesture).
+            const setResizeMode = (next: ResizeMode): void => {
+              const entries: Array<[string, string]> = [];
+              for (const part of editTargets) {
+                const partParentDirection = flexParentDirection(part);
+                const partAxisIsMain =
+                  partParentDirection !== null &&
+                  (property === "width") === (partParentDirection === "row");
+                const partFillKey = partAxisIsMain ? "flex" : "align-self";
+                const key = `${part}.${property}`;
+                const rawPart = String(scopeTokens[key] ?? "");
+                // In overlay scopes, deleting ("") a binding the BASE owns is a
+                // silent no-op — write an explicit neutral instead.
+                const clearSize =
+                  activeScope !== "base" && !(key in scopeOwnTokens) && rawPart ? "auto" : "";
+                const fillKeyFull = `${part}.${partFillKey}`;
+                const fillValueNow = String(scopeTokens[fillKeyFull] ?? "");
+                const clearFill =
+                  activeScope !== "base" && !(fillKeyFull in scopeOwnTokens) && fillValueNow
+                    ? partAxisIsMain
+                      ? "0 0 auto"
+                      : "auto"
+                    : "";
+                // Clear any previous flex-based fill encoding for this axis first.
+                if (partParentDirection !== null) entries.push([fillKeyFull, clearFill]);
+                if (next === "auto") entries.push([key, clearSize]);
+                else if (next === "hug") entries.push([key, "fit-content"]);
+                else if (next === "fixed") entries.push([key, measurePartSize(property, part)]);
+                else if (partParentDirection !== null) {
+                  entries.push([key, clearSize]);
+                  entries.push(
+                    partAxisIsMain ? [`${part}.flex`, "1 1 0"] : [`${part}.align-self`, "stretch"]
+                  );
+                } else {
+                  entries.push([key, "100%"]);
+                }
               }
-            }
-            applyAppearanceBindings(entries);
-          };
-          return (
-            <div key={property} style={autoLayoutRowStyle}>
-              <span style={{ ...propLabelStyle, width: 14, flexShrink: 0 }}>{axis}</span>
-              <select
-                aria-label={t("components.resizeModeFor", { axis })}
-                style={{ ...railSelectStyle, flex: 1, minWidth: 0 }}
-                value={mode}
-                onChange={(event) => setResizeMode(event.currentTarget.value as ResizeMode)}
-              >
+              applyAppearanceBindings(entries);
+            };
+            // Explicit option color: the chevron-only select hides its VALUE with
+            // color:transparent, and options inherit that — keep the dropdown list
+            // readable regardless.
+            const optionStyle = { color: "#171a20" } as const;
+            const modeOptions = (
+              <>
                 {mode === "auto" || ownsBinding ? (
-                  <option value="auto">{t("components.resizeAuto")}</option>
+                  <option value="auto" style={optionStyle}>
+                    {t("components.resizeAuto")}
+                  </option>
                 ) : null}
-                <option value="fixed">{t("components.resizeFixed")}</option>
-                <option value="hug">{t("components.resizeHug")}</option>
-                <option value="fill">{t("components.resizeFill")}</option>
-              </select>
-              {mode === "fixed" ? (
-                <input
-                  // Mounts when entering Fixed (seeded from the measured/current
-                  // value); reseeds on part/scope/variant-value switches.
-                  key={`${activePart}:${scopeInstanceKey}:${property}`}
-                  type="text"
-                  aria-label={t("components.resizeValueFor", { axis })}
-                  defaultValue={raw}
-                  style={{ ...railInputStyle, width: 76, flexShrink: 0 }}
-                  onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") event.currentTarget.blur();
-                    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-                      const delta = (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
-                      const next = stepDimensionValue(event.currentTarget.value || "0px", delta);
-                      if (next !== undefined) {
-                        event.preventDefault();
-                        event.currentTarget.value = next;
-                        applyToSelection(property, next);
-                      }
-                    }
-                  }}
-                />
-              ) : null}
-            </div>
-          );
-        })}
+                <option value="fixed" style={optionStyle}>
+                  {t("components.resizeFixed")}
+                </option>
+                <option value="hug" style={optionStyle}>
+                  {t("components.resizeHug")}
+                </option>
+                <option value="fill" style={optionStyle}>
+                  {t("components.resizeFill")}
+                </option>
+              </>
+            );
+            return (
+              // Figma W|H cell: in-field axis glyph; Fixed shows the number with a
+              // chevron-only mode dropdown, other modes show the mode dropdown.
+              <div
+                key={property}
+                style={{ position: "relative", display: "flex", gap: 4, minWidth: 0 }}
+              >
+                <span style={fieldGlyphStyle} aria-hidden>
+                  {axis}
+                </span>
+                {mode === "fixed" ? (
+                  <>
+                    <input
+                      // Mounts when entering Fixed (seeded from the measured/current
+                      // value); reseeds on part/scope/variant-value switches.
+                      key={`${activePart}:${scopeInstanceKey}:${property}`}
+                      type="text"
+                      aria-label={t("components.resizeValueFor", { axis })}
+                      defaultValue={raw}
+                      style={{ ...railInputStyle, paddingLeft: 20, flex: 1, minWidth: 0 }}
+                      onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") event.currentTarget.blur();
+                        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                          const delta =
+                            (event.key === "ArrowUp" ? 1 : -1) * (event.shiftKey ? 10 : 1);
+                          const next = stepDimensionValue(
+                            event.currentTarget.value || "0px",
+                            delta
+                          );
+                          if (next !== undefined) {
+                            event.preventDefault();
+                            event.currentTarget.value = next;
+                            applyToSelection(property, next);
+                          }
+                        }
+                      }}
+                    />
+                    <select
+                      aria-label={t("components.resizeModeFor", { axis })}
+                      style={modeChevronSelectStyle}
+                      value={mode}
+                      onChange={(event) => setResizeMode(event.currentTarget.value as ResizeMode)}
+                    >
+                      {modeOptions}
+                    </select>
+                  </>
+                ) : (
+                  <select
+                    aria-label={t("components.resizeModeFor", { axis })}
+                    style={{ ...railSelectStyle, paddingLeft: 20, flex: 1, minWidth: 0 }}
+                    value={mode}
+                    onChange={(event) => setResizeMode(event.currentTarget.value as ResizeMode)}
+                  >
+                    {modeOptions}
+                  </select>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
       {sectionOpen("size") && minMaxOpen
         ? MIN_MAX_PROPERTIES.map((property) => (
             <label key={property} style={propRowStyle}>
@@ -2181,10 +2178,14 @@ export function ComponentsPanelWorkspace({
                 />
                 {t("components.absolutePosition")}
               </label>
-              {absolute
-                ? (["top", "right", "bottom", "left", "z-index"] as const).map((property) => (
-                    <label key={property} style={propRowStyle}>
-                      <span style={propLabelStyle}>
+              {absolute ? (
+                <div style={geometryPairStyle}>
+                  {(["top", "right", "bottom", "left", "z-index"] as const).map((property) => (
+                    <label
+                      key={property}
+                      style={{ position: "relative", display: "flex", minWidth: 0 }}
+                    >
+                      <span style={fieldGlyphStyle} aria-hidden>
                         {property === "z-index" ? "Z" : property.toUpperCase().slice(0, 1)}
                       </span>
                       <input
@@ -2193,7 +2194,7 @@ export function ComponentsPanelWorkspace({
                         aria-label={property}
                         defaultValue={scopeValue(property)}
                         placeholder={property === "z-index" ? "1" : "0px"}
-                        style={{ ...railInputStyle, flex: 1, minWidth: 0 }}
+                        style={{ ...railInputStyle, paddingLeft: 20, flex: 1, minWidth: 0 }}
                         onBlur={(event) => applyToSelection(property, event.currentTarget.value)}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") event.currentTarget.blur();
@@ -2213,8 +2214,9 @@ export function ComponentsPanelWorkspace({
                         }}
                       />
                     </label>
-                  ))
-                : null}
+                  ))}
+                </div>
+              ) : null}
             </>
           );
         })()}
@@ -2553,21 +2555,55 @@ export function ComponentsPanelWorkspace({
     <section
       style={{
         ...componentPanelWorkspaceLayout,
-        gridTemplateColumns: policy.design
-          ? `${layersWidth}px minmax(0, 1fr) 320px`
-          : "minmax(0, 1fr) 320px",
+        gridTemplateColumns: `${layersWidth}px minmax(0, 1fr) 240px`,
       }}
     >
-      {policy.design ? (
-        <aside style={layersColumnStyle}>
-          <div
-            role="separator"
-            aria-orientation="vertical"
-            onPointerDown={startLayersResize}
-            style={layerResizeHandleStyle}
-          />
-          <div style={cardStyle}>
-            <div style={cardHeaderStyle}>
+      <aside style={layersColumnStyle}>
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          onPointerDown={startLayersResize}
+          style={layerResizeHandleStyle}
+        />
+        {/* Figma-style single left panel: components list (Pages) over Layers. */}
+        <div style={{ borderBottom: "1px solid #e6e6e6", display: "grid", minWidth: 0 }}>
+          <div style={panelSectionHeaderStyle}>
+            <strong style={railSectionTitleStyle}>{t("components.heading")}</strong>
+          </div>
+          <div style={{ padding: "0 8px 8px" }}>
+            <input
+              aria-label={t("components.search")}
+              placeholder={t("components.search")}
+              style={{ ...railTextInputStyle, width: "100%" }}
+              value={componentSearch}
+              onChange={(event) => setComponentSearch(event.currentTarget.value)}
+            />
+          </div>
+          <div style={{ maxHeight: 192, overflowY: "auto", display: "grid", paddingBottom: 8 }}>
+            {filteredComponents.map((component) => (
+              <button
+                key={component.id}
+                type="button"
+                title={`${component.name} / ${component.id}`}
+                style={
+                  selectedComponentForSpec.id === component.id
+                    ? { ...pagesRowStyle, ...pagesRowActiveStyle }
+                    : pagesRowStyle
+                }
+                onClick={() => setSelectedComponentId(component.id)}
+              >
+                <span
+                  style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                >
+                  {component.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+        {policy.design ? (
+          <>
+            <div style={panelSectionHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.layers")}</strong>
               {policy.structure ? (
                 <button
@@ -2611,122 +2647,36 @@ export function ComponentsPanelWorkspace({
               onCopyAppearance={copyPartAppearance}
               onPasteAppearance={pastePartAppearance}
             />
-          </div>
-        </aside>
-      ) : null}
+          </>
+        ) : null}
+      </aside>
       <div style={stickyPreviewColumnStyle}>
-        <div style={sectionHeaderStyle}>
-          <div>
-            <h1 style={sectionTitleStyle}>{selectedComponentForSpec.name}</h1>
-            <p style={sectionMetaStyle}>{selectedComponentForSpec.id}.component.json</p>
+        <div style={{ minWidth: 0 }}>
+          <div style={canvasFrameLabelStyle}>
+            <span>{selectedComponentForSpec.name}</span>
           </div>
-          <div style={componentStatRowStyle}>
-            <span>
-              {t("components.statProps", { count: selectedComponentForSpec.props.length })}
-            </span>
-            <span>
-              {t("components.statVariants", { count: selectedComponentForSpec.variants.length })}
-            </span>
-            <span>
-              {t("components.statStates", { count: selectedComponentForSpec.states.length })}
-            </span>
+          <div
+            style={
+              effectiveInspectorTarget === "preview"
+                ? {
+                    ...componentPreviewPanelStyle,
+                    outline: "2px solid #0d99ff",
+                    outlineOffset: 1,
+                  }
+                : { ...componentPreviewPanelStyle, cursor: "pointer" }
+            }
+            onClick={() => setInspectorTarget("preview")}
+            title={t("components.previewTestHint")}
+          >
+            {renderComponentPreview(
+              selectedComponentForSpec,
+              effectiveComponentPreviewSelections,
+              previewTokenLookup,
+              // Editor preview: edits inside the live editor flow back to the `value`
+              // prop (and its textarea) so the inspector stays in sync.
+              (value) => commitPreviewSelection("value", value)
+            )}
           </div>
-        </div>
-        <details style={disclosureStyle}>
-          <summary style={summaryStyle}>{t("components.details")}</summary>
-          <div style={compactFormGridStyle}>
-            <label style={fieldStyle}>
-              {t("components.name")}
-              <input
-                style={inputStyle}
-                value={componentMetaDraft.name}
-                onChange={(event) => {
-                  const name = event.currentTarget.value;
-                  setComponentMetaDraft((draft) => ({
-                    ...draft,
-                    name,
-                  }));
-                }}
-              />
-            </label>
-            <label style={fieldStyle}>
-              {t("components.category")}
-              <select
-                style={selectStyle}
-                value={componentMetaDraft.category}
-                onChange={(event) => {
-                  const category = event.currentTarget.value as ComponentDocument["category"];
-                  setComponentMetaDraft((draft) => ({
-                    ...draft,
-                    category,
-                  }));
-                }}
-              >
-                {componentCategories.map((category) => (
-                  <option key={category} value={category}>
-                    {t(`components.category.${category}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label style={fieldStyle}>
-              {t("components.status")}
-              <select
-                style={selectStyle}
-                value={componentMetaDraft.status}
-                onChange={(event) => {
-                  const status = event.currentTarget.value as ComponentDocument["status"];
-                  setComponentMetaDraft((draft) => ({
-                    ...draft,
-                    status,
-                  }));
-                }}
-              >
-                {componentStatuses.map((status) => (
-                  <option key={status} value={status}>
-                    {t(`components.status.${status}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label style={{ ...fieldStyle, gridColumn: "1 / -1" }}>
-              {t("components.description")}
-              <input
-                style={inputStyle}
-                value={componentMetaDraft.description}
-                onChange={(event) => {
-                  const description = event.currentTarget.value;
-                  setComponentMetaDraft((draft) => ({
-                    ...draft,
-                    description,
-                  }));
-                }}
-              />
-            </label>
-            <div style={rowStyle}>
-              <button type="button" style={smallButtonStyle} onClick={saveComponentMetaDraft}>
-                {t("components.save")}
-              </button>
-            </div>
-          </div>
-        </details>
-        <div
-          style={
-            effectiveInspectorTarget === "preview"
-              ? { ...componentPreviewPanelStyle, outline: "2px solid #7aa7ee", outlineOffset: 2 }
-              : { ...componentPreviewPanelStyle, cursor: "pointer" }
-          }
-          onClick={() => setInspectorTarget("preview")}
-          title={t("components.previewTestHint")}
-        >
-          {renderComponentPreview(
-            selectedComponentForSpec,
-            effectiveComponentPreviewSelections,
-            previewTokenLookup,
-            // Editor preview: edits inside the live editor flow back to the `value`
-            // prop (and its textarea) so the inspector stays in sync.
-            (value) => commitPreviewSelection("value", value)
-          )}
         </div>
         {(() => {
           const matrix = renderComponentPreviewMatrix({
@@ -2766,31 +2716,34 @@ export function ComponentsPanelWorkspace({
             t,
           });
           return matrix ? (
-            <div
-              ref={matrixRef}
-              style={componentPreviewPanelStyle}
-              // Preview → layers hover sync (Figma highlights the layer row of the
-              // element under the cursor). Locked parts don't light up.
-              onMouseOver={(event) => {
-                const part = componentPartForElement(
-                  selectedComponentForSpec.id,
-                  event.target as Element
-                );
-                setHoveredPart(part && !lockedParts.has(part) ? part : null);
-              }}
-              onMouseLeave={() => setHoveredPart(null)}
-            >
-              {/* Hover ring for the marked element (non-datepicker matrices have no
-                  per-row style injection, so this one global rule covers them). */}
-              <style>
-                {
-                  ".podo-part-hovered { outline: 1px solid #7aa7ee !important; outline-offset: 1px; }"
-                }
-              </style>
-              <div style={cardHeaderStyle}>
-                <strong style={railSectionTitleStyle}>{t("components.variantSet")}</strong>
+            <div style={{ minWidth: 0 }}>
+              <div style={componentSetLabelStyle}>
+                <span aria-hidden>◈</span>
+                <span>{t("components.variantSet")}</span>
               </div>
-              {matrix}
+              <div
+                ref={matrixRef}
+                style={componentSetFrameStyle}
+                // Preview → layers hover sync (Figma highlights the layer row of the
+                // element under the cursor). Locked parts don't light up.
+                onMouseOver={(event) => {
+                  const part = componentPartForElement(
+                    selectedComponentForSpec.id,
+                    event.target as Element
+                  );
+                  setHoveredPart(part && !lockedParts.has(part) ? part : null);
+                }}
+                onMouseLeave={() => setHoveredPart(null)}
+              >
+                {/* Hover ring for the marked element (non-datepicker matrices have no
+                  per-row style injection, so this one global rule covers them). */}
+                <style>
+                  {
+                    ".podo-part-hovered { outline: 1px solid #0d99ff !important; outline-offset: 1px; }"
+                  }
+                </style>
+                {matrix}
+              </div>
             </div>
           ) : null;
         })()}
@@ -2842,7 +2795,7 @@ export function ComponentsPanelWorkspace({
           />
         ) : null}
         {effectiveInspectorTarget === "design" ? (
-          <div style={cardStyle}>
+          <div style={railSectionStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>
                 {t("components.design", { part: humanizeLabel(activePart) })}
@@ -3108,7 +3061,14 @@ export function ComponentsPanelWorkspace({
                                   />
                                 )
                               ) : (
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 6,
+                                    minWidth: 0,
+                                  }}
+                                >
                                   {isColor ? (
                                     // Figma fill row: the swatch opens the inline HSV+alpha
                                     // picker (writes a raw color, detaching any token —
@@ -3178,7 +3138,7 @@ export function ComponentsPanelWorkspace({
           </div>
         ) : null}
         {effectiveInspectorTarget === "preview" && selectedComponentForSpec.states.length ? (
-          <div style={cardStyle}>
+          <div style={railSectionStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.state")}</strong>
             </div>
@@ -3200,7 +3160,7 @@ export function ComponentsPanelWorkspace({
           </div>
         ) : null}
         {effectiveInspectorTarget === "preview" && selectedComponentForSpec.variants.length ? (
-          <div style={cardStyle}>
+          <div style={railSectionStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.variants")}</strong>
             </div>
@@ -3233,7 +3193,7 @@ export function ComponentsPanelWorkspace({
         ) : null}
         {effectiveInspectorTarget === "preview" &&
         PREVIEW_TEXT_COMPONENT_IDS.has(selectedComponentForSpec.id) ? (
-          <div style={cardStyle}>
+          <div style={railSectionStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.previewText")}</strong>
             </div>
@@ -3252,7 +3212,7 @@ export function ComponentsPanelWorkspace({
         {effectiveInspectorTarget === "preview" && selectedComponentForSpec.id === "field" ? (
           // Field is slot-driven: pick what fills the required `control` slot,
           // like slot composition on the canvas.
-          <div style={cardStyle}>
+          <div style={railSectionStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.slotContent")}</strong>
             </div>
@@ -3275,7 +3235,7 @@ export function ComponentsPanelWorkspace({
           </div>
         ) : null}
         {effectiveInspectorTarget === "preview" ? (
-          <div style={cardStyle}>
+          <div style={railSectionStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.props")}</strong>
             </div>
@@ -3398,7 +3358,7 @@ export function ComponentsPanelWorkspace({
           </div>
         ) : null}
         {effectiveInspectorTarget === "preview" && selectedComponentForSpec.id === "editor" ? (
-          <div style={cardStyle}>
+          <div style={railSectionStyle}>
             <div style={cardHeaderStyle}>
               <strong style={railSectionTitleStyle}>{t("components.editorToolbar")}</strong>
             </div>
@@ -3425,6 +3385,84 @@ export function ComponentsPanelWorkspace({
           </div>
         ) : null}
         {/* Style-only / test-only components hide schema editing entirely. */}
+        <details style={disclosureStyle}>
+          <summary style={summaryStyle}>{t("components.details")}</summary>
+          <div style={editorFormStyle}>
+            <label style={railFieldStyle}>
+              {t("components.name")}
+              <input
+                style={railTextInputStyle}
+                value={componentMetaDraft.name}
+                onChange={(event) => {
+                  const name = event.currentTarget.value;
+                  setComponentMetaDraft((draft) => ({
+                    ...draft,
+                    name,
+                  }));
+                }}
+              />
+            </label>
+            <label style={railFieldStyle}>
+              {t("components.category")}
+              <select
+                style={railSelectStyle}
+                value={componentMetaDraft.category}
+                onChange={(event) => {
+                  const category = event.currentTarget.value as ComponentDocument["category"];
+                  setComponentMetaDraft((draft) => ({
+                    ...draft,
+                    category,
+                  }));
+                }}
+              >
+                {componentCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {t(`components.category.${category}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label style={railFieldStyle}>
+              {t("components.status")}
+              <select
+                style={railSelectStyle}
+                value={componentMetaDraft.status}
+                onChange={(event) => {
+                  const status = event.currentTarget.value as ComponentDocument["status"];
+                  setComponentMetaDraft((draft) => ({
+                    ...draft,
+                    status,
+                  }));
+                }}
+              >
+                {componentStatuses.map((status) => (
+                  <option key={status} value={status}>
+                    {t(`components.status.${status}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label style={{ ...railFieldStyle, gridColumn: "1 / -1" }}>
+              {t("components.description")}
+              <input
+                style={railTextInputStyle}
+                value={componentMetaDraft.description}
+                onChange={(event) => {
+                  const description = event.currentTarget.value;
+                  setComponentMetaDraft((draft) => ({
+                    ...draft,
+                    description,
+                  }));
+                }}
+              />
+            </label>
+            <div style={rowStyle}>
+              <button type="button" style={railButtonStyle} onClick={saveComponentMetaDraft}>
+                {t("components.save")}
+              </button>
+            </div>
+          </div>
+        </details>
         {policy.schema ? (
           <details style={disclosureStyle}>
             <summary style={summaryStyle}>{t("components.editSchema")}</summary>
@@ -3460,7 +3498,7 @@ export function ComponentsPanelWorkspace({
                 ))}
               </div>
               {componentEditMode === "props" ? (
-                <div style={cardStyle}>
+                <div style={railSectionStyle}>
                   <div style={cardHeaderStyle}>
                     <strong style={railSectionTitleStyle}>{t("components.props")}</strong>
                     <button
@@ -3596,7 +3634,7 @@ export function ComponentsPanelWorkspace({
                 </div>
               ) : null}
               {componentEditMode === "variants" ? (
-                <div style={cardStyle}>
+                <div style={railSectionStyle}>
                   <div style={cardHeaderStyle}>
                     <strong style={railSectionTitleStyle}>{t("components.variants")}</strong>
                     <button
@@ -3735,7 +3773,7 @@ export function ComponentsPanelWorkspace({
                 </div>
               ) : null}
               {componentEditMode === "slots" ? (
-                <div style={cardStyle}>
+                <div style={railSectionStyle}>
                   <div style={cardHeaderStyle}>
                     <strong>{t("components.slots")}</strong>
                     <button

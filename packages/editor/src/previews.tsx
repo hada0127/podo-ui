@@ -114,7 +114,7 @@ const matrixAddValueButtonStyle: CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
-  border: "1px solid #d8dde6",
+  border: "1px solid #e6e6e6",
   borderRadius: 4,
   background: "#ffffff",
   color: "#3f3f46",
@@ -153,7 +153,7 @@ function partOutlineCss(componentId: string, scope: string, part: string | undef
   if (!part) return "";
   const selector = COMPONENT_PART_SELECTORS[componentId]?.[part];
   if (!selector) return "";
-  return `${scopeSelector(scope, selector)} { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }`;
+  return `${scopeSelector(scope, selector)} { outline: 2px solid #0d99ff !important; outline-offset: 1px; }`;
 }
 
 // The CSS selector for an anatomy part, so callers (e.g. the editor's layer↔preview
@@ -170,8 +170,8 @@ export function componentPartSelector(componentId: string, part: string): string
 // effect while a layer row (or preview element) is hovered.
 function selectedPartCss(scope: string): string {
   return (
-    `.${scope} .podo-part-selected { outline: 2px solid #4c9ffe !important; outline-offset: 1px; }\n` +
-    `.${scope} .podo-part-hovered { outline: 1px solid #7aa7ee !important; outline-offset: 1px; }`
+    `.${scope} .podo-part-selected { outline: 2px solid #0d99ff !important; outline-offset: 1px; }\n` +
+    `.${scope} .podo-part-hovered { outline: 1px solid #0d99ff !important; outline-offset: 1px; }`
   );
 }
 
@@ -385,6 +385,10 @@ export function renderComponentPreviewMatrix(input: {
                       <div
                         role="button"
                         tabIndex={0}
+                        // Measurement anchor: partElement() reads sizes/computed
+                        // values from THIS cell (falls back to the first cell
+                        // without it — wrong variant when a non-default is chosen).
+                        data-podo-selected-cell={selected ? "true" : undefined}
                         style={{
                           ...componentMatrixPreviewButtonStyle,
                           ...(selected ? componentMatrixPreviewButtonActiveStyle : {}),
