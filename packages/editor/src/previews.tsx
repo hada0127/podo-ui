@@ -762,16 +762,24 @@ function PaginationPreviewBody({ s }: { s: Record<string, string> }) {
 function renderTabPreview(s: Record<string, string>) {
   const active = s.activeKey?.trim() || s.defaultActiveKey?.trim() || "overview";
   return (
-    <V1Tab
-      key={active}
-      fill={s.width === "fill" || s.fill === "true"}
-      defaultActiveKey={active}
-      items={[
-        { key: "overview", label: "Overview" },
-        { key: "usage", label: "Usage" },
-        { key: "changelog", label: "Changelog" },
-      ]}
-    />
+    // Width context: previews shrink-wrap their content (centered grid cells,
+    // where a percentage width resolves back to content size), so `.tabs.fill
+    // > li { flex: 1 }` would have nothing to fill and auto/fill would render
+    // identically. The definite 420px lets fill distribute; maxWidth clamps it
+    // inside definite-width containers (canvas shapes, narrow stages) so it
+    // can't overflow them.
+    <div style={{ width: 420, maxWidth: "100%" }}>
+      <V1Tab
+        key={active}
+        fill={s.width === "fill" || s.fill === "true"}
+        defaultActiveKey={active}
+        items={[
+          { key: "overview", label: "Overview" },
+          { key: "usage", label: "Usage" },
+          { key: "changelog", label: "Changelog" },
+        ]}
+      />
+    </div>
   );
 }
 
