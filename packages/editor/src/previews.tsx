@@ -147,15 +147,6 @@ function scopeSelector(scope: string, selector: string): string {
     .join(", ");
 }
 
-// Figma-style selection outline: ring the currently-selected part's element so
-// you can see what you're editing in the preview/list.
-function partOutlineCss(componentId: string, scope: string, part: string | undefined): string {
-  if (!part) return "";
-  const selector = COMPONENT_PART_SELECTORS[componentId]?.[part];
-  if (!selector) return "";
-  return `${scopeSelector(scope, selector)} { outline: 2px solid #0d99ff !important; outline-offset: 1px; }`;
-}
-
 // The CSS selector for an anatomy part, so callers (e.g. the editor's layer↔preview
 // sync effect) can find that part's element in the rendered preview.
 export function componentPartSelector(componentId: string, part: string): string | undefined {
@@ -419,10 +410,12 @@ export function renderComponentPreviewMatrix(input: {
                               cellScope,
                               false
                             ) +
-                              (selected
-                                ? "\n" +
-                                  partOutlineCss(input.component.id, cellScope, input.selectedPart)
-                                : "")}
+                              // Ring the single marked element (set by the layer↔preview
+                              // sync effect) — a selector-based ring would light up EVERY
+                              // instance of a multi-element part (e.g. all three doc-tabs
+                              // tabs), making the selected variant look differently shaped.
+                              "\n" +
+                              selectedPartCss(cellScope)}
                           </style>
                           {renderComponentPreviewBody(
                             input.component,
