@@ -1,4 +1,6 @@
-# Podo UI
+# Podo UI v1
+
+[V2 URL](https://github.com/podoui/podoui)
 
 > Modern SCSS Module-based Design System
 
